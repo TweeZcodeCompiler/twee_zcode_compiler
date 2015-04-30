@@ -1,0 +1,124 @@
+Eine Übersicht über z-Code
+
+Inhalt:
+1.Speicherbereiche
+1.a Header
+1.b Dynamic Memory
+1.c Static Memory
+1.d High Memory
+2. Darstellung
+2.a Numbers
+2.b ZSCII
+3. Routinen
+3.a Instructions
+4. Object Table
+4.a Property Table
+
+
+1.Speicherbereiche
+##################
+
+1.a Header
+--------
+Der Header beginnt bei Ox00.
+Er beinhaltet Informationen über die Date (z.B. Version des Codes) und die Position des Wörterbuchs (Dictionary), der Objekttabelle, der globalen Variablen, sowie die "Magic-Number" -an der das Programm startet.
+Details: http://inform-fiction.org/zmachine/standards/z1point0/sect11.html
+
+1.b Dynamic Memory
+---------------
+Der dynamische Speicher erstreckt sich von 0x0000 bis zum statischen Speicher. (Diese Position wird an der Stelle 0xe des Headers festgelegt).
+Auf den dynamischen Speicher kann lesend und schreibend zugegriffen werden.
+Er beinhaltet u.a. globale Variablen, den Object-Baum mit Beschreibungen...
+
+1.c Static Memory
+---------------
+Der dynamische Speicher erstreckt sich von der im Header an der Stelle 0xe angegebenen Position bis zu der an der Stelle 0x4 angegebenen Position im Header.
+Es kann nur lesend darauf zugegriffen werden.
+In diesem befinden sich Informationen zu dem verwendeten Wortschatz.(z.B. das Dictionary)
+
+1.d High Memory
+-------------
+Dieser Speicherbereich erstreckt sich von der im Header an der Stelle 0x4 angegebenen Position bis zum Ende der Datei. Er Beinhaltet die auszuführenden Routinen (Den eigentlichen Z-Code).
+
+
+
+2.Darstellungen
+###############
+
+2.a Numbers
+-----------
+2 Bytes, signifikanteres-byte zuerst
+Zahlenbereich : 0 bis 65535
+
+2.b ZSCII
+---------
+Details siehe : http://inform-fiction.org/zmachine/standards/z1point0/sect03.html
+Ein ZSCII-Zeichen wird mit 5 Bits codiert. Das Bedeutet, man benötigt zwei Bytes, die 3 ZSCII-Zeichen beinhalten -> Strings haben also immer eine gerade Anzahl an Bytes.
+Das Erste Bit der beiden Byts bleibt über und wird nicht verwendet.
+
+Es gibt 3 Alphabete: kleinbuchstaben, großbuchstaben, interpunktion
+Zwischen den drei Alphabeten kann mithilfe der beiden ZSCII-Zeichen 2 (00010) und 3 (00011) gewechselt werden.
+Siehe Tabelle von der Seite:
+
+             from A0  from A1  from A2
+  Z-char 2      A1       A2       A0
+  Z-char 3      A2       A0       A1
+  
+Dabei wird das Alphabet nur für das darauf folgende Zeichen gewechselt. Möchte man das Alphabet dauerhaft ändern, sollte man die ZSCII-Zeichen 4 und 5 verwenden (AB VERSION 3 NICHT MEHR EXISTENT!)
+
+
+
+3. Routinen
+###########
+
+Routinen sind im High Memory -direkt hinter dem Wörterbuch - angesiedelt.
+Eine Routine muss immer an einer im Packed Adress Format adressierbaren Stelle beginnen.
+Das erste Byte gibt an, wie viele lokale Variablen die Routine hat. In Code-Version von 1 bis vier folgen daraufhin die Initialwerte der zuvor genannten Variablen (Jeweils 2 Byte-Wörter) .
+Daraufhin folgen die Instruktionen (Instructions).
+
+???? TODO:Es gibt keinen definierten Endwert für die Funktion. Warum nicht? Wie funktioniert der Returnmechanismus????????????
+
+3.a Instructions
+----------------
+Details siehe: http://inform-fiction.org/zmachine/standards/z1point0/sect04.html
+Opcode Tabelle siehe: http://inform-fiction.org/zmachine/standards/z1point0/sect14.html
+Opcode Beschreibung siehe: http://inform-fiction.org/zmachine/standards/z1point0/sect15.html
+
+Tabelle von der Seite:
+  Opcode               1 or 2 bytes
+  (Types of operands)  1 or 2 bytes: 4 or 8 2-bit fields
+  Operands             Between 0 and 8 of these: each 1 or 2 bytes
+  (Store variable)     1 byte
+  (Branch offset)      1 or 2 bytes
+  (Text to print)      An encoded string (of unlimited length)
+  
+Opcode ist in der Obengenannten Tabelle beschrieben.
+
+4. Object Table
+###############
+
+Objekte sind im dynamischen Speicher in Form eines Baumes angeordnet. Der Beginn der Tabelle ist dem Header an der Stelle 0xa zu entnehmen.
+Jedes Objekt in Version 1-3 ist wie folgt aufgebaut:
+
+   the 32 attribute flags     parent     sibling     child   properties
+   ---32 bits in 4 bytes---   ---3 bytes------------------  ---2 bytes--
+
+parent, sibling, child müssen valide Objektnummern sein. (Die sind von Oben nach unten durchnummeriert.) Der properties-Pointer Zeigt auf die Property-Table für dieses Objekt.
+
+4.a Property Table
+------------------
+Jedes Objekt besitzt eine Property-Table im dynamischen Speicher. Diese besteht aus einem Header:
+
+   text-length     text of short name of object
+  -----byte----   --some even number of bytes---
+
+Anschließend folgen die Einzelnen Properties:
+
+   size byte     the actual property data
+                ---between 1 and 8 bytes--
+
+Ist das Size-Byte == 0 ist die Liste zu ende. Ansonsten ist size die länge der data-1 + die Nummer der Propperty. Alle Properties müssen aufsteigend nach ihrer Nummer geordnet sein.
+  
+
+
+
