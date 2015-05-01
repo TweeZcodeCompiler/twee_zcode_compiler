@@ -1,6 +1,9 @@
-# twee_zcode_compiler
-compiler project at FU Berlin. The goal is to develop a compiler from twee into 
+# Twee Zcode Compiler
+*compiler project at Free University Berlin
+*the goal is to develop a compiler from twee into 
 z-code.
+*Programming Language: C++
+
 
 ##Project Organisation
 
