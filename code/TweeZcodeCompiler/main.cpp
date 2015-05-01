@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
 
     FileReader *fileReader = new FileReader();
 
-    string filePath = fileReader->getFilePath(argc,argv);
+    string filePath = fileReader->getFilePathFromArgs(argc,argv);
 
     string fileContent = fileReader->readFile(filePath);
     cout << fileContent;

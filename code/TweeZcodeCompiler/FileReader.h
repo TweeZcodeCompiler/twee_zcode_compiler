@@ -17,11 +17,10 @@ class FileReader {
 
 private:
 
-    string fileContent;
 
 public:
     string readFile(string filePath);
-    string getFilePath(int argc, char *argv[]);
+    string getFilePathFromArgs(int argc, char *argv[]);
 
 };
 

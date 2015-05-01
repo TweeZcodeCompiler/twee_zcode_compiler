@@ -5,7 +5,7 @@
 #include "FileReader.h"
 
 
-string FileReader::getFilePath(int argc, char *argv[]) {
+string FileReader::getFilePathFromArgs(int argc, char *argv[]) {
 
     if ( argc != 2 )
         cout <<"Enter <filename> as parameter for call\n";
