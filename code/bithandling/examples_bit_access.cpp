@@ -1,17 +1,13 @@
-/*
- *  This file shows how to use the C++ bitset
- *  Version: 1.0
- *  Author Lars Hochstetter - lars.hochstetter@fu-berlin.de
- */
-
-#include <iostream> //  std::cout, std::endl;
-#include <string>   //  std::string
-#include <bitset>   //  std::bitset
+#include <iostream>
+#include <string>
+#include <bitset>
 
 int main(int argc, char const *argv[])
 {
 
-	std::bitset<8> hexBitset (0xef);                       //  build a bitset using the hexvalues, the bitset looks like 11101111
+//  build a bitset using the hexvalues, the bitset looks like 11101111
+	std::bitset<8> hexBitset (0xef);
+
 	std::cout << std::endl << "Hex constructed: " << hexBitset << std::endl;
 
 /*

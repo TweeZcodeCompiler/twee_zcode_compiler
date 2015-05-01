@@ -1,18 +1,15 @@
-/*
- *  This file shows how to use the C++ bitset
- *  Version: 1.0
- *  Author Lars Hochstetter - lars.hochstetter@fu-berlin.de
- */
-
-#include <iostream> //  std::cout, std::endl;
-#include <string>   //  std::string
-#include <bitset>   //  std::bitset
+#include <iostream>
+#include <string>
+#include <bitset>
 
 int main(int argc, char const *argv[])
 {
 
-	std::bitset<8> stringBitsetA (std::string("11001111")); //  build a bitset using the string, the bitset looks like 11001111
-	std::bitset<8> stringBitsetB (std::string("11110011")); //  build a bitset using the string, the bitset looks like 11110011
+//  build a bitset using the string, the bitset looks like 00001111
+	std::bitset<8> stringBitsetA (std::string("11001111"));
+
+//  build a bitset using the string, the bitset looks like 11110000 
+	std::bitset<8> stringBitsetB (std::string("11110011")); 
 
 /*
  *  ===========================================================Manipulate_the_string_bitsets==========================================
