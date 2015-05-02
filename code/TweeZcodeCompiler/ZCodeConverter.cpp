@@ -5,28 +5,44 @@
 #include "ZCodeConverter.h"
 #include <iostream>
 
+//This Method converts a String of ASCII chars to a String of Z-characters
+//The base of implementation is the documentation on http://inform-fiction.org/zmachine/standards/z1point1/sect03.html
+//This Method use the default alphabet Table of the z-machine (see section 3.5.3) to translate stored Z-characters to ZSCII.
 vector<bitset<8>> ZCodeConverter::convertStringToZSCII(string source) {
+    //Z-characters are 5 bits long
     vector<bitset<5>> zcode = vector<bitset<5>>();
+    //this will contains the final 8 bit Z-character string
+    vector<bitset<8>> returnVector = vector<bitset<8>>();
+
+    //First Iterate over the characters of "source" and create a vector of 5-bit Z-Chars
     for (int i = 0; i < source.size(); i++) {
-        //lower case
+
         char c = source[i];
         int asciiValue = (int) c;
         int zsciiValue = 0;
+
+        //There are three alphabets of z-characters. To switch between the alphabets use the Z-Character 4 or 5 (on version 5 or later).
         if (c == ' ') {
-            //space
+            //space is 00000 in binary form (see 3.5.1)
             zsciiValue = 0;
         } else if (asciiValue > 96 && asciiValue && asciiValue < 123) {
+        //lower case: this is the default alphabet; we do not have to switch it.
             zsciiValue = asciiValue - 91;
         } else if (asciiValue > 64 && asciiValue < 91) {
             //upper case
+            //This is the second alphabet. We have to push '00100' to switch to capital letters.
             zcode.push_back(convertIntToBitset(4));
             zsciiValue = asciiValue - 59;
         } else {
             //punctuation and numbers
+            //This is the third alphabet. We have to push '00101' to switch to punctuation letters.
             zcode.push_back(convertIntToBitset(5));
             if (asciiValue > 47 && asciiValue < 58) {
+                //range of characters from '0' to '9'
                 zsciiValue = asciiValue - 40;
             } else {
+                //the z-characters of the following signs are not in the same order as their ascii equivalent
+                //we have to check them hard coded
                 switch (asciiValue) {
                     case '\n':
                         zsciiValue = 7;
@@ -81,39 +97,51 @@ vector<bitset<8>> ZCodeConverter::convertStringToZSCII(string source) {
                 }
             }
         }
+        //add the calculated Z-character to the character string
         bitset<5> bs = convertIntToBitset(zsciiValue);
         zcode.push_back(bs);
     }
+
+    //the following code translate 5 bit Z-characters into a 8 bit string, as we store it
+
+    //we use padding to expand the size of Z-characters to multiple of 3
+    //the Z-machine ignores the zeros at the end
     while (zcode.size() % 3 != 0) {
         zcode.push_back(convertIntToBitset(0));
     }
-    vector<bitset<8>> akk = vector<bitset<8>>();
-    for (unsigned long i = 0; i < zcode.size(); i += 3) {
-        bitset<8> first = bitset<8>();
-        bitset<8> second = bitset<8>();
-        bitset<5> firstBs = zcode.at(i);
-        bitset<5> secondBs = zcode.at(i + 1);
-        bitset<5> thirdBs = zcode.at(i + 2);
-        if (i == zcode.size() - 3) {
-            first.set(0, true);
-        }
 
-        for (int pos = 1; pos < 6; pos++) {
-            first.set(pos, firstBs[pos - 1]);
+    for (unsigned long i = 0; i < zcode.size(); i += 3) {
+        // Each two 8 bit byte stores three 5 bit Z-characters
+        bitset<8> firstByte = bitset<8>();
+        bitset<8> secondByte = bitset<8>();
+        bitset<5> firstZChar = zcode.at(i);
+        bitset<5> secondZChar = zcode.at(i + 1);
+        bitset<5> thirdZChar = zcode.at(i + 2);
+
+        //the first bit of the two bytes indicates the end of string
+        //if this bit is 1, the string ends after the current two bytes
+        if (i == zcode.size() - 3) {
+            firstByte.set(0, true);
         }
-        for (int pos = 6; pos < 8; pos++) {
-            first.set(pos, secondBs[pos - 6]);
+        //write first Z-char
+        for (unsigned long pos = 1; pos < 6; pos++) {
+            firstByte.set(pos, firstZChar[pos - 1]);
         }
-        akk.push_back(first);
-        for (int pos = 0; pos < 3; pos++) {
-            second.set(pos, secondBs[pos + 2]);
+        //write second Z-char
+        for (unsigned long pos = 6; pos < 8; pos++) {
+            firstByte.set(pos, secondZChar[pos - 6]);
         }
-        for (int pos = 3; pos < 8; pos++) {
-            second.set(pos, thirdBs[pos - 3]);
+        returnVector.push_back(firstByte);
+        for (unsigned long pos = 0; pos < 3; pos++) {
+            secondByte.set(pos, secondZChar[pos + 2]);
         }
-        akk.push_back(second);
+        //write third Z-char
+        for (unsigned long pos = 3; pos < 8; pos++) {
+            secondByte.set(pos, thirdZChar[pos - 3]);
+        }
+        returnVector.push_back(secondByte);
     }
-    return akk;
+    return returnVector;
 }
 
 bitset<5> ZCodeConverter::convertIntToBitset(int in) {
