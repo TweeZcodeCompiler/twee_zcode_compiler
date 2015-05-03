@@ -15,11 +15,11 @@ private:
     unsigned short fileChecksum;
     bool fileLengthSet = false;
 
-    void setFlags1(std::vector<std::bitset<16>> header);
-    void setAddresses(std::vector<std::bitset<16>> header);
-    void setFlags2(std::vector<std::bitset<16>> header);
+    void setFlags1(std::vector<std::bitset<16>> *header);
+    void setAddresses(std::vector<std::bitset<16>> *header);
+    void setFlags2(std::vector<std::bitset<16>> *header);
 
-    std::bitset<16> setShortVal(unsigned short val, std::vector<std::bitset<16>> header);
+    void setShortVal(unsigned short val, std::vector<std::bitset<16>> *header);
 
 public:
     // Flags 1 in Hex position 1 to 3
@@ -54,7 +54,7 @@ public:
     unsigned short locOfAbbrTable;      // location of abbreviation Table (byte address)
 
     void setFileLength(unsigned int length, unsigned short checksum);
-    std::vector<std::bitset<16>> getHeader();
+    std::vector<std::bitset<16>>* getHeader();
 
 };
 
