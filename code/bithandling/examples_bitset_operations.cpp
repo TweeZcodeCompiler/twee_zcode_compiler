@@ -5,10 +5,17 @@
 int main(int argc, char const *argv[])
 {
 
+<<<<<<< HEAD
 //  build a bitset using the string, the bitset looks like 00001111
 	std::bitset<8> stringBitsetA (std::string("11001111"));
 
 //  build a bitset using the string, the bitset looks like 11110000 
+=======
+//  build a bitset using the string, the bitset looks like 11001111
+	std::bitset<8> stringBitsetA (std::string("11001111")); 
+	
+//  build a bitset using the string, the bitset looks like 11110011
+>>>>>>> 6c1653f4705445d64521c2215819bbcffa1b59c7
 	std::bitset<8> stringBitsetB (std::string("11110011")); 
 
 /*
