@@ -13,12 +13,20 @@ class Header {
 private:
     unsigned short fileLength;
     unsigned short fileChecksum;
-    bool fileLengthSet = false;
+    unsigned short routinesOffset;
+    unsigned short staticStringsOffset;
 
+    // flags show if header is initialized
+    bool fileLengthSet = false;
+    bool routinesOffsetSet = false;
+    bool staticStringsOffsetSet = false;
+
+    // set special parts of header
     void setFlags1(std::vector<std::bitset<16>> *header);
     void setAddresses(std::vector<std::bitset<16>> *header);
     void setFlags2(std::vector<std::bitset<16>> *header);
 
+    // split short values upt to 2 bytes
     void setShortVal(unsigned short val, std::vector<std::bitset<16>> *header);
 
 public:
@@ -51,9 +59,28 @@ public:
     bool useSoundEffects = false;
     bool useMenus = false;
 
-    unsigned short locOfAbbrTable;      // location of abbreviation Table (byte address)
+    unsigned short locOfAbbrTable;              // location of abbreviation Table (byte address)
 
+    unsigned char screenHeight = 255;           // 255 = infinite
+    unsigned char screenWidthCharacters;
+    unsigned short screenWidthUnits;
+    unsigned short screenHeightUnits;
+    unsigned char fontHeightUnits;
+    unsigned char fontWidthUnits;
+
+    unsigned char defBackgroundColor;
+    unsigned char defForegroundColor;
+    unsigned char addressOfCharTable;               // address of terminating characters table (bytes)
+    unsigned short totalWidthInPixels;              // total width in pixels of text sent to output stream 3
+    unsigned short alphabetTableAddress = 0;        // Alphabet table address (bytes), 0 for default
+    unsigned short headerExtensionTableAddress = 0;
+
+    // helper methods - needed to be invoked before getHeader()
     void setFileLength(unsigned int length, unsigned short checksum);
+    void setRoutinesOffset(unsigned int offset);
+    void setStaticStringsOffset(unsigned int offset);
+
+    // get complete header as vector<bitset>
     std::vector<std::bitset<16>>* getHeader();
 
 };
