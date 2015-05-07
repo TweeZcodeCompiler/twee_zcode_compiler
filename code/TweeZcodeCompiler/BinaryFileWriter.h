@@ -12,7 +12,7 @@ class BinaryFileWriter {
 
 public:
 
-    void write(std::string fileName,std::vector<std::bitset<16>> *bitVector);
+    void write(std::string fileName,std::vector<std::bitset<8>> bitVector);
 
 private:
 
