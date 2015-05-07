@@ -1,10 +1,10 @@
 #include <iostream>
-#include <bitset>
 #include "FileReader.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
+
     FileReader *fileReader = new FileReader();
 
     string filePath = fileReader->getFilePathFromArgs(argc,argv);
