@@ -8,19 +8,22 @@
 
 #include "BinaryFileWriter.h"
 
+using std::ofstream;
+using std::string;
+using std::ios;
 
-void BinaryFileWriter::write(std::string fileName,std::vector<std::bitset<8>> bitVector)
+
+void BinaryFileWriter::write(std::string fileName,std::vector<std::bitset<8>> bits)
 {
+    ofstream file;
+    file.open (fileName, ios::out | ios::binary);
 
-    FILE* pFile;
-    pFile = fopen(fileName.c_str(), "wb");
-    for(int i = 0;i<bitVector.size();i++)
-    {
-        fwrite(&bitVector.at(i), 1, 1, pFile);
-
+    for(size_t i=0; i<bits.size(); i++) {
+        unsigned long l = bits.at(i).to_ulong();
+        unsigned char c = static_cast<unsigned char>( l );
+        file << c;
     }
 
-    fclose(pFile);
-
+    file.close();
 }
 
