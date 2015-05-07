@@ -4,12 +4,13 @@
 
 #include "ZCodeConverter.h"
 #include <iostream>
-using namespace std;
+using std::bitset;
+using std::vector;
 
 //This Method converts a String of ASCII chars to a String of Z-characters
 //The base of implementation is the documentation on http://inform-fiction.org/zmachine/standards/z1point1/sect03.html
 //This Method use the default alphabet Table of the z-machine (see section 3.5.3) to translate stored Z-characters to ZSCII.
-vector<bitset<8>> ZCodeConverter::convertStringToZSCII(string source) {
+vector<bitset<8>> ZCodeConverter::convertStringToZSCII(std::string source) {
     //Z-characters are 5 bits long
     vector<bitset<5>> zcode = vector<bitset<5>>();
 
@@ -189,7 +190,7 @@ int testStringToZCharacterString() {
     vector<bitset<8>> erg = z.convertStringToZSCII("H W!");
     for (bitset<8> bs : erg) {
         for (int i = 0; i < 8; i++) {
-            cout << bs[i];
+            std::cout << bs[i];
         }
     }
     return 0;
