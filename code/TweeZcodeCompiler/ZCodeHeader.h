@@ -8,26 +8,28 @@
 #include <bitset>
 #include <vector>
 
-class Header {
+class ZCodeHeader {
 
 private:
+    std::vector<std::bitset<8>> *headerBits;
+
     unsigned short fileLength;
     unsigned short fileChecksum;
     unsigned short routinesOffset;
     unsigned short staticStringsOffset;
 
-    // flags show if header is initialized
+    // flags show if headerBits is initialized
     bool fileLengthSet = false;
     bool routinesOffsetSet = false;
     bool staticStringsOffsetSet = false;
 
-    // set special parts of header
-    void setFlags1(std::vector<std::bitset<16>> *header);
-    void setAddresses(std::vector<std::bitset<16>> *header);
-    void setFlags2(std::vector<std::bitset<16>> *header);
+    // set special parts of headerBits
+    void setFlags1(std::vector<std::bitset<8>> *header);
+    void setAddresses(std::vector<std::bitset<8>> *header);
+    void setFlags2(std::vector<std::bitset<8>> *header);
 
     // split short values upt to 2 bytes
-    void setShortVal(unsigned short val, std::vector<std::bitset<16>> *header);
+    void setShortVal(unsigned short val, std::vector<std::bitset<8>> *header);
 
 public:
     // Flags 1 in Hex position 1 to 3
@@ -75,13 +77,17 @@ public:
     unsigned short alphabetTableAddress = 0;        // Alphabet table address (bytes), 0 for default
     unsigned short headerExtensionTableAddress = 0;
 
-    // helper methods - needed to be invoked before getHeader()
+    // helper methods - needed to be invoked before getHeaderBits()
     void setFileLength(unsigned int length, unsigned short checksum);
     void setRoutinesOffset(unsigned int offset);
     void setStaticStringsOffset(unsigned int offset);
 
-    // get complete header as vector<bitset>
-    std::vector<std::bitset<16>>* getHeader();
+    // get complete headerBits as vector<bitset>
+    std::vector<std::bitset<8>>*getHeaderBits();
+
+    ~ZCodeHeader() {
+        delete headerBits;
+    }
 
 };
 
