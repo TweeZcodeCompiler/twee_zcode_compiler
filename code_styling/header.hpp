@@ -45,21 +45,25 @@ class SomeExampleClass
  */
 private:
 
+    int value;
+
 protected: 
 
 public: 
-
+/*
+ *  ==================================================Constructor=======================================================
+ */
+    SomeExampleClass();
+    SomeExampleClass(int);
 /*
  *  ==================================================Setter============================================================
  *
  *  beyond this comment are setter functions for private / protected variables, 
  *  same for getter, (de-)construtor and other (utility) functions
  *  
- *  functions and variables have an indent of 4 spaces, do not use tabs as the tab width sometime varies
- */
-
-/*
- * setter / getter should be a combination of the variable and the prefixes set / get
+ *  functions and variables have an indent of 4 blanks, do not use tabs as the tab width sometime varies
+ *
+ *  setter / getter should be a combination of the variable and the prefixes set / get
  */
     void setName(std::string);
     std::string getName();
