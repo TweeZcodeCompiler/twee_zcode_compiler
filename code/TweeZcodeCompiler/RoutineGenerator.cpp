@@ -1,4 +1,4 @@
-//
+// Implementation of RoutineGenerator.cpp
 // Created by philip on 10.05.15.
 //
 
@@ -9,7 +9,9 @@
 using std::vector;
 using std::bitset;
 
+//Opcode for print operation; following by Z-character String
 const int PRINT = 178;
+//Opcode: qzit the main; no arguments.
 const int QUIT = 186;
 
 std::vector<std::bitset<8>> RoutineGenerator::getHelloWorldRoutine(std::string stringToPrint) {
@@ -19,19 +21,8 @@ std::vector<std::bitset<8>> RoutineGenerator::getHelloWorldRoutine(std::string s
 
     akk.push_back(numberOfLocalVariables(0));
     akk.push_back(getOpcode(PRINT));
-    for (bitset<8> bs : zsciiString) {
-        for (int i = 0; i < 8; i++) {
-            std::cout << bs[i];
-        }
-    }
-    std::cout << "\n";
     akk.insert(akk.end(),zsciiString.begin(),zsciiString.end());
-    akk.push_back(QUIT);
-    for (bitset<8> bs : akk) {
-        for (int i = 0; i < 8; i++) {
-            std::cout << bs[i];
-        }
-    }
+    akk.push_back(getOpcode(QUIT));
     return akk;
 }
 
