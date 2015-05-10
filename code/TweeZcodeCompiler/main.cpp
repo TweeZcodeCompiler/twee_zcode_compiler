@@ -1,9 +1,13 @@
 #include <iostream>
+#include <bitset>
 #include "FileReader.h"
+#include "test/MainTest.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
+    MainTest test;
+    test.runAllTest();
 
     FileReader *fileReader = new FileReader();
 
