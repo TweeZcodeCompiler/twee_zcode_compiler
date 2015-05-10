@@ -158,27 +158,29 @@ vector<bitset<8>>  ZCodeConverter::convert5BitTo8Bit(vector<bitset<5>> source){
         bitset<5> firstZChar = source.at(i);
         bitset<5> secondZChar = source.at(i + 1);
         bitset<5> thirdZChar = source.at(i + 2);
-
+        for(int i = 0; i < 5; i++){
+            std::cout << firstZChar[i];
+        }
         //the first bit of the two bytes indicates the end of string
         //if this bit is 1, the string ends after the current two bytes
         if (i == source.size() - 3) {
-            firstByte.set(0, true);
+            firstByte.set(7, true);
         }
         //write first Z-char
-        for (unsigned long pos = 1; pos < 6; pos++) {
-            firstByte.set(pos, firstZChar[pos - 1]);
+        for (unsigned long pos = 2; pos < 7; pos++) {
+            firstByte.set(pos, firstZChar[6-pos]);
         }
         //write second Z-char
-        for (unsigned long pos = 6; pos < 8; pos++) {
-            firstByte.set(pos, secondZChar[pos - 6]);
+        for (unsigned long pos = 0; pos < 2; pos++) {
+            firstByte.set(pos, secondZChar[1-pos]);
         }
         returnVector.push_back(firstByte);
-        for (unsigned long pos = 0; pos < 3; pos++) {
-            secondByte.set(pos, secondZChar[pos + 2]);
+        for (unsigned long pos = 5; pos < 8; pos++) {
+            secondByte.set(pos, secondZChar[9-pos]);
         }
         //write third Z-char
-        for (unsigned long pos = 3; pos < 8; pos++) {
-            secondByte.set(pos, thirdZChar[pos - 3]);
+        for (unsigned long pos = 0; pos < 5; pos++) {
+            secondByte.set(pos, thirdZChar[pos]);
         }
         returnVector.push_back(secondByte);
     }
