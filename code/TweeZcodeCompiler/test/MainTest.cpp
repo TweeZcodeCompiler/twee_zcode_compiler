@@ -4,6 +4,7 @@
 
 #include "MainTest.h"
 #include "BinaryFileWriterTest.h"
+#include "ZCodeHeaderTest.h"
 
 
 void MainTest::runAllTest()
@@ -11,4 +12,8 @@ void MainTest::runAllTest()
     //test file writer
     BinaryFileWriterTest binaryFileWriterTest;
     binaryFileWriterTest.testBinaryFileWriter();
+
+    // test zcode header
+    ZCodeHeaderTest headerTest;
+    headerTest.testHeader();
 }
