@@ -9,8 +9,16 @@ int main(int argc, char const *argv[])
 //  initialize a bitset with 8 bits, every bit is set to 0
 	std::bitset<8> defaultBitset;
 
+<<<<<<< HEAD
+//  build a bitset using the hexvalues, the bitset looks like 11101111	
+	std::bitset<8> hexBitset (0xEf);
+
+//  build a bitset using the string, the bitset looks like 00001111
+	std::bitset<8> stringBitset (std::string("00001111")); 
+=======
 //  build a bitset using the hexvalues, the bitset looks like 11101111	                        
 	std::bitset<8> hexBitset (0xEf);
+>>>>>>> 6c1653f4705445d64521c2215819bbcffa1b59c7
 
 //  build a bitset using the string, the bitset looks like 00001111	
 	std::bitset<8> stringBitset (std::string("00001111")); 
