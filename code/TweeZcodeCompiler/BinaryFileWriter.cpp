@@ -21,7 +21,6 @@ void BinaryFileWriter::write(std::string fileName,std::vector<std::bitset<8>> bi
     for(size_t i=0; i<bits.size(); i++) {
         unsigned long l = bits.at(i).to_ulong();
         unsigned char c = static_cast<unsigned char>( l );
-        std::cout << l<<": \t";
         file << c;
     }
 
