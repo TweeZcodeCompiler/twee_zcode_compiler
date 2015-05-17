@@ -21,6 +21,6 @@ std::vector<std::bitset<8>> RoutineGenerator::printPrintRoutine(std::string stri
     return akk;
 }
 
-std::bitset<8> RoutineGenerator::numberToBitset(int number){
+std::bitset<8> RoutineGenerator::numberToBitset(unsigned int number){
     return bitset<8>(number);
 }

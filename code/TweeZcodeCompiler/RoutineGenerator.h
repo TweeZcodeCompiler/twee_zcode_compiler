@@ -14,7 +14,7 @@ class RoutineGenerator {
 
 
 private:
-    std::bitset<8> numberToBitset(int number);
+    std::bitset<8> numberToBitset(unsigned int number);
 
 public:
     std::vector<std::bitset<8>> printPrintRoutine(std::string stringToPrint);
