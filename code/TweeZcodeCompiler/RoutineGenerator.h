@@ -12,14 +12,20 @@
 
 class RoutineGenerator {
 
+
 private:
-    std::bitset<8> numberOfLocalVariables(int number);
-    std::bitset<8> getOpcode(int number);
+    std::bitset<8> numberToBitset(int number);
 
 public:
-    std::vector<std::bitset<8>> getHelloWorldRoutine(std::string stringToPrint);
-
+    std::vector<std::bitset<8>> printPrintRoutine(std::string stringToPrint);
+    enum Opcode{
+        //Opcode for print operation; following by Z-character String
+                PRINT = 178,
+        //Opcode: quit the main; no arguments.
+                QUIT = 186
+    };
 };
+
 
 
 #endif //TWEEZCODECOMPILER_ROUTINEGENERATOR_H

@@ -158,9 +158,6 @@ vector<bitset<8>>  ZCodeConverter::convert5BitTo8Bit(vector<bitset<5>> source){
         bitset<5> firstZChar = source.at(i);
         bitset<5> secondZChar = source.at(i + 1);
         bitset<5> thirdZChar = source.at(i + 2);
-        for(int i = 0; i < 5; i++){
-            std::cout << firstZChar[i];
-        }
         //the first bit of the two bytes indicates the end of string
         //if this bit is 1, the string ends after the current two bytes
         if (i == source.size() - 3) {

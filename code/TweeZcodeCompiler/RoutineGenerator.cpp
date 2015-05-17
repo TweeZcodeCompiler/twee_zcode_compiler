@@ -9,27 +9,18 @@
 using std::vector;
 using std::bitset;
 
-//Opcode for print operation; following by Z-character String
-const int PRINT = 178;
-//Opcode: qzit the main; no arguments.
-const int QUIT = 186;
-
-std::vector<std::bitset<8>> RoutineGenerator::getHelloWorldRoutine(std::string stringToPrint) {
+std::vector<std::bitset<8>> RoutineGenerator::printPrintRoutine(std::string stringToPrint) {
     vector<bitset<8>> akk = vector<bitset<8>>();
     ZCodeConverter converter = ZCodeConverter();
     vector<bitset<8>> zsciiString = converter.convertStringToZSCII(stringToPrint);
 
-    akk.push_back(numberOfLocalVariables(0));
-    akk.push_back(getOpcode(PRINT));
+    akk.push_back(numberToBitset(0));
+    akk.push_back(numberToBitset(PRINT));
     akk.insert(akk.end(),zsciiString.begin(),zsciiString.end());
-    akk.push_back(getOpcode(QUIT));
+    akk.push_back(numberToBitset(QUIT));
     return akk;
 }
 
-std::bitset<8> RoutineGenerator::numberOfLocalVariables(int number) {
-    return bitset<8>(number);
-}
-
-std::bitset<8> RoutineGenerator::getOpcode(int number) {
+std::bitset<8> RoutineGenerator::numberToBitset(int number){
     return bitset<8>(number);
 }
