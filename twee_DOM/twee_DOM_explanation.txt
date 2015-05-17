@@ -1,0 +1,36 @@
+# Twee File
+A .twee source file consists at least of one passage, the Start passage. If there is no Start passage the twee compiler will generated a .html file containing a "This passage does not exist: Start" error message.
+
+# Passage
+The StartPassage is a Passage, which name is set to "Start". It marks the beginning of the story.
+
+Each Passage has name which must be unique.
+
+Each Passage contains Text.
+
+Each Passage may manipulate zero to n Variables by the set() or print() functions. A Variable must have been set to use it.
+
+Each Passage may include zero to n Links to other Passages.
+
+# Text
+Text consists out of a string.
+
+# Variables
+Variables have a name and a value. The value is dynamically typed.
+
+Variables may be manipulated by the set() and print() functions.
+
+# Links
+Links have a target Passage and may have a name. 
+
+Links can manipulate zero to n Variables.
+
+# IfElse
+
+IfElse must have a If statement and can have a Else statement.
+
+IfElse may manipulate Links, Variables and Text.
+
+# Misc
+
+Without a Passage declared, all Links, IfElse's, Variables, and Text are ignored.
