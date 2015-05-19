@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+  <style type="text/css">
+    body 
+    {
+      background-color: #FFFFCC;
+    }
+    .element 
+    {
+      width: 60%;
+    }
+    td
+    {
+      border-top: 2px solid #000000;
+      border-bottom: 2px solid #000000;
+    }
+  </style>
+
+  <head>
+    <title> Twee Cheat Sheet - Basics </title>
+  </head>
+
+  <body>
+
+    <h3> Twee Cheat Sheet - Basics </h3>
+
+    <table>
+        
+        <thead>
+          <tr>
+            <td class="element"> Twee Strukturelement </td>
+            <td> Erklaerung </td>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td class="element"> ::Passage </td>
+            <td> 
+              <p> "Level" des Spiels, Kapitel des Buches </p>
+              <p> erste Passage muss Start heissen </p>
+              <p> Passagennamen muessen verschieden seien und sind case-sensitive </p>
+              <p> <b> jedes Element, was keine Passagendeklaration ist, wird bis zur ersten Passagendeklaration ignoriert </b> </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="element"> /% Kommentar %/ </td>
+            <td> Kommentare dienen zum Festhalten von der Idee eines Codeabschnittes </td>
+          </tr>
+
+          <tr>
+            <td class="element"> 
+              <p>
+                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
+              </p>
+              <p>
+                Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. 
+              </p>
+            </td>
+            <td> Text ist der Kern einer jeden Geschichte / eines jeden Spiels, die Inkarnation der Handlung </td>
+          </tr>
+
+          <tr>
+            <td class="element"> 
+              <p> [[Link]] </p>
+              <p> [[Linkname|Link]] </p>
+              <p> [[Linkname|Link][$var = value]] </p>
+            </td>
+            <td>
+              <p> eine Verknuepfung zur angegeben Passage / Website, der Link wird als Name verwendet </p>
+              <p> wie oben, nur der angezeigte Linkname wird seperat angegeben </p>
+              <p> wie oben, es wird weiterhin die Variable var mit dem Wert value belegt </p>
+            </td>
+          </tr>
+
+
+          <tr>
+            <td class="element">
+              <p> &lt;&lt; set $var=value &gt;&gt; </p>
+              <p> &lt;&lt; set $var1=value1; $var2=value2; $var3=value3 &gt;&gt; </p>
+              <p> &lt;&lt; print $var &gt;&gt; </p>
+            </td>
+            <td> 
+              <p> setzt den Wert der Variable $var auf value </p>
+              <p> wie oben, setzt in einem Schwung mehrere Werte fuer die gegeben Variablen </p>
+              <p> gibt den Wert der Variablen $var aus </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="element"> 
+              <p> A &lt;&lt; if condition &gt;&gt; B &lt;&lt; endif &gt;&gt; C </p>
+              <p> A &lt;&lt; if condition &gt;&gt; B &lt;&lt; else &gt;&gt; C &lt;&lt; endif &gt;&gt; D </p>
+              <p> A &lt;&lt; if condition &gt;&gt; B &lt;&lt; else if condition2 &gt;&gt; C ... &lt;&lt; endif &gt;&gt; D </p>
+            </td>
+            <td> 
+              <p> wenn condition wahr ist wird A B C ausgegeben, wenn condition falsch ist, wird A C ausgegeben </p>
+              <p> wenn condition wahr ist wird A B D ausgegeben, wenn condition falsch ist, wird A C D ausgegeben </p>
+              <p> wie oben, nur koennen mehrer if else Bloecke verschachtelt werden, um unterschiedliche Bedingungen zu pruefen </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="element"> 
+              <p> A </p>
+              <p> &lt;&lt; if condition &gt;&gt;\ </p>
+              <p> B </p>
+              <p> &lt;&lt; endif &gt;&gt;\ </p>
+              <p> C </p>
+             </td>
+            <td> 
+              <p> die \ verhindern, dass Leerzeilen im fertigen Dokument anstelle der if Anweisungen ausgegeben werden </p>
+              <p> wenn condition falsch ist, wird anstelle von B eine Leerzeile ausgegeben </p>
+            </td>
+          </tr>
+
+        </tbody>
+
+    </table>
+
+
+  </body>
+</html>
