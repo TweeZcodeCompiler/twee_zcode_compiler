@@ -63,7 +63,7 @@ public:
 
     unsigned short locOfAbbrTable;              // location of abbreviation Table (byte address)
 
-    unsigned char screenHeight = 255;           // 255 = infinite
+    unsigned char screenHeight = 0;           // 255 = infinite
     unsigned char screenWidthCharacters;
     unsigned short screenWidthUnits;
     unsigned short screenHeightUnits;
