@@ -39,7 +39,7 @@ void simpleCompilerPipeline(string fileContent) {
 
     //get the hello world string from twee source code
     string token = simpleLexer(fileContent);
-    token = "hello world";
+    token = "Dies ist ein Text";
 
     std::vector<std::bitset<8>> zCode;
 
@@ -55,8 +55,8 @@ void simpleCompilerPipeline(string fileContent) {
 
     header->locOfAbbrTable = 66;
 
-    header->setRoutinesOffset(0);
-    header->setStaticStringsOffset(0);
+    header->setRoutinesOffset(128);         // random value
+    header->setStaticStringsOffset(128);    // random value
 
     //generate zcode for hello world string
     RoutineGenerator routineGenerator;
@@ -65,7 +65,7 @@ void simpleCompilerPipeline(string fileContent) {
 
     printHex(zByteCodePrint);
 
-    header->setFileLength(256, 6861);
+    header->setFileLength(516, 6861);
 
     std::vector<std::bitset<8>> *zByteHeader = header->getHeaderBits();
 
@@ -79,7 +79,7 @@ void simpleCompilerPipeline(string fileContent) {
     }
 
     BinaryFileWriter binaryFileWriter;
-    binaryFileWriter.write("hello_world.z3", zCode);
+    binaryFileWriter.write("hello_world.z8", zCode);
 }
 
 

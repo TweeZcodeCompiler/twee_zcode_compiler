@@ -42,7 +42,7 @@ public:
     bool timedKeyboardAvail = false;
 
     // byte addresses
-    unsigned short baseOfHighMem;     // 2 bytes
+    unsigned short baseOfHighMem;        // 2 bytes
     unsigned char initValOfPC;           // initial value of program counter
     unsigned char packedAddressOfMain;   // packed address of initial "main" routine
     unsigned short locOfDict;            // location of dictionary
@@ -63,7 +63,7 @@ public:
 
     unsigned short locOfAbbrTable;              // location of abbreviation Table (byte address)
 
-    unsigned char screenHeight = 0;           // 255 = infinite
+    unsigned char screenHeight = 255;           // 255 = infinite
     unsigned char screenWidthCharacters;
     unsigned short screenWidthUnits;
     unsigned short screenHeightUnits;

@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#define VERSION 3               // Z-code version
+#define VERSION 8               // Z-code version
 #define INTERPRETER_NUMBER 0    // e.g. 4 for Amiga
 #define INTERPRETER_VERSION 0
 #define STANDARD_REVISION_MAIN 1 // revision number of supperted document, here
@@ -51,10 +51,8 @@ vector<bitset<8>>*ZCodeHeader::getHeaderBits() {
     headerBits->push_back(defForegroundColor);       // Hex 2D
     setShortVal(addressOfCharTable, headerBits);     // Hex 2E - 2F
     setShortVal(totalWidthInPixels, headerBits);     // Hex 30 - 31
-    //headerBits->push_back(STANDARD_REVISION_MAIN);   // Hex 32
-    //headerBits->push_back(STANDARD_REVISION_SUB);    // Hex 33
-    headerBits->push_back(0);
-    headerBits->push_back(0);
+    headerBits->push_back(STANDARD_REVISION_MAIN);   // Hex 32
+    headerBits->push_back(STANDARD_REVISION_SUB);    // Hex 33
     setShortVal(alphabetTableAddress, headerBits);   // Hex 34 - 35
     setShortVal(headerExtensionTableAddress, headerBits);// Hex 36 - 38
 
@@ -75,19 +73,7 @@ void ZCodeHeader::setFileLength(unsigned int length, unsigned short checksum) {
         cout << "File too large" << endl;
         throw;
     } else {
-        // TODO: UNDO!!!
-        //fileLength = len;
-        fileLength = length;
-
-
-
-
-
-
-
-
-
-
+        fileLength = len;
         fileChecksum = checksum;
         fileLengthSet = true;
     }
