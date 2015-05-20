@@ -33,7 +33,7 @@
 
 // First part of user declarations.
 
-#line 37 "GeneratedTweeParser.cc" // lalr1.cc:403
+#line 37 "GeneratedTweeParser.cpp" // lalr1.cc:403
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -43,19 +43,19 @@
 #  endif
 # endif
 
-#include "GeneratedTweeParser.hh"
+#include "GeneratedTweeParser.hpp"
 
 // User implementation prologue.
 
-#line 51 "GeneratedTweeParser.cc" // lalr1.cc:411
+#line 51 "GeneratedTweeParser.cpp" // lalr1.cc:411
 // Unqualified %code blocks.
-#line 25 "twee.yy" // lalr1.cc:412
+#line 28 "twee.yy" // lalr1.cc:412
 
 	void yyerror(const char *s) { printf("ERROR: %s\n", s); }
 	// Prototype for the yylex function
 	static int yylex(Twee::BisonParser::semantic_type * yylval, Twee::TweeScanner &scanner);
 
-#line 59 "GeneratedTweeParser.cc" // lalr1.cc:412
+#line 59 "GeneratedTweeParser.cpp" // lalr1.cc:412
 
 
 #ifndef YY_
@@ -122,7 +122,45 @@
 
 #line 7 "twee.yy" // lalr1.cc:478
 namespace Twee {
-#line 126 "GeneratedTweeParser.cc" // lalr1.cc:478
+#line 126 "GeneratedTweeParser.cpp" // lalr1.cc:478
+
+  /* Return YYSTR after stripping away unnecessary quotes and
+     backslashes, so that it's suitable for yyerror.  The heuristic is
+     that double-quoting is unnecessary unless the string contains an
+     apostrophe, a comma, or backslash (other than backslash-backslash).
+     YYSTR is taken from yytname.  */
+  std::string
+  BisonParser::yytnamerr_ (const char *yystr)
+  {
+    if (*yystr == '"')
+      {
+        std::string yyr = "";
+        char const *yyp = yystr;
+
+        for (;;)
+          switch (*++yyp)
+            {
+            case '\'':
+            case ',':
+              goto do_not_strip_quotes;
+
+            case '\\':
+              if (*++yyp != '\\')
+                goto do_not_strip_quotes;
+              // Fall through.
+            default:
+              yyr += *yyp;
+              break;
+
+            case '"':
+              return yyr;
+            }
+      do_not_strip_quotes: ;
+      }
+
+    return yystr;
+  }
+
 
   /// Build a parser object.
   BisonParser::BisonParser (Twee::TweeScanner &scanner_yyarg)
@@ -540,19 +578,42 @@ namespace Twee {
           switch (yyn)
             {
   case 2:
-#line 54 "twee.yy" // lalr1.cc:851
-    {(yylhs.value.passage)=new Passage(*(yystack_[2].value.string),*(yystack_[0].value.body));}
-#line 546 "GeneratedTweeParser.cc" // lalr1.cc:851
+#line 57 "twee.yy" // lalr1.cc:851
+    {
+												(yylhs.value.passage)=new Passage(*(yystack_[2].value.string),*(yystack_[0].value.body));
+												DEBUG_PARSER "Made a new Passage from" << '\n';
+												DEBUG_PARSER "\t PTITLE: " << *(yystack_[2].value.string) << '\n';
+												DEBUG_PARSER "\t Body: " << (yystack_[0].value.body)->getContent() << '\n';
+												}
+#line 589 "GeneratedTweeParser.cpp" // lalr1.cc:851
     break;
 
   case 3:
-#line 58 "twee.yy" // lalr1.cc:851
-    {(yylhs.value.body)=new Body(*(yystack_[0].value.string));}
-#line 552 "GeneratedTweeParser.cc" // lalr1.cc:851
+#line 66 "twee.yy" // lalr1.cc:851
+    {
+												(yylhs.value.body)=new Body(*(yystack_[0].value.string));
+												DEBUG_PARSER "Made a new Body from" << '\n';
+												DEBUG_PARSER "\t PBODYWORD: " << *(yystack_[0].value.string) << '\n';
+												}
+#line 599 "GeneratedTweeParser.cpp" // lalr1.cc:851
+    break;
+
+  case 4:
+#line 71 "twee.yy" // lalr1.cc:851
+    {
+												*(yystack_[2].value.body) += *(yystack_[0].value.string);
+												DEBUG_PARSER "\t Added" << '\n';
+												DEBUG_PARSER "\t PBODYWORD: " << *(yystack_[0].value.string) << '\n';
+												DEBUG_PARSER "\t to the Body Object " << '\n';
+												(yylhs.value.body)=(yystack_[2].value.body);
+												DEBUG_PARSER "Passed a Body object up the syntax tree" << '\n';
+
+												}
+#line 613 "GeneratedTweeParser.cpp" // lalr1.cc:851
     break;
 
 
-#line 556 "GeneratedTweeParser.cc" // lalr1.cc:851
+#line 617 "GeneratedTweeParser.cpp" // lalr1.cc:851
             default:
               break;
             }
@@ -707,9 +768,98 @@ namespace Twee {
 
   // Generate an error message.
   std::string
-  BisonParser::yysyntax_error_ (state_type, const symbol_type&) const
+  BisonParser::yysyntax_error_ (state_type yystate, const symbol_type& yyla) const
   {
-    return YY_("syntax error");
+    // Number of reported tokens (one for the "unexpected", one per
+    // "expected").
+    size_t yycount = 0;
+    // Its maximum.
+    enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
+    // Arguments of yyformat.
+    char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
+
+    /* There are many possibilities here to consider:
+       - If this state is a consistent state with a default action, then
+         the only way this function was invoked is if the default action
+         is an error action.  In that case, don't check for expected
+         tokens because there are none.
+       - The only way there can be no lookahead present (in yyla) is
+         if this state is a consistent state with a default action.
+         Thus, detecting the absence of a lookahead is sufficient to
+         determine that there is no unexpected or expected token to
+         report.  In that case, just report a simple "syntax error".
+       - Don't assume there isn't a lookahead just because this state is
+         a consistent state with a default action.  There might have
+         been a previous inconsistent state, consistent state with a
+         non-default action, or user semantic action that manipulated
+         yyla.  (However, yyla is currently not documented for users.)
+       - Of course, the expected token list depends on states to have
+         correct lookahead information, and it depends on the parser not
+         to perform extra reductions after fetching a lookahead from the
+         scanner and before detecting a syntax error.  Thus, state
+         merging (from LALR or IELR) and default reductions corrupt the
+         expected token list.  However, the list is correct for
+         canonical LR with one exception: it will still contain any
+         token that will not be accepted due to an error action in a
+         later state.
+    */
+    if (!yyla.empty ())
+      {
+        int yytoken = yyla.type_get ();
+        yyarg[yycount++] = yytname_[yytoken];
+        int yyn = yypact_[yystate];
+        if (!yy_pact_value_is_default_ (yyn))
+          {
+            /* Start YYX at -YYN if negative to avoid negative indexes in
+               YYCHECK.  In other words, skip the first -YYN actions for
+               this state because they are default actions.  */
+            int yyxbegin = yyn < 0 ? -yyn : 0;
+            // Stay within bounds of both yycheck and yytname.
+            int yychecklim = yylast_ - yyn + 1;
+            int yyxend = yychecklim < yyntokens_ ? yychecklim : yyntokens_;
+            for (int yyx = yyxbegin; yyx < yyxend; ++yyx)
+              if (yycheck_[yyx + yyn] == yyx && yyx != yyterror_
+                  && !yy_table_value_is_error_ (yytable_[yyx + yyn]))
+                {
+                  if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
+                    {
+                      yycount = 1;
+                      break;
+                    }
+                  else
+                    yyarg[yycount++] = yytname_[yyx];
+                }
+          }
+      }
+
+    char const* yyformat = YY_NULLPTR;
+    switch (yycount)
+      {
+#define YYCASE_(N, S)                         \
+        case N:                               \
+          yyformat = S;                       \
+        break
+        YYCASE_(0, YY_("syntax error"));
+        YYCASE_(1, YY_("syntax error, unexpected %s"));
+        YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
+        YYCASE_(3, YY_("syntax error, unexpected %s, expecting %s or %s"));
+        YYCASE_(4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
+        YYCASE_(5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
+#undef YYCASE_
+      }
+
+    std::string yyres;
+    // Argument number.
+    size_t yyi = 0;
+    for (char const* yyp = yyformat; *yyp; ++yyp)
+      if (yyp[0] == '%' && yyp[1] == 's' && yyi < yycount)
+        {
+          yyres += yytnamerr_ (yyarg[yyi++]);
+          ++yyp;
+        }
+      else
+        yyres += *yyp;
+    return yyres;
   }
 
 
@@ -720,13 +870,13 @@ namespace Twee {
   const signed char
   BisonParser::yypact_[] =
   {
-      -4,    -3,     1,     0,    -5,    -2,    -5,    -5
+      -4,    -3,     1,     0,    -5,    -2,    -5,     2,     3,    -5
   };
 
   const unsigned char
   BisonParser::yydefact_[] =
   {
-       0,     0,     0,     0,     1,     0,     3,     2
+       0,     0,     0,     0,     1,     0,     3,     2,     0,     4
   };
 
   const signed char
@@ -744,35 +894,35 @@ namespace Twee {
   const unsigned char
   BisonParser::yytable_[] =
   {
-       1,     4,     3,     5,     6
+       1,     4,     3,     5,     6,     8,     0,     0,     0,     9
   };
 
-  const unsigned char
+  const signed char
   BisonParser::yycheck_[] =
   {
-       4,     0,     5,     3,     6
+       4,     0,     5,     3,     6,     3,    -1,    -1,    -1,     6
   };
 
   const unsigned char
   BisonParser::yystos_[] =
   {
-       0,     4,     8,     5,     0,     3,     6,     9
+       0,     4,     8,     5,     0,     3,     6,     9,     3,     6
   };
 
   const unsigned char
   BisonParser::yyr1_[] =
   {
-       0,     7,     8,     9
+       0,     7,     8,     9,     9
   };
 
   const unsigned char
   BisonParser::yyr2_[] =
   {
-       0,     2,     4,     1
+       0,     2,     4,     1,     3
   };
 
 
-#if YYDEBUG
+
   // YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
   // First, the terminals, then, starting at \a yyntokens_, nonterminals.
   const char*
@@ -782,11 +932,11 @@ namespace Twee {
   "PBODYWORD", "$accept", "S", "body", YY_NULLPTR
   };
 
-
+#if YYDEBUG
   const unsigned char
   BisonParser::yyrline_[] =
   {
-       0,    54,    54,    58
+       0,    57,    57,    66,    71
   };
 
   // Print the state stack on the debug stream.
@@ -868,8 +1018,8 @@ namespace Twee {
 
 #line 7 "twee.yy" // lalr1.cc:1159
 } // Twee
-#line 872 "GeneratedTweeParser.cc" // lalr1.cc:1159
-#line 61 "twee.yy" // lalr1.cc:1160
+#line 1022 "GeneratedTweeParser.cpp" // lalr1.cc:1159
+#line 82 "twee.yy" // lalr1.cc:1160
 
 
 

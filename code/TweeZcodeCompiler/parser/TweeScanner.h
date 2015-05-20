@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TWEEPARSER_TWEESCANNER_H
+#define TWEEPARSER_TWEESCANNER_H
 
 // Only include FlexLexer.h if it hasn't been already included
 #if ! defined(yyFlexLexerOnce)
@@ -10,7 +11,7 @@
 #define YY_DECL int Twee::TweeScanner::yylex()
 
 // Include Bison for types / tokens
-#include "GeneratedTweeParser.hh"
+#include "GeneratedTweeParser.hpp"
 
 
 namespace Twee {
@@ -29,3 +30,4 @@ namespace Twee {
 	};
 }
 
+#endif

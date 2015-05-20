@@ -31,28 +31,30 @@
 // version 2.2 of Bison.
 
 /**
- ** \file GeneratedTweeParser.hh
+ ** \file GeneratedTweeParser.hpp
  ** Define the Twee::parser class.
  */
 
 // C++ LALR(1) parser skeleton written by Akim Demaille.
 
-#ifndef YY_YY_GENERATEDTWEEPARSER_HH_INCLUDED
-# define YY_YY_GENERATEDTWEEPARSER_HH_INCLUDED
+#ifndef YY_YY_GENERATEDTWEEPARSER_HPP_INCLUDED
+# define YY_YY_GENERATEDTWEEPARSER_HPP_INCLUDED
 // //                    "%code requires" blocks.
-#line 13 "twee.yy" // lalr1.cc:391
+#line 14 "twee.yy" // lalr1.cc:391
 
 	#include "Passage.h"
 	#include "Body.h"
 	#include <memory>
-
+	#include <stdio.h>
+	
 	// Forward-declare the Scanner class; the Parser needs to be assigned a 
 	// Scanner, but the Scanner can't be declared without the Parser
 	namespace Twee {
 		class TweeScanner;
 	}
+	#define DEBUG_PARSER std::cout << "\t\tPARSER DEBUG: " <<
 
-#line 56 "GeneratedTweeParser.hh" // lalr1.cc:391
+#line 58 "GeneratedTweeParser.hpp" // lalr1.cc:391
 
 
 # include <vector>
@@ -123,7 +125,7 @@
 
 #line 7 "twee.yy" // lalr1.cc:391
 namespace Twee {
-#line 127 "GeneratedTweeParser.hh" // lalr1.cc:391
+#line 129 "GeneratedTweeParser.hpp" // lalr1.cc:391
 
 
 
@@ -137,14 +139,14 @@ namespace Twee {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 32 "twee.yy" // lalr1.cc:391
+    #line 35 "twee.yy" // lalr1.cc:391
 
 	std::string *string;
 	int token;
 	Passage *passage;
 	Body *body;
 
-#line 148 "GeneratedTweeParser.hh" // lalr1.cc:391
+#line 150 "GeneratedTweeParser.hpp" // lalr1.cc:391
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -346,7 +348,7 @@ namespace Twee {
   // number is the opposite.  If YYTABLE_NINF, syntax error.
   static const unsigned char yytable_[];
 
-  static const unsigned char yycheck_[];
+  static const signed char yycheck_[];
 
   // YYSTOS[STATE-NUM] -- The (internal number of the) accessing
   // symbol of state STATE-NUM.
@@ -359,10 +361,13 @@ namespace Twee {
   static const unsigned char yyr2_[];
 
 
-#if YYDEBUG
+    /// Convert the symbol name \a n to a form suitable for a diagnostic.
+    static std::string yytnamerr_ (const char *n);
+
+
     /// For a symbol, its name in clear.
     static const char* const yytname_[];
-
+#if YYDEBUG
   // YYRLINE[YYN] -- Source line where rule number YYN was defined.
   static const unsigned char yyrline_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.
@@ -463,7 +468,7 @@ namespace Twee {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 4,     ///< Last index in yytable_.
+      yylast_ = 9,     ///< Last index in yytable_.
       yynnts_ = 3,  ///< Number of nonterminal symbols.
       yyfinal_ = 4, ///< Termination state number.
       yyterror_ = 1,
@@ -479,9 +484,9 @@ namespace Twee {
 
 #line 7 "twee.yy" // lalr1.cc:391
 } // Twee
-#line 483 "GeneratedTweeParser.hh" // lalr1.cc:391
+#line 488 "GeneratedTweeParser.hpp" // lalr1.cc:391
 
 
 
 
-#endif // !YY_YY_GENERATEDTWEEPARSER_HH_INCLUDED
+#endif // !YY_YY_GENERATEDTWEEPARSER_HPP_INCLUDED

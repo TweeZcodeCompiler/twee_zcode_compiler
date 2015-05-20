@@ -10,7 +10,7 @@ TODO: debug parameter for the matching debug statements
 
 #include "Passage.h"
 #include "Body.h"
-#include "GeneratedTweeParser.hh"
+#include "GeneratedTweeParser.hpp"
 #include "TweeScanner.h"
 
 #define SAVE_TOKEN yylval->string = new std::string(YYText(), YYLeng())
