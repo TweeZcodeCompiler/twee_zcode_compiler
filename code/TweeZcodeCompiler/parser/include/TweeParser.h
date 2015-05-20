@@ -7,11 +7,13 @@
  * parser.parse();
 */
 
+#include <iostream>
+
 namespace Twee {
 
     class TweeParser {
     public:
-        TweeParser();
+        TweeParser(std::istream* input);
         ~TweeParser();
 
         int parse();

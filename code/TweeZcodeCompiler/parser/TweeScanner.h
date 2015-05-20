@@ -12,11 +12,14 @@
 
 // Include Bison for types / tokens
 #include "GeneratedTweeParser.hpp"
+#include <fstream>
 
 
 namespace Twee {
 	class TweeScanner : public yyFlexLexer {
 		public:
+            TweeScanner(std::istream *input) : yyFlexLexer(input, 0){}
+
 			// save the pointer to yylval so we can change it, and invoke scanner
 			int yylex(Twee::BisonParser::semantic_type * lval){yylval = lval; return yylex();}
 		

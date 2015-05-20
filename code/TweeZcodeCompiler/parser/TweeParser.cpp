@@ -6,7 +6,7 @@ using namespace Twee;
 
 class TweeParser::TweeParserImpl {
 public:
-    TweeParserImpl() : parser(scanner) { }
+    TweeParserImpl(std::istream* input) : scanner(input), parser(scanner) { }
     int parse();
 
 private:
@@ -14,8 +14,8 @@ private:
     BisonParser parser;
 };
 
-TweeParser::TweeParser() {
-    this->impl = new TweeParserImpl();
+TweeParser::TweeParser(std::istream* input) {
+    this->impl = new TweeParserImpl(input);
 }
 
 TweeParser::~TweeParser() {

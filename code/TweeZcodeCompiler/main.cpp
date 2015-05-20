@@ -18,7 +18,10 @@ int main(int argc, char *argv[]) {
 
     cout << fileContent;
 
-    Twee::TweeParser parser;
+
+    ifstream inputFile("hello_world.z8");
+
+    Twee::TweeParser parser(&inputFile);
 
     parser.parse();
 
