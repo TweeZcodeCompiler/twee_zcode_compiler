@@ -1,0 +1,18 @@
+//
+// Created by micha on 14.05.15.
+//
+
+#include "Passage.h"
+
+
+Passage::Passage(std::string name, Body& body) : body(body) {
+    passageName = name;
+}
+
+Body Passage::getBody(){
+    return this->body;
+}
+
+std::string Passage::getPassageName(){
+    return this->passageName;
+}
