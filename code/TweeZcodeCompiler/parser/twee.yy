@@ -1,15 +1,13 @@
-%debug
-
-%skeleton "lalr1.cc"
-
-
 %defines
+%require "3.0.2"
 %define api.namespace {Twee}
 %define parser_class_name {BisonParser}
 %parse-param { Twee::TweeScanner &scanner }
 %lex-param   { Twee::TweeScanner &scanner }
 %define parse.error verbose
+%debug
 
+%skeleton "lalr1.cc"
 
 %code requires {
 	#include "include/Passage.h"
@@ -51,29 +49,50 @@
 
 
 %type <body> body
+%type <passage> passage
 %type <passage> S
 
 %start S
 
 %%
 
-S : 
-	DOUBLE_COLON PTITLE LINEBREAK body			{
-												$$=new Passage(*$2,*$4);
-												std::cout << "Made an S. \n";
+S :
+	passage										{
+												tweeStructure = $1;
+												DEBUG_PARSER "Assigned result to the tweeStructure" << '\n';
 												}
   ;
+
+passage :
+	DOUBLE_COLON PTITLE LINEBREAK body			{
+												$$=new Passage(*$2,*$4);
+												DEBUG_PARSER "Made a new Passage from" << '\n';
+												DEBUG_PARSER "\t PTITLE: " << *$2 << '\n';
+												DEBUG_PARSER "\t Body: " << $4->getContent() << '\n';
+												}
+	|DOUBLE_COLON PTITLE						{
+												$$=new Passage(*$2, *new Body(""));
+												DEBUG_PARSER "Made a new Passage from" << '\n';
+												DEBUG_PARSER "\t PTITLE: " << *$2 << '\n';
+												DEBUG_PARSER "\t empty Body: " << '\n';
+												}
+  ;
+
+
 
 body:
 	PBODYWORD									{
 												$$=new Body(*$1);
-												std::cout << "Made a body. \n";
+												DEBUG_PARSER "Made a new Body from" << '\n';
+												DEBUG_PARSER "\t PBODYWORD: " << *$1 << '\n';
 												}
-	;
-body:
-	PBODYWORD LINEBREAK body					{
-												$$=new Body(*$1);
-												std::cout << "Made a body. After that, another body\n";
+	|body LINEBREAK PBODYWORD					{
+												*$1 += *$3;
+												DEBUG_PARSER "\t Added" << '\n';
+												DEBUG_PARSER "\t PBODYWORD: " << *$3 << '\n';
+												DEBUG_PARSER "\t to the Body Object " << '\n';
+												$$=$1;
+												DEBUG_PARSER "Passed a Body object up the syntax tree" << '\n';
 												}
     ;
 	
