@@ -35,11 +35,12 @@ LINEBREAK       [\n]
 %x PBODY
 %x PMACRO
 %x PCLOSE
+%x PBODYNL
 
 %%
   /*at Start----------*/
 
-<INITIAL,PBODY>^{DOUBLE_COLON}  {
+<INITIAL>^{DOUBLE_COLON}  {
                                 DEBUG_LEXER "new token DOUBLE_COLON " << '\n';
                                 BEGIN(PHEAD);
                                 DEBUG_LEXER "enter cnd -> PHEAD" << '\n';
@@ -53,7 +54,7 @@ LINEBREAK       [\n]
  /*everything except LINEBREAK*/
 
 <PHEAD>{PTITLE}         {
-                        DEBUG_LEXER "new token PTITLE with content :" << YYText() << '\n';
+                        DEBUG_LEXER "new token PTITLE with content : " << YYText() << '\n';
                         SAVE_TOKEN;
                         return BisonParser::token::PTITLE;
                         }
@@ -76,19 +77,46 @@ LINEBREAK       [\n]
 
  /* look to at Start---------- for next-paragraph-scanning */
  /*match the next uninterruped paragraph body text */
+
 <PBODY>{PBODYWORD}      {
-                        DEBUG_LEXER "new token PBODYWORD with content :" << YYText() << '\n';
+                        DEBUG_LEXER "new token PBODYWORD with content : " << YYText() << '\n';
                         SAVE_TOKEN;
                         return BisonParser::token::PBODYWORD;
                         }
 
 <PBODY>{LINEBREAK}      {
-                        DEBUG_LEXER "new token LINEBREAK " << "\n";
-                        return BisonParser::token::LINEBREAK;
+                        BEGIN(PBODYNL);
+                        DEBUG_LEXER "enter cnd -> PBODYNL" << '\n';
                         }
 
 <PBODY>.                {
                         DEBUG_LEXER "discarding char: " << YYText() << '\n';
+                        }
+  /*PBODYNL: Passage Body New Line scanning----------*/
+ /*after getting a new line, starts looking for a ::, else stuff gets put back on the stack*/
+
+<PBODYNL>::             {
+                        DEBUG_LEXER "new token DOUBLE_COLON " << "\n";
+                        BEGIN(PHEAD);
+                        return BisonParser::token::DOUBLE_COLON;
+                        }
+
+<PBODYNL>{LINEBREAK}    {
+                        DEBUG_LEXER "PBODYNL matched \\n" << YYText() << '\n';
+                        BEGIN(PBODY);
+                        DEBUG_LEXER "new token LINEBREAK " << "\n";
+                        DEBUG_LEXER "enter cnd -> PBODY" << '\n';
+                        return BisonParser::token::LINEBREAK;
+                        }
+
+<PBODYNL>.              {
+                        DEBUG_LEXER "PBODYNL matched : " << YYText() << '\n';
+                        DEBUG_LEXER "PBODYNL putting " << YYText() << "back" << '\n';
+                        unput(YYText()[0]);
+                        BEGIN(PBODY);
+                        DEBUG_LEXER "new token LINEBREAK " << "\n";
+                        DEBUG_LEXER "enter cnd -> PBODY" << '\n';
+                        return BisonParser::token::LINEBREAK;
                         }
 
 %%

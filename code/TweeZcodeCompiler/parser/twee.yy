@@ -50,6 +50,7 @@
 
 %type <body> body
 %type <passage> passage
+%type <passage> passages
 %type <passage> S
 
 %start S
@@ -57,14 +58,23 @@
 %%
 
 S :
+	passages										{
+													tweeStructure = $1;
+													DEBUG_PARSER "Assigned result to the tweeStructure" << '\n';
+													}
+  ;
+passages :
 	passage										{
-												tweeStructure = $1;
-												DEBUG_PARSER "Assigned result to the tweeStructure" << '\n';
+												$$=$1;
+												DEBUG_PARSER "Moved passage up to passages" << '\n';
+												}
+	|passages passage							{
+												$$=$1;
+												DEBUG_PARSER "theres a passage after the first one" << '\n';
 												}
   ;
-
 passage :
-	DOUBLE_COLON PTITLE LINEBREAK body			{
+	DOUBLE_COLON PTITLE linebreaks body			{
 												$$=new Passage(*$2,*$4);
 												DEBUG_PARSER "Made a new Passage from" << '\n';
 												DEBUG_PARSER "\t PTITLE: " << *$2 << '\n';
@@ -86,16 +96,24 @@ body:
 												DEBUG_PARSER "Made a new Body from" << '\n';
 												DEBUG_PARSER "\t PBODYWORD: " << *$1 << '\n';
 												}
-	|body LINEBREAK PBODYWORD					{
+	|body linebreaks PBODYWORD					{
 												*$1 += *$3;
 												DEBUG_PARSER "\t Added" << '\n';
 												DEBUG_PARSER "\t PBODYWORD: " << *$3 << '\n';
 												DEBUG_PARSER "\t to the Body Object " << '\n';
 												$$=$1;
 												DEBUG_PARSER "Passed a Body object up the syntax tree" << '\n';
+
 												}
     ;
-	
+linebreaks:
+	LINEBREAK									{
+
+												}
+	|linebreaks LINEBREAK						{
+
+												}
+    ;
 %%
 
 
