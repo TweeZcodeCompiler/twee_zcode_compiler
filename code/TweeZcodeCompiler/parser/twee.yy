@@ -16,6 +16,8 @@
 	#include "Body.h"
 	#include <memory>
 	#include <stdio.h>
+
+	extern Passage *tweeStructure; /* the result data model */
 	
 	// Forward-declare the Scanner class; the Parser needs to be assigned a 
 	// Scanner, but the Scanner can't be declared without the Parser
@@ -29,6 +31,8 @@
 	void yyerror(const char *s) { printf("ERROR: %s\n", s); }
 	// Prototype for the yylex function
 	static int yylex(Twee::BisonParser::semantic_type * yylval, Twee::TweeScanner &scanner);
+
+	Passage *tweeStructure; /* the result data model */
 }
 
 
@@ -47,13 +51,20 @@
 
 
 %type <body> body
+%type <passage> passage
 %type <passage> S
 
 %start S
 
 %%
 
-S : 
+S :
+	passage										{
+												tweeStructure = $1;
+												DEBUG_PARSER "Assigned result to the tweeStructure" << '\n';
+												}
+  ;
+passage :
 	DOUBLE_COLON PTITLE LINEBREAK body			{
 												$$=new Passage(*$2,*$4);
 												DEBUG_PARSER "Made a new Passage from" << '\n';
@@ -75,10 +86,9 @@ body:
 												DEBUG_PARSER "\t to the Body Object " << '\n';
 												$$=$1;
 												DEBUG_PARSER "Passed a Body object up the syntax tree" << '\n';
-
 												}
     ;
-	
+
 %%
 
 
