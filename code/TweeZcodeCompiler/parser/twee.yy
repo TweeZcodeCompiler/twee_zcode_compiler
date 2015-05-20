@@ -17,9 +17,10 @@
 	#include <memory>
 	#include <stdio.h>
 
+
 	extern Passage *tweeStructure; /* the result data model */
-	
-	// Forward-declare the Scanner class; the Parser needs to be assigned a 
+
+	// Forward-declare the Scanner class; the Parser needs to be assigned a
 	// Scanner, but the Scanner can't be declared without the Parser
 	namespace Twee {
 		class TweeScanner;
@@ -43,7 +44,7 @@
 	Body *body;
 }
 
-%token 
+%token
 	<token> LINEBREAK
 	<token> DOUBLE_COLON
 	<string> PTITLE
