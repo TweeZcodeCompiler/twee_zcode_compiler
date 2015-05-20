@@ -12,3 +12,7 @@ Body::Body(std::string c) {
 std::string Body::getContent(){
     return this->content;
 }
+
+Body& Body::operator+=(const std::string& right) {
+    this->content += right;
+}

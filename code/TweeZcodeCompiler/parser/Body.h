@@ -16,6 +16,8 @@ public:
     Body(std::string c);
 
     std::string getContent();
+
+    Body& operator+=(const std::string& right);
 };
 
 
