@@ -177,7 +177,7 @@ vector<bitset<8>>  ZCodeConverter::convert5BitTo8Bit(vector<bitset<5>> source){
         }
         //write third Z-char
         for (unsigned long pos = 0; pos < 5; pos++) {
-            secondByte.set(pos, thirdZChar[pos]);
+            secondByte.set(pos, thirdZChar[4-pos]);
         }
         returnVector.push_back(secondByte);
     }

@@ -15,8 +15,16 @@ std::vector<std::bitset<8>> RoutineGenerator::printPrintRoutine(std::string stri
     vector<bitset<8>> zsciiString = converter.convertStringToZSCII(stringToPrint);
 
     akk.push_back(numberToBitset(0));
-    akk.push_back(numberToBitset(PRINT));
-    akk.insert(akk.end(),zsciiString.begin(),zsciiString.end());
+    unsigned long len = zsciiString.size();
+    for(int i = 0; i < len; i++){
+        if(i%96 == 0){
+            akk.push_back(numberToBitset(PRINT));
+        }
+        if(i%96 == 94) {
+            zsciiString[i].set(7, true);
+        }
+        akk.push_back(zsciiString[i]);
+    }
     akk.push_back(numberToBitset(QUIT));
     return akk;
 }
