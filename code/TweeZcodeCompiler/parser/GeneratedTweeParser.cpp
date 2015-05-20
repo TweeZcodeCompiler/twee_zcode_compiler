@@ -49,13 +49,15 @@
 
 #line 51 "GeneratedTweeParser.cpp" // lalr1.cc:411
 // Unqualified %code blocks.
-#line 28 "twee.yy" // lalr1.cc:412
+#line 30 "twee.yy" // lalr1.cc:412
 
 	void yyerror(const char *s) { printf("ERROR: %s\n", s); }
 	// Prototype for the yylex function
 	static int yylex(Twee::BisonParser::semantic_type * yylval, Twee::TweeScanner &scanner);
 
-#line 59 "GeneratedTweeParser.cpp" // lalr1.cc:412
+	Passage *tweeStructure; /* the result data model */
+
+#line 61 "GeneratedTweeParser.cpp" // lalr1.cc:412
 
 
 #ifndef YY_
@@ -122,7 +124,7 @@
 
 #line 7 "twee.yy" // lalr1.cc:478
 namespace Twee {
-#line 126 "GeneratedTweeParser.cpp" // lalr1.cc:478
+#line 128 "GeneratedTweeParser.cpp" // lalr1.cc:478
 
   /* Return YYSTR after stripping away unnecessary quotes and
      backslashes, so that it's suitable for yyerror.  The heuristic is
@@ -578,42 +580,34 @@ namespace Twee {
           switch (yyn)
             {
   case 2:
-#line 57 "twee.yy" // lalr1.cc:851
+#line 61 "twee.yy" // lalr1.cc:851
     {
 												(yylhs.value.passage)=new Passage(*(yystack_[2].value.string),*(yystack_[0].value.body));
-												DEBUG_PARSER "Made a new Passage from" << '\n';
-												DEBUG_PARSER "\t PTITLE: " << *(yystack_[2].value.string) << '\n';
-												DEBUG_PARSER "\t Body: " << (yystack_[0].value.body)->getContent() << '\n';
+												std::cout << "Made an S. \n";
 												}
 #line 589 "GeneratedTweeParser.cpp" // lalr1.cc:851
     break;
 
   case 3:
-#line 66 "twee.yy" // lalr1.cc:851
+#line 68 "twee.yy" // lalr1.cc:851
     {
 												(yylhs.value.body)=new Body(*(yystack_[0].value.string));
-												DEBUG_PARSER "Made a new Body from" << '\n';
-												DEBUG_PARSER "\t PBODYWORD: " << *(yystack_[0].value.string) << '\n';
+												std::cout << "Made a body. \n";
 												}
-#line 599 "GeneratedTweeParser.cpp" // lalr1.cc:851
+#line 598 "GeneratedTweeParser.cpp" // lalr1.cc:851
     break;
 
   case 4:
-#line 71 "twee.yy" // lalr1.cc:851
+#line 74 "twee.yy" // lalr1.cc:851
     {
-												*(yystack_[2].value.body) += *(yystack_[0].value.string);
-												DEBUG_PARSER "\t Added" << '\n';
-												DEBUG_PARSER "\t PBODYWORD: " << *(yystack_[0].value.string) << '\n';
-												DEBUG_PARSER "\t to the Body Object " << '\n';
-												(yylhs.value.body)=(yystack_[2].value.body);
-												DEBUG_PARSER "Passed a Body object up the syntax tree" << '\n';
-
+												(yylhs.value.body)=new Body(*(yystack_[2].value.string));
+												std::cout << "Made a body. After that, another body\n";
 												}
-#line 613 "GeneratedTweeParser.cpp" // lalr1.cc:851
+#line 607 "GeneratedTweeParser.cpp" // lalr1.cc:851
     break;
 
 
-#line 617 "GeneratedTweeParser.cpp" // lalr1.cc:851
+#line 611 "GeneratedTweeParser.cpp" // lalr1.cc:851
             default:
               break;
             }
@@ -870,7 +864,7 @@ namespace Twee {
   const signed char
   BisonParser::yypact_[] =
   {
-      -4,    -3,     1,     0,    -5,    -2,    -5,     2,     3,    -5
+      -4,    -3,     1,     0,    -5,    -2,     2,    -5,    -2,    -5
   };
 
   const unsigned char
@@ -882,7 +876,7 @@ namespace Twee {
   const signed char
   BisonParser::yypgoto_[] =
   {
-      -5,    -5,    -5
+      -5,    -5,    -1
   };
 
   const signed char
@@ -894,19 +888,19 @@ namespace Twee {
   const unsigned char
   BisonParser::yytable_[] =
   {
-       1,     4,     3,     5,     6,     8,     0,     0,     0,     9
+       1,     4,     3,     5,     6,     8,     0,     9
   };
 
   const signed char
   BisonParser::yycheck_[] =
   {
-       4,     0,     5,     3,     6,     3,    -1,    -1,    -1,     6
+       4,     0,     5,     3,     6,     3,    -1,     8
   };
 
   const unsigned char
   BisonParser::yystos_[] =
   {
-       0,     4,     8,     5,     0,     3,     6,     9,     3,     6
+       0,     4,     8,     5,     0,     3,     6,     9,     3,     9
   };
 
   const unsigned char
@@ -936,7 +930,7 @@ namespace Twee {
   const unsigned char
   BisonParser::yyrline_[] =
   {
-       0,    57,    57,    66,    71
+       0,    61,    61,    68,    74
   };
 
   // Print the state stack on the debug stream.
@@ -1018,8 +1012,8 @@ namespace Twee {
 
 #line 7 "twee.yy" // lalr1.cc:1159
 } // Twee
-#line 1022 "GeneratedTweeParser.cpp" // lalr1.cc:1159
-#line 82 "twee.yy" // lalr1.cc:1160
+#line 1016 "GeneratedTweeParser.cpp" // lalr1.cc:1159
+#line 80 "twee.yy" // lalr1.cc:1160
 
 
 
@@ -1036,4 +1030,3 @@ void Twee::BisonParser::error(const std::string& msg) {
 static int yylex(Twee::BisonParser::semantic_type * yylval, Twee::TweeScanner &scanner) {
 	return scanner.yylex(yylval);
 }
-

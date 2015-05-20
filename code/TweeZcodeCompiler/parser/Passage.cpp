@@ -2,7 +2,7 @@
 // Created by micha on 14.05.15.
 //
 
-#include "Passage.h"
+#include "include/Passage.h"
 
 
 Passage::Passage(std::string name, Body& body) : body(body) {

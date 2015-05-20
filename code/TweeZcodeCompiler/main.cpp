@@ -30,8 +30,6 @@ int main(int argc, char *argv[]) {
     SimpleCompilerPipeline compiler;
     compiler.compile(fileContent,"hello_world.z8");
 
-
-    //TODO: next step call Lexer with FileContent
     return 0;
 }
 

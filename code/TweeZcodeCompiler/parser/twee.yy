@@ -12,8 +12,8 @@
 
 
 %code requires {
-	#include "Passage.h"
-	#include "Body.h"
+	#include "include/Passage.h"
+	#include "include/Body.h"
 	#include <memory>
 	#include <stdio.h>
 

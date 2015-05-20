@@ -8,8 +8,8 @@ TODO: debug parameter for the matching debug statements
 #include <iostream>
 #include <memory>
 
-#include "Passage.h"
-#include "Body.h"
+#include "include/Passage.h"
+#include "include/Body.h"
 #include "GeneratedTweeParser.hpp"
 #include "TweeScanner.h"
 

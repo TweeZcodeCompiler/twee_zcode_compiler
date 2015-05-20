@@ -42,19 +42,21 @@
 // //                    "%code requires" blocks.
 #line 14 "twee.yy" // lalr1.cc:391
 
-	#include "Passage.h"
-	#include "Body.h"
+	#include "include/Passage.h"
+	#include "include/Body.h"
 	#include <memory>
 	#include <stdio.h>
-	
-	// Forward-declare the Scanner class; the Parser needs to be assigned a 
+
+	extern Passage *tweeStructure; /* the result data model */
+
+	// Forward-declare the Scanner class; the Parser needs to be assigned a
 	// Scanner, but the Scanner can't be declared without the Parser
 	namespace Twee {
 		class TweeScanner;
 	}
 	#define DEBUG_PARSER std::cout << "\t\tPARSER DEBUG: " <<
 
-#line 58 "GeneratedTweeParser.hpp" // lalr1.cc:391
+#line 60 "GeneratedTweeParser.hpp" // lalr1.cc:391
 
 
 # include <vector>
@@ -125,7 +127,7 @@
 
 #line 7 "twee.yy" // lalr1.cc:391
 namespace Twee {
-#line 129 "GeneratedTweeParser.hpp" // lalr1.cc:391
+#line 131 "GeneratedTweeParser.hpp" // lalr1.cc:391
 
 
 
@@ -139,14 +141,14 @@ namespace Twee {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 35 "twee.yy" // lalr1.cc:391
+    #line 39 "twee.yy" // lalr1.cc:391
 
 	std::string *string;
 	int token;
 	Passage *passage;
 	Body *body;
 
-#line 150 "GeneratedTweeParser.hpp" // lalr1.cc:391
+#line 152 "GeneratedTweeParser.hpp" // lalr1.cc:391
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -468,7 +470,7 @@ namespace Twee {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 9,     ///< Last index in yytable_.
+      yylast_ = 7,     ///< Last index in yytable_.
       yynnts_ = 3,  ///< Number of nonterminal symbols.
       yyfinal_ = 4, ///< Termination state number.
       yyterror_ = 1,
@@ -484,7 +486,7 @@ namespace Twee {
 
 #line 7 "twee.yy" // lalr1.cc:391
 } // Twee
-#line 488 "GeneratedTweeParser.hpp" // lalr1.cc:391
+#line 490 "GeneratedTweeParser.hpp" // lalr1.cc:391
 
 
 

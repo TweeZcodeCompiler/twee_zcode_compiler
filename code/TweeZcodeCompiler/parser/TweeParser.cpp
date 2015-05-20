@@ -7,7 +7,7 @@ using namespace Twee;
 class TweeParser::TweeParserImpl {
 public:
     TweeParserImpl(std::istream* input) : scanner(input), parser(scanner) { }
-    int parse();
+    Passage parse();
 
 private:
     TweeScanner scanner;
@@ -22,13 +22,14 @@ TweeParser::~TweeParser() {
     delete this->impl;
 }
 
-int TweeParser::parse() {
+Passage TweeParser::parse() {
     return impl->parse();
 }
 
 
 /* impl */
 
-int TweeParser::TweeParserImpl::parse() {
-    return parser.parse();
+Passage TweeParser::TweeParserImpl::parse() {
+    parser.parse();
+    return *tweeStructure;
 }
