@@ -19,6 +19,7 @@ private:
 public:
     std::vector<std::bitset<8>> convertStringToZSCII(std::string source);
 
+
 };
 
 

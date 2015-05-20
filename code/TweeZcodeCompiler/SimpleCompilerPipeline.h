@@ -18,9 +18,12 @@ class SimpleCompilerPipeline {
 public:
 
     void compile(string fileContent,string zCodeFileName);
-
+    ~SimpleCompilerPipeline(){
+        delete header;
+    }
 
 private:
+    ZCodeHeader * header;
     string simpleLexer(string fileContent);
     void printHex(std::vector<std::bitset<8>> bitsetList);
     std::vector<std::bitset<8>> *generateHeader();

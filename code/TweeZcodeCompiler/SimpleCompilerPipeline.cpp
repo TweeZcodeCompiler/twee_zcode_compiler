@@ -32,10 +32,26 @@ void SimpleCompilerPipeline::compile(string fileContent,string zCodeFileName) {
     zCode.insert(zCode.end(), zByteCodePrint.begin(), zByteCodePrint.end());
     log("Print Command added to ZCode");
 
-    //printHex(zByteCodePrint);
+    //calculate filesize
+    int filesize = ((zCode.size()+8)/8)*8;
 
-    //generate empty space
-    zCode = fillWithBytes(0,147,zCode);
+    //change fileSize in header
+    bitset<16> shortVal (filesize/8);
+    bitset<8> firstHalf, secondHalf;
+
+    for (size_t i = 0; i < 8; i++) {
+        secondHalf.set(i, shortVal[i]);
+    }
+
+    for (size_t i = 8; i < 16; i++) {
+        firstHalf.set(i-8, shortVal[i]);
+    }
+    zCode[26] = firstHalf;
+    zCode[27] = secondHalf;
+
+    //generate empty space for padding
+    int empty = filesize-zCode.size();
+    zCode = fillWithBytes(0,(empty > 0)?empty:0,zCode);
 
     BinaryFileWriter binaryFileWriter;
     binaryFileWriter.write(zCodeFileName, zCode);
@@ -78,7 +94,7 @@ void SimpleCompilerPipeline::log(string message)
 std::vector<std::bitset<8>> *SimpleCompilerPipeline::generateHeader()
 {
     //generate header
-    ZCodeHeader *header = new ZCodeHeader();
+    header = new ZCodeHeader();
     header->baseOfHighMem = 358;
     header->initValOfPC = 1;
     header->packedAddressOfMain = 103;
@@ -91,7 +107,7 @@ std::vector<std::bitset<8>> *SimpleCompilerPipeline::generateHeader()
 
     header->setRoutinesOffset(128);         // random value
     header->setStaticStringsOffset(128);    // random value
-    header->setFileLength(516, 6861);
+    header->setFileLength(2064, 6861);
 
     std::vector<std::bitset<8>> *zByteHeader = header->getHeaderBits();
     return zByteHeader;
