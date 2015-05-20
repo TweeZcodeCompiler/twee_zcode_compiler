@@ -1,5 +1,6 @@
 /*
 This is the lexical analyzer for passages in twee code.
+TODO: debug parameter for the matching debug statements
 */
 
 %{
@@ -14,29 +15,20 @@ This is the lexical analyzer for passages in twee code.
 
 #define SAVE_TOKEN yylval->string = new std::string(YYText(), YYLeng())
 //#define TOKEN(t) (yylval.token = t)
-
+#define DEBUG_LEXER std::cout << "LEXER DEBUG: " <<
 %}
 
 %option nodefault yyclass="Twee::TweeScanner" noyywrap c++
+%option debug
 
 DOUBLE_COLON    ::
-PTITLE          [-=`~!@#$%^&*()_+\|/?';<>.,:\]\{\}\\"'a-zA-Z0-9 \t]+
-PTAGS_OPEN      \[
-PTAGS_CLOSE     \]
-
-PBODYCHAR       [-=`~!@#$%^&*()_+\|/?';>.,:\[\]\{\}\\"'a-zA-Z0-9 \t\n]
-PBODYLT         <
-PBODYWORD       {PBODYCHAR}*({PBODYLT}?{PBODYCHAR}+)*
-
-PTAG            [-=`~!@#$%^&*()_+\|/?';<>.,:\[\{\}\\"'a-zA-Z0-9]+
+PTITLE          [-=`~!@#$%^&*()_+\|/?';<>.,:\[\]\{\}\\"'a-zA-Z0-9 \t]+
+PBODYCHAR       [-=`~!@#$%^&*()_+\|/?';<>.,:\[\]\{\}\\"'a-zA-Z0-9 \t]
+PBODYWORD       {PBODYCHAR}+
 
  /*TODO: check Space and Tab behaviour*/
 SPACE           [ \t]
- /*TAB             [\t]*/
-LINEBREAK       [\n\r]
-
-MACRO_OPEN      <<
-MACRO_CLOSE     >>
+LINEBREAK       [\n]
 
 %x PHEAD
 %x PTAGS
@@ -48,76 +40,36 @@ MACRO_CLOSE     >>
   /*at Start----------*/
 
 <INITIAL,PBODY>^{DOUBLE_COLON}  {
-                                std::cout << "=> DOUBLE_COLON " << YYText() << '\n';
+                                DEBUG_LEXER "new token DOUBLE_COLON " << '\n';
                                 BEGIN(PHEAD);
-                                // *yylval = atoi(yytext);
-                                //std::cout << DOUBLE_COLON << '\n';
-                                //return DOUBLE_COLON;
+                                DEBUG_LEXER "enter cnd -> PHEAD" << '\n';
+                                return BisonParser::token::DOUBLE_COLON;
                                 }
 
  /*discard the rest, because we are looking for a passage*/
 <INITIAL>.               std::cout << "ERROR: TOKEN OUTSIDE OF A PASSAGE " << YYText() << '\n';
 
   /*PHEAD: Title scanning----------*/
- /*everything except ( and LINEBREAK*/
+ /*everything except LINEBREAK*/
 
 <PHEAD>{PTITLE}         {
-                        std::cout << "=> PTITLE " << YYText() << '\n';
-                        // *yylval = atoi(yytext);
-                        //return Passage_name;
-                        }
-
-<PHEAD>{PTAGS_OPEN}     {
-                        std::cout << "=> PTAGS_OPEN " << '\n';
-                        BEGIN(PTAGS);
-                        //std::cout << "BEGIN(PTAGS);" << '\n';
+                        DEBUG_LEXER "new token PTITLE with content :" << YYText() << '\n';
+                        SAVE_TOKEN;
+                        return BisonParser::token::PTITLE;
                         }
 
 <PHEAD>{LINEBREAK}      {
-                        std::cout << "=> LINEBREAK " << "\n\n";
+                        DEBUG_LEXER "new token LINEBREAK " << "\n";
+                        DEBUG_LEXER "enter cnd -> PBODY" << '\n';
                         BEGIN(PBODY);
-                        //std::cout << "BEGIN(PBODY);" << '\n';
-                        // *yylval = atoi(YYText());
-                        SAVE_TOKEN;
+
                         return BisonParser::token::LINEBREAK;
                         }
 
-  /*PTAGS: Title Tags scanning----------*/
- /*Get the Tags, discard the whitespaces, close when )*/
-
- /*match the next words */
-<PTAGS>{PTAG}           {
-                        std::cout << "=> PTAG " << YYText() << '\n';
+<PHEAD>.                {
+                        DEBUG_LEXER "discarding char: " << YYText() << '\n';
                         }
 
- /*throw the spaces aside */
-<PTAGS>{SPACE}          /*Skip*/
-
- /*match the end of the tags */
-<PTAGS>{PTAGS_CLOSE}    {
-                        std::cout << "=> PTAGS_CLOSE " << "\n";
-                        BEGIN(PCLOSE);
-                        //std::cout << "BEGIN(PCLOSE);" << '\n';
-                        }
- /*TODO: Error when Linebreak?*/
-
-  /*PBODYCLOSE: After Tags scanning----------*/
- /*Error when no Linebreak*/
-
- /*match a linebreak */
-<PCLOSE>{LINEBREAK}     {
-                            std::cout << "=> LINEBREAK " << YYText();
-                            BEGIN(PBODY);
-                            //std::cout << "BEGIN(PBODY);" << '\n';
-                            
-                            //return LINEBREAK;
-                            }
-
- /*throw the spaces aside */
-<PCLOSE>{SPACE}         /*Skip*/
-
- /*match unexpected chars to error */
-<PCLOSE>.               /*TODO: Error when no Linebreak*/
 
   /*PBODY: Passage Body scanning----------*/
  /*scan until next ::-Line, while doing that go into PMACRO when "<<" */
@@ -125,30 +77,18 @@ MACRO_CLOSE     >>
  /* look to at Start---------- for next-paragraph-scanning */
  /*match the next uninterruped paragraph body text */
 <PBODY>{PBODYWORD}      {
-                        std::cout << "=> PBODYWORD " << YYText() << '\n';
-                        //yylval.string = std::string(YYText());
+                        DEBUG_LEXER "new token PBODYWORD with content :" << YYText() << '\n';
                         SAVE_TOKEN;
                         return BisonParser::token::PBODYWORD;
                         }
- /*match macro start */
-<PBODY>{MACRO_OPEN}      {
-                        std::cout << "=> MACRO_OPEN " << '\n';
-                        BEGIN(PMACRO);
-                        //std::cout << "BEGIN(PMACRO);" << '\n';
+
+<PBODY>{LINEBREAK}      {
+                        DEBUG_LEXER "new token LINEBREAK " << "\n";
+                        return BisonParser::token::LINEBREAK;
                         }
 
-  /*PMACRO: Passage Body Macro scanning----------*/
- /*scan macro, esp. macro tokens */
- /*TODO: Macro Keyword scanning*/
- /*match the whole macro text */
-<PMACRO>(^[{MACRO_CLOSE}])+  {
-                        std::cout << "=> MACRO_TEXT " << YYText() << '\n';
-                        }
- /*match the macro close */
-<PMACRO>{MACRO_CLOSE}     {
-                        std::cout << "=> MACRO_CLOSE " << '\n';
-                        BEGIN(PBODY);
-                        //std::cout << "BEGIN(PBODY);" << '\n';
+<PBODY>.                {
+                        DEBUG_LEXER "discarding char: " << YYText() << '\n';
                         }
 
 %%

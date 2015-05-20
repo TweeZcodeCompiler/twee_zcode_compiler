@@ -8,18 +8,21 @@
 %define parser_class_name {BisonParser}
 %parse-param { Twee::TweeScanner &scanner }
 %lex-param   { Twee::TweeScanner &scanner }
+%define parse.error verbose
 
 
 %code requires {
 	#include "Passage.h"
 	#include "Body.h"
 	#include <memory>
-
+	#include <stdio.h>
+	
 	// Forward-declare the Scanner class; the Parser needs to be assigned a 
 	// Scanner, but the Scanner can't be declared without the Parser
 	namespace Twee {
 		class TweeScanner;
 	}
+	#define DEBUG_PARSER std::cout << "\t\tPARSER DEBUG: " <<
 }
 
 %code {
@@ -51,12 +54,30 @@
 %%
 
 S : 
-	DOUBLE_COLON PTITLE LINEBREAK body		{$$=new Passage(*$2,*$4);}
+	DOUBLE_COLON PTITLE LINEBREAK body			{
+												$$=new Passage(*$2,*$4);
+												DEBUG_PARSER "Made a new Passage from" << '\n';
+												DEBUG_PARSER "\t PTITLE: " << *$2 << '\n';
+												DEBUG_PARSER "\t Body: " << $4->getContent() << '\n';
+												}
   ;
 
 body:
-	PBODYWORD						{$$=new Body(*$1);}
-	;
+	PBODYWORD									{
+												$$=new Body(*$1);
+												DEBUG_PARSER "Made a new Body from" << '\n';
+												DEBUG_PARSER "\t PBODYWORD: " << *$1 << '\n';
+												}
+	|body LINEBREAK PBODYWORD					{
+												*$1 += *$3;
+												DEBUG_PARSER "\t Added" << '\n';
+												DEBUG_PARSER "\t PBODYWORD: " << *$3 << '\n';
+												DEBUG_PARSER "\t to the Body Object " << '\n';
+												$$=$1;
+												DEBUG_PARSER "Passed a Body object up the syntax tree" << '\n';
+
+												}
+    ;
 	
 %%
 
