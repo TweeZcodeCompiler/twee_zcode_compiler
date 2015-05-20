@@ -32,6 +32,9 @@ private:
     void setShortVal(unsigned short val, std::vector<std::bitset<8>> *header);
 
 public:
+    //HEADER POSITIONS
+    static const int HEADER_FILE_SIZE_POSITION = 26;
+
     // Flags 1 in Hex position 1 to 3
     bool colAvail = false;
     bool picDisplayAvail = false;
@@ -42,7 +45,7 @@ public:
     bool timedKeyboardAvail = false;
 
     // byte addresses
-    unsigned short baseOfHighMem;     // 2 bytes
+    unsigned short baseOfHighMem;        // 2 bytes
     unsigned char initValOfPC;           // initial value of program counter
     unsigned char packedAddressOfMain;   // packed address of initial "main" routine
     unsigned short locOfDict;            // location of dictionary

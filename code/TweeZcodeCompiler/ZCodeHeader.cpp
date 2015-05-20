@@ -56,6 +56,10 @@ vector<bitset<8>>*ZCodeHeader::getHeaderBits() {
     setShortVal(alphabetTableAddress, headerBits);   // Hex 34 - 35
     setShortVal(headerExtensionTableAddress, headerBits);// Hex 36 - 38
 
+    for (size_t i = 0; i < 7; i++) {
+        headerBits->push_back(0);           // Hex 39 - 3F
+    }
+
     return headerBits;
 }
 
@@ -134,12 +138,12 @@ void ZCodeHeader::setAddresses(vector<bitset<8>> *header) {
 
 // sets bytes 10 - 17
 void ZCodeHeader::setFlags2(std::vector<std::bitset<8>> *header) {
-    // Hex 10 - 16
-    for (int i = 0; i < 7; i++) {
+    // Hex 10 - 15
+    for (int i = 0; i < 6; i++) {
         header->push_back(0);
     }
 
-    bitset<8> flags2;                           // Hex 17
+    bitset<8> flags2;                           // Hex 16
     flags2.set(0, transcripting);
     flags2.set(1, forcePrintingInFixedPitchFont);
     flags2.set(2, requestScreenRedraw);
@@ -150,22 +154,22 @@ void ZCodeHeader::setFlags2(std::vector<std::bitset<8>> *header) {
     flags2.set(7, useSoundEffects);
     header->push_back(flags2);
 
-    flags2.reset();
+    flags2.reset();                             // Hex 17
     flags2.set(0, useMenus);
     header->push_back(flags2);
 }
 
 // splits short value up to 2 bytes and pushes them into the headerBits
 void ZCodeHeader::setShortVal(unsigned short val, vector<bitset<8>> *header) {
-    bitset<8> shortVal (val);
+    bitset<16> shortVal (val);
     bitset<8> firstHalf, secondHalf;
 
     for (size_t i = 0; i < 8; i++) {
-        firstHalf.set(i, shortVal[i]);
+        secondHalf.set(i, shortVal[i]);
     }
 
     for (size_t i = 8; i < 16; i++) {
-        secondHalf.set(i-8, shortVal[i]);
+        firstHalf.set(i-8, shortVal[i]);
     }
 
     header->push_back(firstHalf);
