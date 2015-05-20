@@ -16,8 +16,10 @@
 	#include "Body.h"
 	#include <memory>
 	#include <stdio.h>
-	
-	// Forward-declare the Scanner class; the Parser needs to be assigned a 
+
+	extern Passage *tweeStructure; /* the result data model */
+
+	// Forward-declare the Scanner class; the Parser needs to be assigned a
 	// Scanner, but the Scanner can't be declared without the Parser
 	namespace Twee {
 		class TweeScanner;
@@ -29,6 +31,8 @@
 	void yyerror(const char *s) { printf("ERROR: %s\n", s); }
 	// Prototype for the yylex function
 	static int yylex(Twee::BisonParser::semantic_type * yylval, Twee::TweeScanner &scanner);
+
+	Passage *tweeStructure; /* the result data model */
 }
 
 
@@ -56,26 +60,20 @@
 S : 
 	DOUBLE_COLON PTITLE LINEBREAK body			{
 												$$=new Passage(*$2,*$4);
-												DEBUG_PARSER "Made a new Passage from" << '\n';
-												DEBUG_PARSER "\t PTITLE: " << *$2 << '\n';
-												DEBUG_PARSER "\t Body: " << $4->getContent() << '\n';
+												std::cout << "Made an S. \n";
 												}
   ;
 
 body:
 	PBODYWORD									{
 												$$=new Body(*$1);
-												DEBUG_PARSER "Made a new Body from" << '\n';
-												DEBUG_PARSER "\t PBODYWORD: " << *$1 << '\n';
+												std::cout << "Made a body. \n";
 												}
-	|body LINEBREAK PBODYWORD					{
-												*$1 += *$3;
-												DEBUG_PARSER "\t Added" << '\n';
-												DEBUG_PARSER "\t PBODYWORD: " << *$3 << '\n';
-												DEBUG_PARSER "\t to the Body Object " << '\n';
-												$$=$1;
-												DEBUG_PARSER "Passed a Body object up the syntax tree" << '\n';
-
+	;
+body:
+	PBODYWORD LINEBREAK body					{
+												$$=new Body(*$1);
+												std::cout << "Made a body. After that, another body\n";
 												}
     ;
 	
@@ -95,4 +93,3 @@ void Twee::BisonParser::error(const std::string& msg) {
 static int yylex(Twee::BisonParser::semantic_type * yylval, Twee::TweeScanner &scanner) {
 	return scanner.yylex(yylval);
 }
-
