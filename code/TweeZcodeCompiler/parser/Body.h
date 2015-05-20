@@ -15,8 +15,9 @@ private:
 public:
     Body(std::string c);
 
-    std::string getContent();
+    std::string getContent() const;
 
+    Body& operator+=(const Body& right);
     Body& operator+=(const std::string& right);
 };
 
