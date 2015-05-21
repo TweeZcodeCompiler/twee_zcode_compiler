@@ -8,7 +8,6 @@
 #include <iostream>
 #include <vector>
 #include "FileReader.h"
-#include "test/MainTest.h"
 #include "RoutineGenerator.h"
 #include "BinaryFileWriter.h"
 #include "ZCodeHeader.h"

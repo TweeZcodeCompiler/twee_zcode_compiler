@@ -5,10 +5,11 @@
 #include "SimpleCompilerPipeline.h"
 
 #include <TweeParser.h>
+#include <memory>
 
 //Just a Simple Compiler Pipeline
 
-void SimpleCompilerPipeline::compile(string filename,string zCodeFileName) {
+void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     log("Simple Compiler Pipeline started");
 
@@ -16,7 +17,7 @@ void SimpleCompilerPipeline::compile(string filename,string zCodeFileName) {
 
     Twee::TweeParser parser(&inputFile);
 
-    std::auto_ptr<Passage> passage;
+    std::unique_ptr<Passage> passage;
     try {
         passage.reset(parser.parse());
     } catch (Twee::ParseException e) {
@@ -35,41 +36,41 @@ void SimpleCompilerPipeline::compile(string filename,string zCodeFileName) {
     log("ZMachine Header generated and added to ZCode");
 
     //empty space because memory for opcodes starts later
-    zCode = fillWithBytes(0,295,zCode);
+    zCode = fillWithBytes(0, 295, zCode);
 
 
     //generate zcode for token string
     RoutineGenerator routineGenerator;
-    std::vector<std::bitset<8>> zByteCodePrint = routineGenerator.printPrintRoutine(passage.get()->getBody().getContent());
+    std::vector<std::bitset<8>> zByteCodePrint = routineGenerator.printPrintRoutine(
+            passage.get()->getBody().getContent());
     zCode.insert(zCode.end(), zByteCodePrint.begin(), zByteCodePrint.end());
     log("Print Command added to ZCode");
 
     //calculate fileSize
     int fileSize = calculateFileSize(zCode);
 
-    zCode = addFileSizeToHeader(zCode,fileSize);
+    zCode = addFileSizeToHeader(zCode, fileSize);
 
     //generate empty space for padding
-    int empty = fileSize-zCode.size();
-    zCode = fillWithBytes(0,(empty > 0)?empty:0,zCode);
+    int empty = fileSize - zCode.size();
+    zCode = fillWithBytes(0, (empty > 0) ? empty : 0, zCode);
 
     BinaryFileWriter binaryFileWriter;
     binaryFileWriter.write(zCodeFileName, zCode);
-    log("ZCode File '"+zCodeFileName+"' generated");
+    log("ZCode File '" + zCodeFileName + "' generated");
 
 }
 
-int SimpleCompilerPipeline::calculateFileSize(std::vector<std::bitset<8>> zCode)
-{
-    int filesize = ((zCode.size()+8)/8)*8;
+int SimpleCompilerPipeline::calculateFileSize(std::vector<std::bitset<8>> zCode) {
+    int filesize = ((zCode.size() + 8) / 8) * 8;
     return filesize;
 
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::addFileSizeToHeader(std::vector<std::bitset<8>> zCode, int fileSize)
-{
+std::vector<std::bitset<8>> SimpleCompilerPipeline::addFileSizeToHeader(std::vector<std::bitset<8>> zCode,
+                                                                        int fileSize) {
     //change fileSize in header
-    bitset<16> shortVal (fileSize/8);
+    bitset<16> shortVal(fileSize / 8);
     bitset<8> firstHalf, secondHalf;
 
     for (size_t i = 0; i < 8; i++) {
@@ -77,10 +78,10 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::addFileSizeToHeader(std::vec
     }
 
     for (size_t i = 8; i < 16; i++) {
-        firstHalf.set(i-8, shortVal[i]);
+        firstHalf.set(i - 8, shortVal[i]);
     }
     zCode[ZCodeHeader::HEADER_FILE_SIZE_POSITION] = firstHalf;
-    zCode[ZCodeHeader::HEADER_FILE_SIZE_POSITION+1] = secondHalf;
+    zCode[ZCodeHeader::HEADER_FILE_SIZE_POSITION + 1] = secondHalf;
     return zCode;
 
 }
@@ -95,8 +96,8 @@ void SimpleCompilerPipeline::printHex(std::vector<std::bitset<8>> bitsetList) {
     cout << endl;
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::fillWithBytes(int value,int amountOfBytes,std::vector<std::bitset<8>> bitVector)
-{
+std::vector<std::bitset<8>> SimpleCompilerPipeline::fillWithBytes(int value, int amountOfBytes,
+                                                                  std::vector<std::bitset<8>> bitVector) {
     for (size_t i = 0; i < amountOfBytes; i++) {
         bitVector.insert(bitVector.end(), value);
     }
@@ -104,14 +105,12 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::fillWithBytes(int value,int 
 
 }
 
-void SimpleCompilerPipeline::log(string message)
-{
-    cout << "Compiler: " << message << " . . ." <<  "\n";
+void SimpleCompilerPipeline::log(string message) {
+    cout << "Compiler: " << message << " . . ." << "\n";
 }
 
 
-std::vector<std::bitset<8>> *SimpleCompilerPipeline::generateHeader()
-{
+std::vector<std::bitset<8>> *SimpleCompilerPipeline::generateHeader() {
     //generate header
     header = new ZCodeHeader();
     header->baseOfHighMem = 358;

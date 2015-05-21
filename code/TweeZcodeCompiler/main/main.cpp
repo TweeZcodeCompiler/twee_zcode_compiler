@@ -1,12 +1,11 @@
 #include <iostream>
 
 #include "FileReader.h"
-#include "test/MainTest.h"
 #include "SimpleCompilerPipeline.h"
 
 
 int main(int argc, char *argv[]) {
-    MainTest test;
+    // MainTest test;
     // test.runAllTest();
 
     FileReader *fileReader = new FileReader();
