@@ -4,15 +4,27 @@
 
 #include "SimpleCompilerPipeline.h"
 
+#include <TweeParser.h>
+
 //Just a Simple Compiler Pipeline
 
-void SimpleCompilerPipeline::compile(string fileContent,string zCodeFileName) {
-
+void SimpleCompilerPipeline::compile(string filename,string zCodeFileName) {
 
     log("Simple Compiler Pipeline started");
-    //get the hello world string from twee source code
-    string token = simpleLexer(fileContent);
-    log("Generated Token from Twee File");
+
+    ifstream inputFile(filename);
+
+    Twee::TweeParser parser(&inputFile);
+
+    std::auto_ptr<Passage> passage;
+    try {
+        passage.reset(parser.parse());
+    } catch (Twee::ParseException e) {
+        log("Parse error");
+        throw e;
+    }
+
+    log("Parsed twee file");
 
     std::vector<std::bitset<8>> zCode;
 
@@ -28,7 +40,7 @@ void SimpleCompilerPipeline::compile(string fileContent,string zCodeFileName) {
 
     //generate zcode for token string
     RoutineGenerator routineGenerator;
-    std::vector<std::bitset<8>> zByteCodePrint = routineGenerator.printPrintRoutine(token);
+    std::vector<std::bitset<8>> zByteCodePrint = routineGenerator.printPrintRoutine(passage.get()->getBody().getContent());
     zCode.insert(zCode.end(), zByteCodePrint.begin(), zByteCodePrint.end());
     log("Print Command added to ZCode");
 
@@ -73,13 +85,6 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::addFileSizeToHeader(std::vec
 
 }
 
-
-
-
-string SimpleCompilerPipeline::simpleLexer(string fileContent) {
-    std::string token = fileContent.substr(fileContent.find('\n'), fileContent.length());
-    return token;
-}
 
 void SimpleCompilerPipeline::printHex(std::vector<std::bitset<8>> bitsetList) {
     cout << endl << endl;

@@ -40,7 +40,7 @@
 #ifndef YY_YY_GENERATEDTWEEPARSER_HPP_INCLUDED
 # define YY_YY_GENERATEDTWEEPARSER_HPP_INCLUDED
 // //                    "%code requires" blocks.
-#line 14 "twee.yy" // lalr1.cc:391
+#line 12 "twee.yy" // lalr1.cc:391
 
 	#include "include/Passage.h"
 	#include "include/Body.h"
@@ -125,7 +125,7 @@
 # define YYDEBUG 1
 #endif
 
-#line 7 "twee.yy" // lalr1.cc:391
+#line 3 "twee.yy" // lalr1.cc:391
 namespace Twee {
 #line 131 "GeneratedTweeParser.hpp" // lalr1.cc:391
 
@@ -141,7 +141,7 @@ namespace Twee {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 39 "twee.yy" // lalr1.cc:391
+    #line 37 "twee.yy" // lalr1.cc:391
 
 	std::string *string;
 	int token;
@@ -470,9 +470,9 @@ namespace Twee {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 7,     ///< Last index in yytable_.
-      yynnts_ = 3,  ///< Number of nonterminal symbols.
-      yyfinal_ = 4, ///< Termination state number.
+      yylast_ = 12,     ///< Last index in yytable_.
+      yynnts_ = 6,  ///< Number of nonterminal symbols.
+      yyfinal_ = 6, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
       yyntokens_ = 7  ///< Number of tokens.
@@ -484,7 +484,7 @@ namespace Twee {
   };
 
 
-#line 7 "twee.yy" // lalr1.cc:391
+#line 3 "twee.yy" // lalr1.cc:391
 } // Twee
 #line 490 "GeneratedTweeParser.hpp" // lalr1.cc:391
 

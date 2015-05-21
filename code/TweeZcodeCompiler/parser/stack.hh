@@ -40,7 +40,7 @@
 
 # include <vector>
 
-#line 7 "twee.yy" // stack.hh:152
+#line 3 "twee.yy" // stack.hh:152
 namespace Twee {
 #line 46 "stack.hh" // stack.hh:152
   template <class T, class S = std::vector<T> >
@@ -151,7 +151,7 @@ namespace Twee {
     unsigned int range_;
   };
 
-#line 7 "twee.yy" // stack.hh:152
+#line 3 "twee.yy" // stack.hh:152
 } // Twee
 #line 157 "stack.hh" // stack.hh:152
 

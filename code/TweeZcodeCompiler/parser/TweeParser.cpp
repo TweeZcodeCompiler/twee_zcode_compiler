@@ -1,13 +1,14 @@
 #include "include/TweeParser.h"
 
 #include "TweeScanner.h"
+#include "include/ParseException.h"
 
 using namespace Twee;
 
 class TweeParser::TweeParserImpl {
 public:
     TweeParserImpl(std::istream* input) : scanner(input), parser(scanner) { }
-    Passage parse();
+    Passage* parse();
 
 private:
     TweeScanner scanner;
@@ -22,14 +23,19 @@ TweeParser::~TweeParser() {
     delete this->impl;
 }
 
-Passage TweeParser::parse() {
+Passage* TweeParser::parse() {
     return impl->parse();
 }
 
 
 /* impl */
 
-Passage TweeParser::TweeParserImpl::parse() {
+Passage* TweeParser::TweeParserImpl::parse() {
     parser.parse();
-    return *tweeStructure;
+    if(!tweeStructure) {
+        throw new ParseException();
+    }
+
+    // TODO: return a copy of the passage. global will be changed on next parse run.
+    return tweeStructure;
 }

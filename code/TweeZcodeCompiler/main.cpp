@@ -1,5 +1,4 @@
 #include <iostream>
-#include <TweeParser.h>
 
 #include "FileReader.h"
 #include "test/MainTest.h"
@@ -16,19 +15,11 @@ int main(int argc, char *argv[]) {
 
     string fileContent = fileReader->readFile(filePath);
 
-    cout << fileContent;
-
-
-    ifstream inputFile("hello_world.z8");
-
-    Twee::TweeParser parser(&inputFile);
-
-    parser.parse();
-
+    cout << fileContent << endl;
 
     //SIMPLE COMPILER PIPELINE
     SimpleCompilerPipeline compiler;
-    compiler.compile(fileContent,"hello_world.z8");
+    compiler.compile(filePath,"hello_world.z8");
 
     return 0;
 }

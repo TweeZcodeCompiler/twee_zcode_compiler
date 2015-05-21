@@ -49,7 +49,7 @@
 
 #line 51 "GeneratedTweeParser.cpp" // lalr1.cc:411
 // Unqualified %code blocks.
-#line 30 "twee.yy" // lalr1.cc:412
+#line 28 "twee.yy" // lalr1.cc:412
 
 	void yyerror(const char *s) { printf("ERROR: %s\n", s); }
 	// Prototype for the yylex function
@@ -122,7 +122,7 @@
 #define YYERROR         goto yyerrorlab
 #define YYRECOVERING()  (!!yyerrstatus_)
 
-#line 7 "twee.yy" // lalr1.cc:478
+#line 3 "twee.yy" // lalr1.cc:478
 namespace Twee {
 #line 128 "GeneratedTweeParser.cpp" // lalr1.cc:478
 
@@ -582,32 +582,94 @@ namespace Twee {
   case 2:
 #line 61 "twee.yy" // lalr1.cc:851
     {
-												(yylhs.value.passage)=new Passage(*(yystack_[2].value.string),*(yystack_[0].value.body));
-												std::cout << "Made an S. \n";
-												}
+													tweeStructure = (yystack_[0].value.passage);
+													DEBUG_PARSER "Assigned result to the tweeStructure" << '\n';
+													}
 #line 589 "GeneratedTweeParser.cpp" // lalr1.cc:851
     break;
 
   case 3:
-#line 68 "twee.yy" // lalr1.cc:851
+#line 67 "twee.yy" // lalr1.cc:851
     {
-												(yylhs.value.body)=new Body(*(yystack_[0].value.string));
-												std::cout << "Made a body. \n";
+												(yylhs.value.passage)=(yystack_[0].value.passage);
+												DEBUG_PARSER "Moved passage up to passages" << '\n';
 												}
 #line 598 "GeneratedTweeParser.cpp" // lalr1.cc:851
     break;
 
   case 4:
-#line 74 "twee.yy" // lalr1.cc:851
+#line 71 "twee.yy" // lalr1.cc:851
     {
-												(yylhs.value.body)=new Body(*(yystack_[2].value.string));
-												std::cout << "Made a body. After that, another body\n";
+												(yylhs.value.passage)=(yystack_[1].value.passage);
+												DEBUG_PARSER "theres a passage after the first one" << '\n';
 												}
 #line 607 "GeneratedTweeParser.cpp" // lalr1.cc:851
     break;
 
+  case 5:
+#line 77 "twee.yy" // lalr1.cc:851
+    {
+												(yylhs.value.passage)=new Passage(*(yystack_[2].value.string),*(yystack_[0].value.body));
+												DEBUG_PARSER "Made a new Passage from" << '\n';
+												DEBUG_PARSER "\t PTITLE: " << *(yystack_[2].value.string) << '\n';
+												DEBUG_PARSER "\t Body: " << (yystack_[0].value.body)->getContent() << '\n';
+												}
+#line 618 "GeneratedTweeParser.cpp" // lalr1.cc:851
+    break;
 
-#line 611 "GeneratedTweeParser.cpp" // lalr1.cc:851
+  case 6:
+#line 83 "twee.yy" // lalr1.cc:851
+    {
+												(yylhs.value.passage)=new Passage(*(yystack_[0].value.string), *new Body(""));
+												DEBUG_PARSER "Made a new Passage from" << '\n';
+												DEBUG_PARSER "\t PTITLE: " << *(yystack_[0].value.string) << '\n';
+												DEBUG_PARSER "\t empty Body: " << '\n';
+												}
+#line 629 "GeneratedTweeParser.cpp" // lalr1.cc:851
+    break;
+
+  case 7:
+#line 94 "twee.yy" // lalr1.cc:851
+    {
+												(yylhs.value.body)=new Body(*(yystack_[0].value.string));
+												DEBUG_PARSER "Made a new Body from" << '\n';
+												DEBUG_PARSER "\t PBODYWORD: " << *(yystack_[0].value.string) << '\n';
+												}
+#line 639 "GeneratedTweeParser.cpp" // lalr1.cc:851
+    break;
+
+  case 8:
+#line 99 "twee.yy" // lalr1.cc:851
+    {
+												*(yystack_[2].value.body) += *(yystack_[0].value.string);
+												DEBUG_PARSER "\t Added" << '\n';
+												DEBUG_PARSER "\t PBODYWORD: " << *(yystack_[0].value.string) << '\n';
+												DEBUG_PARSER "\t to the Body Object " << '\n';
+												(yylhs.value.body)=(yystack_[2].value.body);
+												DEBUG_PARSER "Passed a Body object up the syntax tree" << '\n';
+
+												}
+#line 653 "GeneratedTweeParser.cpp" // lalr1.cc:851
+    break;
+
+  case 9:
+#line 110 "twee.yy" // lalr1.cc:851
+    {
+
+												}
+#line 661 "GeneratedTweeParser.cpp" // lalr1.cc:851
+    break;
+
+  case 10:
+#line 113 "twee.yy" // lalr1.cc:851
+    {
+
+												}
+#line 669 "GeneratedTweeParser.cpp" // lalr1.cc:851
+    break;
+
+
+#line 673 "GeneratedTweeParser.cpp" // lalr1.cc:851
             default:
               break;
             }
@@ -857,62 +919,69 @@ namespace Twee {
   }
 
 
-  const signed char BisonParser::yypact_ninf_ = -5;
+  const signed char BisonParser::yypact_ninf_ = -4;
 
   const signed char BisonParser::yytable_ninf_ = -1;
 
   const signed char
   BisonParser::yypact_[] =
   {
-      -4,    -3,     1,     0,    -5,    -2,     2,    -5,    -2,    -5
+       1,     2,     6,     1,    -4,    -1,    -4,    -4,    -4,    -3,
+      -4,    -4,    -1,    -2,    -4
   };
 
   const unsigned char
   BisonParser::yydefact_[] =
   {
-       0,     0,     0,     0,     1,     0,     3,     2,     0,     4
+       0,     0,     0,     2,     3,     6,     1,     4,     9,     0,
+      10,     7,     5,     0,     8
   };
 
   const signed char
   BisonParser::yypgoto_[] =
   {
-      -5,    -5,    -1
+      -4,    -4,    -4,     5,    -4,     0
   };
 
   const signed char
   BisonParser::yydefgoto_[] =
   {
-      -1,     2,     7
+      -1,     2,     3,     4,    12,     9
   };
 
   const unsigned char
   BisonParser::yytable_[] =
   {
-       1,     4,     3,     5,     6,     8,     0,     9
+      10,    10,     8,    11,    14,     1,     6,     5,     7,     0,
+       0,     0,    13
   };
 
   const signed char
   BisonParser::yycheck_[] =
   {
-       4,     0,     5,     3,     6,     3,    -1,     8
+       3,     3,     3,     6,     6,     4,     0,     5,     3,    -1,
+      -1,    -1,    12
   };
 
   const unsigned char
   BisonParser::yystos_[] =
   {
-       0,     4,     8,     5,     0,     3,     6,     9,     3,     9
+       0,     4,     8,     9,    10,     5,     0,    10,     3,    12,
+       3,     6,    11,    12,     6
   };
 
   const unsigned char
   BisonParser::yyr1_[] =
   {
-       0,     7,     8,     9,     9
+       0,     7,     8,     9,     9,    10,    10,    11,    11,    12,
+      12
   };
 
   const unsigned char
   BisonParser::yyr2_[] =
   {
-       0,     2,     4,     1,     3
+       0,     2,     1,     1,     2,     4,     2,     1,     3,     1,
+       2
   };
 
 
@@ -923,14 +992,15 @@ namespace Twee {
   const BisonParser::yytname_[] =
   {
   "$end", "error", "$undefined", "LINEBREAK", "DOUBLE_COLON", "PTITLE",
-  "PBODYWORD", "$accept", "S", "body", YY_NULLPTR
+  "PBODYWORD", "$accept", "S", "passages", "passage", "body", "linebreaks", YY_NULLPTR
   };
 
 #if YYDEBUG
   const unsigned char
   BisonParser::yyrline_[] =
   {
-       0,    61,    61,    68,    74
+       0,    61,    61,    67,    71,    77,    83,    94,    99,   110,
+     113
   };
 
   // Print the state stack on the debug stream.
@@ -1010,10 +1080,10 @@ namespace Twee {
       return undef_token_;
   }
 
-#line 7 "twee.yy" // lalr1.cc:1159
+#line 3 "twee.yy" // lalr1.cc:1159
 } // Twee
-#line 1016 "GeneratedTweeParser.cpp" // lalr1.cc:1159
-#line 80 "twee.yy" // lalr1.cc:1160
+#line 1086 "GeneratedTweeParser.cpp" // lalr1.cc:1159
+#line 117 "twee.yy" // lalr1.cc:1160
 
 
 
