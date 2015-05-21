@@ -1,12 +1,8 @@
 #include <iostream>
+
 #include "FileReader.h"
 #include "test/MainTest.h"
 #include "SimpleCompilerPipeline.h"
-
-
-using namespace std;
-
-
 
 
 int main(int argc, char *argv[]) {
@@ -19,13 +15,12 @@ int main(int argc, char *argv[]) {
 
     string fileContent = fileReader->readFile(filePath);
 
+    cout << fileContent << endl;
 
     //SIMPLE COMPILER PIPELINE
     SimpleCompilerPipeline compiler;
-    compiler.compile(fileContent,"hello_world.z8");
+    compiler.compile(filePath,"hello_world.z8");
 
-
-    //TODO: next step call Lexer with FileContent
     return 0;
 }
 

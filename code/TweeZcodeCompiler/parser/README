@@ -1,0 +1,9 @@
+To (re)generate the lexer and parser, use a shell, cd into this directory
+and run the following commands:
+
+flex -o GeneratedTweeLexer.cpp twee.ll
+bison -d -o GeneratedTweeParser.cpp twee.yy
+
+Minimum requirements:
+flex 2.5.35
+bison 3.0.3
