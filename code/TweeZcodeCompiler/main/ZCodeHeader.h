@@ -11,7 +11,7 @@
 class ZCodeHeader {
 
 private:
-    std::vector<std::bitset<8>> *headerBits;
+    //std::vector<std::bitset<8>> headerBits;
 
     unsigned short fileLength;
     unsigned short fileChecksum;
@@ -24,12 +24,12 @@ private:
     bool staticStringsOffsetSet = false;
 
     // set special parts of headerBits
-    void setFlags1(std::vector<std::bitset<8>> *header);
-    void setAddresses(std::vector<std::bitset<8>> *header);
-    void setFlags2(std::vector<std::bitset<8>> *header);
+    void setFlags1(std::vector<std::bitset<8>> &header);
+    void setAddresses(std::vector<std::bitset<8>> &header);
+    void setFlags2(std::vector<std::bitset<8>> &header);
 
     // split short values upt to 2 bytes
-    void setShortVal(unsigned short val, std::vector<std::bitset<8>> *header);
+    void setShortVal(unsigned short val, std::vector<std::bitset<8>> &header);
 
 public:
     //HEADER POSITIONS
@@ -86,11 +86,7 @@ public:
     void setStaticStringsOffset(unsigned int offset);
 
     // get complete headerBits as vector<bitset>
-    std::vector<std::bitset<8>>*getHeaderBits();
-
-    ~ZCodeHeader() {
-        delete headerBits;
-    }
+    std::vector<std::bitset<8>> getHeaderBits();
 
 };
 

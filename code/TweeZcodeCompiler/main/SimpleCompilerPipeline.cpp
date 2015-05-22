@@ -31,8 +31,8 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
 
     //create header and append
-    std::vector<std::bitset<8>> *zByteHeader = generateHeader();
-    zCode.insert(zCode.end(), zByteHeader->begin(), zByteHeader->end());
+    std::vector<std::bitset<8>> zByteHeader = generateHeader();
+    zCode.insert(zCode.end(), zByteHeader.begin(), zByteHeader.end());
     log("ZMachine Header generated and added to ZCode");
 
     //empty space because memory for opcodes starts later
@@ -110,23 +110,22 @@ void SimpleCompilerPipeline::log(string message) {
 }
 
 
-std::vector<std::bitset<8>> *SimpleCompilerPipeline::generateHeader() {
+std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHeader() {
     //generate header
-    header = new ZCodeHeader();
-    header->baseOfHighMem = 358;
-    header->initValOfPC = 1;
-    header->packedAddressOfMain = 103;
-    header->locOfDict = 328;
-    header->locOfObjTable = 266;
-    header->locOfGlobVarTable = 258;
-    header->baseOfStatMem = 328;
+    ZCodeHeader header;
+    header.baseOfHighMem = 358;
+    header.initValOfPC = 1;
+    header.packedAddressOfMain = 103;
+    header.locOfDict = 328;
+    header.locOfObjTable = 266;
+    header.locOfGlobVarTable = 258;
+    header.baseOfStatMem = 328;
 
-    header->locOfAbbrTable = 66;
+    header.locOfAbbrTable = 66;
 
-    header->setRoutinesOffset(128);         // random value
-    header->setStaticStringsOffset(128);    // random value
-    header->setFileLength(2064, 6861);
+    header.setRoutinesOffset(128);         // random value
+    header.setStaticStringsOffset(128);    // random value
+    header.setFileLength(2064, 6861);
 
-    std::vector<std::bitset<8>> *zByteHeader = header->getHeaderBits();
-    return zByteHeader;
+    return header.getHeaderBits();
 }
