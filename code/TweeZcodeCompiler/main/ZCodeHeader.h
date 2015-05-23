@@ -13,10 +13,10 @@ class ZCodeHeader {
 private:
     //std::vector<std::bitset<8>> headerBits;
 
-    unsigned short fileLength;
-    unsigned short fileChecksum;
-    unsigned short routinesOffset;
-    unsigned short staticStringsOffset;
+    unsigned short fileLength = 0;
+    unsigned short fileChecksum = 0;
+    unsigned short routinesOffset = 0;
+    unsigned short staticStringsOffset = 0;
 
     // flags show if headerBits is initialized
     bool fileLengthSet = false;
@@ -45,13 +45,13 @@ public:
     bool timedKeyboardAvail = false;
 
     // byte addresses
-    unsigned short baseOfHighMem;        // 2 bytes
-    unsigned char initValOfPC;           // initial value of program counter
-    unsigned char packedAddressOfMain;   // packed address of initial "main" routine
-    unsigned short locOfDict;            // location of dictionary
-    unsigned short locOfObjTable;        // location of object table
-    unsigned short locOfGlobVarTable;    // location of global variable table
-    unsigned short baseOfStatMem;        // base of static memory
+    unsigned short baseOfHighMem = 0;    // 2 bytes
+    unsigned char initValOfPC = 0;       // initial value of program counter
+    unsigned char packedAddressOfMain = 0;// packed address of initial "main" routine
+    unsigned short locOfDict = 0;        // location of dictionary
+    unsigned short locOfObjTable = 0;    // location of object table
+    unsigned short locOfGlobVarTable = 0;// location of global variable table
+    unsigned short baseOfStatMem = 0;    // base of static memory
 
     // Flags 2 in Hex position 10 to 17
     bool transcripting = false;
@@ -64,19 +64,19 @@ public:
     bool useSoundEffects = false;
     bool useMenus = false;
 
-    unsigned short locOfAbbrTable;              // location of abbreviation Table (byte address)
+    unsigned short locOfAbbrTable = 0;          // location of abbreviation Table (byte address)
 
     unsigned char screenHeight = 255;           // 255 = infinite
-    unsigned char screenWidthCharacters;
-    unsigned short screenWidthUnits;
-    unsigned short screenHeightUnits;
-    unsigned char fontHeightUnits;
-    unsigned char fontWidthUnits;
+    unsigned char screenWidthCharacters = 0;
+    unsigned short screenWidthUnits = 0;
+    unsigned short screenHeightUnits = 0;
+    unsigned char fontHeightUnits = 0;
+    unsigned char fontWidthUnits = 0;
 
-    unsigned char defBackgroundColor;
-    unsigned char defForegroundColor;
-    unsigned char addressOfCharTable;               // address of terminating characters table (bytes)
-    unsigned short totalWidthInPixels;              // total width in pixels of text sent to output stream 3
+    unsigned char defBackgroundColor = 0;
+    unsigned char defForegroundColor = 0;
+    unsigned short addressOfCharTable = 0;          // address of terminating characters table (bytes)
+    unsigned short totalWidthInPixels = 0;          // total width in pixels of text sent to output stream 3
     unsigned short alphabetTableAddress = 0;        // Alphabet table address (bytes), 0 for default
     unsigned short headerExtensionTableAddress = 0;
 
