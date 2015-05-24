@@ -16,7 +16,7 @@ using namespace std;
 #define STANDARD_REVISION_MAIN 1 // revision number of supperted document, here
 #define STANDARD_REVISION_SUB 1  // 1.1 (STANDARD_REVISION_MAIN.STANDARD_REVISION_SUB)
 
-vector<bitset<8>> *ZCodeHeader::getHeaderBits() {
+vector<bitset<8>> ZCodeHeader::getHeaderBits() {
     if (!fileLengthSet) {
         cout << "No file size specified!" << endl;
         throw;
@@ -28,36 +28,36 @@ vector<bitset<8>> *ZCodeHeader::getHeaderBits() {
         throw;
     }
 
-    headerBits = new vector<bitset<8>>();
+    vector<std::bitset<8>> headerBits;
 
-    headerBits->push_back(VERSION);                  // Hex 0
+    headerBits.push_back(VERSION);                  // Hex 0
     setFlags1(headerBits);                           // Hex 1 - 3
     setAddresses(headerBits);                        // Hex 4 - F
     setFlags2(headerBits);                           // Hex 10 - 17
     setShortVal(locOfAbbrTable, headerBits);         // Hex 18 - 19
     setShortVal(fileLength, headerBits);             // Hex 1A - 1B
     setShortVal(fileChecksum, headerBits);           // Hex 1C - 1D
-    headerBits->push_back(INTERPRETER_NUMBER);       // Hex 1E
-    headerBits->push_back(INTERPRETER_VERSION);      // Hex 1F
-    headerBits->push_back(screenHeight);             // Hex 20
-    headerBits->push_back(screenWidthCharacters);    // Hex 21
+    headerBits.push_back(INTERPRETER_NUMBER);       // Hex 1E
+    headerBits.push_back(INTERPRETER_VERSION);      // Hex 1F
+    headerBits.push_back(screenHeight);             // Hex 20
+    headerBits.push_back(screenWidthCharacters);    // Hex 21
     setShortVal(screenWidthUnits, headerBits);       // Hex 22 - 23
     setShortVal(screenHeightUnits, headerBits);      // Hex 24 - 25
-    headerBits->push_back(fontWidthUnits);           // Hex 26
-    headerBits->push_back(fontHeightUnits);         // Hex 27
+    headerBits.push_back(fontWidthUnits);           // Hex 26
+    headerBits.push_back(fontHeightUnits);         // Hex 27
     setShortVal(routinesOffset, headerBits);         // Hex 28 - 29
     setShortVal(staticStringsOffset, headerBits);    // Hex 2A - 2B
-    headerBits->push_back(defBackgroundColor);       // Hex 2C
-    headerBits->push_back(defForegroundColor);       // Hex 2D
+    headerBits.push_back(defBackgroundColor);       // Hex 2C
+    headerBits.push_back(defForegroundColor);       // Hex 2D
     setShortVal(addressOfCharTable, headerBits);     // Hex 2E - 2F
     setShortVal(totalWidthInPixels, headerBits);     // Hex 30 - 31
-    headerBits->push_back(STANDARD_REVISION_MAIN);   // Hex 32
-    headerBits->push_back(STANDARD_REVISION_SUB);    // Hex 33
+    headerBits.push_back(STANDARD_REVISION_MAIN);   // Hex 32
+    headerBits.push_back(STANDARD_REVISION_SUB);    // Hex 33
     setShortVal(alphabetTableAddress, headerBits);   // Hex 34 - 35
     setShortVal(headerExtensionTableAddress, headerBits);// Hex 36 - 38
 
     for (size_t i = 0; i < 7; i++) {
-        headerBits->push_back(0);           // Hex 39 - 3F
+        headerBits.push_back(0);           // Hex 39 - 3F
     }
 
     return headerBits;
@@ -110,9 +110,9 @@ void ZCodeHeader::setStaticStringsOffset(uint64_t offset) {
 }
 
 // sets bytes 1 - 3
-void ZCodeHeader::setFlags1(vector<bitset<8>> *header) {
-    header->push_back(0);                        //Hex 1
-    header->push_back(0);                        //Hex 2
+void ZCodeHeader::setFlags1(vector<bitset<8>> &header) {
+    header.push_back(0);                        //Hex 1
+    header.push_back(0);                        //Hex 2
 
     bitset<8> flags1;
     flags1.set(0, colAvail);
@@ -122,14 +122,14 @@ void ZCodeHeader::setFlags1(vector<bitset<8>> *header) {
     flags1.set(4, fixedSpaceStyleAvail);
     flags1.set(5, soundEffectsAvail);
     flags1.set(7, timedKeyboardAvail);
-    header->push_back(flags1);                   // Hex 3
+    header.push_back(flags1);                   // Hex 3
 }
 
 // sets bytes 4 - F
-void ZCodeHeader::setAddresses(vector<bitset<8>> *header) {
+void ZCodeHeader::setAddresses(vector<bitset<8>> &header) {
     setShortVal(baseOfHighMem, header);         // Hex 4 - 5
-    header->push_back(initValOfPC);             // Hex 6
-    header->push_back(packedAddressOfMain);     // Hex 7
+    header.push_back(initValOfPC);             // Hex 6
+    header.push_back(packedAddressOfMain);     // Hex 7
     setShortVal(locOfDict, header);             // Hex 8 - 9
     setShortVal(locOfObjTable, header);         // Hex A - B
     setShortVal(locOfGlobVarTable, header);     // Hex C - D
@@ -137,10 +137,10 @@ void ZCodeHeader::setAddresses(vector<bitset<8>> *header) {
 }
 
 // sets bytes 10 - 17
-void ZCodeHeader::setFlags2(std::vector<std::bitset<8>> *header) {
+void ZCodeHeader::setFlags2(std::vector<std::bitset<8>> &header) {
     // Hex 10 - 15
     for (int i = 0; i < 6; i++) {
-        header->push_back(0);
+        header.push_back(0);
     }
 
     bitset<8> flags2;                           // Hex 16
@@ -152,16 +152,16 @@ void ZCodeHeader::setFlags2(std::vector<std::bitset<8>> *header) {
     flags2.set(5, useMouse);
     flags2.set(6, useColors);
     flags2.set(7, useSoundEffects);
-    header->push_back(flags2);
+    header.push_back(flags2);
 
     flags2.reset();                             // Hex 17
     flags2.set(0, useMenus);
-    header->push_back(flags2);
+    header.push_back(flags2);
 }
 
 // splits short value up to 2 bytes and pushes them into the headerBits
-void ZCodeHeader::setShortVal(uint16_t val, vector<bitset<8>> *header) {
-    bitset<16> shortVal(val);
+void ZCodeHeader::setShortVal(unsigned short val, vector<bitset<8>> &header) {
+    bitset<16> shortVal (val);
     bitset<8> firstHalf, secondHalf;
 
     for (size_t i = 0; i < 8; i++) {
@@ -172,6 +172,6 @@ void ZCodeHeader::setShortVal(uint16_t val, vector<bitset<8>> *header) {
         firstHalf.set(i - 8, shortVal[i]);
     }
 
-    header->push_back(firstHalf);
-    header->push_back(secondHalf);
+    header.push_back(firstHalf);
+    header.push_back(secondHalf);
 }

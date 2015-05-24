@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
     string filePath = fileReader->getFilePathFromArgs(argc, argv);
 
     string fileContent = fileReader->readFile(filePath);
+    delete fileReader;
 
     cout << fileContent << endl;
 
