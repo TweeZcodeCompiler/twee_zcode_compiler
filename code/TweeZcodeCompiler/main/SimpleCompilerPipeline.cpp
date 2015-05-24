@@ -126,7 +126,6 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHeader() {
     header.setRoutinesOffset(128);         // random value
     header.setStaticStringsOffset(128);    // random value
     header.setFileLength(2064, 6861);
-
-    vector<bitset<8>> h = header.getHeaderBits();
-    return h;
+    
+    return header.getHeaderBits();
 }

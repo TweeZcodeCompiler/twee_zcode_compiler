@@ -28,7 +28,6 @@ vector<bitset<8>> ZCodeHeader::getHeaderBits() {
         throw;
     }
 
-    //headerBits = new vector<bitset<8>>();
     vector<std::bitset<8>> headerBits;
 
     headerBits.push_back(VERSION);                  // Hex 0
@@ -67,14 +66,14 @@ vector<bitset<8>> ZCodeHeader::getHeaderBits() {
 /* helper method to calculate length and to
  * avoid not setting these values before calling getHeaderBits()
  * */
-void ZCodeHeader::setFileLength(unsigned int length, unsigned short checksum) {
-    int len = length / 8;
+void ZCodeHeader::setFileLength(uint64_t length, uint16_t checksum) {
+    uint64_t len = length / 8;
 
-    if (len > numeric_limits<unsigned short>::max()) {
+    if (len > numeric_limits<uint16_t>::max()) {
         cout << "File too large" << endl;
         throw;
     } else {
-        fileLength = len;
+        fileLength = (uint16_t) len;
         fileChecksum = checksum;
         fileLengthSet = true;
     }
@@ -83,14 +82,14 @@ void ZCodeHeader::setFileLength(unsigned int length, unsigned short checksum) {
 /* helper method to calculate routines offset and to
  * avoid not setting this value before calling getHeaderBits()
  * */
-void ZCodeHeader::setRoutinesOffset(unsigned int offset) {
-    int off = offset / 8;
+void ZCodeHeader::setRoutinesOffset(uint64_t offset) {
+    uint64_t off = offset / 8;
 
-    if (off > numeric_limits<unsigned short>::max()) {
+    if (off > numeric_limits<uint16_t>::max()) {
         cout << "Routine offset too large" << endl;
         throw;
     } else {
-        routinesOffset = off;
+        routinesOffset = (uint16_t) off;
         routinesOffsetSet = true;
     }
 }
@@ -98,14 +97,14 @@ void ZCodeHeader::setRoutinesOffset(unsigned int offset) {
 /* helper method to calculate static string offset and to
  * avoid not setting this value before calling getHeaderBits()
  * */
-void ZCodeHeader::setStaticStringsOffset(unsigned int offset) {
-    int off = offset / 8;
+void ZCodeHeader::setStaticStringsOffset(uint64_t offset) {
+    uint64_t off = offset / 8;
 
-    if (off > numeric_limits<unsigned short>::max()) {
+    if (off > numeric_limits<uint16_t>::max()) {
         cout << "Routine offset too large" << endl;
         throw;
     } else {
-        staticStringsOffset = off;
+        staticStringsOffset = (uint16_t) off;
         staticStringsOffsetSet = true;
     }
 }
@@ -170,7 +169,7 @@ void ZCodeHeader::setShortVal(unsigned short val, vector<bitset<8>> &header) {
     }
 
     for (size_t i = 8; i < 16; i++) {
-        firstHalf.set(i-8, shortVal[i]);
+        firstHalf.set(i - 8, shortVal[i]);
     }
 
     header.push_back(firstHalf);

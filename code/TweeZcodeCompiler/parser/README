@@ -1,5 +1,7 @@
-To (re)generate the lexer and parser, use a shell, cd into this directory
-and run the following commands:
+CMake should recreate all generated files automatically.
+
+To (re)generate the lexer and parser manually, use a shell, cd into this directory and
+run the following commands:
 
 flex -o GeneratedTweeLexer.cpp twee.ll
 bison -d -o GeneratedTweeParser.cpp twee.yy
@@ -7,3 +9,9 @@ bison -d -o GeneratedTweeParser.cpp twee.yy
 Minimum requirements:
 flex 2.5.35
 bison 3.0.3
+
+
+*** NOTE FOR OS X ***
+The default bison binaries on OS X are very old. CMake is too dumb to find the required
+bison when installed via homebrew/macports. The only workaround for now is to move the
+bison binary out of /usr/bin and ln to a appropriate version. This is incredibly dirty.
