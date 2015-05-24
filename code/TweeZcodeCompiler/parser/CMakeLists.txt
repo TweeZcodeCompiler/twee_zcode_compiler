@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(TweeParser)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-deprecated-register")
 
 find_package(BISON 3.0.2 REQUIRED)
 find_package(FLEX 2.5.35 REQUIRED)
