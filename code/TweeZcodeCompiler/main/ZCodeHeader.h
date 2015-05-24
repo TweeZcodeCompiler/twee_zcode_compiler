@@ -7,16 +7,17 @@
 
 #include <bitset>
 #include <vector>
+#include <cstdint>
 
 class ZCodeHeader {
 
 private:
     std::vector<std::bitset<8>> *headerBits;
 
-    unsigned short fileLength;
-    unsigned short fileChecksum;
-    unsigned short routinesOffset;
-    unsigned short staticStringsOffset;
+    uint16_t fileLength;
+    uint16_t fileChecksum;
+    uint16_t routinesOffset;
+    uint16_t staticStringsOffset;
 
     // flags show if headerBits is initialized
     bool fileLengthSet = false;
@@ -25,11 +26,13 @@ private:
 
     // set special parts of headerBits
     void setFlags1(std::vector<std::bitset<8>> *header);
+
     void setAddresses(std::vector<std::bitset<8>> *header);
+
     void setFlags2(std::vector<std::bitset<8>> *header);
 
     // split short values upt to 2 bytes
-    void setShortVal(unsigned short val, std::vector<std::bitset<8>> *header);
+    void setShortVal(uint16_t val, std::vector<std::bitset<8>> *header);
 
 public:
     //HEADER POSITIONS
@@ -45,13 +48,13 @@ public:
     bool timedKeyboardAvail = false;
 
     // byte addresses
-    unsigned short baseOfHighMem;        // 2 bytes
-    unsigned char initValOfPC;           // initial value of program counter
-    unsigned char packedAddressOfMain;   // packed address of initial "main" routine
-    unsigned short locOfDict;            // location of dictionary
-    unsigned short locOfObjTable;        // location of object table
-    unsigned short locOfGlobVarTable;    // location of global variable table
-    unsigned short baseOfStatMem;        // base of static memory
+    uint16_t baseOfHighMem;        // 2 bytes
+    uint8_t initValOfPC;           // initial value of program counter
+    uint8_t packedAddressOfMain;   // packed address of initial "main" routine
+    uint16_t locOfDict;            // location of dictionary
+    uint16_t locOfObjTable;        // location of object table
+    uint16_t locOfGlobVarTable;    // location of global variable table
+    uint16_t baseOfStatMem;        // base of static memory
 
     // Flags 2 in Hex position 10 to 17
     bool transcripting = false;
@@ -64,29 +67,31 @@ public:
     bool useSoundEffects = false;
     bool useMenus = false;
 
-    unsigned short locOfAbbrTable;              // location of abbreviation Table (byte address)
+    uint16_t locOfAbbrTable;              // location of abbreviation Table (byte address)
 
-    unsigned char screenHeight = 255;           // 255 = infinite
-    unsigned char screenWidthCharacters;
-    unsigned short screenWidthUnits;
-    unsigned short screenHeightUnits;
-    unsigned char fontHeightUnits;
-    unsigned char fontWidthUnits;
+    uint8_t screenHeight = 255;           // 255 = infinite
+    uint8_t screenWidthCharacters;
+    uint16_t screenWidthUnits;
+    uint16_t screenHeightUnits;
+    uint8_t fontHeightUnits;
+    uint8_t fontWidthUnits;
 
-    unsigned char defBackgroundColor;
-    unsigned char defForegroundColor;
-    unsigned char addressOfCharTable;               // address of terminating characters table (bytes)
-    unsigned short totalWidthInPixels;              // total width in pixels of text sent to output stream 3
-    unsigned short alphabetTableAddress = 0;        // Alphabet table address (bytes), 0 for default
-    unsigned short headerExtensionTableAddress = 0;
+    uint8_t defBackgroundColor;
+    uint8_t defForegroundColor;
+    uint8_t addressOfCharTable;               // address of terminating characters table (bytes)
+    uint16_t totalWidthInPixels;              // total width in pixels of text sent to output stream 3
+    uint16_t alphabetTableAddress = 0;        // Alphabet table address (bytes), 0 for default
+    uint16_t headerExtensionTableAddress = 0;
 
     // helper methods - needed to be invoked before getHeaderBits()
-    void setFileLength(unsigned int length, unsigned short checksum);
-    void setRoutinesOffset(unsigned int offset);
-    void setStaticStringsOffset(unsigned int offset);
+    void setFileLength(uint64_t length, uint16_t checksum);
+
+    void setRoutinesOffset(uint64_t offset);
+
+    void setStaticStringsOffset(uint64_t offset);
 
     // get complete headerBits as vector<bitset>
-    std::vector<std::bitset<8>>*getHeaderBits();
+    std::vector<std::bitset<8>> *getHeaderBits();
 
     ~ZCodeHeader() {
         delete headerBits;
