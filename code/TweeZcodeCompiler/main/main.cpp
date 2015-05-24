@@ -1,16 +1,11 @@
 #include <iostream>
+
 #include "FileReader.h"
-#include "test/MainTest.h"
 #include "SimpleCompilerPipeline.h"
 
 
-using namespace std;
-
-
-
-
 int main(int argc, char *argv[]) {
-    MainTest test;
+    // MainTest test;
     // test.runAllTest();
 
     FileReader *fileReader = new FileReader();
@@ -18,14 +13,14 @@ int main(int argc, char *argv[]) {
     string filePath = fileReader->getFilePathFromArgs(argc, argv);
 
     string fileContent = fileReader->readFile(filePath);
+    delete fileReader;
 
+    cout << fileContent << endl;
 
     //SIMPLE COMPILER PIPELINE
     SimpleCompilerPipeline compiler;
-    compiler.compile(fileContent,"hello_world.z8");
+    compiler.compile(filePath,"hello_world.z8");
 
-
-    //TODO: next step call Lexer with FileContent
     return 0;
 }
 
