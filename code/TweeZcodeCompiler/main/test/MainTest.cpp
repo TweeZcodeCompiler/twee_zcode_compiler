@@ -5,6 +5,7 @@
 #include "MainTest.h"
 #include "BinaryFileWriterTest.h"
 #include "ZCodeHeaderTest.h"
+#include "RoutineGeneratorTest.h"
 
 
 void MainTest::runAllTest()
@@ -16,4 +17,8 @@ void MainTest::runAllTest()
     // test zcode header
     ZCodeHeaderTest headerTest;
     headerTest.testHeader();
+
+    //test RoutineGenerator
+    RoutineGeneratorTest routineGeneratorTest;
+    routineGeneratorTest.testRoutineGenerator();
 }
