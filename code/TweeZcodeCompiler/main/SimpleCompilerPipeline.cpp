@@ -42,8 +42,12 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     //generate zcode for token string
     RoutineGenerator routineGenerator = RoutineGenerator();
-    std::vector<std::bitset<8>> zByteCodePrint = routineGenerator.printPrintRoutine(
-            passage.get()->getBody().getContent());
+    routineGenerator.printPrintRoutine(passage.get()->getBody().getContent());
+    routineGenerator.newLine();
+    routineGenerator.printPrintRoutine(passage.get()->getBody().getContent());
+    routineGenerator.quitRoutine();
+
+    std::vector<std::bitset<8>> zByteCodePrint = routineGenerator.getRoutine();
     zCode.insert(zCode.end(), zByteCodePrint.begin(), zByteCodePrint.end());
     log("Print Command added to ZCode");
 

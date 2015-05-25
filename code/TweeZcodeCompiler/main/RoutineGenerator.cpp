@@ -9,12 +9,14 @@
 using std::vector;
 using std::bitset;
 
-std::vector<std::bitset<8>> RoutineGenerator::printPrintRoutine(std::string stringToPrint) {
-    vector<bitset<8>> akk = vector<bitset<8>>();
+std::vector<std::bitset<8>> RoutineGenerator::getRoutine() {
+    return akk;
+}
+
+void RoutineGenerator::printPrintRoutine(std::string stringToPrint) {
     ZCodeConverter converter = ZCodeConverter();
     vector<bitset<8>> zsciiString = converter.convertStringToZSCII(stringToPrint);
 
-    akk.push_back(numberToBitset(0));
     unsigned long len = zsciiString.size();
     for(int i = 0; i < len; i++){
         if(i%96 == 0){
@@ -25,8 +27,14 @@ std::vector<std::bitset<8>> RoutineGenerator::printPrintRoutine(std::string stri
         }
         akk.push_back(zsciiString[i]);
     }
+}
+
+void RoutineGenerator::newLine() {
+    akk.push_back(numberToBitset(NEW_LINE));
+}
+
+void RoutineGenerator::quitRoutine() {
     akk.push_back(numberToBitset(QUIT));
-    return akk;
 }
 
 std::bitset<8> RoutineGenerator::numberToBitset(unsigned int number){
