@@ -37,6 +37,6 @@ void RoutineGenerator::quitRoutine() {
     akk.push_back(numberToBitset(QUIT));
 }
 
-std::bitset<8> RoutineGenerator::numberToBitset(unsigned int number){
+std::bitset<8> RoutineGenerator::numberToBitset(unsigned char number){
     return bitset<8>(number);
 }

@@ -15,7 +15,7 @@ class RoutineGenerator {
 
 private:
     std::vector<std::bitset<8>> akk = std::vector<std::bitset<8>>();
-    std::bitset<8> numberToBitset(unsigned int number);
+    std::bitset<8> numberToBitset(unsigned char number);
 
 public:
     std::vector<std::bitset<8>> getRoutine();
