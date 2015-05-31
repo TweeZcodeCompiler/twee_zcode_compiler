@@ -21,10 +21,6 @@ public:
 
     PassageBody();
 
-    PassageBody(PassageElement);
-
-    PassageBody(std::vector <PassageElement>);
-
     void addElement(PassageElement);
 
     PassageBody operator+=(const PassageElement &);

@@ -5,6 +5,8 @@
 #ifndef PASSAGEHEAD_H
 #define PASSAGEHEAD_H
 
+#include "../PassageElement.h"
+
 #include <string>
 
 class PassageHead : public TweeElement {
