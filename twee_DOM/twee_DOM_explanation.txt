@@ -9,25 +9,14 @@ Each Passage has name which must be unique.
 Each Passage consits of zero to n PassageElement's.
 
 # PassageElement
-A PassageElement is an abstract class which is the parent class for Links, Text, Variables, and IfElse.
+A PassageElement is an abstract class which is the parent class for Links and Text.
 
 # Text
 Text consists out of a string.
 
-# Variables
-Variables have a name and a value. The value is dynamically typed.
-
 # Links
 Links have a target Passage and may have a name. 
 
-Links can manipulate zero to n Variables.
-
-# IfElse
-
-IfElse must have a If statement and can have a Else statement.
-
-IfElse may manipulate Links, Variables and Text.
-
 # Misc
 
-Without a Passage declared, all Links, IfElse's, Variables, and Text are ignored.
+Without a Passage declared, all Links and Text are ignored.
