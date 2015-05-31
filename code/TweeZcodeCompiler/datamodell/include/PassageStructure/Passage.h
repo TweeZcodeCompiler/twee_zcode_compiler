@@ -20,10 +20,6 @@ private:
 public:
     Passage(PassageHead &, PassageBody &);
 
-    PassageHead getHead();
-
-    PassageBody getBody();
-
     std::string to_string();
 
     std::string to_ZASS();

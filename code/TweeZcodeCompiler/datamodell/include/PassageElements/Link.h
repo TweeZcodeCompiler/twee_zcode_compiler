@@ -13,7 +13,7 @@
 class Link : public PassageElement {
 
 private:
-    Passage target;
+    Passage &target;
     std::string altName;
 
 public:
