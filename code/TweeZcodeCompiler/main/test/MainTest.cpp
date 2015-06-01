@@ -7,11 +7,13 @@
 
 int main()
 {
-
+    //Add tests to Testframework
     Test::addTest("BinaryFileWriter", new BinaryFileWriterTest());
     Test::addTest("RoutineGenerator", new RoutineGeneratorTest());
     Test::addTest("ZCodeHeader",new ZCodeHeaderTest());
+    //Execute tests
     Test::executeAllTests(false);
+    //call delete for each test
     Test::deleteTests();
     return 0;
 }

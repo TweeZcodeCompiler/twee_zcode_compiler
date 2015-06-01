@@ -6,7 +6,3 @@ add_subdirectory(parser)
 add_subdirectory(main)
 
 include_directories(${TweeParser_SOURCE_DIR}/include)
-
-add_executable(BitsetOperations  bithandling/examples_bitset_operations.cpp)
-add_executable(BitOperations bithandling/examples_bit_operations.cpp)
-add_executable(BitAccess bithandling/examples_bit_access.cpp)
