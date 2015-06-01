@@ -7,6 +7,7 @@
 
 #include "../BinaryFileWriter.h"
 #include "Test.h"
+
 class BinaryFileWriterTest : public Test {
 
 public:

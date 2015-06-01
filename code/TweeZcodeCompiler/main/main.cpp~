@@ -1,0 +1,31 @@
+#include <iostream>
+
+#include "SimpleCompilerPipeline.h"
+<<<<<<< HEAD
+#include "test/MainTest.h"
+
+int main(int argc, char *argv[]) {
+    MainTest test;
+     test.runAllTest();
+
+    FileReader *fileReader = new FileReader();
+
+    string filePath = fileReader->getFilePathFromArgs(argc, argv);
+
+    string fileContent = fileReader->readFile(filePath);
+=======
+
+int main(int argc, char *argv[]) {
+    // TODO: parse args properly (GNU getopt?)
+    if(argc < 2) return 1;
+    std::string inputFile = argv[argc-1];
+    std::string outputFile = "hello_world.z8";
+>>>>>>> 1f7604745ace13c2a9204881329da74aa939d8d4
+
+
+    SimpleCompilerPipeline compiler;
+    compiler.compile(inputFile, outputFile);
+
+    return 0;
+}
+

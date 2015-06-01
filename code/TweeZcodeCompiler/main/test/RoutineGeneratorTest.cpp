@@ -4,8 +4,6 @@
 
 #include "RoutineGeneratorTest.h"
 #include "../RoutineGenerator.h"
-#include <vector>
-#include <bitset>
 #include <iostream>
 using std::bitset;
 

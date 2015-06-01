@@ -7,10 +7,9 @@
 
 #include "Test.h"
 
-class ZCodeHeaderTest: public Test {
+class ZCodeHeaderTest : public Test {
 public:
     void runTest();
-    void testHeader();
 };
 
 
