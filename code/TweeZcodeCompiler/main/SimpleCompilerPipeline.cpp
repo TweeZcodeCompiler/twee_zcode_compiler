@@ -7,6 +7,7 @@
 #include <TweeParser.h>
 #include <fstream>
 #include <memory>
+#include <bits/stl_map.h>
 
 using namespace std;
 
@@ -41,11 +42,25 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
 
     //generate zcode for token string
-    RoutineGenerator routineGenerator = RoutineGenerator();
+    RoutineGenerator routineGenerator = RoutineGenerator(167);
+    /**routineGenerator.addBranch("one");
+    routineGenerator.printPrintRoutine(passage.get()->getBody().getContent());
+
+    routineGenerator.newLine();
+    routineGenerator.jump("two");
+    routineGenerator.printPrintRoutine(passage.get()->getBody().getContent());
+    routineGenerator.addBranch("two");
+    routineGenerator.quitRoutine();*/
+    routineGenerator.jump("print test");
+    routineGenerator.addBranch("quit");
+    routineGenerator.quitRoutine();
+    routineGenerator.addBranch("print");
     routineGenerator.printPrintRoutine(passage.get()->getBody().getContent());
     routineGenerator.newLine();
     routineGenerator.printPrintRoutine(passage.get()->getBody().getContent());
-    routineGenerator.quitRoutine();
+    //routineGenerator.jump("quit");
+
+
 
     std::vector<std::bitset<8>> zByteCodePrint = routineGenerator.getRoutine();
     zCode.insert(zCode.end(), zByteCodePrint.begin(), zByteCodePrint.end());

@@ -9,22 +9,34 @@
 #include <vector>
 #include <string>
 #include <bitset>
+#include <map>
 
 class RoutineGenerator {
 
 
 private:
+    bool quitOpcodePrinted = false;                 // every routine needs to call quit opcode
+    int firstInstructionAddress = -1;
     std::vector<std::bitset<8>> akk = std::vector<std::bitset<8>>();
+    std::map<std::string, u_int> branches;        // maps branch label to instruction address
+    std::map<u_int, std::string> jumpToBranch;    // keys = addresses that need to be filled with branch offset, values = jump destination label
+
     std::bitset<8> numberToBitset(unsigned int number);
+    void addLargeNumber(int16_t number);    // signed number over 2 bytes
+    void addLargeNumber(int16_t number, int pos);    // signed number over 2 bytes
 
 public:
     std::vector<std::bitset<8>> getRoutine();
     void printPrintRoutine(std::string stringToPrint);
     void newLine();
+    void jump(std::string toLabel);
     void quitRoutine();
 
-    RoutineGenerator() {
-        akk.push_back(numberToBitset(0));  // just a work around; we do not know why it does not work without this
+    void addBranch(std::string label);
+
+    RoutineGenerator(int instructionNumber) {
+        this->firstInstructionAddress = instructionNumber;
+        akk.push_back(numberToBitset(0));                   // number of local variables in routine
     }
 
     enum Opcode{
