@@ -1,24 +1,17 @@
 //
 // Created by Manuel Polzhofer on 07.05.15.
 //
-
-#include "MainTest.h"
 #include "BinaryFileWriterTest.h"
 #include "ZCodeHeaderTest.h"
 #include "RoutineGeneratorTest.h"
 
-
-void MainTest::runAllTest()
+int main()
 {
-    //test file writer
-    BinaryFileWriterTest binaryFileWriterTest;
-    binaryFileWriterTest.testBinaryFileWriter();
 
-    // test zcode header
-    ZCodeHeaderTest headerTest;
-    headerTest.testHeader();
-
-    //test RoutineGenerator
-    RoutineGeneratorTest routineGeneratorTest;
-    routineGeneratorTest.testRoutineGenerator();
+    Test::addTest("BinaryFileWriter", new BinaryFileWriterTest());
+    Test::addTest("RoutineGenerator", new RoutineGeneratorTest());
+    Test::addTest("ZCodeHeader",new ZCodeHeaderTest());
+    Test::executeAllTests(false);
+    Test::deleteTests();
+    return 0;
 }

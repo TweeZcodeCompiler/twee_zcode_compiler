@@ -6,11 +6,11 @@
 #define TWEEZCODECOMPILER_BINARYFILEWRITERTEST_H
 
 #include "../BinaryFileWriter.h"
-
-class BinaryFileWriterTest {
+#include "Test.h"
+class BinaryFileWriterTest : public Test {
 
 public:
-    void testBinaryFileWriter();
+    void runTest();
 
 };
 
