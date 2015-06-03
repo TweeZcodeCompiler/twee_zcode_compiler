@@ -12,8 +12,6 @@ class PassageElement : public TweeElement {
 public:
     std::string to_string();
 
-    std::string to_ZASS();
-
 };
 
 #endif //PASSAGEELEMENT_H

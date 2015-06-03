@@ -6,23 +6,23 @@
 #define PASSAGE_H
 
 #include "../TweeElement.h"
-#include "PassageHead.h"
-#include "PassageBody.h"
+#include "../PassageElement.h"
+
 
 #include <string>
 
 class Passage : public TweeElement {
 
 private:
-    PassageHead &head;
-    PassageBody &body;
+    std::string name;
+    std::vector <PassageElement> elemnts;
 
 public:
-    Passage(PassageHead &, PassageBody &);
+    Passage(std::string);
+
+    void addElement(PassageElement);
 
     std::string to_string();
-
-    std::string to_ZASS();
 
 };
 

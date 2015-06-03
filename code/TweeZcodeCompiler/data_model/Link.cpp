@@ -24,7 +24,3 @@ std::string Link::to_string() {
     return "Link" + std::endl + "Name: " + this->altName + std::endl + "Target: " + this->target + std::endl;
 
 }
-
-std::string Link::to_ZASS() {
-
-}

@@ -16,9 +16,9 @@ private:
 public:
     Text(std::string);
 
-    std::string to_string();
+    void addText(std::string);
 
-    std::string to_ZASS();
+    std::string to_string();
 
 };
 

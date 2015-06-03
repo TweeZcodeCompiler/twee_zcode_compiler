@@ -6,7 +6,7 @@
 #define LINK_H
 
 #include "../PassageElement.h"
-#include "../PassageStructure/Passage.h"
+#include "Passage.h"
 
 #include <string>
 
@@ -22,8 +22,6 @@ public:
     Link(Passage, std::string);
 
     std::string to_string();
-
-    std::string to_ZASS();
 
 };
 
