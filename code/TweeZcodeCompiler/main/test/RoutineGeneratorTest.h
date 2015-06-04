@@ -5,11 +5,12 @@
 #ifndef TWEEZCODECOMPILER_ROUTINEGENERATORTEST_H
 #define TWEEZCODECOMPILER_ROUTINEGENERATORTEST_H
 
+#include "Test.h"
 
-class RoutineGeneratorTest {
+class RoutineGeneratorTest : public Test{
 
 public:
-    void testRoutineGenerator();
+    void runTest();
 
 };
 
