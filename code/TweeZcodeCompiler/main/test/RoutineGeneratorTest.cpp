@@ -11,7 +11,7 @@ using std::bitset;
 
 void RoutineGeneratorTest::testRoutineGenerator() {
 /*    RoutineGenerator rg = RoutineGenerator();
-    std::vector<std::bitset<8>> res = rg.printPrintRoutine("hallo");
+    std::vector<std::bitset<8>> res = rg.print("hallo");
 
     //createVerifier
     std::vector<std::bitset<8>> ver = std::vector<std::bitset<8>>();

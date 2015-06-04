@@ -24,12 +24,20 @@ private:
     std::bitset<8> numberToBitset(unsigned int number);
     void addLargeNumber(int16_t number);    // signed number over 2 bytes
     void addLargeNumber(int16_t number, int pos);    // signed number over 2 bytes
+    void addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondTrue);
 
 public:
     std::vector<std::bitset<8>> getRoutine();
-    void printPrintRoutine(std::string stringToPrint);
+    void print(std::string stringToPrint);
     void newLine();
     void jump(std::string toLabel);
+
+    // Jump if a is equal to any of the subsequent operands (one argument never jumps)
+    void jumpEquals();
+
+
+    void jumpZero(int16_t variable, bool parameterIsVariable, std::string toLabel, bool jumpIfTrue);
+
     void quitRoutine();
 
     void addBranch(std::string label);
@@ -40,18 +48,38 @@ public:
     }
 
     enum Opcode{
-        //Print new line
+        // Print new line
                 NEW_LINE = 187,
-        //Opcodes for jump instructions
+        // Opcodes for jump instructions
                 JE = 1,
                 JL = 2,
                 JG = 3,
                 JZ = 128,
                 JUMP = 140,
-        //Opcode for print operation; following by Z-character String
+        // Opcode for print operation; following by Z-character String
                 PRINT = 178,
-        //Opcode: quit the main; no arguments.
+        // Opcode: quit the main; no arguments.
                 QUIT = 186
+    };
+
+    enum BranchOffset{
+        // Offset placeholder used for unconditional jumps
+                JUMP_UNCOND_OFFSET_PLACEHOLDER = 1,
+        // Offset placeholder used for conditional jumps
+                JUMP_COND_OFFSET_PLACEHOLDER = 2,
+        // Conditional jump: bit 7 of first byte of offset determines whether to jump if condition is true (1) or false (0).
+        // If set to true, value of first byte is at least 128 (2^7) in decimal
+                JUMP_COND_TRUE = 7,
+        // Conditional jump: bit 6 of first byte of offset determines whether the offset is only between 0 and 63 over the
+        // bit 5 to 0 or signed offset over 14 bits (set to 1 -> offset only 6 bits)
+                JUMP_OFFSET_5_BIT = 6
+    };
+
+    enum OperandTypes{
+        // Operand is a variable
+                TYPE_VARIABLE = 5,
+        // Operand is 1 byte constant
+                TYPE_SMALL_CONSTANT = 4
     };
 };
 

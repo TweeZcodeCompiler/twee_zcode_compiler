@@ -43,22 +43,27 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     //generate zcode for token string
     RoutineGenerator routineGenerator = RoutineGenerator(167);
-    /**routineGenerator.addBranch("one");
-    routineGenerator.printPrintRoutine(passage.get()->getBody().getContent());
 
+    routineGenerator.print("Test");
+    routineGenerator.addBranch("one");
+    //routineGenerator.jump("two");
+    routineGenerator.print(passage.get()->getBody().getContent());
     routineGenerator.newLine();
-    routineGenerator.jump("two");
-    routineGenerator.printPrintRoutine(passage.get()->getBody().getContent());
+    routineGenerator.jumpZero(0, false, "two", true);
+    routineGenerator.print(passage.get()->getBody().getContent());
+    routineGenerator.print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
     routineGenerator.addBranch("two");
-    routineGenerator.quitRoutine();*/
-    routineGenerator.jump("print test");
+    routineGenerator.print(passage.get()->getBody().getContent());
+    routineGenerator.quitRoutine();
+
+    /*routineGenerator.jump("print");
     routineGenerator.addBranch("quit");
     routineGenerator.quitRoutine();
     routineGenerator.addBranch("print");
-    routineGenerator.printPrintRoutine(passage.get()->getBody().getContent());
+    routineGenerator.print(passage.get()->getBody().getContent());
     routineGenerator.newLine();
-    routineGenerator.printPrintRoutine(passage.get()->getBody().getContent());
-    //routineGenerator.jump("quit");
+    routineGenerator.print(passage.get()->getBody().getContent());
+    routineGenerator.jumpZero("quit");*/
 
 
 
