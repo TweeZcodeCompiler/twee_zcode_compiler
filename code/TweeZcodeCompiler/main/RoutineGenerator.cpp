@@ -5,6 +5,8 @@
 #include "RoutineGenerator.h"
 #include "ZCodeConverter.h"
 #include <iostream>
+#include <algorithm>
+#include <list>
 
 using namespace std;
 
@@ -14,29 +16,79 @@ std::vector<std::bitset<8>> RoutineGenerator::getRoutine() {
         throw;
     }
 
+
+    std::list<int> ilist;
+    ilist.push_back(1);
+    ilist.push_back(2);
+    ilist.push_back(3);
+    ilist.push_back(1);
+
+    list<int>::iterator findIter = std::find(ilist.begin(), ilist.end(), 1);
+    cout << "Found: " << &(*findIter) << endl;
+
+
+    cout << "Vorher: " << akk.at(3) << endl;
+
+    bitset<8>* t = &akk.at(3);
+    cout << "Adresse: " << t << endl;
+
+    t->reset();
+    t->set(0, true);
+
+    cout << "Nachher: " << akk.at(3) << endl;
+
+    akk.erase(akk.begin() + 2);
+    cout << "Adresse 2: " << &akk.at(2) << ", " << akk.at(2) << endl;
+    cout << "Adresse 3: " << &akk.at(3) << ", " << akk.at(3) << endl;
+
     // replace jump offset placeholders
-    for (map<u_int, string>::iterator entry = jumpToBranch.begin(); entry != jumpToBranch.end(); ++entry) {
+    for (map<bitset<8>*, string>::iterator entry = jumpToBranch.begin(); entry != jumpToBranch.end(); ++entry) {
         // throw exception if jump to unknown label
         if (branches.find(entry->second) == branches.end()) {
             cout << "Unknown label '" << entry->second << "' at address: " << entry->first << endl;
             throw;
         }
 
-        u_int instructionAdress = entry->first;                             // address where jump offset needs to be added
-        u_int destinationAddress = branches.find(entry->second)->second;    // destination jump address
+        bitset<8>* jumpInstruction = entry->first;                             // address where jump offset needs to be added
+        bitset<8>* labeledInstruction = branches.find(entry->second)->second;    // destination jump address
 
-        bitset<8> offsetPlaceholder = akk.at(instructionAdress - firstInstructionAddress);
-        int offsetPos = instructionAdress - firstInstructionAddress;
-        int offset = destinationAddress - instructionAdress;
-        if (offsetPlaceholder.test(JUMP_COND_OFFSET_PLACEHOLDER)) {
-            bool jumpIfCondTrue = offsetPlaceholder.test(JUMP_COND_TRUE);
+        //bitset<8> offsetPlaceholder = akk.at(jumpInstruction - firstInstructionAddress);
+        //int offsetPos = jumpInstruction - firstInstructionAddress;
 
-            akk.erase(akk.begin() + (instructionAdress - firstInstructionAddress));
-            addCondBranchOffset(offsetPos, offset, jumpIfCondTrue);
+        vector<bitset<8>>::iterator it = find(akk.begin(), akk.end(), *jumpInstruction);
+        int indexOfJumpInstruction = -1;  //it - akk.begin(); //labeledInstruction - jumpInstruction;
+        //it = find(akk.begin(), akk.end(), *labeledInstruction);
+        int indexOfLabel = -1; //it - akk.begin();
+
+        bool jumpFound = false, labelFound = false;
+        for(vector<bitset<8>>::iterator it = akk.begin(); it != akk.end(); ++it) {
+            bitset<8>* instP = &(*it);
+
+            if (!jumpFound) indexOfJumpInstruction++;
+            if (!labelFound) indexOfLabel++;
+
+            if(instP == jumpInstruction) {
+                jumpFound = true;
+            } else if (instP == labeledInstruction) {
+                labelFound = true;
+            }
+
+            if (jumpFound && labelFound) {
+                break;
+            }
+        }
+
+        int offset = indexOfLabel - indexOfJumpInstruction;
+
+        if (jumpInstruction->test(JUMP_COND_OFFSET_PLACEHOLDER)) {
+            bool jumpIfCondTrue = jumpInstruction->test(JUMP_COND_TRUE);
+
+            akk.erase(akk.begin() + indexOfJumpInstruction);
+            addCondBranchOffset(indexOfJumpInstruction, offset, jumpIfCondTrue);
         } else {
-            akk.erase(akk.begin() + offsetPos);
-            akk.erase(akk.begin() + offsetPos);
-            addLargeNumber(offset, offsetPos);
+            akk.erase(akk.begin() + indexOfJumpInstruction);
+            akk.erase(akk.begin() + indexOfJumpInstruction);
+            addLargeNumber(offset, indexOfJumpInstruction);
         }
     }
 
@@ -67,7 +119,7 @@ void RoutineGenerator::newLine() {
 // Address after instruction + Offset - 2
 void RoutineGenerator::jump(string toLabel) {
     akk.push_back(numberToBitset(JUMP));
-    jumpToBranch.insert(pair<int, string>(firstInstructionAddress + akk.size(), toLabel));
+    jumpToBranch.insert(pair<std::bitset<8>*, string>(&akk.back(), toLabel));
     addLargeNumber(1 << (JUMP_UNCOND_OFFSET_PLACEHOLDER + 7)); // placeholder, will be replaced in getRoutine()
 }
 
@@ -77,8 +129,12 @@ void RoutineGenerator::quitRoutine() {
 }
 
 // adds label and next instruction address to 'branches' map
-void RoutineGenerator::addBranch(string label) {
-    branches.insert(pair<string, int>(label, firstInstructionAddress + akk.size()));
+void RoutineGenerator::addLabel(string label) {
+    int test = akk.size();
+
+    vector<bitset<8>>::iterator it = akk.end();
+    bitset<8>* instruction = &(*it);
+    branches.insert(pair<string, std::bitset<8>*>(label, instruction));
 }
 
 void RoutineGenerator::jumpZero(int16_t parameter, bool parameterIsVariable, std::string toLabel, bool jumpIfTrue) {
@@ -105,7 +161,10 @@ void RoutineGenerator::jumpZero(int16_t parameter, bool parameterIsVariable, std
         addLargeNumber(parameter);
     }
 
-    jumpToBranch.insert(pair<int, string>(firstInstructionAddress + akk.size(), toLabel));
+    //jumpToBranch.insert(pair<std::bitset<8>*, string>(&(*akk.end()), toLabel));
+    int test = akk.size();
+    bitset<8>* branch = &akk.at(akk.size() - 1);
+    jumpToBranch.insert(pair<bitset<8>*, string>(branch, toLabel));
 
     bitset<8> offsetFirstBits;
     offsetFirstBits.set(JUMP_COND_TRUE, jumpIfTrue);

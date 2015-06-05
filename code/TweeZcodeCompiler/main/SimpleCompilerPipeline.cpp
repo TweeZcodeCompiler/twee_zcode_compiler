@@ -45,21 +45,22 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     RoutineGenerator routineGenerator = RoutineGenerator(167);
 
     routineGenerator.print("Test");
-    routineGenerator.addBranch("one");
+    routineGenerator.addLabel("one");
     //routineGenerator.jump("two");
     routineGenerator.print(passage.get()->getBody().getContent());
     routineGenerator.newLine();
     routineGenerator.jumpZero(0, false, "two", true);
     routineGenerator.print(passage.get()->getBody().getContent());
     routineGenerator.print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-    routineGenerator.addBranch("two");
     routineGenerator.print(passage.get()->getBody().getContent());
+    routineGenerator.addLabel("two");
+    routineGenerator.print("Ende");
     routineGenerator.quitRoutine();
 
     /*routineGenerator.jump("print");
     routineGenerator.addBranch("quit");
     routineGenerator.quitRoutine();
-    routineGenerator.addBranch("print");
+    routineGenerator.addLabel("print");
     routineGenerator.print(passage.get()->getBody().getContent());
     routineGenerator.newLine();
     routineGenerator.print(passage.get()->getBody().getContent());

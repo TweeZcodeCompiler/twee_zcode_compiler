@@ -18,8 +18,8 @@ private:
     bool quitOpcodePrinted = false;                 // every routine needs to call quit opcode
     int firstInstructionAddress = -1;
     std::vector<std::bitset<8>> akk = std::vector<std::bitset<8>>();
-    std::map<std::string, u_int> branches;        // maps branch label to instruction address
-    std::map<u_int, std::string> jumpToBranch;    // keys = addresses that need to be filled with branch offset, values = jump destination label
+    std::map<std::string, std::bitset<8>*> branches;        // maps branch label to instruction address
+    std::map<std::bitset<8>*, std::string> jumpToBranch;    // keys = addresses that need to be filled with branch offset, values = jump destination label
 
     std::bitset<8> numberToBitset(unsigned int number);
     void addLargeNumber(int16_t number);    // signed number over 2 bytes
@@ -40,7 +40,7 @@ public:
 
     void quitRoutine();
 
-    void addBranch(std::string label);
+    void addLabel(std::string label);
 
     RoutineGenerator(int instructionNumber) {
         this->firstInstructionAddress = instructionNumber;
