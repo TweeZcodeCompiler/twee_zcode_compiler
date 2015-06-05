@@ -17,7 +17,7 @@ std::vector<std::bitset<8>> RoutineGenerator::getRoutine() {
     }
 
 
-    std::list<int> ilist;
+    /*std::list<int> ilist;
     ilist.push_back(1);
     ilist.push_back(2);
     ilist.push_back(3);
@@ -39,7 +39,7 @@ std::vector<std::bitset<8>> RoutineGenerator::getRoutine() {
 
     akk.erase(akk.begin() + 2);
     cout << "Adresse 2: " << &akk.at(2) << ", " << akk.at(2) << endl;
-    cout << "Adresse 3: " << &akk.at(3) << ", " << akk.at(3) << endl;
+    cout << "Adresse 3: " << &akk.at(3) << ", " << akk.at(3) << endl;*/
 
     // replace jump offset placeholders
     for (map<bitset<8>*, string>::iterator entry = jumpToBranch.begin(); entry != jumpToBranch.end(); ++entry) {
