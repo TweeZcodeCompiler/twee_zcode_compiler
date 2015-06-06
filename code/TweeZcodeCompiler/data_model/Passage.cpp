@@ -1,29 +1,35 @@
 //
-// Created by lars on 31.05.15.
+// Created by lars on 05.06.15.
 //
 
 #include "include/Passage/Passage.h"
-#include "include/PassageElement.h"
+#include "include/Passage/Head.h"
+#include "include/Passage/Body.h"
 
 #include <string>
 
-Passage::Passage(std::string name) {
+Passage::Passage(Head &head, Body &body) {
 
-    this->name = name;
+    this->head = head;
+    this->body = body;
 
 }
 
-void addElement(PassageElement element) {
-    this->elements.push_back(element);
+Head Passage::getHead() {
+
+    return this->head;
+
+}
+
+Body Passage::getBody() {
+
+    return this->body;
+
 }
 
 std::string Passage::to_string() {
 
-    std::string result = "Name " + this->name;
+    return this->head.to_string() + std::endl + this->body.to_string();
 
-    for (std::vector<PassageElement>::iterator iter = this->elemnts.begin(); iter != this->elemnts.end(); ++iter) {
-        result += *iter;
-    }
-
-    return result;
 }
+

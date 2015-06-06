@@ -5,22 +5,22 @@
 #ifndef PASSAGE_H
 #define PASSAGE_H
 
-#include "../TweeElement.h"
-#include "../PassageElement.h"
+#include "Head.h"
+#include "Body.h"
 
 
-#include <string>
-
-class Passage : public TweeElement {
+class Passage {
 
 private:
-    std::string name;
-    std::vector <PassageElement> elemnts;
+    Head &head;
+    Body &body;
 
 public:
-    Passage(std::string);
+    Passage(Head &, Body &);
 
-    void addElement(PassageElement);
+    Head getHead();
+
+    Body getBody();
 
     std::string to_string();
 

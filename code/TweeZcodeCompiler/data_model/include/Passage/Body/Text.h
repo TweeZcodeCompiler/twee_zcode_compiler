@@ -5,10 +5,11 @@
 #ifndef TEXT_H
 #define TEXT_H
 
-#include "../PassageElement.h"
+#include "BodyPart.h"
+
 #include <string>
 
-class Text : public PassageElement {
+class Text : public BodyPart {
 
 private:
     std::string content;
@@ -16,7 +17,7 @@ private:
 public:
     Text(std::string);
 
-    void addText(std::string);
+    std::string getContent();
 
     std::string to_string();
 
