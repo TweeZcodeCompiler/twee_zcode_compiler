@@ -17,14 +17,17 @@ class RoutineGenerator {
 private:
     bool quitOpcodePrinted = false;                 // every routine needs to call quit opcode
     int firstInstructionAddress = -1;
-    std::vector<std::bitset<8>> akk = std::vector<std::bitset<8>>();
-    std::map<std::string, std::bitset<8>*> branches;        // maps branch label to instruction address
-    std::map<std::bitset<8>*, std::string> jumpToBranch;    // keys = addresses that need to be filled with branch offset, values = jump destination label
+    std::map<int, std::bitset<8>> akk;
+    //std::vector<std::bitset<8>> akk = std::vector<std::bitset<8>>();
+    std::map<std::string, int> branches;        // maps branch label to instruction address
+    std::map<int, std::string> jumpToBranch;    // keys = addresses that need to be filled with branch offset, values = jump destination label
 
     std::bitset<8> numberToBitset(unsigned int number);
     void addLargeNumber(int16_t number);    // signed number over 2 bytes
     void addLargeNumber(int16_t number, int pos);    // signed number over 2 bytes
-    void addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondTrue);
+    int addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondTrue);
+    void addBitset(std::bitset<8> byte, int pos = -1);
+    int getOffset(int jumpPosition, int labelPosition);
 
 public:
     std::vector<std::bitset<8>> getRoutine();
@@ -44,7 +47,8 @@ public:
 
     RoutineGenerator(int instructionNumber) {
         this->firstInstructionAddress = instructionNumber;
-        akk.push_back(numberToBitset(0));                   // number of local variables in routine
+        //akk.push_back(numberToBitset(0));                   // number of local variables in routine
+        addBitset(numberToBitset(0));
     }
 
     enum Opcode{

@@ -44,17 +44,29 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     //generate zcode for token string
     RoutineGenerator routineGenerator = RoutineGenerator(167);
 
-    routineGenerator.print("Test");
+    routineGenerator.print("Test - ");
     routineGenerator.addLabel("one");
     //routineGenerator.jump("two");
     routineGenerator.print(passage.get()->getBody().getContent());
     routineGenerator.newLine();
-    routineGenerator.jumpZero(0, false, "two", true);
+    routineGenerator.jumpZero(3, false, "two", true);
+
     routineGenerator.print(passage.get()->getBody().getContent());
     routineGenerator.print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
     routineGenerator.print(passage.get()->getBody().getContent());
+
+    routineGenerator.jumpZero(2, false, "three", true);
+    routineGenerator.jumpZero(0, false, "one", true);
+    routineGenerator.jumpZero(0, false, "three", true);
+    routineGenerator.jumpZero(0, false, "three", true);
+
     routineGenerator.addLabel("two");
     routineGenerator.print("Ende");
+
+    routineGenerator.addLabel("three");
+
+    routineGenerator.print("Bla");
+
     routineGenerator.quitRoutine();
 
     /*routineGenerator.jump("print");
