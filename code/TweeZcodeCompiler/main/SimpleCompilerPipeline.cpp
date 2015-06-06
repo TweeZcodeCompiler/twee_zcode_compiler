@@ -6,9 +6,34 @@
 
 #include <TweeParser.h>
 #include <fstream>
+#include <iostream>
+#include <sstream>
 #include <memory>
 
 using namespace std;
+
+// TODO: check if PASSAGE_GLOB can be replaced with return values
+static const string PASSAGE_GLOB = "PASSAGE_PTR",
+        JUMP_TABLE_LABEL = "JUMP_TABLE";
+
+string labelForPassage(Passage& passage) {
+    stringstream ss;
+    ss << "L_" << passage.getPassageName();
+    return ss.str();
+}
+
+string routineNameForPassage(Passage& passage) {
+    stringstream ss;
+    ss << "R_" << passage.getPassageName();
+    return ss.str();
+}
+
+void compilePassage(Passage passage, std::ostream& out) {
+    out << ".ROUTINE " << passage.getPassageName() << endl;
+    // TODO: go through all links and present options here. code should set PASSAGE_GLOB and return
+
+    out << "\t" << "RET 0" << endl << endl;
+}
 
 //Just a Simple Compiler Pipeline
 void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
@@ -28,6 +53,53 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     }
 
     log("Parsed twee file");
+
+    ofstream out = ofstream("test.zas", ofstream::out);
+    // create some dummy passages
+    Body body("Testtestest");
+    Passage start("start", body);
+    start.id = 0;
+    Passage passage1("passage1", body);
+    passage1.id = 1;
+    Passage passage2("passage2", body);
+    passage2.id = 2;
+
+    vector<Passage> passages;
+    passages.push_back(start);
+    passages.push_back(passage1);
+    passages.push_back(passage2);
+
+
+    out << ".GLOBAL " << PASSAGE_GLOB << endl << endl;
+    out << ".ROUTINE main" << endl;
+    out << "\t" << "CALL start" << endl;
+
+    out << JUMP_TABLE_LABEL << ":" << endl;
+
+    for(vector<Passage>::iterator it = passages.begin(); it != passages.end(); ++it) {
+        //out << it->getPassageName() << endl;
+        out << "\t" << "JE #" << it->id << " " << PASSAGE_GLOB << " ?(" << labelForPassage(*it)<<  ")" << endl;
+    }
+
+    // TODO: error handling in case no matching passage could be found
+
+    for(vector<Passage>::iterator it = passages.begin(); it != passages.end(); ++it) {
+        out << labelForPassage(*it) << ":" << endl
+            << "\t" << "CALL " << it->getPassageName() << endl
+            << "\t" << "JUMP " << JUMP_TABLE_LABEL << endl;
+    }
+
+    out << "\t" << "QUIT";
+
+            out << endl << endl
+        << "; passages" << endl;
+
+    for(vector<Passage>::iterator it = passages.begin(); it != passages.end(); ++it) {
+        compilePassage(*it, out);
+    }
+
+
+    out.close();
 
     std::vector<std::bitset<8>> zCode;
 
