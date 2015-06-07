@@ -11,29 +11,28 @@
 #include <bitset>
 #include <map>
 
-class RoutineGenerator {
+class Jumps;
 
+class RoutineGenerator {
 
 private:
     bool quitOpcodePrinted = false;                 // every routine needs to call quit opcode
     int firstInstructionAddress = -1;
     std::map<int, std::bitset<8>> akk;
-    //std::vector<std::bitset<8>> akk = std::vector<std::bitset<8>>();
-    std::map<std::string, int> branches;        // maps branch label to instruction address
-    std::map<int, std::string> jumpToBranch;    // keys = addresses that need to be filled with branch offset, values = jump destination label
+    Jumps jumps = Jumps(akk);
 
     std::bitset<8> numberToBitset(unsigned int number);
-    void addLargeNumber(int16_t number);    // signed number over 2 bytes
-    void addLargeNumber(int16_t number, int pos);    // signed number over 2 bytes
-    int addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondTrue);
-    void addBitset(std::bitset<8> byte, int pos = -1);
-    int getOffset(int jumpPosition, int labelPosition);
 
 public:
     std::vector<std::bitset<8>> getRoutine();
     void print(std::string stringToPrint);
     void newLine();
     void jump(std::string toLabel);
+
+    void addLargeNumber(int16_t number);    // signed number over 2 bytes
+    void addLargeNumber(int16_t number, int pos);    // signed number over 2 bytes
+
+    void addBitset(std::bitset<8> byte, int pos = -1);
 
     // Jump if a is equal to any of the subsequent operands (one argument never jumps)
     void jumpEquals();
@@ -45,10 +44,8 @@ public:
 
     void addLabel(std::string label);
 
-    RoutineGenerator(int instructionNumber) {
-        this->firstInstructionAddress = instructionNumber;
-        //akk.push_back(numberToBitset(0));                   // number of local variables in routine
-        addBitset(numberToBitset(0));
+    RoutineGenerator() {
+        addBitset(numberToBitset(0));   // number of local variables in routine
     }
 
     enum Opcode{

@@ -42,7 +42,7 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
 
     //generate zcode for token string
-    RoutineGenerator routineGenerator = RoutineGenerator(167);
+    RoutineGenerator routineGenerator = RoutineGenerator();
 
     routineGenerator.print("Test - ");
     routineGenerator.addLabel("one");
