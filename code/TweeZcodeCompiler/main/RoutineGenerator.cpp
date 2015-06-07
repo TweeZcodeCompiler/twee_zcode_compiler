@@ -47,11 +47,11 @@ std::vector<std::bitset<8>> RoutineGenerator::printPrintCharInstruction(uint8_t 
 
 std::vector<std::bitset<8>> RoutineGenerator::printCallToMainAndMain(int offset, int locVar) {
     vector<bitset<8>> akk = vector<bitset<8>>();
-    size_t pkgAdrr = Utils::calculateNextPackageAddress (offset+3);
+    size_t pkgAdrr = Utils::calculateNextPackageAddress(offset + 3);
     //call the main
     akk.push_back(bitset<8>(CALL_1N));
-    Utils::setShortVal(pkgAdrr/8,akk);
-    Utils::paddingToNextPackageAddress(akk,offset);
+    Utils::setShortVal(pkgAdrr / 8, akk);
+    Utils::paddingToNextPackageAddress(akk, offset);
     akk.push_back(numberToBitset(locVar));
     return akk;
 }

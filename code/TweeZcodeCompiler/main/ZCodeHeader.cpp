@@ -54,8 +54,8 @@ vector<bitset<8>> ZCodeHeader::getHeaderBits() {
     Utils::setShortVal(totalWidthInPixels, headerBits);     // Hex 30 - 31
     headerBits.push_back(STANDARD_REVISION_MAIN);   // Hex 32
     headerBits.push_back(STANDARD_REVISION_SUB);    // Hex 33
-    Utils:: setShortVal(alphabetTableAddress, headerBits);   // Hex 34 - 35
-    Utils:: setShortVal(headerExtensionTableAddress, headerBits);// Hex 36 - 38
+    Utils::setShortVal(alphabetTableAddress, headerBits);   // Hex 34 - 35
+    Utils::setShortVal(headerExtensionTableAddress, headerBits);// Hex 36 - 38
 
     for (size_t i = 0; i < 7; i++) {
         headerBits.push_back(0);           // Hex 39 - 3F
@@ -128,11 +128,11 @@ void ZCodeHeader::setFlags1(vector<bitset<8>> &header) {
 
 // sets bytes 4 - F
 void ZCodeHeader::setAddresses(vector<bitset<8>> &header) {
-    Utils:: setShortVal(baseOfHighMem, header);         // Hex 4 - 5
+    Utils::setShortVal(baseOfHighMem, header);         // Hex 4 - 5
     Utils::setShortVal(initValOfPC, header);           // Hex 6 - 7
     Utils::setShortVal(locOfDict, header);             // Hex 8 - 9
-    Utils:: setShortVal(locOfObjTable, header);         // Hex A - B
-    Utils:: setShortVal(locOfGlobVarTable, header);     // Hex C - D
+    Utils::setShortVal(locOfObjTable, header);         // Hex A - B
+    Utils::setShortVal(locOfGlobVarTable, header);     // Hex C - D
     Utils::setShortVal(baseOfStatMem, header);         // Hex E - F
 }
 

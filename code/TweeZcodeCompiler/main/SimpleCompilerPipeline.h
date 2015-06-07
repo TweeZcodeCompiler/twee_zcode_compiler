@@ -18,13 +18,19 @@ public:
 
 private:
     std::vector<std::bitset<8>> generateDynamicMemory(ZCodeHeader &header, int offset);
-    std::vector<std::bitset<8>> generateStaticMemory(ZCodeHeader &header,int offset);
-    std::vector<std::bitset<8>> generateHighMemory(ZCodeHeader &header,int offset);
+
+    std::vector<std::bitset<8>> generateStaticMemory(ZCodeHeader &header, int offset);
+
+    std::vector<std::bitset<8>> generateHighMemory(ZCodeHeader &header, int offset);
+
     std::vector<std::bitset<8>> printGlobalTable(int offset);
+
     void printHex(std::vector<std::bitset<8>> bitsetList);
+
     std::vector<std::bitset<8>> generateHeader();
 
     std::vector<std::bitset<8>> addFileSizeToHeader(std::vector<std::bitset<8>> zCode, size_t fileSize);
+
     void log(std::string message);
 };
 

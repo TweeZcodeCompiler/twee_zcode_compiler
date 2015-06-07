@@ -26,9 +26,10 @@ private:
 
     // set special parts of headerBits
     void setFlags1(std::vector<std::bitset<8>> &header);
-    void setAddresses(std::vector<std::bitset<8>> &header);
-    void setFlags2(std::vector<std::bitset<8>> &header);
 
+    void setAddresses(std::vector<std::bitset<8>> &header);
+
+    void setFlags2(std::vector<std::bitset<8>> &header);
 
 
 public:
