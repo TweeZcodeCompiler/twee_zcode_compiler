@@ -5,8 +5,8 @@ include_directories(${TweeParser_SOURCE_DIR}/include)
 
 set(SOURCE_FILES ZCodeConverter.cpp ZCodeConverter.h
                                              ZCodeHeader.cpp ZCodeHeader.h BinaryFileWriter.cpp BinaryFileWriter.h
-                                             RoutineGenerator.cpp RoutineGenerator.h SimpleCompilerPipeline.cpp SimpleCompilerPipeline.h)
-add_executable(TweeZcodeCompiler ${SOURCE_FILES} main.cpp)
+                                             RoutineGenerator.cpp RoutineGenerator.h SimpleCompilerPipeline.cpp SimpleCompilerPipeline.h Utils.cpp Utils.h)
+add_executable(TweeZcodeCompiler ${SOURCE_FILES} main.cpp )
 target_link_libraries (TweeZcodeCompiler TweeParser)
 
 add_executable(TestCompiler ${SOURCE_FILES} test/MainTest.cpp test/BinaryFileWriterTest.h test/BinaryFileWriterTest.cpp
