@@ -21,7 +21,7 @@ https://trello.com/b/gioyajLT/swp-compilerbau-c
 
 ###Skypekontakte
 * "manuelpolzhofer" - Manuel
-* "protegon" - Philip
+* "potregon" - Philip
 * "gredox" - Georg
 * "charly_128" - Michaela
 * "lasergenetik" - Danni
