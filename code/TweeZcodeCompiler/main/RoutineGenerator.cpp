@@ -67,7 +67,7 @@ void RoutineGenerator::addLabel(string label) {
     jumps.newLabel(label);
 }
 
-void RoutineGenerator::jumpZero(int16_t parameter, bool parameterIsVariable, std::string toLabel, bool jumpIfTrue) {
+void RoutineGenerator::jumpZero(int16_t parameter, bool parameterIsVariable, string toLabel, bool jumpIfTrue) {
     bitset<8> opcode = numberToBitset(JZ);
     bool oneByteParameter = true;
 
@@ -103,7 +103,43 @@ void RoutineGenerator::jumpZero(int16_t parameter, bool parameterIsVariable, std
     addBitset(numberToBitset(0));
 }
 
-std::bitset<8> RoutineGenerator::numberToBitset(unsigned int number){
+void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, int8_t variable1, bool parameter1IsVariable,
+                int8_t variable2, bool parameter2IsVariable, int8_t variable3,
+                bool parameter3IsVariable, int8_t variable4, bool parameter4IsVariable) {
+
+    bitset<8> opcode = numberToBitset(JE);
+    int paramCount = 4;
+
+
+    if (parameter1IsVariable) {
+        opcode.set(6, true);
+        if (variable1 < 0 || variable1 > 255) {
+            // TODO: Opcode needs to be assembled to variable form
+        }
+    }
+    if (parameter2IsVariable) {
+        opcode.set(5, true);
+        if (variable2 < 0 || variable2 > 255) {
+            // TODO: Opcode needs to be assembled to variable form
+        }
+    }
+    addBitset(opcode);
+    addBitset(numberToBitset(variable1));
+    addBitset(numberToBitset(variable2));
+
+    jumps.newJump(toLabel);
+
+    bitset<8> offsetFirstBits;
+    offsetFirstBits.set(JUMP_COND_TRUE, jumpIfTrue);
+    offsetFirstBits.set(JUMP_COND_OFFSET_PLACEHOLDER, true);
+    offsetFirstBits.set(JUMP_UNCOND_OFFSET_PLACEHOLDER, false);
+
+    // placeholder, will be replaced in getRoutine()
+    addBitset(offsetFirstBits);
+    addBitset(numberToBitset(0));
+}
+
+bitset<8> RoutineGenerator::numberToBitset(unsigned int number){
     return bitset<8>(number);
 }
 

@@ -8,12 +8,12 @@
 
 using namespace std;
 
-void Jumps::newJump(std::string toLabel) {
-    jumpToBranch[routineOpcodes.size()] = toLabel;
+void Jumps::newJump(string toLabel) {
+    jumpToBranch[routineOpcodes->size()] = toLabel;
 }
 
-void Jumps::newLabel(std::string label) {
-    branches[label] = routineOpcodes.size();
+void Jumps::newLabel(string label) {
+    branches[label] = routineOpcodes->size();
 }
 
 void Jumps::calculateOffsets() {
@@ -30,7 +30,7 @@ void Jumps::calculateOffsets() {
         int indexOfJumpInstruction = entry->first;                               // address where jump offset needs to be added
         int indexOfLabel = branches.find(entry->second)->second;    // destination jump address
 
-        bitset<8> jumpInstruction = routineOpcodes.find(indexOfJumpInstruction)->second;
+        bitset<8> jumpInstruction = routineOpcodes->find(indexOfJumpInstruction)->second;
 
         int offset = getOffset(indexOfJumpInstruction, indexOfLabel);
 
@@ -59,7 +59,7 @@ void Jumps::calculateOffsets() {
             if (calculatedCondOffsets.find(indexOfJumpInstruction) != calculatedCondOffsets.end()) {
                 int savedOffset = calculatedCondOffsets.find(indexOfJumpInstruction)->second;
                 if (offset != savedOffset) {
-                    bitset<8> wrongOffsetBitset = routineOpcodes.find(indexOfJumpInstruction)->second;
+                    bitset<8> wrongOffsetBitset = routineOpcodes->find(indexOfJumpInstruction)->second;
                     addCondBranchOffset(indexOfJumpInstruction, offset,
                                         wrongOffsetBitset.test(RoutineGenerator::JUMP_COND_TRUE));
 
@@ -72,7 +72,6 @@ void Jumps::calculateOffsets() {
                 }
             } else {
                 if (offset != calculatedUncondOffsets.find(indexOfJumpInstruction)->second) {
-                    bitset<8> wrongOffsetBitset = routineOpcodes.find(indexOfJumpInstruction)->second;
                     addLargeNumber(offset, indexOfJumpInstruction);
                     calculatedUncondOffsets[indexOfJumpInstruction] = offset;
                     correctOffsets = false;
@@ -82,16 +81,20 @@ void Jumps::calculateOffsets() {
     }
 }
 
+void Jumps::setRoutineBitsetMap(map<int, bitset<8>> &opcodes) {
+    routineOpcodes = &opcodes;
+}
+
 int Jumps::getOffset(int jumpPosition, int labelPosition) {
     int offset;
     if (jumpPosition == labelPosition) {
         offset = 0;
     } if (jumpPosition < labelPosition) {
-        for (map<int, bitset<8>>::iterator it = routineOpcodes.find(jumpPosition); it != routineOpcodes.find(labelPosition); ++it) {
+        for (map<int, bitset<8>>::iterator it = routineOpcodes->find(jumpPosition); it != routineOpcodes->find(labelPosition); ++it) {
             offset++;
         }
     } else {
-        for (map<int, bitset<8>>::iterator it = routineOpcodes.find(jumpPosition); it != routineOpcodes.find(labelPosition); --it) {
+        for (map<int, bitset<8>>::iterator it = routineOpcodes->find(jumpPosition); it != routineOpcodes->find(labelPosition); --it) {
             offset--;
         }
     }
@@ -116,7 +119,7 @@ int Jumps::addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondT
             firstHalf.set(i, bitsetOffset[i]);
         }
 
-        routineOpcodes.erase(position + 1);
+        routineOpcodes->erase(position + 1);
         addBitset(firstHalf, position);
     } else {
         bitset<14> bitsetOffset(offset);
@@ -158,5 +161,5 @@ void Jumps::addLargeNumber(int16_t number, int pos) {
 }
 
 void Jumps::addBitset(std::bitset<8> byte, int pos) {
-    routineOpcodes[pos < 0 ? routineOpcodes.size() : pos] = byte;
+    (*routineOpcodes)[pos < 0 ? routineOpcodes->size() : pos] = byte;
 }

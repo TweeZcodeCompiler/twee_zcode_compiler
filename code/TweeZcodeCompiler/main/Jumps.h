@@ -8,11 +8,10 @@
 
 #include <map>
 #include <bitset>
-#include "RoutineGenerator.h"
 
 class Jumps {
 private:
-    std::map<int, std::bitset<8>> routineOpcodes;
+    std::map<int, std::bitset<8>> *routineOpcodes;
     std::map<std::string, int> branches;        // maps branch label to instruction address
     std::map<int, std::string> jumpToBranch;    // keys = addresses that need to be filled with branch offset, values = jump destination label
 
@@ -26,10 +25,7 @@ public:
     void newLabel(std::string label);
     void newJump(std::string toLabel);
     void calculateOffsets();
-
-    Jumps(std::map<int, std::bitset<8>> &routineOpcodes) {
-        this -> routineOpcodes = routineOpcodes;
-    }
+    void setRoutineBitsetMap(std::map<int, std::bitset<8>> &opcodes);
 };
 
 
