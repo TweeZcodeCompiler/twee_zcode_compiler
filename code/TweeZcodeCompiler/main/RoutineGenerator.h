@@ -17,7 +17,6 @@ private:
     std::bitset<8> numberToBitset(unsigned int number);
 
 public:
-    std::vector<std::bitset<8>> printPrintRoutine(std::string stringToPrint);
     std::vector<std::bitset<8>> printReadCharInstruction(uint8_t var);
     std::vector<std::bitset<8>> printPrintCharInstruction(uint8_t var);
     std::vector<std::bitset<8>> printPrintStringInstruction(std::string stringToPrint);

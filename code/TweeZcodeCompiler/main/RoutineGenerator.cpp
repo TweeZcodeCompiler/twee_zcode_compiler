@@ -11,38 +11,6 @@
 using std::vector;
 using std::bitset;
 
-std::vector<std::bitset<8>> RoutineGenerator::printPrintRoutine(std::string stringToPrint) {
-    vector<bitset<8>> akk = vector<bitset<8>>();
-    ZCodeConverter converter = ZCodeConverter();
-    vector<bitset<8>> zsciiString = converter.convertStringToZSCII(stringToPrint);
-
-    akk.push_back(numberToBitset(1));
-    akk.push_back(numberToBitset(246));
-    akk.push_back(numberToBitset(0xbf));
-    akk.push_back(numberToBitset(1));
-    akk.push_back(numberToBitset(0x10));
-    akk.push_back(numberToBitset(229));
-    akk.push_back(numberToBitset(0xbf));
-    akk.push_back(numberToBitset(0x10));
-    akk.push_back(numberToBitset(229));
-    akk.push_back(numberToBitset(0xbf));
-    akk.push_back(numberToBitset(0x10));
-    akk.push_back(numberToBitset(187));
-
-    /*  unsigned long len = zsciiString.size();
-      for(int i = 0; i < len; i++){
-          if(i%96 == 0){
-              akk.push_back(numberToBitset(PRINT));
-          }
-          if(i%96 == 94) {
-              zsciiString[i].set(7, true);
-          }
-          akk.push_back(zsciiString[i]);
-      }*/
-    akk.push_back(numberToBitset(QUIT));
-    return akk;
-}
-
 std::vector<std::bitset<8>> RoutineGenerator::printPrintStringInstruction(std::string stringToPrint) {
     vector<bitset<8>> akk = vector<bitset<8>>();
     ZCodeConverter converter = ZCodeConverter();

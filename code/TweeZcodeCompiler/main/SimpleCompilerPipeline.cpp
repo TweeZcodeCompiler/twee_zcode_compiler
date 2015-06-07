@@ -31,7 +31,7 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     log("Parsed twee file");
 
     //create header
-    ZCodeHeader *header = new ZCodeHeader();
+    ZCodeHeader header = ZCodeHeader();
 
     //create memory sections
     vector<bitset<8>> dynamicMemory = generateDynamicMemory(header, 0x3f);
@@ -39,13 +39,13 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     vector<bitset<8>> highMemory = generateHighMemory(header, (int) (0x3f+staticMemory.size()+dynamicMemory.size()));
 
     //init header
-    header->setRoutinesOffset(88);
-    header->setStaticStringsOffset(99);
-    header->setFileLength(3,52);
-    header->baseOfStatMem = (uint16_t) (0x3f+dynamicMemory.size());
-    header->baseOfHighMem = (uint16_t) (0x3f+dynamicMemory.size()+staticMemory.size());
-    header->initValOfPC = header->baseOfHighMem;
-    vector<bitset<8>> headerMemory = header->getHeaderBits();
+    header.setRoutinesOffset(88);
+    header.setStaticStringsOffset(99);
+    header.setFileLength(3,52);
+    header.baseOfStatMem = (uint16_t) (0x3f+dynamicMemory.size());
+    header.baseOfHighMem = (uint16_t) (0x3f+dynamicMemory.size()+staticMemory.size());
+    header.initValOfPC = header.baseOfHighMem;
+    vector<bitset<8>> headerMemory = header.getHeaderBits();
 
     //concat memory sections
     vector<bitset<8>> zCode = vector<bitset<8>>();
@@ -65,29 +65,28 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     BinaryFileWriter binaryFileWriter;
     binaryFileWriter.write(zCodeFileName, zCode);
     log("ZCode File '" + zCodeFileName + "' generated");
-    delete header;
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::generateDynamicMemory(ZCodeHeader *header, int offset) {
+std::vector<std::bitset<8>> SimpleCompilerPipeline::generateDynamicMemory(ZCodeHeader &header, int offset) {
     vector<bitset<8>> akk = vector<bitset<8>>();
     //abbervation strings
     Utils::fillWithBytes(akk,0,2);
     //abbervation table
-    header->locOfAbbrTable = (uint16_t) (offset+akk.size());
+    header.locOfAbbrTable = (uint16_t) (offset+akk.size());
     Utils::fillWithBytes(akk,0,0xc0);
     //property defaults
     Utils::fillWithBytes(akk,0,0x3e);
     //objects
-    header->locOfObjTable = (uint16_t) (offset + akk.size());
+    header.locOfObjTable = (uint16_t) (offset + akk.size());
     Utils::fillWithBytes(akk,0,0x5a3);
     //globalVariables
-    header->locOfGlobVarTable = (uint16_t) (offset+akk.size());
+    header.locOfGlobVarTable = (uint16_t) (offset+akk.size());
     vector<bitset<8>> vars = printGlobalTable((int) (offset+akk.size()));
     akk.insert(akk.end(),vars.begin(),vars.end());
     return akk;
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHeader *header, int offset) {
+std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHeader &header, int offset) {
     vector<bitset<8>> akk = vector<bitset<8>>();
     //grammar table
     Utils::fillWithBytes(akk,0,0x55f);
@@ -102,7 +101,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHe
     return akk;
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader *header, int offset) {
+std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader &header, int offset) {
     RoutineGenerator routineGenerator = RoutineGenerator();
     vector<bitset<8>> akk = vector<bitset<8>>();
 
