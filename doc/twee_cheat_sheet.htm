@@ -6,15 +6,12 @@
     {
       background-color: #FFFFCC;
     }
+
     .element 
     {
       width: 60%;
     }
-    td
-    {
-      border-top: 2px solid #000000;
-      border-bottom: 2px solid #000000;
-    }
+
   </style>
 
   <head>
@@ -28,10 +25,6 @@
     <table>
         
         <thead>
-          <tr>
-            <td class="element"> Twee Strukturelement </td>
-            <td> Erklaerung </td>
-          </tr>
         </thead>
 
         <tbody>
@@ -75,47 +68,182 @@
             </td>
           </tr>
 
+          <tr>
+            <td>
+              <h3> Macros </h3>
+            </td>
+            <td></td>
+          </tr>
+
+          <tr>
+            <td>
+              <h4> Kontrollfluss </h4>
+            </td>
+            <td></td>
+          </tr>
 
           <tr>
             <td class="element">
               <p> &lt;&lt; set $var=value &gt;&gt; </p>
               <p> &lt;&lt; set $var1=value1; $var2=value2; $var3=value3 &gt;&gt; </p>
-              <p> &lt;&lt; print $var &gt;&gt; </p>
+
+              <p> A &lt;&lt; if condition &gt;&gt; B &lt;&lt; endif &gt;&gt; C </p>
+
+              <p> A &lt;&lt; if condition &gt;&gt; B &lt;&lt; else &gt;&gt; C &lt;&lt; endif &gt;&gt; D </p>
+
+              <p> A &lt;&lt; if condition &gt;&gt; B &lt;&lt; else if condition2 &gt;&gt; C ... &lt;&lt; endif &gt;&gt;
+                D </p>
+
+              <p> &lt;&lt; remember $var &gt;&gt; </p>
+
+              <p> &lt;&lt; forget $var &gt;&gt; </p>
             </td>
             <td> 
               <p> setzt den Wert der Variable $var auf value </p>
               <p> wie oben, setzt in einem Schwung mehrere Werte fuer die gegeben Variablen </p>
-              <p> gibt den Wert der Variablen $var aus </p>
-            </td>
-          </tr>
 
-          <tr>
-            <td class="element"> 
-              <p> A &lt;&lt; if condition &gt;&gt; B &lt;&lt; endif &gt;&gt; C </p>
-              <p> A &lt;&lt; if condition &gt;&gt; B &lt;&lt; else &gt;&gt; C &lt;&lt; endif &gt;&gt; D </p>
-              <p> A &lt;&lt; if condition &gt;&gt; B &lt;&lt; else if condition2 &gt;&gt; C ... &lt;&lt; endif &gt;&gt; D </p>
-            </td>
-            <td> 
               <p> wenn condition wahr ist wird A B C ausgegeben, wenn condition falsch ist, wird A C ausgegeben </p>
+
               <p> wenn condition wahr ist wird A B D ausgegeben, wenn condition falsch ist, wird A C D ausgegeben </p>
-              <p> wie oben, nur koennen mehrer if else Bloecke verschachtelt werden, um unterschiedliche Bedingungen zu pruefen </p>
+
+              <p> wie oben, nur koennen mehrer if else Bloecke verschachtelt werden, um unterschiedliche Bedingungen zu
+                pruefen </p>
+
+              <p> speichert den Wert von $var persistent zwischen zwei Spielen ab </p>
+
+              <p> verwirft den gespeichert Wert $var wieder </p>
             </td>
           </tr>
 
           <tr>
-            <td class="element"> 
-              <p> A </p>
+            <td>
+              <h4> Anzeige / Ausgabe </h4>
+            </td>
+            <td></td>
+          </tr>
+
+          <tr>
+            <td class="element">
+              <p> &lt;&lt; print $var &gt;&gt; </p>
+
+              <p> &lt;&lt; print expr &gt;&gt; </p>
+
+              <p> &lt;&lt; print "String" &gt;&gt; </p>
+
+              <p> &lt;&lt; display expr &gt;&gt; </p>
+
+              <p> &lt;&lt; PassageName &gt;&gt; </p>
+            </td>
+            <td>
+              <p> gibt den Wert der Variablen $var aus </p>
+
+              <p> gibt das Ergebnis des Ausdrucks expr aus </p>
+
+              <p> gibt den Text String aus </p>
+
+              <p> wenn expr (wahlweise Ausdruck oder Variable) ein gueltiger Passagenname ist, dann wird der Inhalt der
+                Passage ausgegeben </p>
+
+              <p> die Kurzschreibweise zu &lt;&lt; display PassageName &gt;&gt; </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <h4> Eingabe </h4>
+            </td>
+            <td></td>
+          </tr>
+
+          <tr>
+            <td>
+              <p> &lt;&lt; button [[ButtonText|PassageName]] &gt;&gt; </p>
+
+              <p> &lt;&lt; textinput $var &gt;&gt; </p>
+
+              <p> &lt;&lt; textinput $var [[ButtonText|PassageName]] &gt;&gt; </p>
+
+              <p> &lt;&lt; radio $var "radioName" &gt;&gt; </p>
+
+              <p> &lt;&lt; checkbox $var "checkboxName" &gt;&gt; </p>
+            </td>
+            <td>
+              <p> setzt ALLE eingegeben Daten in die entsprechenden Variablen und wechselt zur angegebenen Passage, wenn
+                kein Button geklickt wird (Link wird bspw. genutzt um Passage zu wechseln), werden die Werte nicht
+                gesetzt </p>
+
+              <p> erzeugt ein Textfeld, dessen Eingabe in $var geschrieben wird </p>
+
+              <p> wie oben, erzeugt aber einen eigenen Button neben dem Textfeld </p>
+
+              <p> erzeugt RadioButtons mit der Bezeichnung radioName, radioName wird bei Auswahl in $var geschrieben, es
+                kann jeweils nur ein RadioButton ausgewaehlt werden! </p>
+
+              <p> wie &lt;&lt; radio ... &gt;&gt; nur das mehrere Auswahlmoeglichkeiten getroffen werden koennen, die
+                getroffene Auswahl wird als Liste Groesse (n-1) gespeichert und kann mit $var[i], i in {0..(n-1)}
+                abgefragt werden </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <h4> Verschiedenes </h4>
+            </td>
+            <td></td>
+          </tr>
+
+          <tr>
+            <td class="element">
+              <p> &lt;&lt; action "string1" ... "stringN" &gt;&gt; </p>
+
+              <p> &lt;&lt; choice [[link syntax]] &gt;&gt; </p>
+            </td>
+            <td>
+              <p> nimmt string1 .. stringN als Passagennamen an und setzt entsprechende Links </p>
+
+              <p> vergleichbar mit &lt;&lt; action ... &gt;&gt;, nur das nur eine Auswahl getroffen werden kann, wenn
+                man in dieselbe Passage zurueckkehrt sind alle Moeglichkeiten nicht mehr waehlbar, link syntax kann jede
+                Form eines validen Links annehmen </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="element">
+              <p> &lt;&lt; nobr &gt;&gt; Text &lt;&lt; endnobr &gt;&gt; </p>
+            </td>
+            <td>
+              <p> entfernt ALLE Zeilenumbrueche bspw. durch Ausfruehren von Macros, vergleichbar mit &lt;&lt; silently
+                &gt;&gt; Text &lt;&lt; endsilently &gt;&gt; (nicht mehr genutzt), wobei silently auch den Text nicht
+                mehr ausgibt </p>
+
+              <p> nobr Passage Tag, um in einer ganzen Passage ALLE Zeilenumbrueche zu entfernen </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="element">
+            <p> A </p>
               <p> &lt;&lt; if condition &gt;&gt;\ </p>
               <p> B </p>
               <p> &lt;&lt; endif &gt;&gt;\ </p>
               <p> C </p>
-             </td>
+            </td>
             <td> 
               <p> die \ verhindern, dass Leerzeilen im fertigen Dokument anstelle der if Anweisungen ausgegeben werden </p>
               <p> wenn condition falsch ist, wird anstelle von B eine Leerzeile ausgegeben </p>
             </td>
           </tr>
 
+          <tr>
+            <td class="element">
+              <p> &lt;&lt; back &gt;&gt; </p>
+            </td>
+            <td>
+              <p> oder auch &lt;&lt; return &gt;&gt; dient um in die vorige Passage zurueckzukehren, durch die
+                previous() Funktion ersetzt (gibt den Passagennamen der vorigen Passage zurueck, kann in Links genutzt
+                werden) </p>
+            </td>
+          </tr>
         </tbody>
 
     </table>
