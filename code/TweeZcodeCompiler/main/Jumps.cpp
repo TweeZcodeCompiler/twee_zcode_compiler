@@ -27,14 +27,12 @@ void Jumps::calculateOffsets() {
             throw;
         }
 
-        int indexOfJumpInstruction = entry->first;                               // address where jump offset needs to be added
+        int indexOfJumpInstruction = entry->first;                  // address where jump offset needs to be added
         int indexOfLabel = branches.find(entry->second)->second;    // destination jump address
 
         bitset<8> jumpInstruction = routineOpcodes->find(indexOfJumpInstruction)->second;
 
         int offset = getOffset(indexOfJumpInstruction, indexOfLabel);
-
-
 
         if (jumpInstruction.test(RoutineGenerator::JUMP_COND_OFFSET_PLACEHOLDER)) {
             bool jumpIfCondTrue = jumpInstruction.test(RoutineGenerator::JUMP_COND_TRUE);
@@ -86,14 +84,13 @@ void Jumps::setRoutineBitsetMap(map<int, bitset<8>> &opcodes) {
 }
 
 int Jumps::getOffset(int jumpPosition, int labelPosition) {
-    int offset;
-    if (jumpPosition == labelPosition) {
-        offset = 0;
-    } if (jumpPosition < labelPosition) {
+    int offset = 0;
+
+    if (jumpPosition < labelPosition) {
         for (map<int, bitset<8>>::iterator it = routineOpcodes->find(jumpPosition); it != routineOpcodes->find(labelPosition); ++it) {
             offset++;
         }
-    } else {
+    } else if (jumpPosition > labelPosition){
         for (map<int, bitset<8>>::iterator it = routineOpcodes->find(jumpPosition); it != routineOpcodes->find(labelPosition); --it) {
             offset--;
         }
@@ -111,7 +108,7 @@ int Jumps::addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondT
     firstHalf.set(RoutineGenerator::JUMP_OFFSET_5_BIT, useOneByte);
 
     if (useOneByte) {
-        offset--;
+        offset -= 2;    // TODO: Why -2? -1 should be enough...
 
         bitset<6> bitsetOffset (offset);
 
