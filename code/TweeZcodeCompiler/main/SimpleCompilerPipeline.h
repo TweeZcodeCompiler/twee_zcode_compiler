@@ -17,11 +17,11 @@ public:
     void compile(std::string fileContent, std::string zCodeFileName);
 
 private:
-    std::vector<std::bitset<8>> generateDynamicMemory(ZCodeHeader &header, int offset);
+    std::vector<std::bitset<8>> generateDynamicMemory(ZCodeHeader &header, size_t offset);
 
-    std::vector<std::bitset<8>> generateStaticMemory(ZCodeHeader &header, int offset);
+    std::vector<std::bitset<8>> generateStaticMemory(ZCodeHeader &header, size_t offset);
 
-    std::vector<std::bitset<8>> generateHighMemory(ZCodeHeader &header, int offset);
+    std::vector<std::bitset<8>> generateHighMemory(ZCodeHeader &header, size_t offset);
 
     std::vector<std::bitset<8>> printGlobalTable(int offset);
 

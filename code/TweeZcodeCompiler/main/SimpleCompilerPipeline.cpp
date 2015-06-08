@@ -68,7 +68,7 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     log("ZCode File '" + zCodeFileName + "' generated");
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::generateDynamicMemory(ZCodeHeader &header, int offset) {
+std::vector<std::bitset<8>> SimpleCompilerPipeline::generateDynamicMemory(ZCodeHeader &header, size_t offset) {
     vector<bitset<8>> akk = vector<bitset<8>>();
     //abbervation strings
     Utils::fillWithBytes(akk, 0, 2);
@@ -87,7 +87,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateDynamicMemory(ZCodeH
     return akk;
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHeader &header, int offset) {
+std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHeader &header, size_t offset) {
     vector<bitset<8>> akk = vector<bitset<8>>();
     //grammar table
     Utils::fillWithBytes(akk, 0, 0x55f);
@@ -102,7 +102,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHe
     return akk;
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader &header, int offset) {
+std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader &header, size_t offset) {
     RoutineGenerator routineGenerator = RoutineGenerator();
     vector<bitset<8>> akk = vector<bitset<8>>();
 

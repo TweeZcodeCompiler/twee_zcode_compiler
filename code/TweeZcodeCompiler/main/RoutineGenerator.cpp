@@ -4,7 +4,6 @@
 
 #include "RoutineGenerator.h"
 #include "ZCodeConverter.h"
-#include "ZCodeHeader.h"
 #include "Utils.h"
 #include <iostream>
 
@@ -41,16 +40,16 @@ std::vector<std::bitset<8>> RoutineGenerator::printPrintCharInstruction(uint8_t 
     vector<bitset<8>> akk = vector<bitset<8>>();
     akk.push_back(numberToBitset(PRINT_CHAR));
     akk.push_back(numberToBitset(0xbf));
-    akk.push_back(numberToBitset(0x10));
+    akk.push_back(numberToBitset(var));
     return akk;
 }
 
-std::vector<std::bitset<8>> RoutineGenerator::printCallToMainAndMain(int offset, int locVar) {
+std::vector<std::bitset<8>> RoutineGenerator::printCallToMainAndMain(size_t offset, unsigned int locVar) {
     vector<bitset<8>> akk = vector<bitset<8>>();
-    size_t pkgAdrr = Utils::calculateNextPackageAddress(offset + 3);
+    size_t pkgAdrr = Utils::calculateNextPackageAddress((size_t) (offset + 3));
     //call the main
     akk.push_back(bitset<8>(CALL_1N));
-    Utils::setShortVal(pkgAdrr / 8, akk);
+    Utils::setShortVal((uint16_t) (pkgAdrr / 8), akk);
     Utils::paddingToNextPackageAddress(akk, offset);
     akk.push_back(numberToBitset(locVar));
     return akk;

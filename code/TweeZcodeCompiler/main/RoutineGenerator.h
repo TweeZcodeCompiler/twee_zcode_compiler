@@ -23,7 +23,7 @@ public:
 
     std::vector<std::bitset<8>> printPrintStringInstruction(std::string stringToPrint);
 
-    std::vector<std::bitset<8>> printCallToMainAndMain(int offset, int locVar);
+    std::vector<std::bitset<8>> printCallToMainAndMain(size_t offset, unsigned int locVar);
 
     enum Opcode {
         //Opcode for print operation; following by Z-character String
