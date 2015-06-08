@@ -11,35 +11,36 @@
 #include <bitset>
 #include <map>
 #include "Jumps.h"
+#include "OpcodeParameterGenerator.h"
 
 class RoutineGenerator {
 
 private:
     bool quitOpcodePrinted = false;                 // every routine needs to call quit opcode
-    int firstInstructionAddress = -1;
     std::map<int, std::bitset<8>> akk;
     Jumps jumps;
+    OpcodeParameterGenerator opcodeGenerator;
 
     std::bitset<8> numberToBitset(unsigned int number);
+    void addBitset(std::vector<std::bitset<8>> bitsets);
+    void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable);
 
 public:
     std::vector<std::bitset<8>> getRoutine();
     void print(std::string stringToPrint);
     void newLine();
-    void jump(std::string toLabel);
 
     void addLargeNumber(int16_t number);    // signed number over 2 bytes
     void addLargeNumber(int16_t number, int pos);    // signed number over 2 bytes
 
     void addBitset(std::bitset<8> byte, int pos = -1);
 
-    // Jump if a is equal to any of the subsequent operands (one argument never jumps)
-    void jumpEquals(std::string toLabel, bool jumpIfTrue, int8_t variable1, bool parameter1IsVariable,
-                    int8_t variable2 = -1, bool parameter2IsVariable = false, int8_t variable3 = -1,
-                    bool parameter3IsVariable = false, int8_t variable4 = -1, bool parameter4IsVariable = false);
-
-
-    void jumpZero(int16_t variable, bool parameterIsVariable, std::string toLabel, bool jumpIfTrue);
+    void jump(std::string toLabel);
+    void jumpZero(std::string toLabel, bool jumpIfTrue, int16_t variable, bool parameterIsVariable);
+    void jumpLessThan(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable);
+    void jumpGreaterThan(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable);
+    void jumpEquals(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable);
+    void jumpEquals(std::string toLabel, bool jumpIfTrue, u_int16_t param, bool paramIsVariable);
 
     void quitRoutine();
 
@@ -50,7 +51,7 @@ public:
         addBitset(numberToBitset(0));   // number of local variables in routine
     }
 
-    enum Opcode{
+    enum Opcode : unsigned int {
         // Print new line
                 NEW_LINE = 187,
         // Opcodes for jump instructions
@@ -76,13 +77,6 @@ public:
         // Conditional jump: bit 6 of first byte of offset determines whether the offset is only between 0 and 63 over the
         // bit 5 to 0 or signed offset over 14 bits (set to 1 -> offset only 6 bits)
                 JUMP_OFFSET_5_BIT = 6
-    };
-
-    enum OperandTypes{
-        // Operand is a variable
-                TYPE_VARIABLE = 5,
-        // Operand is 1 byte constant
-                TYPE_SMALL_CONSTANT = 4
     };
 };
 

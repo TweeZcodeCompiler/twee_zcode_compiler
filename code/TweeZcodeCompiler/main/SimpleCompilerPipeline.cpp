@@ -49,16 +49,17 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     //routineGenerator.jump("two");
     routineGenerator.print(passage.get()->getBody().getContent());
     routineGenerator.newLine();
+
     routineGenerator.jumpEquals("two", true, 3, 3, false, false);
 
     routineGenerator.print(passage.get()->getBody().getContent());
-    routineGenerator.print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+    //routineGenerator.print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
     routineGenerator.print(passage.get()->getBody().getContent());
 
-    routineGenerator.jumpZero(2, false, "three", true);
-    routineGenerator.jumpZero(0, false, "one", true);
-    routineGenerator.jumpZero(0, false, "three", true);
-    routineGenerator.jumpZero(0, false, "three", true);
+    /*routineGenerator.jumpZero("three", true, 2, false);
+    routineGenerator.jumpZero("one", true, 0, false);
+    routineGenerator.jumpZero("three", true, 2, false);
+    routineGenerator.jumpZero("three", true, 2, false);*/
 
     routineGenerator.addLabel("two");
     routineGenerator.print("Ende");

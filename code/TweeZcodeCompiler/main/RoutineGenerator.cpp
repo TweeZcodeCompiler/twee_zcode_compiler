@@ -29,6 +29,12 @@ void RoutineGenerator::addBitset(std::bitset<8> byte, int pos) {
     akk[pos < 0 ? akk.size() : pos] = byte;
 }
 
+void RoutineGenerator::addBitset(vector<bitset<8>> bitsets) {
+    for (bitset<8> bitset : bitsets) {
+        akk[akk.size()] = bitset;
+    }
+}
+
 void RoutineGenerator::print(string stringToPrint) {
     ZCodeConverter converter = ZCodeConverter();
     vector<bitset<8>> zsciiString = converter.convertStringToZSCII(stringToPrint);
@@ -67,29 +73,9 @@ void RoutineGenerator::addLabel(string label) {
     jumps.newLabel(label);
 }
 
-void RoutineGenerator::jumpZero(int16_t parameter, bool parameterIsVariable, string toLabel, bool jumpIfTrue) {
-    bitset<8> opcode = numberToBitset(JZ);
-    bool oneByteParameter = true;
-
-    if (parameterIsVariable) {
-        opcode.set(TYPE_VARIABLE, parameterIsVariable);
-    } else {
-        if (parameter < 0) {
-            cout << "Constant < 0 not allowed at address: " << firstInstructionAddress + akk.size() << endl;
-            throw;
-        } else if (parameter < 256) {
-            opcode.set(TYPE_SMALL_CONSTANT, true);
-        } else {
-            oneByteParameter = false;
-        }
-    }
-    addBitset(opcode);
-
-    if (oneByteParameter) {
-        addBitset(numberToBitset(parameter));
-    } else {
-        addLargeNumber(parameter);
-    }
+void RoutineGenerator::jumpZero(string toLabel, bool jumpIfTrue, int16_t parameter, bool parameterIsVariable) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JZ, parameter, parameterIsVariable);
+    addBitset(instructions);
 
     jumps.newJump(toLabel);
 
@@ -103,29 +89,37 @@ void RoutineGenerator::jumpZero(int16_t parameter, bool parameterIsVariable, str
     addBitset(numberToBitset(0));
 }
 
-void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, int8_t variable1, bool parameter1IsVariable,
-                int8_t variable2, bool parameter2IsVariable, int8_t variable3,
-                bool parameter3IsVariable, int8_t variable4, bool parameter4IsVariable) {
+void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t param, bool paramIsVariable) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JE, param, paramIsVariable);
+    addBitset(instructions);
 
-    bitset<8> opcode = numberToBitset(JE);
-    int paramCount = 4;
+    jumps.newJump(toLabel);
 
+    bitset<8> offsetFirstBits;
+    offsetFirstBits.set(JUMP_COND_TRUE, jumpIfTrue);
+    offsetFirstBits.set(JUMP_COND_OFFSET_PLACEHOLDER, true);
+    offsetFirstBits.set(JUMP_UNCOND_OFFSET_PLACEHOLDER, false);
 
-    if (parameter1IsVariable) {
-        opcode.set(6, true);
-        if (variable1 < 0 || variable1 > 255) {
-            // TODO: Opcode needs to be assembled to variable form
-        }
-    }
-    if (parameter2IsVariable) {
-        opcode.set(5, true);
-        if (variable2 < 0 || variable2 > 255) {
-            // TODO: Opcode needs to be assembled to variable form
-        }
-    }
-    addBitset(opcode);
-    addBitset(numberToBitset(variable1));
-    addBitset(numberToBitset(variable2));
+    // placeholder, will be replaced in getRoutine()
+    addBitset(offsetFirstBits);
+    addBitset(numberToBitset(0));
+}
+
+void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable) {
+    conditionalJump(JE, toLabel, jumpIfTrue, param1, param2, param1IsVariable, param2IsVariable);
+}
+
+void RoutineGenerator::jumpLessThan(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable) {
+    conditionalJump(JL, toLabel, jumpIfTrue, param1, param2, param1IsVariable, param2IsVariable);
+}
+
+void RoutineGenerator::jumpGreaterThan(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable) {
+    conditionalJump(JG, toLabel, jumpIfTrue, param1, param2, param1IsVariable, param2IsVariable);
+}
+
+void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(opcode, param1, param2, param1IsVariable, param2IsVariable);
+    addBitset(instructions);
 
     jumps.newJump(toLabel);
 
