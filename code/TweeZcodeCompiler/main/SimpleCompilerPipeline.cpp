@@ -113,20 +113,16 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     Utils::append(highMemoryZcode, routine);
 
     RoutineGenerator testRoutineGenerator = RoutineGenerator();
-
-    ZCodeConverter converter = ZCodeConverter();
-    vector<bitset<8>> zsciiString = converter.convertStringToZSCII("1");
-    unsigned  long i = zsciiString.at(1).to_ulong();
-    testRoutineGenerator.store(0x10, 49);
-    //testRoutineGenerator.store(0x10, 1);
     testRoutineGenerator.printString("Dies ist ein Test");
     testRoutineGenerator.newLabel("start");
     testRoutineGenerator.newLine();
     testRoutineGenerator.printString("print 1 to exit");
     testRoutineGenerator.readChar(0x00);
-    testRoutineGenerator.jumpEquals("start", false, 0x00, 0x10, true, true);
+
+    testRoutineGenerator.jumpEquals("start", false, 0x00, 49, true, false);
     testRoutineGenerator.newLine();
-    testRoutineGenerator.printString("Well done :)");
+    testRoutineGenerator.printString("Mission completed");
+    testRoutineGenerator.newLine();
     testRoutineGenerator.quitRoutine();
 
     vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();

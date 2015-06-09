@@ -171,6 +171,18 @@ void RoutineGenerator::store(u_int8_t address, u_int16_t value) {
     addBitset(instructions);
 }
 
+void RoutineGenerator::load(u_int8_t address, u_int8_t result_address) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, address, true);
+    addBitset(instructions);
+
+    addBitset(numberToBitset(result_address));
+}
+
+void RoutineGenerator::printStringAtAddress(u_int8_t address) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(PRINT_ADDR, address, true);
+    addBitset(instructions);
+}
+
 void RoutineGenerator::addLargeNumber(int16_t number) {
     addLargeNumber(number, -1);
 }

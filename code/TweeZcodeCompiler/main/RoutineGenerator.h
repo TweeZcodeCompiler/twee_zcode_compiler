@@ -45,9 +45,11 @@ public:
     void readChar(uint8_t var);
     void printChar(uint8_t var);
     void printString(std::string stringToPrint);
+    void printStringAtAddress(u_int8_t address);
     void callToMainRoutine(size_t offset, unsigned int locVar);
 
     void store(u_int8_t address, u_int16_t value);
+    void load(u_int8_t address, u_int8_t result_address);
 
     void quitRoutine();
 
@@ -75,7 +77,11 @@ public:
         // Opcode: quit the main; no arguments.
                 QUIT = 186,
         // Opcode: store variable
-                STORE = 13
+                STORE = 13,
+        // Opcode: load a variable
+                LOAD = 142,
+        // Opcode: print zscii encoded string at address
+                PRINT_ADDR = 135
     };
 
     enum BranchOffset{
