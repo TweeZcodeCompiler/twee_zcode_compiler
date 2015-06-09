@@ -55,6 +55,8 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     Utils::append(zCode, staticMemory);
     Utils::append(zCode, highMemory);
 
+    RoutineGenerator::resolveCallInstructions(zCode);
+
     //calculate fileSize
     size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
     zCode = addFileSizeToHeader(zCode, fileSize);
@@ -111,13 +113,14 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, routine);
 
-    RoutineGenerator testRoutineGenerator = RoutineGenerator(0);
+    RoutineGenerator testRoutineGenerator = RoutineGenerator("main",0,highMemoryZcode,offset);
     testRoutineGenerator.printString("Dies ist ein Test");
     testRoutineGenerator.newLine();
-    testRoutineGenerator.printString("print 1 to exit");
+    testRoutineGenerator.printString("print 1 to routine 1");
     testRoutineGenerator.readChar(0x10);
     testRoutineGenerator.jumpEquals("w", false, 0x10, 49, true, false);
     testRoutineGenerator.printString("correct");
+    testRoutineGenerator.callRoutine("Routine1");
     testRoutineGenerator.quitRoutine();
     testRoutineGenerator.newLabel("w");
     testRoutineGenerator.printString("wrong");
@@ -125,6 +128,13 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
 
     vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, testRoutine);
+
+    RoutineGenerator routine1 = RoutineGenerator("Routine1",0,highMemoryZcode,offset);
+    routine1.printString("Dies ist Routine 1");
+    routine1.quitRoutine();
+
+    vector<bitset<8>> vroutine1 = routine1.getRoutine();
+    Utils::append(highMemoryZcode, vroutine1);
 
     return highMemoryZcode;
 }

@@ -12,11 +12,15 @@
 #include <map>
 #include "Jumps.h"
 #include "OpcodeParameterGenerator.h"
+#include "Utils.h"
 
 class RoutineGenerator {
 
 private:
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
+    static std::map<std::string, size_t> routines; //keys = name of routine, value = offset.
+    static std::map<size_t, std::string> callTo; //keys = offset of call, value = name of routine
+    size_t offsetOfRoutine = 0;
     Jumps jumps;
     OpcodeParameterGenerator opcodeGenerator;
 
@@ -29,6 +33,8 @@ private:
 
 public:
     std::vector<std::bitset<8>> getRoutine();
+
+    static void resolveCallInstructions(std::vector<std::bitset<8>> &zCode);
 
     void newLine();
 
@@ -64,6 +70,9 @@ public:
 
     void callRoutine(size_t routineOffset);
 
+    //Call to a routine with spezific name
+    void callRoutine(std::string nameOfRoutine);
+
     void store(u_int8_t address, u_int16_t value);
 
     void load(u_int8_t address, u_int8_t result_address);
@@ -77,6 +86,18 @@ public:
     RoutineGenerator(unsigned int locVar) {
         jumps.setRoutineBitsetMap(routineZcode);
         addBitset(numberToBitset(locVar));
+    }
+
+    //this constructor padding zCode to the next package adress and initialize this routine with the name 'name'
+    RoutineGenerator(std::string name,unsigned int locVar, std::vector<std::bitset<8>> &zCode, size_t offsetOfZCode){
+        size_t padding = Utils::paddingToNextPackageAddress(zCode.size(),offsetOfZCode);
+
+        for (size_t i = 0; i < padding; i++) {
+            addBitset(numberToBitset(0));
+        }
+        RoutineGenerator::routines[name] = zCode.size();
+        this->offsetOfRoutine = zCode.size()+offsetOfZCode;
+        jumps.setRoutineBitsetMap(routineZcode);
     }
 
     enum Opcode : unsigned int {

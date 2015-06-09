@@ -35,7 +35,7 @@ size_t Utils::calculateNextPackageAddress(size_t currentOffset) {
 }
 
 size_t Utils::paddingToNextPackageAddress(size_t vector_size, size_t offset) {
-    size_t pkgAdrr = Utils::calculateNextPackageAddress(offset + 3);
+    size_t pkgAdrr = Utils::calculateNextPackageAddress(offset+vector_size + 3);
     size_t empty = pkgAdrr - vector_size - offset;
     return (empty > 0) ? empty : 0;
 }

@@ -4,11 +4,13 @@
 
 #include "RoutineGenerator.h"
 #include "ZCodeConverter.h"
-#include "Utils.h"
 #include <iostream>
 #include <algorithm>
 
 using namespace std;
+
+ map<string,size_t> RoutineGenerator::routines = map<string, size_t >();
+ std::map<size_t, std::string> RoutineGenerator::callTo =  std::map<size_t, std::string>();
 
 vector<bitset<8>> RoutineGenerator::getRoutine() {
     jumps.calculateOffsets();
@@ -58,6 +60,12 @@ void RoutineGenerator::printChar(uint8_t var) {
     addBitset(numberToBitset(PRINT_CHAR));
     addBitset(numberToBitset(0xbf));
     addBitset(numberToBitset(var));
+}
+
+void RoutineGenerator::callRoutine(string nameOfRoutine) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N,0, false);
+    addBitset(instructions);
+    RoutineGenerator::callTo[offsetOfRoutine+routineZcode.size()-2]=nameOfRoutine;
 }
 
 void RoutineGenerator::callRoutine(size_t routineOffset) {
@@ -182,6 +190,18 @@ void RoutineGenerator::printStringAtAddress(u_int8_t address) {
 
 void RoutineGenerator::addLargeNumber(int16_t number) {
     addLargeNumber(number, -1);
+}
+
+void RoutineGenerator::resolveCallInstructions(std::vector<std::bitset<8>> &zCode) {
+    typedef map<size_t , string>::iterator it_type;
+    for(it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++){
+        size_t calledRoutineOffset = RoutineGenerator::routines[it->second];
+        size_t callOffset = it->first;
+        vector<bitset<8>> callAdress = vector<bitset<8>>();
+        Utils::setShortVal(calledRoutineOffset/8,callAdress);
+        zCode[callOffset]=callAdress[0];
+        zCode[callOffset]=callAdress[1];
+    }
 }
 
 void RoutineGenerator::addLargeNumber(int16_t number, int pos) {
