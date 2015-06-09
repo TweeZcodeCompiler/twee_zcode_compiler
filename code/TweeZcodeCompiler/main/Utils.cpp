@@ -34,12 +34,20 @@ size_t Utils::calculateNextPackageAddress(size_t currentOffset) {
     return ((currentOffset + 8) / 8) * 8;
 }
 
-void Utils::paddingToNextPackageAddress(std::vector<std::bitset<8>> &bitset, size_t offset) {
+size_t Utils::paddingToNextPackageAddress(size_t vector_size, size_t offset) {
     size_t pkgAdrr = Utils::calculateNextPackageAddress(offset + 3);
-    size_t empty = pkgAdrr - bitset.size() - offset;
-    Utils::fillWithBytes(bitset, 0, (empty > 0) ? empty : 0);
+    size_t empty = pkgAdrr - vector_size - offset;
+    return (empty > 0) ? empty : 0;
 }
 
 void Utils::append(std::vector<std::bitset<8>> &head, std::vector<std::bitset<8>> &tail) {
     head.insert(head.end(), tail.begin(), tail.end());
+}
+
+void Utils::insertPaddingToNextRoutine(vector<bitset<8>> &bitsets, size_t routineOffset) {
+    size_t padding = Utils::paddingToNextPackageAddress(bitsets.size(), routineOffset);
+
+    for (size_t i = 0; i < padding; i++) {
+        bitsets.push_back(bitset<8>(0));
+    }
 }

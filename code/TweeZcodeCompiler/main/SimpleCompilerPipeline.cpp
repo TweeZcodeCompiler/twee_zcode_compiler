@@ -103,27 +103,30 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHe
 }
 
 std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader &header, size_t offset) {
-    RoutineGenerator routineGenerator = RoutineGenerator();
-    vector<bitset<8>> akk = vector<bitset<8>>();
+    vector<bitset<8>> highMemoryZcode = vector<bitset<8>>();
 
-    vector<bitset<8>> main = routineGenerator.printCallToMainAndMain(offset, 0);
-    Utils::append(akk, main);
+    RoutineGenerator callToMainroutineGenerator = RoutineGenerator();
+    callToMainroutineGenerator.callRoutine(offset);
 
-    vector<bitset<8>> readChar = routineGenerator.printReadCharInstruction(0x10);
-    Utils::append(akk, readChar);
+    vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
+    Utils::append(highMemoryZcode, routine);
 
-    vector<bitset<8>> printChar = routineGenerator.printPrintCharInstruction(0x10);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
+    RoutineGenerator testRoutineGenerator = RoutineGenerator(0);
+    testRoutineGenerator.printString("Dies ist ein Test");
+    testRoutineGenerator.newLine();
+    testRoutineGenerator.printString("print 1 to exit");
+    testRoutineGenerator.readChar(0x10);
+    testRoutineGenerator.jumpEquals("w", false, 0x10, 49, true, false);
+    testRoutineGenerator.printString("correct");
+    testRoutineGenerator.quitRoutine();
+    testRoutineGenerator.newLabel("w");
+    testRoutineGenerator.printString("wrong");
+    testRoutineGenerator.quitRoutine();
 
-    akk.push_back(bitset<8>(RoutineGenerator::NEW_LINE));
-    akk.push_back(bitset<8>(RoutineGenerator::QUIT));
+    vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
+    Utils::append(highMemoryZcode, testRoutine);
 
-    return akk;
+    return highMemoryZcode;
 }
 
 std::vector<std::bitset<8>> SimpleCompilerPipeline::addFileSizeToHeader(std::vector<std::bitset<8>> zCode,
