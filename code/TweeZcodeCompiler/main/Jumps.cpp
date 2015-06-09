@@ -62,7 +62,7 @@ void Jumps::calculateOffsets() {
                                         wrongOffsetBitset.test(RoutineGenerator::JUMP_COND_TRUE));
 
                     if ((savedOffset < 0 || savedOffset > 63) && (offset >= 0 && offset <= 63)) {
-                        offset--;
+                        routineOpcodes->erase(indexOfJumpInstruction + 1);
                     }
 
                     calculatedCondOffsets[indexOfJumpInstruction] = offset;
@@ -95,6 +95,11 @@ int Jumps::getOffset(int jumpPosition, int labelPosition) {
             offset--;
         }
     }
+
+    if (offset >= 0 && offset <= 63) {
+        offset++;
+    }
+
     return offset;
 }
 
@@ -102,14 +107,12 @@ int Jumps::addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondT
     bitset<8> firstHalf, secondHalf;
 
     // Offset needs to be between 0 and 63 to fit into 6 bits
-    bool useOneByte = offset > 0 && offset < 64;
+    bool useOneByte = offset > 0 && (offset - 1) < 64;
 
     firstHalf.set(RoutineGenerator::JUMP_COND_TRUE, jumpIfCondTrue);
     firstHalf.set(RoutineGenerator::JUMP_OFFSET_5_BIT, useOneByte);
 
     if (useOneByte) {
-        offset -= 2;    // TODO: Why -2? -1 should be enough...
-
         bitset<6> bitsetOffset (offset);
 
         for (size_t i = 0; i < 6; i++) {

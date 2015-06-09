@@ -65,19 +65,17 @@ void RoutineGenerator::printChar(uint8_t var) {
     addBitset(numberToBitset(var));
 }
 
-void RoutineGenerator::callToMainRoutine(size_t offset, unsigned int locVar) {
-    size_t pkgAdrr = Utils::calculateNextPackageAddress((size_t) (offset + 3));
+void RoutineGenerator::callRoutine(size_t routineOffset) {
+    size_t pkgAdrr = Utils::calculateNextPackageAddress((size_t) (routineOffset + 3));
 
-    //call the main
-    addBitset(bitset<8>(CALL_1N));
-    addLargeNumber((uint16_t) (pkgAdrr / 8));
-    size_t padding = Utils::paddingToNextPackageAddress(routineZcode.size(), offset);
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (uint16_t) (pkgAdrr / 8), false);
+    addBitset(instructions);
+
+    size_t padding = Utils::paddingToNextPackageAddress(routineZcode.size(), routineOffset);
 
     for (size_t i = 0; i < padding; i++) {
         addBitset(numberToBitset(0));
     }
-
-    addBitset(numberToBitset(locVar));
 }
 
 std::bitset<8> RoutineGenerator::numberToBitset(unsigned int number) {

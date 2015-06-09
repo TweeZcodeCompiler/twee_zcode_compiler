@@ -107,26 +107,40 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     vector<bitset<8>> highMemoryZcode = vector<bitset<8>>();
 
     RoutineGenerator callToMainroutineGenerator = RoutineGenerator();
-    callToMainroutineGenerator.callToMainRoutine(offset, 0);
+    callToMainroutineGenerator.callRoutine(offset);
 
     vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, routine);
 
-    RoutineGenerator testRoutineGenerator = RoutineGenerator();
+    RoutineGenerator testRoutineGenerator = RoutineGenerator(0);
     testRoutineGenerator.printString("Dies ist ein Test");
-    testRoutineGenerator.newLabel("start");
+    testRoutineGenerator.jumpEquals("b", true, 1, 1, false, false);
+    testRoutineGenerator.printString("eins");
+    testRoutineGenerator.newLabel("b");
+    testRoutineGenerator.printString("zwei");
+
+    testRoutineGenerator.newLabel("w");
     testRoutineGenerator.newLine();
     testRoutineGenerator.printString("print 1 to exit");
-    testRoutineGenerator.readChar(0x00);
+    testRoutineGenerator.readChar(0x10);
+    testRoutineGenerator.jumpEquals("w", false, 0x10, 49, true, false);
 
-    testRoutineGenerator.jumpEquals("start", false, 0x00, 49, true, false);
-    testRoutineGenerator.newLine();
-    testRoutineGenerator.printString("Mission completed");
-    testRoutineGenerator.newLine();
+    testRoutineGenerator.jumpEquals("w", true, 1, 0, false, false);
+    testRoutineGenerator.jumpEquals("w", true, 1, 0, false, false);
+    testRoutineGenerator.jumpEquals("w", true, 1, 0, false, false);
+    testRoutineGenerator.jumpEquals("w", true, 1, 0, false, false);
+    testRoutineGenerator.printString("correct");
+    testRoutineGenerator.quitRoutine();
+
+
+    testRoutineGenerator.printString("wrong");
+
     testRoutineGenerator.quitRoutine();
 
     vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, testRoutine);
+
+    RoutineGenerator correctNum = RoutineGenerator(0);
 
     return highMemoryZcode;
 }

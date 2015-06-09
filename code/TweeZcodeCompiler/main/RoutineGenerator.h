@@ -46,7 +46,7 @@ public:
     void printChar(uint8_t var);
     void printString(std::string stringToPrint);
     void printStringAtAddress(u_int8_t address);
-    void callToMainRoutine(size_t offset, unsigned int locVar);
+    void callRoutine(size_t routineOffset);
 
     void store(u_int8_t address, u_int16_t value);
     void load(u_int8_t address, u_int8_t result_address);
@@ -55,6 +55,11 @@ public:
 
     RoutineGenerator() {
         jumps.setRoutineBitsetMap(routineZcode);
+    }
+
+    RoutineGenerator(unsigned int locVar) {
+        jumps.setRoutineBitsetMap(routineZcode);
+        addBitset(numberToBitset(locVar));
     }
 
     enum Opcode : unsigned int {
