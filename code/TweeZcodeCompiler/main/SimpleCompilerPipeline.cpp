@@ -4,6 +4,7 @@
 
 #include "SimpleCompilerPipeline.h"
 #include "Utils.h"
+#include "ZCodeConverter.h"
 
 #include <TweeParser.h>
 #include <fstream>
@@ -55,13 +56,6 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     Utils::append(zCode, staticMemory);
     Utils::append(zCode, highMemory);
 
-    //generate zcode for token string
-    RoutineGenerator routineGenerator = RoutineGenerator();
-    std::vector<std::bitset<8>> zByteCodePrint = routineGenerator.printPrintRoutine(
-            passage.get()->getBody().getContent());
-    zCode.insert(zCode.end(), zByteCodePrint.begin(), zByteCodePrint.end());
-    log("Print Command added to ZCode");
-
     //calculate fileSize
     size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
     zCode = addFileSizeToHeader(zCode, fileSize);
@@ -110,27 +104,35 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHe
 }
 
 std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader &header, size_t offset) {
-    RoutineGenerator routineGenerator = RoutineGenerator();
-    vector<bitset<8>> akk = vector<bitset<8>>();
+    vector<bitset<8>> highMemoryZcode = vector<bitset<8>>();
 
-    vector<bitset<8>> main = routineGenerator.printCallToMainAndMain(offset, 0);
-    Utils::append(akk, main);
+    RoutineGenerator callToMainroutineGenerator = RoutineGenerator();
+    callToMainroutineGenerator.callToMainRoutine(offset, 0);
 
-    vector<bitset<8>> readChar = routineGenerator.printReadCharInstruction(0x10);
-    Utils::append(akk, readChar);
+    vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
+    Utils::append(highMemoryZcode, routine);
 
-    vector<bitset<8>> printChar = routineGenerator.printPrintCharInstruction(0x10);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
+    RoutineGenerator testRoutineGenerator = RoutineGenerator();
 
-    akk.push_back(bitset<8>(RoutineGenerator::NEW_LINE));
-    akk.push_back(bitset<8>(RoutineGenerator::QUIT));
+    ZCodeConverter converter = ZCodeConverter();
+    vector<bitset<8>> zsciiString = converter.convertStringToZSCII("1");
+    unsigned  long i = zsciiString.at(1).to_ulong();
+    testRoutineGenerator.store(0x10, 49);
+    //testRoutineGenerator.store(0x10, 1);
+    testRoutineGenerator.printString("Dies ist ein Test");
+    testRoutineGenerator.newLabel("start");
+    testRoutineGenerator.newLine();
+    testRoutineGenerator.printString("print 1 to exit");
+    testRoutineGenerator.readChar(0x00);
+    testRoutineGenerator.jumpEquals("start", false, 0x00, 0x10, true, true);
+    testRoutineGenerator.newLine();
+    testRoutineGenerator.printString("Well done :)");
+    testRoutineGenerator.quitRoutine();
 
-    return akk;
+    vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
+    Utils::append(highMemoryZcode, testRoutine);
+
+    return highMemoryZcode;
 }
 
 std::vector<std::bitset<8>> SimpleCompilerPipeline::addFileSizeToHeader(std::vector<std::bitset<8>> zCode,

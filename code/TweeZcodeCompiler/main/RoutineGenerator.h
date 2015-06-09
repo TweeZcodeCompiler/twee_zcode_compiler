@@ -15,10 +15,9 @@
 
 class RoutineGenerator {
 
-
 private:
     bool quitOpcodePrinted = false;                 // every routine needs to call quit opcode
-    std::map<int, std::bitset<8>> akk;
+    std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
     Jumps jumps;
     OpcodeParameterGenerator opcodeGenerator;
 
@@ -28,7 +27,6 @@ private:
 
 public:
     std::vector<std::bitset<8>> getRoutine();
-    void print(std::string stringToPrint);
     void newLine();
 
     void addLargeNumber(int16_t number);    // signed number over 2 bytes
@@ -36,6 +34,7 @@ public:
 
     void addBitset(std::bitset<8> byte, int pos = -1);
 
+    void newLabel(std::string label);
     void jump(std::string toLabel);
     void jumpZero(std::string toLabel, bool jumpIfTrue, int16_t variable, bool parameterIsVariable);
     void jumpLessThan(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable);
@@ -43,21 +42,17 @@ public:
     void jumpEquals(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable);
     void jumpEquals(std::string toLabel, bool jumpIfTrue, u_int16_t param, bool paramIsVariable);
 
+    void readChar(uint8_t var);
+    void printChar(uint8_t var);
+    void printString(std::string stringToPrint);
+    void callToMainRoutine(size_t offset, unsigned int locVar);
+
+    void store(u_int8_t address, u_int16_t value);
+
     void quitRoutine();
 
-    void addLabel(std::string label);
-
-    std::vector<std::bitset<8>> printReadCharInstruction(uint8_t var);
-
-    std::vector<std::bitset<8>> printPrintCharInstruction(uint8_t var);
-
-    std::vector<std::bitset<8>> printPrintStringInstruction(std::string stringToPrint);
-
-    std::vector<std::bitset<8>> printCallToMainAndMain(size_t offset, unsigned int locVar);
-
     RoutineGenerator() {
-        jumps.setRoutineBitsetMap(akk);
-        addBitset(numberToBitset(0));   // number of local variables in routine
+        jumps.setRoutineBitsetMap(routineZcode);
     }
 
     enum Opcode : unsigned int {
@@ -78,7 +73,9 @@ public:
         // Opcode for print operation; following by Z-character String
                 PRINT = 178,
         // Opcode: quit the main; no arguments.
-                QUIT = 186
+                QUIT = 186,
+        // Opcode: store variable
+                STORE = 13
     };
 
     enum BranchOffset{

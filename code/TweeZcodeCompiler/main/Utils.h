@@ -19,7 +19,7 @@ public:
 
     static size_t calculateNextPackageAddress(size_t currentOffset);
 
-    static void paddingToNextPackageAddress(std::vector<std::bitset<8>> &bitset, size_t offset);
+    static size_t paddingToNextPackageAddress(size_t vector_size, size_t offset);
 
     static void append(std::vector<std::bitset<8>> &head, std::vector<std::bitset<8>> &tail);
 };

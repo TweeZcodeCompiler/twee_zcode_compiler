@@ -10,16 +10,16 @@
 
 using namespace std;
 
-std::vector<std::bitset<8>> RoutineGenerator::getRoutine() {
-    if (!quitOpcodePrinted) {
+vector<bitset<8>> RoutineGenerator::getRoutine() {
+    /*if (!quitOpcodePrinted) {
         cout << "Routine has no quit expression!" << endl;
         throw;
-    }
+    }*/
 
     jumps.calculateOffsets();
 
     vector<bitset<8>> zcode;
-    for (map<int, bitset<8>>::iterator entry = akk.begin(); entry != akk.end(); ++entry) {
+    for (map<int, bitset<8>>::iterator entry = routineZcode.begin(); entry != routineZcode.end(); ++entry) {
         zcode.push_back(entry->second);
     }
 
@@ -27,17 +27,16 @@ std::vector<std::bitset<8>> RoutineGenerator::getRoutine() {
 }
 
 void RoutineGenerator::addBitset(std::bitset<8> byte, int pos) {
-    akk[pos < 0 ? akk.size() : pos] = byte;
+    routineZcode[pos < 0 ? routineZcode.size() : pos] = byte;
 }
 
 void RoutineGenerator::addBitset(vector<bitset<8>> bitsets) {
     for (bitset<8> bitset : bitsets) {
-        akk[akk.size()] = bitset;
+        routineZcode[routineZcode.size()] = bitset;
     }
 }
 
-std::vector<std::bitset<8>> RoutineGenerator::printPrintStringInstruction(std::string stringToPrint) {
-    vector<bitset<8>> akk = vector<bitset<8>>();
+void RoutineGenerator::printString(std::string stringToPrint) {
     ZCodeConverter converter = ZCodeConverter();
     vector<bitset<8>> zsciiString = converter.convertStringToZSCII(stringToPrint);
 
@@ -51,35 +50,34 @@ std::vector<std::bitset<8>> RoutineGenerator::printPrintStringInstruction(std::s
         }
         addBitset(zsciiString[i]);
     }
-    return akk;
 }
 
-std::vector<std::bitset<8>> RoutineGenerator::printReadCharInstruction(uint8_t var) {
-    vector<bitset<8>> akk = vector<bitset<8>>();
-    akk.push_back(numberToBitset(READ_CHAR));
-    akk.push_back(numberToBitset(0xbf));
-    akk.push_back(numberToBitset(1));
-    akk.push_back(numberToBitset(var));
-    return akk;
+void RoutineGenerator::readChar(uint8_t var) {
+    addBitset(numberToBitset(READ_CHAR));
+    addBitset(numberToBitset(0xbf));
+    addBitset(numberToBitset(1));
+    addBitset(numberToBitset(var));
 }
 
-std::vector<std::bitset<8>> RoutineGenerator::printPrintCharInstruction(uint8_t var) {
-    vector<bitset<8>> akk = vector<bitset<8>>();
-    akk.push_back(numberToBitset(PRINT_CHAR));
-    akk.push_back(numberToBitset(0xbf));
-    akk.push_back(numberToBitset(var));
-    return akk;
+void RoutineGenerator::printChar(uint8_t var) {
+    addBitset(numberToBitset(PRINT_CHAR));
+    addBitset(numberToBitset(0xbf));
+    addBitset(numberToBitset(var));
 }
 
-std::vector<std::bitset<8>> RoutineGenerator::printCallToMainAndMain(size_t offset, unsigned int locVar) {
-    vector<bitset<8>> akk = vector<bitset<8>>();
+void RoutineGenerator::callToMainRoutine(size_t offset, unsigned int locVar) {
     size_t pkgAdrr = Utils::calculateNextPackageAddress((size_t) (offset + 3));
+
     //call the main
-    akk.push_back(bitset<8>(CALL_1N));
-    Utils::setShortVal((uint16_t) (pkgAdrr / 8), akk);
-    Utils::paddingToNextPackageAddress(akk, offset);
-    akk.push_back(numberToBitset(locVar));
-    return akk;
+    addBitset(bitset<8>(CALL_1N));
+    addLargeNumber((uint16_t) (pkgAdrr / 8));
+    size_t padding = Utils::paddingToNextPackageAddress(routineZcode.size(), offset);
+
+    for (size_t i = 0; i < padding; i++) {
+        addBitset(numberToBitset(0));
+    }
+
+    addBitset(numberToBitset(locVar));
 }
 
 std::bitset<8> RoutineGenerator::numberToBitset(unsigned int number) {
@@ -104,7 +102,7 @@ void RoutineGenerator::quitRoutine() {
 }
 
 // adds label and next instruction address to 'branches' map
-void RoutineGenerator::addLabel(string label) {
+void RoutineGenerator::newLabel(string label) {
     jumps.newLabel(label);
 }
 
@@ -168,8 +166,9 @@ void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel,
     addBitset(numberToBitset(0));
 }
 
-bitset<8> RoutineGenerator::numberToBitset(unsigned int number){
-    return bitset<8>(number);
+void RoutineGenerator::store(u_int8_t address, u_int16_t value) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(STORE, address, value, true, false);
+    addBitset(instructions);
 }
 
 void RoutineGenerator::addLargeNumber(int16_t number) {
