@@ -29,7 +29,7 @@ Body Passage::getBody() {
 
 std::string Passage::to_string() {
 
-    return this->getHead().to_string() + std::string("\n") + this->getBody().to_string();
+    return std::string("Passage \n") + this->getHead().to_string() + std::string("\n") + this->getBody().to_string();
 
 }
 

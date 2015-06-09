@@ -35,7 +35,7 @@ std::string Link::getAltName() {
 std::string Link::to_string() {
 
     return std::string("Link \n")
-           + std::string("Target: ") + this->getTarget() + std::string("\n")
-           + std::string("AltName: ") + this->getAltName();
+           + std::string("      Target: ") + this->getTarget() + std::string("\n")
+           + std::string("      AltName: ") + this->getAltName();
 
 }
