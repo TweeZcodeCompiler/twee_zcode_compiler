@@ -4,7 +4,6 @@
 
 #include "SimpleCompilerPipeline.h"
 #include "Utils.h"
-#include "ZCodeConverter.h"
 
 #include <TweeParser.h>
 #include <fstream>
@@ -114,33 +113,18 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
 
     RoutineGenerator testRoutineGenerator = RoutineGenerator(0);
     testRoutineGenerator.printString("Dies ist ein Test");
-    testRoutineGenerator.jumpEquals("b", true, 1, 1, false, false);
-    testRoutineGenerator.printString("eins");
-    testRoutineGenerator.newLabel("b");
-    testRoutineGenerator.printString("zwei");
-
-    testRoutineGenerator.newLabel("w");
     testRoutineGenerator.newLine();
     testRoutineGenerator.printString("print 1 to exit");
     testRoutineGenerator.readChar(0x10);
     testRoutineGenerator.jumpEquals("w", false, 0x10, 49, true, false);
-
-    testRoutineGenerator.jumpEquals("w", true, 1, 0, false, false);
-    testRoutineGenerator.jumpEquals("w", true, 1, 0, false, false);
-    testRoutineGenerator.jumpEquals("w", true, 1, 0, false, false);
-    testRoutineGenerator.jumpEquals("w", true, 1, 0, false, false);
     testRoutineGenerator.printString("correct");
     testRoutineGenerator.quitRoutine();
-
-
+    testRoutineGenerator.newLabel("w");
     testRoutineGenerator.printString("wrong");
-
     testRoutineGenerator.quitRoutine();
 
     vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, testRoutine);
-
-    RoutineGenerator correctNum = RoutineGenerator(0);
 
     return highMemoryZcode;
 }

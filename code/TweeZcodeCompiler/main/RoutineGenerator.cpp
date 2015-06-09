@@ -11,11 +11,6 @@
 using namespace std;
 
 vector<bitset<8>> RoutineGenerator::getRoutine() {
-    /*if (!quitOpcodePrinted) {
-        cout << "Routine has no quit expression!" << endl;
-        throw;
-    }*/
-
     jumps.calculateOffsets();
 
     vector<bitset<8>> zcode;
@@ -95,7 +90,6 @@ void RoutineGenerator::jump(string toLabel) {
 }
 
 void RoutineGenerator::quitRoutine() {
-    quitOpcodePrinted = true;
     addBitset(numberToBitset(QUIT));
 }
 
@@ -136,20 +130,25 @@ void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t par
     addBitset(numberToBitset(0));
 }
 
-void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable) {
+void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2,
+                                  bool param1IsVariable, bool param2IsVariable) {
     conditionalJump(JE, toLabel, jumpIfTrue, param1, param2, param1IsVariable, param2IsVariable);
 }
 
-void RoutineGenerator::jumpLessThan(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable) {
+void RoutineGenerator::jumpLessThan(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2,
+                                    bool param1IsVariable, bool param2IsVariable) {
     conditionalJump(JL, toLabel, jumpIfTrue, param1, param2, param1IsVariable, param2IsVariable);
 }
 
-void RoutineGenerator::jumpGreaterThan(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable) {
+void RoutineGenerator::jumpGreaterThan(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2,
+                                       bool param1IsVariable, bool param2IsVariable) {
     conditionalJump(JG, toLabel, jumpIfTrue, param1, param2, param1IsVariable, param2IsVariable);
 }
 
-void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(opcode, param1, param2, param1IsVariable, param2IsVariable);
+void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, int16_t param1,
+                                       u_int16_t param2, bool param1IsVariable, bool param2IsVariable) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(opcode, param1, param2, param1IsVariable,
+                                                                            param2IsVariable);
     addBitset(instructions);
 
     jumps.newJump(toLabel);
@@ -186,7 +185,7 @@ void RoutineGenerator::addLargeNumber(int16_t number) {
 }
 
 void RoutineGenerator::addLargeNumber(int16_t number, int pos) {
-    bitset<16> shortVal (number);
+    bitset<16> shortVal(number);
     bitset<8> firstHalf, secondHalf;
 
     for (size_t i = 0; i < 8; i++) {

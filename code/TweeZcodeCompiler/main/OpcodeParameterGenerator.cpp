@@ -7,7 +7,8 @@
 
 using namespace std;
 
-vector<bitset<8>> OpcodeParameterGenerator::generate1OPInstruction(unsigned int opcode, u_int16_t param, bool paramIsVariable) {
+vector<bitset<8>> OpcodeParameterGenerator::generate1OPInstruction(unsigned int opcode, u_int16_t param,
+                                                                   bool paramIsVariable) {
     vector<bitset<8>> instructions;
 
     bitset<8> opcodeByte = bitset<8>(opcode);
@@ -40,7 +41,9 @@ vector<bitset<8>> OpcodeParameterGenerator::generate1OPInstruction(unsigned int 
     return instructions;
 }
 
-vector<bitset<8>> OpcodeParameterGenerator::generate2OPInstruction(unsigned int opcode, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable) {
+vector<bitset<8>> OpcodeParameterGenerator::generate2OPInstruction(unsigned int opcode, u_int16_t param1,
+                                                                   u_int16_t param2, bool param1IsVariable,
+                                                                   bool param2IsVariable) {
     bitset<8> opcodeByte = bitset<8>(opcode);
     bool longForm = true; // used for 2 operands
 
@@ -93,7 +96,8 @@ vector<bitset<8>> OpcodeParameterGenerator::generate2OPInstruction(unsigned int 
     return instructions;
 }
 
-vector<bitset<8>> OpcodeParameterGenerator::generateVarOPInstruction(unsigned int opcode, vector<u_int16_t> params, vector<bool> paramIsVariable) {
+vector<bitset<8>> OpcodeParameterGenerator::generateVarOPInstruction(unsigned int opcode, vector<u_int16_t> params,
+                                                                     vector<bool> paramIsVariable) {
     bitset<8> opcodeByte = bitset<8>(opcode);
 
     // variable form
@@ -136,13 +140,13 @@ vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitset
             paramTypes.set(i, true);
             paramTypes.set(i - 1, false);
 
-            instructions.push_back(bitset<8> (params[param]));
+            instructions.push_back(bitset<8>(params[param]));
         } else if (params[param] > -1 && params[param] < 256) {
             // type small constant
             paramTypes.set(i, false);
             paramTypes.set(i - 1, true);
 
-            instructions.push_back(bitset<8> (params[param]));
+            instructions.push_back(bitset<8>(params[param]));
         } else {
             // type large constant
             paramTypes.set(i, false);
@@ -160,7 +164,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitset
 }
 
 void OpcodeParameterGenerator::addLargeNumber(int16_t val, vector<bitset<8>> &vectorBitset) {
-    bitset<16> shortVal (val);
+    bitset<16> shortVal(val);
     bitset<8> firstHalf, secondHalf;
 
     for (size_t i = 0; i < 8; i++) {

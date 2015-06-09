@@ -16,17 +16,20 @@
 class RoutineGenerator {
 
 private:
-    bool quitOpcodePrinted = false;                 // every routine needs to call quit opcode
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
     Jumps jumps;
     OpcodeParameterGenerator opcodeGenerator;
 
     std::bitset<8> numberToBitset(unsigned int number);
+
     void addBitset(std::vector<std::bitset<8>> bitsets);
-    void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable);
+
+    void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, int16_t param1, u_int16_t param2,
+                         bool param1IsVariable, bool param2IsVariable);
 
 public:
     std::vector<std::bitset<8>> getRoutine();
+
     void newLine();
 
     void addLargeNumber(int16_t number);    // signed number over 2 bytes
@@ -35,20 +38,34 @@ public:
     void addBitset(std::bitset<8> byte, int pos = -1);
 
     void newLabel(std::string label);
+
     void jump(std::string toLabel);
+
     void jumpZero(std::string toLabel, bool jumpIfTrue, int16_t variable, bool parameterIsVariable);
-    void jumpLessThan(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable);
-    void jumpGreaterThan(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable);
-    void jumpEquals(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable);
+
+    void jumpLessThan(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable,
+                      bool param2IsVariable);
+
+    void jumpGreaterThan(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2,
+                         bool param1IsVariable, bool param2IsVariable);
+
+    void jumpEquals(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable,
+                    bool param2IsVariable);
+
     void jumpEquals(std::string toLabel, bool jumpIfTrue, u_int16_t param, bool paramIsVariable);
 
     void readChar(uint8_t var);
+
     void printChar(uint8_t var);
+
     void printString(std::string stringToPrint);
+
     void printStringAtAddress(u_int8_t address);
+
     void callRoutine(size_t routineOffset);
 
     void store(u_int8_t address, u_int16_t value);
+
     void load(u_int8_t address, u_int8_t result_address);
 
     void quitRoutine();
@@ -73,10 +90,10 @@ public:
                 NEW_LINE = 187,
         // Opcodes for jump instructions
                 JE = 1,
-                JL = 2,
-                JG = 3,
-                JZ = 128,
-                JUMP = 140,
+        JL = 2,
+        JG = 3,
+        JZ = 128,
+        JUMP = 140,
         // Opcode for print operation; following by Z-character String
                 PRINT = 178,
         // Opcode: quit the main; no arguments.
@@ -89,7 +106,7 @@ public:
                 PRINT_ADDR = 135
     };
 
-    enum BranchOffset{
+    enum BranchOffset {
         // Offset placeholder used for unconditional jumps
                 JUMP_UNCOND_OFFSET_PLACEHOLDER = 1,
         // Offset placeholder used for conditional jumps
@@ -102,7 +119,6 @@ public:
                 JUMP_OFFSET_5_BIT = 6
     };
 };
-
 
 
 #endif //TWEEZCODECOMPILER_ROUTINEGENERATOR_H

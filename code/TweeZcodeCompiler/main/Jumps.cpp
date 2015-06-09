@@ -87,11 +87,13 @@ int Jumps::getOffset(int jumpPosition, int labelPosition) {
     int offset = 0;
 
     if (jumpPosition < labelPosition) {
-        for (map<int, bitset<8>>::iterator it = routineOpcodes->find(jumpPosition); it != routineOpcodes->find(labelPosition); ++it) {
+        for (map<int, bitset<8>>::iterator it = routineOpcodes->find(jumpPosition);
+             it != routineOpcodes->find(labelPosition); ++it) {
             offset++;
         }
-    } else if (jumpPosition > labelPosition){
-        for (map<int, bitset<8>>::iterator it = routineOpcodes->find(jumpPosition); it != routineOpcodes->find(labelPosition); --it) {
+    } else if (jumpPosition > labelPosition) {
+        for (map<int, bitset<8>>::iterator it = routineOpcodes->find(jumpPosition);
+             it != routineOpcodes->find(labelPosition); --it) {
             offset--;
         }
     }
@@ -103,7 +105,7 @@ int Jumps::getOffset(int jumpPosition, int labelPosition) {
     return offset;
 }
 
-int Jumps::addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondTrue){
+int Jumps::addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondTrue) {
     bitset<8> firstHalf, secondHalf;
 
     // Offset needs to be between 0 and 63 to fit into 6 bits
@@ -113,7 +115,7 @@ int Jumps::addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondT
     firstHalf.set(RoutineGenerator::JUMP_OFFSET_5_BIT, useOneByte);
 
     if (useOneByte) {
-        bitset<6> bitsetOffset (offset);
+        bitset<6> bitsetOffset(offset);
 
         for (size_t i = 0; i < 6; i++) {
             firstHalf.set(i, bitsetOffset[i]);
@@ -140,7 +142,7 @@ int Jumps::addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondT
 }
 
 void Jumps::addLargeNumber(int16_t number, int pos) {
-    bitset<16> shortVal (number);
+    bitset<16> shortVal(number);
     bitset<8> firstHalf, secondHalf;
 
     for (size_t i = 0; i < 8; i++) {
