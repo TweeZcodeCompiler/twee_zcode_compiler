@@ -18,7 +18,6 @@ public:
     Passage(std::string name, Body& body1);
 
     Body getBody();
-    unsigned id;
 
     std::string getPassageName();
 };

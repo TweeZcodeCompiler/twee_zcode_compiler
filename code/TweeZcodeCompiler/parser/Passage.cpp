@@ -7,7 +7,6 @@
 
 Passage::Passage(std::string name, Body& body) : body(body) {
     passageName = name;
-    id = 0;
 }
 
 Body Passage::getBody(){
