@@ -13,15 +13,16 @@
 class Body {
 
 private:
-    std::vector<BodyPart> bodyparts;
+    std::vector<BodyPart*> bodyparts;
 
 public:
 
     Body();
+    ~Body();
 
-    std::vector<BodyPart> &getBodyParts();
+    const std::vector<BodyPart*> &getBodyParts();
 
-    Body &operator+=(const BodyPart &);
+    Body &operator+=(BodyPart*);
 
     std::string to_string();
 

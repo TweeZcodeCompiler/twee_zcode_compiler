@@ -10,6 +10,9 @@
 int main() {
 
     Text t = Text("asdasd");
-    //BodyPart &bp = t;
-    std::cout << t.to_string();
+    BodyPart &bp = t;
+    std::cout << bp.to_string();
+
+    Body body;
+    body += new Text("test"); // body deletes Text instance on its own
 }
