@@ -3,16 +3,18 @@
 #include "include/Passage/Head.h"
 #include "include/Passage/Body/BodyPart.h"
 #include "include/Passage/Body/Text.h"
+#include "include/Passage/Body/Link.h"
 
 
 #include <iostream>
 
 int main() {
 
-    Text t = Text("asdasd");
-    BodyPart &bp = t;
-    std::cout << bp.to_string();
+    Body b;
+    Head h("test");
+    b += new Text("testText");
+    b += new Link("testTarget");
+    Passage p(h, b);
 
-    Body body;
-    body += new Text("test"); // body deletes Text instance on its own
+    std::cout << p.to_string();
 }
