@@ -10,6 +10,7 @@
 #include <string>
 #include <bitset>
 #include <map>
+#include <iostream>
 #include "Jumps.h"
 #include "OpcodeParameterGenerator.h"
 #include "Utils.h"
@@ -19,7 +20,7 @@ class RoutineGenerator {
 private:
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
     static std::map<std::string, size_t> routines; //keys = name of routine, value = offset.
-    static std::map<size_t, std::string> callTo; //keys = offset of call, value = name of routine
+    //keys = offset of call, value = name of routine
     size_t offsetOfRoutine = 0;
     Jumps jumps;
     OpcodeParameterGenerator opcodeGenerator;
@@ -92,12 +93,14 @@ public:
     RoutineGenerator(std::string name,unsigned int locVar, std::vector<std::bitset<8>> &zCode, size_t offsetOfZCode){
         size_t padding = Utils::paddingToNextPackageAddress(zCode.size(),offsetOfZCode);
 
-        for (size_t i = 0; i < padding; i++) {
-            addBitset(numberToBitset(0));
-        }
-        RoutineGenerator::routines[name] = zCode.size();
+            Utils::fillWithBytes(zCode,0,padding);
+
+        RoutineGenerator::routines[name] = zCode.size()+offsetOfZCode;
         this->offsetOfRoutine = zCode.size()+offsetOfZCode;
+        std::cout << padding<<"/"<<this->offsetOfRoutine <<"\n";
         jumps.setRoutineBitsetMap(routineZcode);
+        jumps.routineOffset = this->offsetOfRoutine;
+        addBitset(numberToBitset(locVar));
     }
 
     enum Opcode : unsigned int {
@@ -139,6 +142,7 @@ public:
         // bit 5 to 0 or signed offset over 14 bits (set to 1 -> offset only 6 bits)
                 JUMP_OFFSET_5_BIT = 6
     };
+    static std::map<size_t, std::string> callTo;
 };
 
 

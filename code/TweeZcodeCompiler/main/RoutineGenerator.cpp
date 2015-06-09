@@ -9,8 +9,8 @@
 
 using namespace std;
 
- map<string,size_t> RoutineGenerator::routines = map<string, size_t >();
- std::map<size_t, std::string> RoutineGenerator::callTo =  std::map<size_t, std::string>();
+map<string, size_t> RoutineGenerator::routines = map<string, size_t>();
+std::map<size_t, std::string> RoutineGenerator::callTo = std::map<size_t, std::string>();
 
 vector<bitset<8>> RoutineGenerator::getRoutine() {
     jumps.calculateOffsets();
@@ -63,15 +63,15 @@ void RoutineGenerator::printChar(uint8_t var) {
 }
 
 void RoutineGenerator::callRoutine(string nameOfRoutine) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N,0, false);
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (u_int16_t) 3000, false);
     addBitset(instructions);
-    RoutineGenerator::callTo[offsetOfRoutine+routineZcode.size()-2]=nameOfRoutine;
+    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 1] = nameOfRoutine;
 }
 
 void RoutineGenerator::callRoutine(size_t routineOffset) {
     size_t pkgAdrr = Utils::calculateNextPackageAddress((size_t) (routineOffset + 3));
 
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (uint16_t) (pkgAdrr / 8), false);
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (u_int16_t) (pkgAdrr / 8), false);
     addBitset(instructions);
 
     size_t padding = Utils::paddingToNextPackageAddress(routineZcode.size(), routineOffset);
@@ -107,7 +107,8 @@ void RoutineGenerator::newLabel(string label) {
 }
 
 void RoutineGenerator::jumpZero(string toLabel, bool jumpIfTrue, int16_t parameter, bool parameterIsVariable) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JZ, (u_int16_t) parameter, parameterIsVariable);
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JZ, (u_int16_t) parameter,
+                                                                            parameterIsVariable);
     addBitset(instructions);
 
     jumps.newJump(toLabel);
@@ -193,14 +194,20 @@ void RoutineGenerator::addLargeNumber(int16_t number) {
 }
 
 void RoutineGenerator::resolveCallInstructions(std::vector<std::bitset<8>> &zCode) {
-    typedef map<size_t , string>::iterator it_type;
-    for(it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++){
+    typedef map<size_t, string>::iterator it_type;
+    for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {
         size_t calledRoutineOffset = RoutineGenerator::routines[it->second];
         size_t callOffset = it->first;
         vector<bitset<8>> callAdress = vector<bitset<8>>();
-        Utils::setShortVal(calledRoutineOffset/8,callAdress);
-        zCode[callOffset]=callAdress[0];
-        zCode[callOffset]=callAdress[1];
+        Utils::setShortVal(calledRoutineOffset / 8, callAdress);
+        for (size_t i = callOffset; i > 0; i--) {
+            if (zCode[i] == RoutineGenerator::CALL_1N) {
+                zCode[i + 1] = callAdress[0];
+                zCode[i + 2] = callAdress[1];
+                break;
+            }
+        }
+
     }
 }
 

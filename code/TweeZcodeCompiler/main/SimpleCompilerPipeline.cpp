@@ -116,25 +116,44 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     RoutineGenerator testRoutineGenerator = RoutineGenerator("main",0,highMemoryZcode,offset);
     testRoutineGenerator.printString("Dies ist ein Test");
     testRoutineGenerator.newLine();
-    testRoutineGenerator.printString("print 1 to routine 1");
+    testRoutineGenerator.printString("1: gehe in den Wald!");
+    testRoutineGenerator.newLine();
+    testRoutineGenerator.printString("2: gehe in die Stadt!");
     testRoutineGenerator.readChar(0x10);
-    testRoutineGenerator.jumpEquals("w", false, 0x10, 49, true, false);
-    testRoutineGenerator.printString("correct");
-    testRoutineGenerator.callRoutine("Routine1");
+    testRoutineGenerator.jumpEquals("w", true, 0x10, 49, true, false);
+    testRoutineGenerator.jumpEquals("s",true,0x10,50,true,false);
+    testRoutineGenerator.printString("Keine valide eingabe!");
     testRoutineGenerator.quitRoutine();
     testRoutineGenerator.newLabel("w");
-    testRoutineGenerator.printString("wrong");
+    testRoutineGenerator.printString("korrekt");
+    testRoutineGenerator.callRoutine("wald");
     testRoutineGenerator.quitRoutine();
+    testRoutineGenerator.newLabel("s");
+    testRoutineGenerator.printString("korrekt");
+    testRoutineGenerator.callRoutine("stadt");
+    testRoutineGenerator.quitRoutine();
+
 
     vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, testRoutine);
 
-    RoutineGenerator routine1 = RoutineGenerator("Routine1",0,highMemoryZcode,offset);
-    routine1.printString("Dies ist Routine 1");
+    RoutineGenerator routine1 = RoutineGenerator("wald",0,highMemoryZcode,offset);
+    routine1.newLine();
+    routine1.printString("Dies ist der Wald!");
+    routine1.newLine();
     routine1.quitRoutine();
 
     vector<bitset<8>> vroutine1 = routine1.getRoutine();
     Utils::append(highMemoryZcode, vroutine1);
+
+    RoutineGenerator routine2 = RoutineGenerator("stadt",0,highMemoryZcode,offset);
+    routine2.newLine();
+    routine2.printString("Dies ist die Stadt!");
+    routine2.newLine();
+    routine2.quitRoutine();
+
+    vector<bitset<8>> vroutine2 = routine2.getRoutine();
+    Utils::append(highMemoryZcode, vroutine2);
 
     return highMemoryZcode;
 }
