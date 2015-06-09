@@ -9,20 +9,20 @@
 
 #include <vector>
 #include <string>
-#include <memory>
 
 class Body {
 
 private:
-    std::vector<std::unique_ptr<BodyPart>> bodyparts;
+    std::vector<BodyPart*> bodyparts;
 
 public:
 
     Body();
+    ~Body();
 
-    std::vector<std::unique_ptr<BodyPart>> &getBodyParts();
+    const std::vector<BodyPart*> &getBodyParts();
 
-    Body &operator+=(const BodyPart &);
+    Body &operator+=(BodyPart*);
 
     std::string to_string();
 
