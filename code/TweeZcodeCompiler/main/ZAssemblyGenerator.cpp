@@ -3,6 +3,7 @@
 //
 
 #include "ZAssemblyGenerator.h"
+#include <sstream>
 
 using namespace std;
 using namespace std::experimental;
@@ -41,6 +42,18 @@ namespace instruction {
 ZAssemblyGenerator::ZAssemblyGenerator(ostream& out) : out(out) { }
 
 const std::string ZAssemblyGenerator::STACK_POINTER = "sp";
+
+std::string ZAssemblyGenerator::makeArgs(std::initializer_list<std::string> args) {
+    stringstream ss;
+    for(auto arg = args.begin(); arg != args.end(); ++arg) {
+        ss << *arg;
+        if(arg != args.end() && arg+1 != args.end()) {
+            ss << INST_SEPARATOR;
+        }
+    }
+    return ss.str();
+}
+
 
 ZAssemblyGenerator& ZAssemblyGenerator::addLabel(std::string labelName) {
     out << labelName << LABEL_MARKER << INST_END;
@@ -114,6 +127,11 @@ ZAssemblyGenerator &ZAssemblyGenerator::jump(std::string targetLabel) {
 
 ZAssemblyGenerator &ZAssemblyGenerator::call(std::string routineName) {
     addInstruction(instruction::CALL, routineName, nullopt, nullopt);
+    return *this;
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::call(std::string routineName, std::string storeTarget) {
+    addInstruction(instruction::CALL, routineName, nullopt, storeTarget);
     return *this;
 }
 

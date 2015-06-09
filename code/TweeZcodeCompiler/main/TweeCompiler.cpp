@@ -40,19 +40,20 @@ void TweeCompiler::compile(TweeDoc &tweeDoc, std::ostream &out) {
     {
         assgen.addGlobal(PASSAGE_GLOB)
                 .addRoutine(MAIN_ROUTINE)
-                .call(MAIN_ROUTINE)
+                .call("start", PASSAGE_GLOB)
                 .addLabel(JUMP_TABLE_LABEL);
 
 
         for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
             assgen.addLabel(labelForPassage(*passage))
-                    .call(passage->getPassageName())
+                    .call(passage->getPassageName(), PASSAGE_GLOB)
                     .jump(JUMP_TABLE_LABEL);
         }
 
         for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
             int passageId = passageName2id[passage->getPassageName()];
-            assgen.jumpEquals(std::to_string(passageId), labelForPassage(*passage));
+
+            assgen.jumpEquals(ZAssemblyGenerator::makeArgs({std::to_string(passageId), PASSAGE_GLOB}), labelForPassage(*passage));
         }
 
         assgen.addLabel(JUMP_TABLE_END_LABEL);

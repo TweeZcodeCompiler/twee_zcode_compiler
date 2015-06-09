@@ -9,6 +9,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <initializer_list>
 #include "optional.hpp"
 
 typedef const std::string INST_TYPE;
@@ -27,6 +28,7 @@ public:
 
     ZAssemblyGenerator &jump(std::string label);
     ZAssemblyGenerator &call(std::string routineName);
+    ZAssemblyGenerator &call(std::string routineName, std::string storeTarget);
     ZAssemblyGenerator &jumpEquals(std::string args, std::string targetLabel);
     ZAssemblyGenerator &jumpGreater(std::string args, std::string targetLabel);
     ZAssemblyGenerator &quit();
@@ -35,6 +37,7 @@ public:
     ZAssemblyGenerator &print(std::string str);
     ZAssemblyGenerator &read_char(std::string storeTarget);
 
+    static std::string makeArgs(std::initializer_list<std::string> args);
 
     static const std::string STACK_POINTER;
 private:
