@@ -10,7 +10,7 @@
 
 TweeFile::TweeFile() { }
 
-vector <Passage> TweeFile::getPassages() {
+std::vector<Passage> TweeFile::getPassages() {
 
     return this->passages;
 
@@ -24,10 +24,10 @@ TweeFile &TweeFile::operator+=(const Passage &passage) {
 
 std::string TweeFile::to_string() {
 
-    std::string result = "TweeFile" + std::endl;
+    std::string result = "TweeFile \n";
 
-    for (int i = 0; i < passages.size(); ++i) {
-        result += this->passages[i].to_string();
+    for (std::vector<Passage>::iterator iter = this->getPassages().begin(); iter != this->getPassages().end(); ++iter) {
+        result += (*iter).to_string() + "\n";
     }
 
     return result;

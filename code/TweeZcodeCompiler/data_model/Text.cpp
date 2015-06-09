@@ -20,6 +20,6 @@ std::string Text::getContent() {
 
 std::string Text::to_string() {
 
-    return "Text: "  + std::endl + this->content;
+    return "Text: " + this->getContent();
 
 }

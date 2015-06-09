@@ -10,7 +10,7 @@
 
 Body::Body() { }
 
-vector <BodyPart> Body::getBodyParts() {
+std::vector<BodyPart> &Body::getBodyParts() {
 
     return this->bodyparts;
 
@@ -25,11 +25,11 @@ Body &Body::operator+=(const BodyPart &bodyPart) {
 
 std::string Body::to_string() {
 
-    std::string result = "Body" + std::endl;
+    std::string result = "Body \n";
 
-    for (int i = 0; i < passages.size(); ++i) {
-        result += this->bodyparts[i].to_string() + std::endl;
-    }
+    for (std::vector<BodyPart>::iterator iter = this->getBodyParts().begin();
+         iter != this->getBodyParts().end(); ++iter)
+        result += (*iter).to_string() + "\n";
 
     return result;
 

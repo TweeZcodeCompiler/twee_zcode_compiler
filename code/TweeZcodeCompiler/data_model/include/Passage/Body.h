@@ -13,13 +13,13 @@
 class Body {
 
 private:
-    vector <BodyPart> bodyparts;
+    std::vector<BodyPart> bodyparts;
 
 public:
 
     Body();
 
-    vector <BodyPart> getBodyParts();
+    std::vector<BodyPart> &getBodyParts();
 
     Body &operator+=(const BodyPart &);
 

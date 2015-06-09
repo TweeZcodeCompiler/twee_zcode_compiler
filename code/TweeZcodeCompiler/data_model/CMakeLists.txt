@@ -16,4 +16,8 @@ include/Passage/Body/Link.h Link.cpp
 include/Passage/Body/Text.h Text.cpp
 include/Passage/Body/FormattedText.h FormattedText.cpp
 
+main.cpp
+
 )
+
+add_executable(Data_Model ${SOURCE_FILES} main.cpp)

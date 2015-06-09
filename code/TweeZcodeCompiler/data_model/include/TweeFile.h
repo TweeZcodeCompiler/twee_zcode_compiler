@@ -13,12 +13,12 @@
 class TweeFile {
 
 private:
-    vector <Passage> passages;
+    std::vector<Passage> passages;
 
 public:
     TweeFile();
 
-    vector <Passage> getPassages();
+    std::vector<Passage> getPassages();
 
     TweeFile &operator+=(const Passage &);
 
