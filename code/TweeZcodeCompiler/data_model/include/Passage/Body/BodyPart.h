@@ -13,6 +13,7 @@ public:
     BodyPart();
 
     ~BodyPart();
+
     virtual std::string to_string() = 0;
 
 };

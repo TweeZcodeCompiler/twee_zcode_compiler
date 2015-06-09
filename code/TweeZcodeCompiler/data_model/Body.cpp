@@ -7,10 +7,11 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 Body::Body() { }
 
-std::vector<BodyPart> &Body::getBodyParts() {
+std::vector<std::unique_ptr<BodyPart>> &Body::getBodyParts() {
 
     return this->bodyparts;
 
@@ -18,7 +19,8 @@ std::vector<BodyPart> &Body::getBodyParts() {
 
 Body &Body::operator+=(const BodyPart &bodyPart) {
 
-    this->bodyparts.push_back(bodyPart);
+    this->bodyparts.push_back(std::unique_ptr<BodyPart>(&bodyPart));
+
     return *this;
 
 }
@@ -27,9 +29,9 @@ std::string Body::to_string() {
 
     std::string result = "Body \n";
 
-    for (std::vector<BodyPart>::iterator iter = this->getBodyParts().begin();
+    for (std::vector<std::unique_ptr<BodyPart>>::iterator iter = this->getBodyParts().begin();
          iter != this->getBodyParts().end(); ++iter)
-        result += (*iter).to_string() + "\n";
+        result += (*iter)->to_string() + "\n";
 
     return result;
 

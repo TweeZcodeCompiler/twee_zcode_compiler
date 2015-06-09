@@ -9,17 +9,18 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 class Body {
 
 private:
-    std::vector<BodyPart> bodyparts;
+    std::vector<std::unique_ptr<BodyPart>> bodyparts;
 
 public:
 
     Body();
 
-    std::vector<BodyPart> &getBodyParts();
+    std::vector<std::unique_ptr<BodyPart>> &getBodyParts();
 
     Body &operator+=(const BodyPart &);
 
