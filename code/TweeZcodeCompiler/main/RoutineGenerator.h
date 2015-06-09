@@ -15,6 +15,7 @@
 
 class RoutineGenerator {
 
+
 private:
     bool quitOpcodePrinted = false;                 // every routine needs to call quit opcode
     std::map<int, std::bitset<8>> akk;
@@ -46,12 +47,26 @@ public:
 
     void addLabel(std::string label);
 
+    std::vector<std::bitset<8>> printReadCharInstruction(uint8_t var);
+
+    std::vector<std::bitset<8>> printPrintCharInstruction(uint8_t var);
+
+    std::vector<std::bitset<8>> printPrintStringInstruction(std::string stringToPrint);
+
+    std::vector<std::bitset<8>> printCallToMainAndMain(size_t offset, unsigned int locVar);
+
     RoutineGenerator() {
         jumps.setRoutineBitsetMap(akk);
         addBitset(numberToBitset(0));   // number of local variables in routine
     }
 
     enum Opcode : unsigned int {
+        //Opcode: VAR:246 16 4 read_char 1 time routine -> (result)
+                READ_CHAR = 246,
+        //Opcode: VAR:229 5 print_char output-character-code
+                PRINT_CHAR = 229,
+        //Opcode: 1OP:143 F 5 call_1n routine
+                CALL_1N = 143,
         // Print new line
                 NEW_LINE = 187,
         // Opcodes for jump instructions

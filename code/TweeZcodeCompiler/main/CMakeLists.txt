@@ -8,7 +8,10 @@ set(SOURCE_FILES main.cpp)
 
 add_executable(TweeZcodeCompiler ${SOURCE_FILES} ZCodeConverter.cpp ZCodeConverter.h
     ZCodeHeader.cpp ZCodeHeader.h BinaryFileWriter.cpp BinaryFileWriter.h test/BinaryFileWriterTest.cpp
-    test/BinaryFileWriterTest.h test/MainTest.cpp test/MainTest.h test/ZCodeHeaderTest.cpp test/ZCodeHeaderTest.h RoutineGenerator.cpp RoutineGenerator.h test/RoutineGeneratorTest.cpp test/RoutineGeneratorTest.h SimpleCompilerPipeline.cpp SimpleCompilerPipeline.h Jumps.cpp Jumps.h OpcodeParameterGenerator.cpp OpcodeParameterGenerator.h)
+    test/BinaryFileWriterTest.h test/MainTest.cpp test/MainTest.h test/ZCodeHeaderTest.cpp test/ZCodeHeaderTest.h RoutineGenerator.cpp RoutineGenerator.h test/RoutineGeneratorTest.cpp test/RoutineGeneratorTest.h SimpleCompilerPipeline.cpp SimpleCompilerPipeline.h, Utils.cpp Utils.h)
 
 target_link_libraries (TweeZcodeCompiler TweeParser)
 
+add_executable(TestCompiler ${SOURCE_FILES} test/MainTest.cpp test/BinaryFileWriterTest.h test/BinaryFileWriterTest.cpp
+test/RoutineGeneratorTest.h test/RoutineGeneratorTest.cpp test/Test.cpp test/Test.h test/ZCodeHeaderTest.cpp test/ZCodeHeaderTest.h)
+target_link_libraries(TestCompiler TweeParser)

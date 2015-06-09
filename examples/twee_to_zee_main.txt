@@ -1,0 +1,93 @@
+//This is very much a work in progress, I plan to have it done by noon Friday.
+
+//Short Intro:
+	//The main is called at first and will call the start passage first
+		//in every passage, the nextPassage will have to be set before the QUIT
+	//When a passage routine is called:
+		//it will do its Twee-Body-Printing-Stuff
+		//print all the possible user inputs (LinkPrintRoutine routine)
+		//wait for and read the user input
+		//check if it was a valid input
+			//if it is NOT a valid input, error and "try again User", back to wait for and read the user input
+			//if valid input, call the LinkTextMatcher routine, which will set the nextPassage variable
+		//then the routine will quit
+
+//TODO: maybe we can skip all this jump bullshit with some clever adress pointing
+	//if nextPassage is the same as the adress of the passage routine it is pointing to, we could consolidate all
+	//the jumps into one call
+//TODO: we might need to have a register of all the passages
+
+//Main Routine example, gets called first, handles the calling of the routines corresponding to the nextPassage variable
+Routine main, 0 local
+		//using nextPassage, no writing
+		//start with the start routine
+        CALL 		start
+		//successively check whether the global variable nextPassage equals one of the corresponding passages
+			//TODO: guarantees
+				//nextPassage matches at least one of the Passages
+L0000:  JNE 		nextPassage,"1" L0001
+        //call the passage
+        CALL 		start
+        //after that we will se where to go next, so we start the whole process again
+        JP 			L0000
+		//if nextPAssage didn't match "1", we will continue
+L0001:  JNE 		nextPassage,"2" L0002
+        CALL 		passageTwo
+        JP 			L0000
+L0002:  JNE 		nextPassage,"3" L0003
+        CALL 		passageThree
+        //etc... etc...
+
+        //the code done fucked up, we are not supposed to get here
+        PRINT		"This isn't supposed to happen, something went very wrong."
+
+//Passage Routine example:
+
+Routine passageTwo, 0 local
+		//using input, writing
+        //using all the Link-Variables, writing
+			//TODO guarantees: passageRoutine
+				//LinkText1 != LinkText2 != LinkText3 != LinkText4 ... should be guaranteed
+				//clean Variables
+		LOAD 		LinkText1, "LinkTextONE"
+		LOAD 		LinkText2, "LinkTextTWO"
+		LOAD 		LinkText3, "LinkTextTHREE"
+		LOAD		LinkTarget1, "start"
+		LOAD		LinkTarget2, "passageTwo"
+		LOAD		LinkTarget3, "passageThree"
+L0000   PRINT 		"PassageText2"
+		NEWLINE
+		//TODO: LinkPrintRoutine: takes all the LinkTexts and prints the availabe Linkoptions at the End of the Passagetext
+		CALL 		LinkPrintRoutine
+		AREAD		G6d, input
+		//TODO: the fuck does G6d do?
+        //check if the input was one of the predefined LinkTexts
+        JE 			input, LinkText1,LinkText2,LinkText3 L0001
+        PRINT 		"I do not understand your action, try again."
+		JP			L0000
+        //now match LinkText to LinkPassages, load it into the nextPassage Variable, this should be done by a routine
+		CALL 		LinkTextMatcher
+        //LinkTextMatcher should write into the nextPassage global Variable
+        CALL		CleanLinkVariables
+        QUIT
+
+//The LinkTextMatcher that's used to get the nextPassage
+Routine LinkTextMatcher, 0 local
+		//using input, NOT touching it
+		//using nextPassage, writing on it
+		//using all the Link-Variables, NOT touching it
+			//TODO guarantees: LinkTextMatcher
+				//input matches one of the LinkText#
+				//LinkText# and LinkTarget# of the current calling passage routine are clean
+					//Not used Link-Variables are 0 or something
+		JNE 		input,LinkText1 L0000
+		LOAD 		nextPassage,LinkTarget1
+		JP 			LXXXX //End
+L0000:	JNE 		input LinkText2 L0001
+		LOAD 		nextPassage,LinkTarget2
+		JP 			LXXXX //End
+L0001:	JNE 		input LinkText3 L0002
+		LOAD 		nextPassage,LinkTarget3
+		JP 			LXXXX //End
+		//etc. etc.
+LXXXX:	QUIT
