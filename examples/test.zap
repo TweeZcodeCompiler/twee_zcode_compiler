@@ -47,7 +47,7 @@ L_2
 .FUNCT passage1
     print "correct"
     new_line
-    ret 2
+    ret -1
 
 .FUNCT passage2
     print "wrong"
