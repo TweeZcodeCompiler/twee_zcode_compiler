@@ -35,7 +35,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generate1OPInstruction(unsigned int 
     if (oneByteParameter) {
         instructions.push_back(bitset<8>(param));
     } else {
-        addLargeNumber(param, instructions);
+        addLargeNumber((int16_t) param, instructions);
     }
 
     return instructions;
@@ -130,7 +130,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitset
     }
 
     int param = 0;
-    for (int i = 7; i > 0; i -= 2) {
+    for (size_t i = 7; i > 0; i -= 2) {
         if (param >= params.size()) {
             // if less than 4 parameter types needed set last bits to type omitted
             paramTypes.set(i, true);
@@ -152,7 +152,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitset
             paramTypes.set(i, false);
             paramTypes.set(i - 1, false);
 
-            addLargeNumber(params[param], instructions);
+            addLargeNumber((int16_t) params[param], instructions);
         }
 
         param++;
@@ -164,7 +164,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitset
 }
 
 void OpcodeParameterGenerator::addLargeNumber(int16_t val, vector<bitset<8>> &vectorBitset) {
-    bitset<16> shortVal(val);
+    bitset<16> shortVal((unsigned long long int) val);
     bitset<8> firstHalf, secondHalf;
 
     for (size_t i = 0; i < 8; i++) {

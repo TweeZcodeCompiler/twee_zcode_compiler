@@ -9,7 +9,7 @@ using std::bitset;
 
 void RoutineGeneratorTest::runTest() {
     RoutineGenerator rg = RoutineGenerator();
-    std::vector<std::bitset<8>> res = rg.printPrintRoutine("hallo");
+    std::vector<std::bitset<8>> res = rg.printPrintStringInstruction("hallo");
 
     //createVerifier
     std::vector<std::bitset<8>> ver = std::vector<std::bitset<8>>();
