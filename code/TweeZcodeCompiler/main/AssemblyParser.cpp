@@ -8,6 +8,11 @@
 
 
 const std::string AssemblyParser::ROUTINE_COMMAND = "Routine";
+const std::string AssemblyParser::NEW_LINE_COMMAND = "new_line";
+const std::string AssemblyParser::PRINT_COMMAND = "print";
+const std::string AssemblyParser::JE_COMMAND = "je";
+
+
 
 
 std::vector<std::bitset<8>> AssemblyParser::readAssembly(std::string assFilePath){
@@ -15,8 +20,11 @@ std::vector<std::bitset<8>> AssemblyParser::readAssembly(std::string assFilePath
     std::cout << "Compiler: Parse Assembly File\n";
 
 
+
     std::vector<std::bitset<8>> zCode;
     std::vector<std::string> routineList = this->getRoutinesFromFile(assFilePath);
+
+    getZCodeForRoutine(routineList.at(0));
 
 
     return  zCode;
@@ -26,6 +34,25 @@ std::vector<std::bitset<8>> AssemblyParser::readAssembly(std::string assFilePath
 
 std::vector<std::bitset<8>> AssemblyParser::getZCodeForRoutine(std::string routine)
 {
+
+    std::vector<std::string> commands = this->split(routine,'\n');
+    std::cout << "\n";
+    for(int i = 0;i<commands.size();i++)
+    {
+        std::cout << i <<": " << commands.at(i) << "\n";
+        getCommandType(commands.at(i));
+    }
+
+
+}
+
+
+std::string AssemblyParser::getCommandType(std::string command)
+{
+  std::vector<std::string> commandParts = this->split(command,' ');
+  //  std::cout << command << commandParts.size();
+    std::string s = "hello";
+    return s;
 
 }
 
@@ -41,17 +68,19 @@ std::vector<std::string> AssemblyParser::getRoutinesFromFile(std::string assFile
     for( std::string command; getline( input, command ); )
     {
 
-        if(checkIfCommandRoutineStart(command))
-        {
-            std::cout << command << "\n";
-            if(routine.compare("") != 0)
+        if(command.size() != 0) {
+            if (command.at(0) != ';') //comment symbol
             {
-                std::cout << "routine: " << routine << " routine end" << "\n\n";
-                routineList.push_back(routine);
+                if (checkIfCommandRoutineStart(command)== true) {
+                    if (routine.compare("") != 0) {
+                        std::cout << "routine: " << routine << " routine end" << "\n\n";
+                        routineList.push_back(routine);
+                    }
+                    routine = "";
+                }
+                routine += command + "\n";
             }
-            routine = "";
         }
-        routine += command;
 
 
     }
