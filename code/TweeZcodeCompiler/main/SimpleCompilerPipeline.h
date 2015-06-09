@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <vector>
-#include "FileReader.h"
 #include "RoutineGenerator.h"
 #include "BinaryFileWriter.h"
 #include "ZCodeHeader.h"
@@ -15,19 +14,24 @@
 class SimpleCompilerPipeline {
 
 public:
-    void compile(string fileContent,string zCodeFileName);
+    void compile(std::string fileContent, std::string zCodeFileName);
 
 private:
-    string simpleLexer(string fileContent);
+    std::vector<std::bitset<8>> generateDynamicMemory(ZCodeHeader &header, size_t offset);
+
+    std::vector<std::bitset<8>> generateStaticMemory(ZCodeHeader &header, size_t offset);
+
+    std::vector<std::bitset<8>> generateHighMemory(ZCodeHeader &header, size_t offset);
+
+    std::vector<std::bitset<8>> printGlobalTable(int offset);
+
     void printHex(std::vector<std::bitset<8>> bitsetList);
+
     std::vector<std::bitset<8>> generateHeader();
-    std::vector<std::bitset<8>> fillWithBytes(int value,int amountOfBytes,std::vector<std::bitset<8>> bitVector);
-    std::vector<std::bitset<8>> addFileSizeToHeader(std::vector<std::bitset<8>> zCode, int fileSize);
-    int calculateFileSize(std::vector<std::bitset<8>> zCode);
-    void log(string message);
 
+    std::vector<std::bitset<8>> addFileSizeToHeader(std::vector<std::bitset<8>> zCode, size_t fileSize);
 
-
+    void log(std::string message);
 };
 
 

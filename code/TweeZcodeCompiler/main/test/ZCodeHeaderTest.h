@@ -5,10 +5,11 @@
 #ifndef TWEEZCODECOMPILER_ZCODEHEADERTEST_H
 #define TWEEZCODECOMPILER_ZCODEHEADERTEST_H
 
+#include "Test.h"
 
-class ZCodeHeaderTest {
+class ZCodeHeaderTest : public Test {
 public:
-    void testHeader();
+    void runTest();
 };
 
 

@@ -1,0 +1,29 @@
+Routine R0001, 0 local
+	PRINT		"Dies ist die erste Seite."
+	NEW_LINE
+	PRINT		"1: Link zur ersten Seite."
+	NEW_LINE
+	PRINT		"2: Link zur zweiten Seite."
+	NEW_LINE
+L0000:  AREAD		G6d, G6e
+	LOADW           G6e,#01 -> -(SP)
+	JE		(SP)+,"1" L0001
+	LOADW		G6e,#01 -> -(SP)
+	JE		(SP)+,"2" L0002
+	JUMP		L0000
+L0001:	CALL		R0002
+L0002:	CALL		R0003
+
+Routine R0002, 0 local
+	PRINT		"Dies ist die zweite Seite."
+	QUIT
+
+Routine R0003, 0 local
+	PRINT		"Dies ist die dritte Seite."
+	QUIT
+	
+	
+	
+Dabei sind G6d, G6e Byteadressen in den Globalen Variablen, welche im dynamic Memory der Storry-File liegen. 
+-(SP) pusht und (SP)+ popt etwas vom Stack.
+	

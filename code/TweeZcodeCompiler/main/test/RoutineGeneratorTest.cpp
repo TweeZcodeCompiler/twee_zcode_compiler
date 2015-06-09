@@ -4,12 +4,10 @@
 
 #include "RoutineGeneratorTest.h"
 #include "../RoutineGenerator.h"
-#include <vector>
-#include <bitset>
 #include <iostream>
 using std::bitset;
 
-void RoutineGeneratorTest::testRoutineGenerator() {
+void RoutineGeneratorTest::runTest() {
     RoutineGenerator rg = RoutineGenerator();
     std::vector<std::bitset<8>> res = rg.printPrintRoutine("hallo");
 
@@ -26,13 +24,5 @@ void RoutineGeneratorTest::testRoutineGenerator() {
     ver.push_back(bitset<8>(128));
     //Opcode for quit
     ver.push_back(bitset<8>(186));
-
-    for(int i = 0; i < 7; i++){
-        if(ver[i] != res[i]){
-            std::cout << "ERROR in RoutineGenerator at byte "<<i<<" : expected " << ver[i] <<". Found: " << res[i] <<".\n";
-            return;
-        }
-    }
-    std::cout << "Test for RoutineGenerator ran SUCCESSFULLY\n";
-
+    assertsEquals(ver,res);
 }

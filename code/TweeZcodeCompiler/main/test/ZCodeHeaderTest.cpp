@@ -6,8 +6,9 @@
 #include "ZCodeHeaderTest.h"
 #include "../ZCodeHeader.h"
 
-void ZCodeHeaderTest::testHeader() {
-    ZCodeHeader header;
+void ZCodeHeaderTest::runTest() {
+    ignoreTestResult();
+    ZCodeHeader header = ZCodeHeader();
     header.setFileLength(800, 99);
     header.setRoutinesOffset(100);
     header.setStaticStringsOffset(200);
