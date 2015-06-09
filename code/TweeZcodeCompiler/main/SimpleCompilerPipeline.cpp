@@ -3,6 +3,7 @@
 //
 
 #include "SimpleCompilerPipeline.h"
+#include "Utils.h"
 
 #include <TweeParser.h>
 #include <fstream>
@@ -29,40 +30,100 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     log("Parsed twee file");
 
-    std::vector<std::bitset<8>> zCode;
+    //create header
+    ZCodeHeader header = ZCodeHeader();
 
-    //create header and append
-    std::vector<std::bitset<8>> zByteHeader = generateHeader();
-    zCode.insert(zCode.end(), zByteHeader.begin(), zByteHeader.end());
-    log("ZMachine Header generated and added to ZCode");
+    //create memory sections
+    vector<bitset<8>> dynamicMemory = generateDynamicMemory(header, 0x3f);
+    vector<bitset<8>> staticMemory = generateStaticMemory(header, (int) (0x3f + staticMemory.size()));
+    vector<bitset<8>> highMemory = generateHighMemory(header,
+                                                      (int) (0x3f + staticMemory.size() + dynamicMemory.size()));
 
-    //empty space because memory for opcodes starts later
-    fillWithBytes(zCode, 0, 295);
+    //init header
+    header.setRoutinesOffset(88);
+    header.setStaticStringsOffset(99);
+    header.setFileLength(3, 52);
+    header.baseOfStatMem = (uint16_t) (0x3f + dynamicMemory.size());
+    header.baseOfHighMem = (uint16_t) (0x3f + dynamicMemory.size() + staticMemory.size());
+    header.initValOfPC = header.baseOfHighMem;
+    vector<bitset<8>> headerMemory = header.getHeaderBits();
 
-
-    //generate zcode for token string
-    RoutineGenerator routineGenerator = RoutineGenerator();
-    std::vector<std::bitset<8>> zByteCodePrint = routineGenerator.printPrintRoutine(
-            passage.get()->getBody().getContent());
-    zCode.insert(zCode.end(), zByteCodePrint.begin(), zByteCodePrint.end());
-    log("Print Command added to ZCode");
+    //concat memory sections
+    vector<bitset<8>> zCode = vector<bitset<8>>();
+    Utils::append(zCode, headerMemory);
+    Utils::append(zCode, dynamicMemory);
+    Utils::append(zCode, staticMemory);
+    Utils::append(zCode, highMemory);
 
     //calculate fileSize
-    size_t fileSize = calculateFileSize(zCode);
-
+    size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
     zCode = addFileSizeToHeader(zCode, fileSize);
 
     //generate empty space for padding
     size_t empty = fileSize - zCode.size();
-    fillWithBytes(zCode, 0, (empty > 0) ? empty : 0);
+    Utils::fillWithBytes(zCode, 0, (empty > 0) ? empty : 0);
 
     BinaryFileWriter binaryFileWriter;
     binaryFileWriter.write(zCodeFileName, zCode);
     log("ZCode File '" + zCodeFileName + "' generated");
 }
 
-size_t SimpleCompilerPipeline::calculateFileSize(std::vector<std::bitset<8>> zCode) {
-    return ((zCode.size() + 8) / 8) * 8;
+std::vector<std::bitset<8>> SimpleCompilerPipeline::generateDynamicMemory(ZCodeHeader &header, size_t offset) {
+    vector<bitset<8>> akk = vector<bitset<8>>();
+    //abbervation strings
+    Utils::fillWithBytes(akk, 0, 2);
+    //abbervation table
+    header.locOfAbbrTable = (uint16_t) (offset + akk.size());
+    Utils::fillWithBytes(akk, 0, 0xc0);
+    //property defaults
+    Utils::fillWithBytes(akk, 0, 0x3e);
+    //objects
+    header.locOfObjTable = (uint16_t) (offset + akk.size());
+    Utils::fillWithBytes(akk, 0, 0x5a3);
+    //globalVariables
+    header.locOfGlobVarTable = (uint16_t) (offset + akk.size());
+    vector<bitset<8>> vars = printGlobalTable((int) (offset + akk.size()));
+    akk.insert(akk.end(), vars.begin(), vars.end());
+    return akk;
+}
+
+std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHeader &header, size_t offset) {
+    vector<bitset<8>> akk = vector<bitset<8>>();
+    //grammar table
+    Utils::fillWithBytes(akk, 0, 0x55f);
+    //actions table
+    Utils::fillWithBytes(akk, 0, 0xac);
+    //preactions table
+    Utils::fillWithBytes(akk, 0, 0xae);
+    //adjectives table
+    Utils::fillWithBytes(akk, 0, 0x4c);
+    //dictionary
+    Utils::fillWithBytes(akk, 0, 0x7bd);
+    return akk;
+}
+
+std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader &header, size_t offset) {
+    RoutineGenerator routineGenerator = RoutineGenerator();
+    vector<bitset<8>> akk = vector<bitset<8>>();
+
+    vector<bitset<8>> main = routineGenerator.printCallToMainAndMain(offset, 0);
+    Utils::append(akk, main);
+
+    vector<bitset<8>> readChar = routineGenerator.printReadCharInstruction(0x10);
+    Utils::append(akk, readChar);
+
+    vector<bitset<8>> printChar = routineGenerator.printPrintCharInstruction(0x10);
+    Utils::append(akk, printChar);
+    Utils::append(akk, printChar);
+    Utils::append(akk, printChar);
+    Utils::append(akk, printChar);
+    Utils::append(akk, printChar);
+    Utils::append(akk, printChar);
+
+    akk.push_back(bitset<8>(RoutineGenerator::NEW_LINE));
+    akk.push_back(bitset<8>(RoutineGenerator::QUIT));
+
+    return akk;
 }
 
 std::vector<std::bitset<8>> SimpleCompilerPipeline::addFileSizeToHeader(std::vector<std::bitset<8>> zCode,
@@ -88,38 +149,31 @@ void SimpleCompilerPipeline::printHex(std::vector<std::bitset<8>> bitsetList) {
     cout << endl << endl;
     for (unsigned int i = 0; i < bitsetList.size(); i++) {
         bitset<8> set(bitsetList.at(i));
-        cout << hex << set.to_ulong();
+        cout << hex << set.to_ulong() << endl;
     }
     cout << endl;
 }
 
-void SimpleCompilerPipeline::fillWithBytes(std::vector<std::bitset<8>>& bitVector, uint8_t value, unsigned long amountOfBytes) {
-    for (size_t i = 0; i < amountOfBytes; i++) {
-        bitVector.insert(bitVector.end(), value);
+std::vector<std::bitset<8>> SimpleCompilerPipeline::printGlobalTable(int offset) {
+    vector<bitset<8>> akk = vector<bitset<8>>();
+    for (int i = 0; i < (0xff - 0x10); i++) {
+        int adr = offset + (0xff - 0x10) * 2 + i * 100;
+        bitset<8> one = bitset<8>((unsigned long long int) adr / 255);
+        bitset<8> two = bitset<8>((unsigned long long int) adr % 256);
+        akk.push_back(one);
+        akk.push_back(two);
     }
+    for (int i = 0; i < (0xff - 0x10); i++) {
+        akk.push_back(bitset<8>(4));
+        akk.push_back(bitset<8>(0));
+        Utils::fillWithBytes(akk, 0, 96);
+        akk.push_back(bitset<8>(0x80));
+        akk.push_back(bitset<8>(0));
+    }
+
+    return akk;
 }
 
 void SimpleCompilerPipeline::log(string message) {
     cout << "Compiler: " << message << " . . ." << "\n";
-}
-
-
-std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHeader() {
-    //generate header
-    ZCodeHeader header;
-    header.baseOfHighMem = 358;
-    header.initValOfPC = 1;
-    header.packedAddressOfMain = 103;
-    header.locOfDict = 328;
-    header.locOfObjTable = 266;
-    header.locOfGlobVarTable = 258;
-    header.baseOfStatMem = 328;
-
-    header.locOfAbbrTable = 66;
-
-    header.setRoutinesOffset(128);         // random value
-    header.setStaticStringsOffset(128);    // random value
-    header.setFileLength(2064, 6861);
-    
-    return header.getHeaderBits();
 }
