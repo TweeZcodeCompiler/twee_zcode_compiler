@@ -35,12 +35,12 @@ private:
     std::vector<std::string> getRoutinesFromFile(std::string fileNames);
     std::vector<std::bitset<8>> getZCodeForRoutine(std::string routine,std::vector<std::bitset<8>> highMemoryZcode,size_t offset);
 
-    RoutineGenerator executeCommand(std::string command,RoutineGenerator routineGenerator);
+    RoutineGenerator executeCommand(std::string command,RoutineGenerator &routineGenerator);
 
-    RoutineGenerator executePRINTCommand(std::string printCommand,RoutineGenerator routineGenerator);
-    RoutineGenerator executeREADCommand(std::string readCommand,RoutineGenerator routineGenerator);
-    RoutineGenerator executeJECommand(std::string jeCommand,RoutineGenerator routineGenerator);
-    RoutineGenerator executeCALLCommand(std::string callCommand,RoutineGenerator routineGenerator);
+    RoutineGenerator executePRINTCommand(std::string printCommand,RoutineGenerator &routineGenerator);
+    RoutineGenerator executeREADCommand(std::string readCommand,RoutineGenerator &routineGenerator);
+    RoutineGenerator executeJECommand(std::string jeCommand,RoutineGenerator &routineGenerator);
+    RoutineGenerator executeCALLCommand(std::string callCommand,RoutineGenerator &routineGenerator);
 
 
 

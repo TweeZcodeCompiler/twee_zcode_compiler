@@ -43,14 +43,6 @@ std::vector<std::bitset<8>> AssemblyParser::readAssembly(std::string assFilePath
         Utils::append(zCode, routineZCode);
     }
 
-
-
-
-
-
-
-
-
     return  zCode;
 
 
@@ -61,20 +53,23 @@ std::vector<std::bitset<8>> AssemblyParser::getZCodeForRoutine(std::string routi
 
   std::vector<std::bitset<8>> zCodeRoutine;
 
-
+    //get commands from routine
     std::vector<std::string> commands = this->split(routine,'\n');
+
+    //get routine name
     std::string routineName = split(commands.at(0),' ').at(1);
     std::cout << ":::::: routine " << routineName << std::endl;
     RoutineGenerator routineGenerator = RoutineGenerator(routineName, 0, highMemoryZcode, offset);
 
-std::string command;
-for(int i = 0;i<commands.size();i++)
-{
+    //execute all commands
+    std::string command;
+    for(int i = 0;i<commands.size();i++)
+    {
     command = commands.at(i);
     routineGenerator = executeCommand(command,routineGenerator);
-}
+    }
 
-zCodeRoutine = routineGenerator.getRoutine();
+    zCodeRoutine = routineGenerator.getRoutine();
     return zCodeRoutine;
 
 
@@ -82,7 +77,7 @@ zCodeRoutine = routineGenerator.getRoutine();
 
 
 
-RoutineGenerator AssemblyParser::executePRINTCommand(std::string printCommand,RoutineGenerator routineGenerator)
+RoutineGenerator AssemblyParser::executePRINTCommand(std::string printCommand,RoutineGenerator &routineGenerator)
 {
 
    std::vector<std::string> commandParts = this->split(printCommand,AssemblyParser::STRING_IDENTIFIER);
@@ -91,15 +86,19 @@ RoutineGenerator AssemblyParser::executePRINTCommand(std::string printCommand,Ro
     return routineGenerator;
 }
 
-RoutineGenerator AssemblyParser::executeREADCommand(std::string readCommand,RoutineGenerator routineGenerator)
+RoutineGenerator AssemblyParser::executeREADCommand(std::string readCommand,RoutineGenerator &routineGenerator)
 {
 
-    this->globalVariableStack.insert(std::pair<std::string,int>("sp",variableUsed));
+    std::vector<std::string> commandParts = this->split(readCommand,' ');
+    std::string globalVariable = commandParts.at(3);
+    std::cout << globalVariable << std::endl;
+
+    this->globalVariableStack.insert(std::pair<std::string,int>(globalVariable,variableUsed));
     variableUsed++;
     routineGenerator.readChar(0x10); //TODO: get avialabe address
     return routineGenerator;
 }
-RoutineGenerator AssemblyParser::executeJECommand(std::string jeCommand,RoutineGenerator routineGenerator)
+RoutineGenerator AssemblyParser::executeJECommand(std::string jeCommand,RoutineGenerator &routineGenerator)
 {
 
     std::vector<std::string> commandParts = this->split(jeCommand,'?');
@@ -110,7 +109,7 @@ RoutineGenerator AssemblyParser::executeJECommand(std::string jeCommand,RoutineG
     return routineGenerator;
 }
 
-RoutineGenerator AssemblyParser::executeCALLCommand(std::string callCommand,RoutineGenerator routineGenerator)
+RoutineGenerator AssemblyParser::executeCALLCommand(std::string callCommand,RoutineGenerator &routineGenerator)
 {
 
     std::vector<std::string> commandParts = this->split(callCommand,' ');
@@ -123,7 +122,7 @@ RoutineGenerator AssemblyParser::executeCALLCommand(std::string callCommand,Rout
 
 
 
-RoutineGenerator AssemblyParser::executeCommand(std::string command,RoutineGenerator routineGenerator)
+RoutineGenerator AssemblyParser::executeCommand(std::string command,RoutineGenerator &routineGenerator)
 {
 
   std::vector<std::string> commandParts = this->split(command,AssemblyParser::SPLITTER_BETWEEN_LEXEMS_IN_AN_COMMAND);
@@ -148,13 +147,13 @@ RoutineGenerator AssemblyParser::executeCommand(std::string command,RoutineGener
         {
 
             std::cout << ":::::: new print ";
-           routineGenerator = executePRINTCommand(command,routineGenerator);
+           executePRINTCommand(command,routineGenerator);
 
         }
         if(commandPart.compare(AssemblyParser::JE_COMMAND) == 0)
         {
             std::cout << ":::::: new je ";
-            routineGenerator = executeJECommand(command,routineGenerator);
+           executeJECommand(command,routineGenerator);
 
         }
         if(commandPart.compare(AssemblyParser::QUIT_COMMAND) == 0)
@@ -164,14 +163,15 @@ RoutineGenerator AssemblyParser::executeCommand(std::string command,RoutineGener
         }
         if(commandPart.compare(AssemblyParser::READ_CHAR_COMMAND) == 0)
         {
-            routineGenerator = executeREADCommand(command,routineGenerator);
-            std::cout << ":::::: new read"<< std::endl;
+            std::cout << ":::::: new read in -> ";
+           executeREADCommand(command,routineGenerator);
+
         }
 
         if(commandPart.compare(AssemblyParser::CALL_COMMAND) == 0)
         {
             std::cout << ":::::: new call ";
-            routineGenerator = executeCALLCommand(command,routineGenerator);
+            executeCALLCommand(command,routineGenerator);
 
         }
 
