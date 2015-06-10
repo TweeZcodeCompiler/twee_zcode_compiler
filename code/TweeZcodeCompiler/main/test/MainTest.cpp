@@ -11,7 +11,7 @@ int main() {
     Test::addTest("RoutineGenerator", new RoutineGeneratorTest());
     Test::addTest("ZCodeHeader", new ZCodeHeaderTest());
     //Execute tests
-    Test::executeAllTests(false);
+    Test::executeAllTests(true);
     //call delete for each test
     Test::deleteTests();
     return 0;
