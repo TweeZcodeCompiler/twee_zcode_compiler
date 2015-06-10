@@ -55,9 +55,12 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     Utils::append(zCode, staticMemory);
     Utils::append(zCode, highMemory);
 
+<<<<<<< HEAD
 
     RoutineGenerator::resolveCallInstructions(zCode);
 
+=======
+>>>>>>> assembly backendparser v3.
 
     //calculate fileSize
     size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
@@ -114,6 +117,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, routine);
 
+<<<<<<< HEAD
     RoutineGenerator testRoutineGenerator = RoutineGenerator("main", 0, highMemoryZcode, offset);
     testRoutineGenerator.printString("Dies ist 1 Test");
     testRoutineGenerator.newLine();
@@ -144,6 +148,16 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
 
     vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, testRoutine);
+=======
+
+    AssemblyParser assemblyParser;
+
+    vector<bitset<8>> zProgramCode = assemblyParser.readAssembly("eat_apple.zap");
+
+
+
+    Utils::append(highMemoryZcode, zProgramCode);
+>>>>>>> assembly backendparser v3.
 
     RoutineGenerator routine1 = RoutineGenerator("wald", 0, highMemoryZcode, offset);
     routine1.newLine();
