@@ -14,11 +14,14 @@ FormattedText::FormattedText(std::string content, bool isItalic, bool isBold, bo
 
 }
 
+
+
 void FormattedText::setIsItalic(bool italic) {
 
     this->isItalic = italic;
 
 }
+
 
 void FormattedText::setIsBold(bool bold) {
 
@@ -29,6 +32,12 @@ void FormattedText::setIsBold(bool bold) {
 void FormattedText::setIsUnderlined(bool underlined) {
 
     this->isUnderlined = underlined;
+
+}
+
+bool FormattedText::getIsItalic() {
+
+    return this->isItalic;
 
 }
 
@@ -46,6 +55,10 @@ bool FormattedText::getIsUnderlined() {
 
 std::string FormattedText::to_string() {
 
-    return "Formatted Text\n";
+    return std::string("Formatted Text \n")
+           + std::string("Is Italic: ") + (this->getIsItalic() ? std::string("Yes \n") : std::string("No \n"))
+           + std::string("Is Bold: ") + (this->getIsBold() ? std::string("Yes \n") : std::string("No \n"))
+           + std::string("Is Underlined: ") + (this->getIsUnderlined() ? std::string("Yes \n") : std::string("No \n"))
+           + std::string("Content: ") + this->getContent();
 
 }

@@ -17,8 +17,6 @@ include/Passage/Body/Link.h Link.cpp
 include/Passage/Body/Text.h Text.cpp
 include/Passage/Body/FormattedText.h FormattedText.cpp
 
+main.cpp
+
 )
-
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
-
-add_executable(DataModelTest ${SOURCE_FILES} main.cpp)

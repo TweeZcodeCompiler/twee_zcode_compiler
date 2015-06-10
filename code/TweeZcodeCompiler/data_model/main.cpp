@@ -1,21 +1,20 @@
-//
-// Created by george on 6/10/15.
-//
+#include "include/Passage/Passage.h"
+#include "include/Passage/Body.h"
+#include "include/Passage/Head.h"
+#include "include/Passage/Body/BodyPart.h"
+#include "include/Passage/Body/Text.h"
+#include "include/Passage/Body/Link.h"
 
-#include "include/TweeFile.h"
 
-int main(int argc, char *argv[]) {
+#include <iostream>
 
-    TweeFile* tweeStructure = new TweeFile();
+int main() {
 
-    //start passage
-    Head* h1 = new Head("start");
-    Body* b1 = new Body();
-    Text* t1_1 = new Text("Starttext 1");
-    Link* t1_2 = new Link("psg1","psg1");
-    *b1 += *t1_1;
-    *b1 += *t1_2;
-    Passage p1 = new Passage(*h1, *b1);
+    Body b;
+    Head h("test");
+    b += new Text("testText");
+    b += new Link("testTarget");
+    Passage p(h, b);
 
-    *tweeStructure += *p1;
+    std::cout << p.to_string();
 }

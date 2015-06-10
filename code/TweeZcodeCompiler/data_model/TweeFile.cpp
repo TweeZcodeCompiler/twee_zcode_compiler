@@ -3,15 +3,14 @@
 //
 
 #include "include/TweeFile.h"
-#include <iostream>
+
 #include <vector>
 #include <string>
 
-using namespace std;
 
 TweeFile::TweeFile() { }
 
-vector <Passage> TweeFile::getPassages() {
+std::vector<Passage> TweeFile::getPassages() {
 
     return this->passages;
 
@@ -27,9 +26,9 @@ std::string TweeFile::to_string() {
 
     std::string result = "TweeFile \n";
 
-    /*for (int i = 0; i < passages.size(); ++i) {
-        result += this->passages[i].to_string();
-    }*/
+    for (std::vector<Passage>::iterator iter = this->getPassages().begin(); iter != this->getPassages().end(); ++iter) {
+        result += (*iter).to_string() + "\n";
+    }
 
     return result;
 

@@ -7,9 +7,11 @@
 #include "include/Passage/Body.h"
 
 #include <string>
-#include <ostream>
 
 Passage::Passage(Head &head, Body &body) : head(head), body(body) {
+
+    this->head = head;
+    this->body = body;
 
 }
 
@@ -27,7 +29,7 @@ Body Passage::getBody() {
 
 std::string Passage::to_string() {
 
-    return this->head.to_string() + std::to_string('\n') + this->body.to_string();
+    return std::string("Passage \n") + this->getHead().to_string() + std::string("\n") + this->getBody().to_string();
 
 }
 

@@ -6,9 +6,6 @@
 #define BODY_H
 
 #include "Body/BodyPart.h"
-#include "Body/Text.h"
-#include "Body/Link.h"
-#include "Body/FormattedText.h"
 
 #include <vector>
 #include <string>
@@ -16,15 +13,16 @@
 class Body {
 
 private:
-    std::vector <BodyPart> bodyparts;
+    std::vector<BodyPart*> bodyparts;
 
 public:
 
     Body();
+    ~Body();
 
-    std::vector <BodyPart> getBodyParts();
+    const std::vector<BodyPart*> &getBodyParts();
 
-    Body &operator+=(const BodyPart &);
+    Body &operator+=(BodyPart*);
 
     std::string to_string();
 
