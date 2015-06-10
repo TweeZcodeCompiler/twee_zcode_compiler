@@ -7,6 +7,7 @@
 #include <TweeParser.h>
 #include <fstream>
 #include <memory>
+#include "AssemblyParser.h"
 
 using namespace std;
 
@@ -54,7 +55,9 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     Utils::append(zCode, staticMemory);
     Utils::append(zCode, highMemory);
 
+
     RoutineGenerator::resolveCallInstructions(zCode);
+
 
     //calculate fileSize
     size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
