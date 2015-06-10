@@ -1,40 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 
   <style type="text/css">
-    body 
+
+    .nav
     {
-      background-color: #FFFFCC;
+    padding: 30px 0px 30px 0px;
+    text-align: center;
     }
 
-    .element 
+    .nav a
     {
-      width: 60%;
+    color: black;
+    text-decoration: none;
+    padding: 20px;
+    border: 2px solid black;
+    }
+
+    div.twee-structure, div.twee-macro, div.twee-function, div.analysis
+    {
+    display: none;
+    }
+
+    .twee-structure:target, .twee-macro:target, .twee-function:target , .analysis:target
+    {
+    display:block;
+    }
+
+    .element
+    {
+    width: 60%;
+    }
+
+    tr
+    {
+    outline: 1px black solid;
     }
 
   </style>
 
   <head>
-    <title> Twee Cheat Sheet - Basics </title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <title> Twee Cheat Sheet </title>
+
   </head>
 
   <body>
 
-    <h3> Twee Cheat Sheet - Basics </h3>
+  <div class="nav">
+    <a href="#twee-structure" class="twee-structure">Twee Struktur</a>
+    <a href="#twee-macro" class="twee-macro">Twee Macros</a>
+    <a href="#twee-function" class="twee-function">Twee Funktionen</a>
+    <a href="#analysis" class="analysis">Analyse</a>
 
+  </div>
+
+
+  <div id="twee-structure" class="twee-structure">
     <table>
-        
         <thead>
+        <tr>
+          <td class="element"> Element</td>
+          <td> Erklärung</td>
+        </tr>
         </thead>
 
         <tbody>
+
           <tr>
             <td class="element"> ::Passage </td>
-            <td> 
-              <p> "Level" des Spiels, Kapitel des Buches </p>
-              <p> erste Passage muss Start heissen </p>
-              <p> Passagennamen muessen verschieden seien und sind case-sensitive </p>
-              <p> <b> jedes Element, was keine Passagendeklaration ist, wird bis zur ersten Passagendeklaration ignoriert </b> </p>
+            <td>
+              <p>"Level" des Spiels, Kapitel des Buches </p>
+
+              <p>erste Passage <b>muss</b> Start heißen </p>
+
+              <p>Passagennamen muessen verschieden seien und sind case-sensitive </p>
+
+              <p><b> jedes Element, was keine Passagendeklaration ist, wird bis zur ersten Passagendeklaration
+                ignoriert </b></p>
             </td>
           </tr>
 
@@ -47,9 +92,6 @@
             <td class="element"> 
               <p>
                 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
-              </p>
-              <p>
-                Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. 
               </p>
             </td>
             <td> Text ist der Kern einer jeden Geschichte / eines jeden Spiels, die Inkarnation der Handlung </td>
@@ -68,13 +110,21 @@
             </td>
           </tr>
 
-          <tr>
-            <td>
-              <h3> Macros </h3>
-            </td>
-            <td></td>
-          </tr>
+        </tbody>
+    </table>
+  </div>
 
+  <div id="twee-macro" class="twee-macro">
+    <table>
+
+      <thead>
+      <tr>
+        <td class="element"> Element</td>
+        <td> Erklärung</td>
+      </tr>
+      </thead>
+
+      <tbody>
           <tr>
             <td>
               <h4> Kontrollfluss </h4>
@@ -245,9 +295,187 @@
             </td>
           </tr>
         </tbody>
-
     </table>
+  </div>
 
+  <div id="twee-function" class="twee-function">
+    <p>Eine Twine / Twee Funktion hat folgende Syntax: functionName(expressions), expressions mit "," getrennt. Eine
+      Funktion kann 0..n expressions als Eingabewerte erhalten.</p>
+
+    <p>Theoretisch wird jede JavaScript Funktion unterstützt, es gibt aber auch Twine / Twee spezifische Funktionen, die
+      im nachfolgenden aufgezählt und beschrieben werden. </p>
+    <table>
+      <thead>
+      <tr>
+        <td class="element"> Element</td>
+        <td> Erklärung</td>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+        <td class="element"> either(value, value, ...)</td>
+        <td>
+          <p> wählt zufällig einen Wert value aus </p>
+
+          <p> kann bspw. mit &lt;&lt;set...&gt;&gt; oder &lt;&lt;display...&gt;&gt; verwendet werden, um zufällig Werte
+            zu setzen oder wenn value ein valider Passagenname ist, eine zufällige Passage anzeigen, dasselbe
+            funktioniert auch mit Links </p>
+        </td>
+      </tr>
+      <tr>
+        <td class="element"> random(lower, upper)</td>
+        <td>
+          <p>erzeugt einen ganzzahligen Zufallswert </p>
+
+          <p>lower &lt;= Zufallswert &lt;= upper</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="element"> rot13(string)</td>
+        <td>
+          <p>kodiert normalen Text nach ROT13 mittels ROT13 Verschlüsselung und dekodiert ROT13 Text zurück</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="element"> previous()</td>
+        <td>
+          <p>gibt den Namen der Passage zurück, die der Spieler zuletzt besucht hat</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="element">visited(PassageName*)</td>
+        <td>
+          <p>gibt die Anzahl zurück, wie oft der Spieler die Passage besucht hat </p>
+
+          <p>wenn kein Name angegeben wird, gibt visited() die Anzahl der Besuche der aktuellen Passage zurück </p>
+
+          <p>wenn mehrere Namen angegeben werden, gibt visited() die minimale Anzahl an Besuchen für die Passage mit der
+            geringsten Anzahl an Besuchen zurück</p>
+
+          <p> bspw. kann mithilfe von if-Statements ein Text bei jedem dritten Besuch einer Passage ausgegeben
+            werden </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="element">turns()</td>
+        <td>
+          <p>Anzahl an geklickten Links</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="element">passage()</td>
+        <td>
+          <p>gibt den Namen der aktuellen Passage zurück</p>
+
+          <p>Ausnahme: Passagen, die mit dem &lt;&lt;display...&gt;&gt; Makro aufgerufen wurden, geben den Namen der
+            aufrufenden Passage als aktuelle Passage zurück </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="element">tags()</td>
+        <td>
+          <p>gibt als JavaScript Array die Tags der aktuellen Passage (s. passage()) zurück</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="element">parameter(number)</td>
+        <td>
+          <p>für den Fall das man &lt;&lt;display PassageName parameters&gt;&gt; ausführt, kann man mit parameter(i) den
+            Parameter an Stelle i zurückgewinnen </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="element">confirm(string)</td>
+        <td>
+          <p>erzeugt ein Pop Up, das die Frage string an den Spieler stellt, der "Ja" oder "Nein" auswählen kann, was
+            entsprechend den Rückgabewert auf true oder false setzt</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="element">prompt(stringF, string)</td>
+        <td>
+          <p> erzeugt ein Pop Up mit Eingabefeld, wobei stringF ein Text ist, der zusammen mit dem Pop Up ausgegeben
+            wird, in string liegt die Eingabe des Nutzers, verwendet mit &lt;&lt;set $var to prompt(stringF,string)&gt;&gt; </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="element">alert(string)</td>
+        <td>
+          <p>erzeugt ein Pop Up, dass den Text string ausgibt, verwendet mit &lt;&lt;set alert(string)&gt;&gt; </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="element">open(string)</td>
+        <td>
+          <p>öffnet einen neuen Tab, wenn string eine gültige URL ist, verwendet mit &lt;&lt;set
+            open(string)&gt;&gt;</p>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="analysis" class="analysis">
+
+    <h5> Must have </h5>
+    <dl>
+      <dt>Passage</dt>
+      <dd>either a function call or a jump to a label, where the called function / label resembles the passage</dd>
+      <dt>Text</dt>
+      <dd>Z Machine ZSCII</dd>
+      <dt>Links</dt>
+      <dd>either a function call or a jump to a label</dd>
+      <dt>set</dt>
+      <dd>global variables</dd>
+      <dt>if-else</dt>
+      <dd>conditional jumps</dd>
+      <dt>print</dt>
+      <dd>Z Machine print routine</dd>
+      <dt>display</dt>
+      <dd>either a function call or a jump to a label, where the called function / label resembles the passage</dd>
+      <dt>expressions</dt>
+      <dd>using the Z Machine arithmetic operations</dd>
+    </dl>
+
+    <h5> Optional </h5>
+    <dl>
+      <dt>either()</dt>
+      <dd>Z Machine has probably some sort of random number generator</dd>
+      <dt>random()</dt>
+      <dd>Z Machine has probably some sort of random number generator</dd>
+      <dt>previous()</dt>
+      <dd>global ID's for each passage and a corresponding global variable containing the last ID</dd>
+      <dt>visited()</dt>
+      <dd>global counter to count each jump to each passage</dd>
+      <dt>turns()</dt>
+      <dd>global counter to count each jump to a passage</dd>
+      <dt>remember</dt>
+      <dd>persistent storage maybe in a file</dd>
+      <dt>forget</dt>
+      <dd>persistent storage maybe in a file</dd>
+      <dt>action</dt>
+      <dd>function with corresponding links</dd>
+      <dt>choice</dt>
+      <dd>function with corresponding links and counter</dd>
+    </dl>
+
+    <h5> Lesser than optional </h5>
+    macros: back, nobr, entire input macros
+    functions: passage(), tags(), rot13(), tags(), prompt(), alert(), open()
+  </div>
 
   </body>
+
 </html>
