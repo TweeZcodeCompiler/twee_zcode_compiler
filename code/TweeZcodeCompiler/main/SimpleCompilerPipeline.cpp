@@ -55,12 +55,11 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     Utils::append(zCode, staticMemory);
     Utils::append(zCode, highMemory);
 
-<<<<<<< HEAD
+
 
     RoutineGenerator::resolveCallInstructions(zCode);
 
-=======
->>>>>>> assembly backendparser v3.
+
 
     //calculate fileSize
     size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
