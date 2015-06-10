@@ -65,7 +65,8 @@ void RoutineGenerator::printChar(uint8_t var) {
 void RoutineGenerator::callRoutine(string nameOfRoutine) {
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (u_int16_t) 3000, false);
     addBitset(instructions);
-    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 1] = nameOfRoutine;
+    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = nameOfRoutine;
+    std::cout << "Call Routine at:::"<<offsetOfRoutine + routineZcode.size() - 2<<"\n";
 }
 
 void RoutineGenerator::callRoutine(size_t routineOffset) {
@@ -200,14 +201,8 @@ void RoutineGenerator::resolveCallInstructions(std::vector<std::bitset<8>> &zCod
         size_t callOffset = it->first;
         vector<bitset<8>> callAdress = vector<bitset<8>>();
         Utils::setShortVal(calledRoutineOffset / 8, callAdress);
-        for (size_t i = callOffset; i > 0; i--) {
-            if (zCode[i] == RoutineGenerator::CALL_1N) {
-                zCode[i + 1] = callAdress[0];
-                zCode[i + 2] = callAdress[1];
-                break;
-            }
-        }
-
+                zCode[callOffset] = callAdress[0];
+                zCode[callOffset+1] = callAdress[1];
     }
 }
 

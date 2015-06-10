@@ -26,6 +26,10 @@ public:
     void newJump(std::string toLabel);
     void calculateOffsets();
     void setRoutineBitsetMap(std::map<int, std::bitset<8>> &opcodes);
+
+    void calculateCallOffsets(size_t position);
+
+    size_t routineOffset;
 };
 
 
