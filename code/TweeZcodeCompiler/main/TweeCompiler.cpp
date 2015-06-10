@@ -145,7 +145,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     #endif
                     assgen.ret(to_string(targetPassageId));
                 } catch (out_of_range &err) {
-                    cerr << "could not find passage for link \"" << *link << "\"" << endl;
+                    cerr << "could not find passage for link target\"" << (*link)->getTarget() << "\"" << endl;
                     throw;
                 }
                 i++;
