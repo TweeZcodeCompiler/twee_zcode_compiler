@@ -6,9 +6,9 @@
 
 #include <string>
 
-Text::Text(std::string content) {
+Text::Text(std::string content_) {
 
-    this->content = content;
+    content = content_;
 
 }
 
@@ -20,6 +20,6 @@ std::string Text::getContent() {
 
 std::string Text::to_string() {
 
-    return "Text: "  + std::endl + this->content;
+    return "Text:\n";
 
 }

@@ -9,13 +9,13 @@
 
 #include <string>
 
-class Text : public BodyPart {
+class Text {
 
 private:
     std::string content;
 
 public:
-    Text(std::string);
+    Text(std::string content);
 
     std::string getContent();
 

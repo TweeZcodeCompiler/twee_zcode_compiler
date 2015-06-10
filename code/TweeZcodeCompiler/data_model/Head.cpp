@@ -34,6 +34,6 @@ std::vector <std::string> Head::getTags() {
 
 std::string Head::to_string() {
 
-    return "Head" + std::endl + "Name: " + this->name + std::endl + "Tags: " + this->tags;
+    return std::to_string('\n');
 
 }

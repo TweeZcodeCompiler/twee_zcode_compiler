@@ -3,10 +3,11 @@
 //
 
 #include "include/TweeFile.h"
-
+#include <iostream>
 #include <vector>
 #include <string>
 
+using namespace std;
 
 TweeFile::TweeFile() { }
 
@@ -24,11 +25,11 @@ TweeFile &TweeFile::operator+=(const Passage &passage) {
 
 std::string TweeFile::to_string() {
 
-    std::string result = "TweeFile" + std::endl;
+    std::string result = "TweeFile \n";
 
-    for (int i = 0; i < passages.size(); ++i) {
+    /*for (int i = 0; i < passages.size(); ++i) {
         result += this->passages[i].to_string();
-    }
+    }*/
 
     return result;
 

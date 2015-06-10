@@ -6,6 +6,8 @@
 #define TWEEFILE_H
 
 #include "Passage/Passage.h"
+#include "Passage/Body.h"
+#include "Passage/Head.h"
 
 #include <vector>
 #include <string>
@@ -13,12 +15,12 @@
 class TweeFile {
 
 private:
-    vector <Passage> passages;
+    std::vector <Passage> passages;
 
 public:
     TweeFile();
 
-    vector <Passage> getPassages();
+    std::vector <Passage> getPassages();
 
     TweeFile &operator+=(const Passage &);
 

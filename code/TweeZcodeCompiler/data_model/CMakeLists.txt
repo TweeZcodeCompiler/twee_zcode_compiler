@@ -1,4 +1,5 @@
-project(TweeZcodeCompiler)
+cmake_minimum_required(VERSION 3.2)
+project(TweeDataModel)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 include_directories(${TweeParser_SOURCE_DIR}/include)
@@ -17,3 +18,7 @@ include/Passage/Body/Text.h Text.cpp
 include/Passage/Body/FormattedText.h FormattedText.cpp
 
 )
+
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+
+add_executable(DataModelTest ${SOURCE_FILES} main.cpp)

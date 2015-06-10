@@ -1,4 +1,4 @@
-%defines
+%defines "GeneratedTweeParser.h"
 %require "3.0.2"
 %define api.namespace {Twee}
 %define parser_class_name {BisonParser}
@@ -10,15 +10,15 @@
 %skeleton "lalr1.cc"
 
 %code requires {
-	#include "include/Passage.h"
-	#include "include/Body.h"
 	#include <memory>
 	#include <stdio.h>
+	#include <vector>
 
-	extern Passage *tweeStructure; /* the result data model */
+    #include "../data_model/include/TweeFile.h"
+    #include "../data_model/include/Passage/Passage.h"
+	extern TweeFile *tweeStructure; /* the result data model */
 
-	// Forward-declare the Scanner class; the Parser needs to be assigned a
-	// Scanner, but the Scanner can't be declared without the Parser
+	// forward declare the Scanner class
 	namespace Twee {
 		class TweeScanner;
 	}
@@ -30,92 +30,236 @@
 	// Prototype for the yylex function
 	static int yylex(Twee::BisonParser::semantic_type * yylval, Twee::TweeScanner &scanner);
 
-	Passage *tweeStructure; /* the result data model */
+	void parser_log(std::string message) {
+        std::cout << "\tParser: " << message << "\n";
+    }
+
+	TweeFile *tweeStructure; /* the result data model */
+
+	//TODO: declare the passage list globally or look if it can be integrated into the parse tree
 }
 
 
 %union{
 	std::string *string;
 	int token;
+
+	TweeFile *tweefile;
+
 	Passage *passage;
+
+	Head *head;
+	Text *tag;
+
 	Body *body;
+
+	BodyPart *bodypart;
+	Text *text;
+	Link *link;
+	FormattedText *formattedtext;
+
+
+	//TODO: add Syntax Tree classes
 }
 
-%token 
-	<token> LINEBREAK
-	<token> DOUBLE_COLON
-	<string> PTITLE
-	<string> PBODYWORD
+%token
+	<token> PASSAGE_START
+	<token> NEWLINE
 
+	<token> TAGS_OPEN
+	<token> TAGS_CLOSE
+	<string> TITLE
+	<string> TAG
+
+	<token> LINK_OPEN
+	<token> LINK_CLOSE
+    <token> LINK_SEPARATOR
+	<token> MACRO_OPEN
+	<token> MACRO_CLOSE
+	<token> FORMATTING_OPEN
+	<token> FORMATTING_CLOSE
+    <string> TEXT_TOKEN
+
+ //TODO: apply new Syntax Tree implementation
+%type <tweefile> TweeDocument
+
+%type <passage> passage
+%type <tweefile> passages
+
+%type <head> head
+%type <head> title
+%type <tag> tags
 
 %type <body> body
-%type <passage> passage
-%type <passage> passages
-%type <passage> S
 
-%start S
+%type <bodypart> bodypart
+%type <text> text
+%type <link> link
+%type <formattedtext> formatted
+%type <text> macro
+
+%start TweeDocument
 
 %%
 
-S :
-	passages										{
-													tweeStructure = $1;
-													DEBUG_PARSER "Assigned result to the tweeStructure" << '\n';
-													}
+TweeDocument :
+    passages
+    {
+    //TODO: make a TweeDocument out of the passages
+    parser_log("make a TweeDocument out of the passages");
+    tweeStructure = $1;
+    }
   ;
 passages :
-	passage										{
-												$$=$1;
-												DEBUG_PARSER "Moved passage up to passages" << '\n';
-												}
-	|passages passage							{
-												$$=$1;
-												DEBUG_PARSER "theres a passage after the first one" << '\n';
-												}
+    passages passage
+    {
+    parser_log("pass the TweeFile upwards");
+    $$ = $1;
+    parser_log("add the passage to the twee file");
+    *$$ += *$2;
+    }
+	|passage
+	{
+    parser_log("create a TweeFile");
+    $$ = new TweeFile();
+    parser_log("add passage to TweeFile");
+    *$$ += *$1;
+    }
   ;
 passage :
-	DOUBLE_COLON PTITLE linebreaks body			{
-												$$=new Passage(*$2,*$4);
-												DEBUG_PARSER "Made a new Passage from" << '\n';
-												DEBUG_PARSER "\t PTITLE: " << *$2 << '\n';
-												DEBUG_PARSER "\t Body: " << $4->getContent() << '\n';
-												}
-	|DOUBLE_COLON PTITLE						{
-												$$=new Passage(*$2, *new Body(""));
-												DEBUG_PARSER "Made a new Passage from" << '\n';
-												DEBUG_PARSER "\t PTITLE: " << *$2 << '\n';
-												DEBUG_PARSER "\t empty Body: " << '\n';
-												}
+    head body
+    {
+    parser_log("make a passage out of the Head and Body objects");
+    $$ = new Passage(*$1, *$2);
+    }
   ;
 
+head :
+    PASSAGE_START title
+    {
+    parser_log("pass Head object of title upwards");
+    $$ = $2;
+    }
+  ;
 
+title :
+    TITLE NEWLINE
+    {
+    parser_log("generate Head object");
+    $$ = new Head(*$1);
+    }
+    |TITLE TAGS_OPEN tags TAGS_CLOSE NEWLINE
+    {
+    parser_log("generate Head object, add the list of token strings to it");
+    //TODO: incorporate tags
+    $$ = new Head(*$1);
+    }
+  ;
 
-body:
-	PBODYWORD									{
-												$$=new Body(*$1);
-												DEBUG_PARSER "Made a new Body from" << '\n';
-												DEBUG_PARSER "\t PBODYWORD: " << *$1 << '\n';
-												}
-	|body linebreaks PBODYWORD					{
-												*$1 += *$3;
-												DEBUG_PARSER "\t Added" << '\n';
-												DEBUG_PARSER "\t PBODYWORD: " << *$3 << '\n';
-												DEBUG_PARSER "\t to the Body Object " << '\n';
-												$$=$1;
-												DEBUG_PARSER "Passed a Body object up the syntax tree" << '\n';
+tags :
+    tags TAG
+    {
+    //TODO: TAG token vector: tags TAG production
+    parser_log("add the TAG-Token's string to the tags list");
+    }
+    |TAG
+    {
+    //TODO: TAG token vector: tags TAG production
+    parser_log("generate tags list");
+    parser_log("add TAG to tags list");
+    }
+  ;
 
-												}
-    ;
-linebreaks:
-	LINEBREAK									{
+body :
+    body bodypart
+    {
+    //TODO: add the bodypart to the bodypart list
+    parser_log("pass body upwards");
+    $$ = $1;
+    parser_log("pass it upwards");
+    *$$ += *$2;
+    }
+    |bodypart
+    {
+    parser_log("generate body");
+    $$ = new Body();
+    parser_log("add bodypart to body");
+    *$$ += *$1;
+    }
+  ;
 
-												}
-	|linebreaks LINEBREAK						{
+bodypart :
+    text
+    {
+    parser_log("pass the Text object up");
+    $$ =static_cast<BodyPart*> ($1);
+    }
+    |link
+    {
+    parser_log("pass the Link object up");
+    $$ = $1;
+    }
+    |macro
+    {
+    parser_log("pass the Macro object up");
+    $$ = $1;
+    }
+    |formatted
+    {
+    parser_log("pass the FormattedText object up");
+    $$ = $1;
+    }
+  ;
 
-												}
-    ;
+text :
+    TEXT_TOKEN
+    {
+    parser_log("generate Text object");
+    $$ = new Text(*$1);
+    }
+  ;
+
+link :
+    LINK_OPEN TEXT_TOKEN LINK_CLOSE
+    {
+    parser_log("generate Link object, name == destination");
+    $$ = new Link(*$2);
+    }
+    |LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
+    {
+    parser_log("generate Link object, separate name & destination");
+    $$ = new Link(*$2, *$4);
+    }
+  ;
+
+macro :
+    MACRO_OPEN TEXT_TOKEN MACRO_CLOSE
+    {
+    //TODO: data model: implement macro
+    parser_log("generate Macro object");
+    $$ = new Text(*$2);
+    }
+  ;
+
+formatted:
+    FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
+    {
+    //TODO:check if F_OPEN and F_CLOSE are the same
+    //TODO:implement bold,underlined, italic-differenciate function
+    parser_log("make new Formatted Text");
+    $$ = new FormattedText(*$2);
+    $$.setIsBold(true);
+    }
+    |FORMATTING_OPEN formatted FORMATTING_CLOSE
+    {
+    //TODO:check if F_OPEN and F_CLOSE are the same
+    //TODO:implement bold,underlined, italic-differenciate function
+    $$ = $2;
+    $$.setIsBold(!$$.getBold());
+    }
+  ;
+
 %%
-
 
 // We have to implement the error function
 void Twee::BisonParser::error(const std::string& msg) {

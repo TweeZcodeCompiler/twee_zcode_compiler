@@ -26,6 +26,12 @@ public:
 
     bool getIsUnderlined();
 
+    void setIsItalic(bool italic);
+
+    void setIsBold(bool bold);
+
+    void setIsUnderlined(bool underlined);
+
     std::string to_string();
 
 };
