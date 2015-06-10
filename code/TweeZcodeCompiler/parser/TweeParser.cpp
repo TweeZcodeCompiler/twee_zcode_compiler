@@ -1,5 +1,5 @@
 
-#include "../data_model/include/TweeFile.h"
+#include "include/TweeFile.h"
 #include "include/TweeParser.h"
 
 #include "TweeScanner.h"
@@ -34,7 +34,7 @@ TweeFile* TweeParser::parse() {
 
 TweeFile* TweeParser::TweeParserImpl::parse() {
     parser.parse();
-    std::cout << tweeStructure->to_string();
+
     if(!tweeStructure) {
         throw new ParseException();
     }

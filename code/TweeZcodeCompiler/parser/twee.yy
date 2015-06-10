@@ -14,8 +14,11 @@
 	#include <stdio.h>
 	#include <vector>
 
-    #include "../data_model/include/TweeFile.h"
-    #include "../data_model/include/Passage/Passage.h"
+    #include "include/TweeFile.h"
+    #include "include/Passage/Passage.h"
+    #include "include/Passage/Body/Text.h"
+    #include "include/Passage/Body/Link.h"
+    #include "include/Passage/Body/FormattedText.h"
 	extern TweeFile *tweeStructure; /* the result data model */
 
 	// forward declare the Scanner class
@@ -177,14 +180,14 @@ body :
     parser_log("pass body upwards");
     $$ = $1;
     parser_log("pass it upwards");
-    *$$ += *$2;
+    *$$ += $2;
     }
     |bodypart
     {
     parser_log("generate body");
     $$ = new Body();
     parser_log("add bodypart to body");
-    *$$ += *$1;
+    *$$ += $1;
     }
   ;
 
@@ -192,7 +195,7 @@ bodypart :
     text
     {
     parser_log("pass the Text object up");
-    $$ =static_cast<BodyPart*> ($1);
+    $$ = $1;
     }
     |link
     {
@@ -248,14 +251,14 @@ formatted:
     //TODO:implement bold,underlined, italic-differenciate function
     parser_log("make new Formatted Text");
     $$ = new FormattedText(*$2);
-    $$.setIsBold(true);
+    $$->setIsBold(true);
     }
     |FORMATTING_OPEN formatted FORMATTING_CLOSE
     {
     //TODO:check if F_OPEN and F_CLOSE are the same
     //TODO:implement bold,underlined, italic-differenciate function
     $$ = $2;
-    $$.setIsBold(!$$.getBold());
+    $$->setIsBold(!$$->isBold());
     }
   ;
 

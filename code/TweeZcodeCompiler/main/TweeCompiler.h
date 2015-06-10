@@ -5,13 +5,13 @@
 #ifndef PROJECT_TWEECOMPILER_H
 #define PROJECT_TWEECOMPILER_H
 
-#include <TweeDoc.h>
+#include <TweeFile.h>
 #include <ostream>
 #include <map>
 
 class TweeCompiler {
 public:
-    void compile(TweeDoc& tweeDoc, std::ostream& out);
+    void compile(TweeFile& tweeDoc, std::ostream& out);
 private:
     std::map<std::string, int> passageName2id;
 };

@@ -8,7 +8,7 @@
 */
 
 #include <iostream>
-#include "../../data_model/include/TweeFile.h"
+#include "TweeFile.h"
 #include "ParseException.h"
 
 namespace Twee {

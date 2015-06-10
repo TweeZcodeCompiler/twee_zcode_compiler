@@ -9,12 +9,10 @@ Body::Body() { }
 
 
 Body::~Body() {
-    for (auto it = bodyparts.begin(); it != bodyparts.end(); ++it) {
-        delete *it;
-    }
+
 }
 
-const std::vector<BodyPart *> &Body::getBodyParts() {
+std::vector<BodyPart *> &Body::getBodyParts() {
     return this->bodyparts;
 }
 

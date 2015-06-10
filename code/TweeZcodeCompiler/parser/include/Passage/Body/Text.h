@@ -9,7 +9,7 @@
 
 #include <string>
 
-class Text {
+class Text : public BodyPart {
 
 private:
     std::string content;

@@ -20,7 +20,7 @@ public:
     Body();
     ~Body();
 
-    const std::vector<BodyPart*> &getBodyParts();
+    std::vector<BodyPart*> &getBodyParts();
 
     Body &operator+=(BodyPart*);
 

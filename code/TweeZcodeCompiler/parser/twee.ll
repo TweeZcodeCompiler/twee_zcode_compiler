@@ -24,7 +24,7 @@ some stated 'goals':
 //TweeScanner.h for the Tokens
 #include "TweeScanner.h"
 
-#include "../data_model/include/TweeFile.h"
+#include "include/TweeFile.h"
 
 // TODO: check memory stuff for SAVE_TOKEN, does the parser clear that?
 #define SAVE_TOKEN yylval->string = new std::string(YYText(), YYLeng())

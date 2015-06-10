@@ -9,7 +9,7 @@
 #include <iostream>
 #include <memory>
 #include <map>
-#include <TweeDoc.h>
+#include <TweeFile.h>
 #include "TweeCompiler.h"
 
 using namespace std;
@@ -23,9 +23,9 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     Twee::TweeParser parser(&inputFile);
 
-    std::unique_ptr<Passage> passage;
+    std::unique_ptr<TweeFile> tweeFile;
     try {
-        passage.reset(parser.parse());
+        tweeFile.reset(parser.parse());
     } catch (Twee::ParseException e) {
         log("Parse error");
         throw e;
@@ -35,25 +35,8 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     ofstream out = ofstream("test.zas", ofstream::out);
 
-    // create some dummy passages
-    Body body("Testtestest");
-    Passage start("start", body);
-    Passage passage1("passage1", body);
-    Passage passage2("passage2", body);
-
-    // set some dummy links
-    start.links.push_back("passage1");
-    start.links.push_back("passage2");
-    passage1.links.push_back("passage2");
-    passage2.links.push_back("start");
-
-    TweeDoc tweeDoc = TweeDoc();
-    tweeDoc.passages.push_back(start);
-    tweeDoc.passages.push_back(passage1);
-    tweeDoc.passages.push_back(passage2);
-
     TweeCompiler compiler;
-    compiler.compile(tweeDoc, out);
+    compiler.compile(*tweeFile, out);
 
     out.close();
 
@@ -69,7 +52,7 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
 
     //generate zcode for token string
-    RoutineGenerator routineGenerator = RoutineGenerator();
+    /*RoutineGenerator routineGenerator = RoutineGenerator();
     std::vector<std::bitset<8>> zByteCodePrint = routineGenerator.printPrintRoutine(
             passage.get()->getBody().getContent());
     zCode.insert(zCode.end(), zByteCodePrint.begin(), zByteCodePrint.end());
@@ -86,7 +69,7 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     BinaryFileWriter binaryFileWriter;
     binaryFileWriter.write(zCodeFileName, zCode);
-    log("ZCode File '" + zCodeFileName + "' generated");
+    log("ZCode File '" + zCodeFileName + "' generated");*/
 }
 
 size_t SimpleCompilerPipeline::calculateFileSize(std::vector<std::bitset<8>> zCode) {

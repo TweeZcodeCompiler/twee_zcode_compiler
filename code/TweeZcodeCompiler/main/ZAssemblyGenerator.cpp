@@ -38,7 +38,7 @@ namespace instruction {
 ZAssemblyGenerator::ZAssemblyGenerator(ostream& out) : out(out) { }
 
 const std::string ZAssemblyGenerator::STACK_POINTER = "sp";
-const bool ZAssemblyGenerator::ZAPF_MODE = true;
+const bool ZAssemblyGenerator::ZAPF_MODE = false;
 
 std::string ZAssemblyGenerator::makeArgs(std::initializer_list<std::string> args) {
     stringstream ss;
