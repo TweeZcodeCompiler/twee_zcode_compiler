@@ -53,7 +53,6 @@ private:
     std::map<std::string, int> globalVariableStack;
     int variableUsed;
 
-
 public:
     void readAssembly(std::string assFilePath, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
 
