@@ -7,6 +7,7 @@
 
 #include "Body.h"
 #include <string>
+#include <vector>
 
 class Passage {
 
@@ -20,6 +21,8 @@ public:
     Body getBody();
 
     std::string getPassageName();
+
+    std::vector<std::string> links;
 };
 
 

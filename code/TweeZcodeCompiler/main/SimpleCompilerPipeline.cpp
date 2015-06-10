@@ -41,6 +41,12 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     Passage passage1("passage1", body);
     Passage passage2("passage2", body);
 
+    // set some dummy links
+    start.links.push_back("passage1");
+    start.links.push_back("passage2");
+    passage1.links.push_back("passage2");
+    passage2.links.push_back("start");
+
     TweeDoc tweeDoc = TweeDoc();
     tweeDoc.passages.push_back(start);
     tweeDoc.passages.push_back(passage1);

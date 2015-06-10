@@ -19,10 +19,17 @@ typedef const std::string INST_TYPE;
  */
 class ZAssemblyGenerator {
 public:
+    static const std::string STACK_POINTER;
+    // to remedy some compat quirks with ZAPF
+    static const bool ZAPF_MODE;
+
+    static std::string makeArgs(std::initializer_list<std::string> args);
+
     ZAssemblyGenerator(std::ostream& out);
 
     ZAssemblyGenerator& addLabel(std::string labelName);
 
+    ZAssemblyGenerator& markStart();
     ZAssemblyGenerator& addRoutine(std::string routineName);
     ZAssemblyGenerator& addGlobal(std::string globalName);
 
@@ -36,20 +43,18 @@ public:
     ZAssemblyGenerator &newline();
     ZAssemblyGenerator &print(std::string str);
     ZAssemblyGenerator &read_char(std::string storeTarget);
+    ZAssemblyGenerator &println(std::string str);
 
-    static std::string makeArgs(std::initializer_list<std::string> args);
-
-    static const std::string STACK_POINTER;
 private:
     std::ostream& out;
     std::map<std::string, int> passageName2id;
 
-    void addInstruction(INST_TYPE instruction,
+    ZAssemblyGenerator& addInstruction(INST_TYPE instruction,
                                       std::experimental::optional<std::string> args,
                                       std::experimental::optional<std::pair<std::string, bool>> targetLabelAndNeg,
                                       std::experimental::optional<std::string> storeTarget);
 
-    void addDirective(std::string directiveName, std::experimental::optional<std::string> args);
+    ZAssemblyGenerator& addDirective(std::string directiveName, std::experimental::optional<std::string> args);
 
 };
 

@@ -25,11 +25,7 @@ namespace directive {
 
 namespace instruction {
     INST_TYPE CALL = "call_vs";
-#ifdef ZAPF_MODE
-    INST_TYPE JUMP_EQUALS = "jeq";
-#else
-    INST_TYPE JUMP_EQUALS = "je";
-#endif
+    INST_TYPE JUMP_EQUALS = ZAssemblyGenerator::ZAPF_MODE ? "jeq" : "je";
     INST_TYPE JUMP = "jump";
     INST_TYPE QUIT = "quit";
     INST_TYPE RETURN = "ret";
@@ -42,6 +38,7 @@ namespace instruction {
 ZAssemblyGenerator::ZAssemblyGenerator(ostream& out) : out(out) { }
 
 const std::string ZAssemblyGenerator::STACK_POINTER = "sp";
+const bool ZAssemblyGenerator::ZAPF_MODE = true;
 
 std::string ZAssemblyGenerator::makeArgs(std::initializer_list<std::string> args) {
     stringstream ss;
@@ -62,7 +59,7 @@ ZAssemblyGenerator& ZAssemblyGenerator::addLabel(std::string labelName) {
 
 #pragma mark - directives
 
-void ZAssemblyGenerator::addDirective(std::string directiveName, std::experimental::optional<std::string> args) {
+ZAssemblyGenerator& ZAssemblyGenerator::addDirective(std::string directiveName, std::experimental::optional<std::string> args) {
     out << DIRECTIVE_START
         << directiveName;
 
@@ -72,6 +69,8 @@ void ZAssemblyGenerator::addDirective(std::string directiveName, std::experiment
     }
 
     out << INST_END;
+
+    return *this;
 }
 
 ZAssemblyGenerator& ZAssemblyGenerator::addRoutine(std::string routineName) {
@@ -86,7 +85,7 @@ ZAssemblyGenerator& ZAssemblyGenerator::addGlobal(std::string globalName) {
 
 #pragma mark - instructions
 
-void ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
+ZAssemblyGenerator& ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
                                         optional<std::string> args,
                                         optional<pair<std::string, bool>> targetLabelAndNeg,
                                         optional<std::string> storeTarget)
@@ -118,54 +117,62 @@ void ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
     }
 
     out << INST_END;
+
+    return *this;
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jump(std::string targetLabel) {
-    addInstruction(instruction::JUMP, nullopt, make_pair(targetLabel, false), nullopt);
+    if(ZAPF_MODE)
+        return addInstruction(instruction::JUMP, targetLabel, nullopt, nullopt);
+    else
+        return addInstruction(instruction::JUMP, nullopt, make_pair(targetLabel, false), nullopt);
+}
+
+
+ZAssemblyGenerator &ZAssemblyGenerator::markStart() {
+    if(ZAPF_MODE) {
+        out << "START::" << INST_END;
+    }
     return *this;
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::call(std::string routineName) {
-    addInstruction(instruction::CALL, routineName, nullopt, nullopt);
-    return *this;
+    return addInstruction(instruction::CALL, routineName, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::call(std::string routineName, std::string storeTarget) {
-    addInstruction(instruction::CALL, routineName, nullopt, storeTarget);
-    return *this;
+    return addInstruction(instruction::CALL, routineName, nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jumpEquals(std::string args, std::string targetLabel) {
-    addInstruction(instruction::JUMP_EQUALS, args, make_pair(targetLabel, false), nullopt);
-    return *this;
+    return addInstruction(instruction::JUMP_EQUALS, args, make_pair(targetLabel, false), nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jumpGreater(std::string args, std::string targetLabel) {
-    addInstruction(instruction::JUMP_GREATER, args, make_pair(targetLabel, false), nullopt);
-    return *this;
+    return addInstruction(instruction::JUMP_GREATER, args, make_pair(targetLabel, false), nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::quit() {
-    addInstruction(instruction::QUIT, nullopt, nullopt, nullopt);
-    return *this;
+    return addInstruction(instruction::QUIT, nullopt, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::ret(std::string arg) {
-    addInstruction(instruction::RETURN, arg, nullopt, nullopt);
-    return *this;
+    return addInstruction(instruction::RETURN, arg, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::newline() {
-    addInstruction(instruction::NEWLINE, nullopt, nullopt, nullopt);
-    return *this;
+    return addInstruction(instruction::NEWLINE, nullopt, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::print(std::string str) {
-    addInstruction(instruction::PRINT, str, nullopt, nullopt);
-    return *this;
+    return addInstruction(instruction::PRINT, string("\"") + str + string("\""), nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::read_char(std::string storeTarget) {
-    addInstruction(instruction::READ_CHAR, string("1"), nullopt, storeTarget);
-    return *this;
+    return addInstruction(instruction::READ_CHAR, string("1"), nullopt, storeTarget);
 }
+
+ZAssemblyGenerator &ZAssemblyGenerator::println(std::string str) {
+    return addInstruction(instruction::PRINT, string("\"") + str + string("\""), nullopt, nullopt).newline();
+}
+
