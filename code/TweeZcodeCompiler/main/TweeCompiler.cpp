@@ -22,8 +22,13 @@ static const unsigned int ZSCII_NUM_OFFSET = 49;
 
 //#define ZAS_DEBUG
 
+void maskString(std::string& string) {
+    std::replace( string.begin(), string.end(), ' ', '_');
+}
+
 string routineNameForPassageName(std::string passageName) {
     stringstream ss;
+    maskString(passageName);
     ss << "R_" << passageName;
     return ss.str();
 }
@@ -35,7 +40,9 @@ string routineNameForPassage(Passage& passage) {
 
 string labelForPassage(Passage& passage) {
     stringstream ss;
-    ss << "L_" << passage.getHead().getName();
+    string passageName = passage.getHead().getName();
+    maskString(passageName);
+    ss << "L_" << passageName;
     return ss.str();
 }
 
@@ -145,7 +152,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     #endif
                     assgen.ret(to_string(targetPassageId));
                 } catch (out_of_range &err) {
-                    cerr << "could not find passage for link target\"" << (*link)->getTarget() << "\"" << endl;
+                    cerr << "could not find passage for link target \"" << (*link)->getTarget() << "\"" << endl;
                     throw;
                 }
                 i++;
