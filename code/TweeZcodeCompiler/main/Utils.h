@@ -8,12 +8,13 @@
 #include <bitset>
 #include <vector>
 #include <cstdint>
+#include <map>
 
 class Utils {
 
 public:
-    // split short values upt to 2 bytes
-    static void setShortVal(uint16_t val, std::vector<std::bitset<8>> &bitset);
+    // splits 16 bit value up to 2 bytes and pushes them into the bitvector
+    static void addTwoBytes(uint16_t val, std::vector<std::bitset<8>> &bitset);
 
     static void fillWithBytes(std::vector<std::bitset<8>> &bitVector, uint8_t value, unsigned long amountOfBytes);
 

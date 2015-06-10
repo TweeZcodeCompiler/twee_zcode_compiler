@@ -7,8 +7,7 @@
 using std::bitset;
 using std::vector;
 
-// splits short value up to 2 bytes and pushes them into the headerBits
-void Utils::setShortVal(unsigned short val, vector<bitset<8>> &bitvector) {
+void Utils::addTwoBytes(uint16_t val, vector<bitset<8>> &bitvector) {
     bitset<16> shortVal(val);
     bitset<8> firstHalf, secondHalf;
 

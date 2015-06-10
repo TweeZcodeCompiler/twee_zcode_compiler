@@ -106,9 +106,8 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHe
 std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader &header, size_t offset) {
     vector<bitset<8>> highMemoryZcode = vector<bitset<8>>();
 
-    RoutineGenerator callToMainroutineGenerator = RoutineGenerator();
-    callToMainroutineGenerator.callRoutine(offset);
-
+    // this part creates call to first routine
+    RoutineGenerator callToMainroutineGenerator = RoutineGenerator(offset);
     vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, routine);
 
