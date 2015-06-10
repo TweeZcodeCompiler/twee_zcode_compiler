@@ -54,37 +54,37 @@ ASCII_UPPER_CASE        ABCDEFGHIJKLMNOPQRSTUVWXYZ
 ASCII_NUMBER            0123456789
  /*TODO: still experimental*/
 ASCII_SYMBOL_NOTOKEN    -_=+\\/?.,
-ASCII_WHITESPACE        \t\w
+ASCII_WHITESPACE        \t
 
 PASSAGE_START           ::
 NEWLINE                 \n
 
  /*TITLE_CHAR              [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}] */
-TITLE                   [a-zA-Z0-9_\-=+\\/?.,\t\w]
+TITLE                   [a-zA-Z0-9_\-="+\\/?.,\t ]
 
 TAGS_OPEN               \[
 TAGS_CLOSE              \]
  /*TAG_CHAR                [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}]*/
-TAG                     [a-zA-Z0-9\-_=+\\/?.,]+
+TAG                     [a-zA-Z0-9\-_="'!+\\/?.,]+
 
  /*BODY_TEXT_CHAR          [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
-BODY_TEXT               [a-zA-Z0-9\-_=+\\/?.,\t\w]+
+BODY_TEXT               [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
 
 FORMATTING_OPEN         \^{3}
 FORMATTING_CLOSE        \^{3}
-BODY_TEXT_FORMATTED     [a-zA-Z0-9\-_=+\\/?.,\t\w]+
+BODY_TEXT_FORMATTED     [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
 
 LINK_OPEN               \[{2}
 LINK_CLOSE              \]{2}
 LINK_SEPARATOR          \|
 
  /*LINK_TEXT_CHAR          [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
-LINK_TEXT               [a-zA-Z0-9\-_=+\\/?.,\t\w]+
+LINK_TEXT               [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
 
 MACRO_OPEN              <{2}
 MACRO_CLOSE             >{2}
  /*MACRO_TEXT_CHAR         [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
-MACRO_TEXT              [a-zA-Z0-9\-_=+\\/?.,\t\w]+
+MACRO_TEXT              [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
 
  /*Parser Conditions */
     /*Naming convention in this file: CamelCase*/
@@ -108,7 +108,6 @@ MACRO_TEXT              [a-zA-Z0-9\-_=+\\/?.,\t\w]+
                                 //enter condition HeaderTitle
                                 BEGIN(HeaderTitle);
                                 lex_log("enter condition HeaderTitle");
-                                lex_log(YYText());
                                 //return the PASSAGE_START token
                                 lex_log("return the PASSAGE_START token");
                                 return BisonParser::token::PASSAGE_START;
@@ -130,6 +129,8 @@ MACRO_TEXT              [a-zA-Z0-9\-_=+\\/?.,\t\w]+
                                 lex_log("stay in condition HeaderTitle, look for next token");
                                 //return the TITLE Token
                                 lex_log("return the TITLE Token");
+                                lex_log("\t matched:");
+                                lex_log(YYText());
                                 SAVE_TOKEN;
                                 return BisonParser::token::TITLE;
                                 }
@@ -156,9 +157,10 @@ MACRO_TEXT              [a-zA-Z0-9\-_=+\\/?.,\t\w]+
 
     /* unexpected Token(s) */
 <HeaderTitle>.                  {
-                                lex_log(YYText());
                                 //TODO: lexer error in HeaderTitle
                                 lex_log("lexer error in HeaderTitle");
+                                lex_log("\t matched:");
+                                lex_log(YYText());
                                 }
 
  /* ___NEW CONDITION___ HeaderTags*/
@@ -171,6 +173,9 @@ MACRO_TEXT              [a-zA-Z0-9\-_=+\\/?.,\t\w]+
                                 lex_log("stay in condition HeaderTags, look for next token");
                                 //return the TAG Token
                                 lex_log("return the TAG Token");
+                                lex_log("\t matched:");
+                                lex_log(YYText());
+                                SAVE_TOKEN;
                                 return BisonParser::token::TAG;
                                 }
 
@@ -208,6 +213,8 @@ MACRO_TEXT              [a-zA-Z0-9\-_=+\\/?.,\t\w]+
 <HeaderTagsClose>.              {
                                 //TODO: lexer error in HeaderTagsClose
                                 lex_log("lexer error in HeaderTagsClose");
+                                lex_log("\t matched:");
+                                lex_log(YYText());
                                 }
 
  /* ___NEW CONDITION___ Body*/
@@ -220,6 +227,8 @@ MACRO_TEXT              [a-zA-Z0-9\-_=+\\/?.,\t\w]+
                                 lex_log("stay in condition Body, look for next token");
                                 //return the TEXT Token
                                 lex_log("return the TEXT Token");
+                                lex_log("\t matched:");
+                                lex_log(YYText());
                                 SAVE_TOKEN;
                                 return BisonParser::token::TEXT_TOKEN;
                                 }
@@ -250,7 +259,7 @@ MACRO_TEXT              [a-zA-Z0-9\-_=+\\/?.,\t\w]+
                                 lex_log("enter condition BodyLink");
                                 BEGIN(BodyLink);
                                 //return the LINK_OPEN token
-                                lex_log("");
+                                lex_log("return the LINK_OPEN token");
                                 return BisonParser::token::LINK_OPEN;
                                 }
 
@@ -274,6 +283,8 @@ MACRO_TEXT              [a-zA-Z0-9\-_=+\\/?.,\t\w]+
 <Body>.                         {
                                 //TODO: lexer error in Body
                                 lex_log("lexer error in Body");
+                                lex_log("\t matched:");
+                                lex_log(YYText());
                                 }
 
  /* ___NEW CONDITION___ BodyFormattedText*/
@@ -286,6 +297,8 @@ MACRO_TEXT              [a-zA-Z0-9\-_=+\\/?.,\t\w]+
                                 lex_log("stay in condition BodyFormattedText, look for next token");
                                 //return the TEXT Token
                                 lex_log("return the TEXT Token");
+                                lex_log("\t matched:");
+                                lex_log(YYText());
                                 SAVE_TOKEN;
                                 return BisonParser::token::TEXT_TOKEN;
                                 }
@@ -316,6 +329,8 @@ MACRO_TEXT              [a-zA-Z0-9\-_=+\\/?.,\t\w]+
                                 lex_log("stay in condition BodyLink, look for next token");
                                 //return the TEXT Token
                                 lex_log("return the TEXT Token");
+                                lex_log("\t matched:");
+                                lex_log(YYText());
                                 SAVE_TOKEN;
                                 return BisonParser::token::TEXT_TOKEN;
                                 }
@@ -356,6 +371,7 @@ MACRO_TEXT              [a-zA-Z0-9\-_=+\\/?.,\t\w]+
                                 lex_log("stay in condition BodyMacro, look for next token");
                                 //return the TEXT Token
                                 lex_log("return the TEXT Token");
+                                lex_log("\t matched:");
                                 SAVE_TOKEN;
                                 return BisonParser::token::TEXT_TOKEN;
                                 }
