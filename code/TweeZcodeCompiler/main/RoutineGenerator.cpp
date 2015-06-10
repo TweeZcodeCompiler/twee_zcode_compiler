@@ -4,11 +4,13 @@
 
 #include "RoutineGenerator.h"
 #include "ZCodeConverter.h"
-#include "Utils.h"
 #include <iostream>
 #include <algorithm>
 
 using namespace std;
+
+map<string, size_t> RoutineGenerator::routines = map<string, size_t>();
+std::map<size_t, std::string> RoutineGenerator::callTo = std::map<size_t, std::string>();
 
 vector<bitset<8>> RoutineGenerator::getRoutine() {
     jumps.calculateOffsets();
@@ -19,10 +21,6 @@ vector<bitset<8>> RoutineGenerator::getRoutine() {
     }
 
     return zcode;
-}
-
-void RoutineGenerator::addBitset(std::bitset<8> byte, int pos) {
-    routineZcode[pos < 0 ? routineZcode.size() : (unsigned long) pos] = byte;
 }
 
 void RoutineGenerator::addBitset(vector<bitset<8>> bitsets) {
@@ -38,39 +36,33 @@ void RoutineGenerator::printString(std::string stringToPrint) {
     unsigned long len = zsciiString.size();
     for (int i = 0; i < len; i++) {
         if (i % 96 == 0) {
-            addBitset(numberToBitset(PRINT));
+            addOneByte(numberToBitset(PRINT));
         }
         if (i % 96 == 94) {
             zsciiString[i].set(7, true);
         }
-        addBitset(zsciiString[i]);
+        addOneByte(zsciiString[i]);
     }
 }
 
 void RoutineGenerator::readChar(uint8_t var) {
-    addBitset(numberToBitset(READ_CHAR));
-    addBitset(numberToBitset(0xbf));
-    addBitset(numberToBitset(1));
-    addBitset(numberToBitset(var));
+    addOneByte(numberToBitset(READ_CHAR));
+    addOneByte(numberToBitset(0xbf));
+    addOneByte(numberToBitset(1));
+    addOneByte(numberToBitset(var));
 }
 
 void RoutineGenerator::printChar(uint8_t var) {
-    addBitset(numberToBitset(PRINT_CHAR));
-    addBitset(numberToBitset(0xbf));
-    addBitset(numberToBitset(var));
+    addOneByte(numberToBitset(PRINT_CHAR));
+    addOneByte(numberToBitset(0xbf));
+    addOneByte(numberToBitset(var));
 }
 
-void RoutineGenerator::callRoutine(size_t routineOffset) {
-    size_t pkgAdrr = Utils::calculateNextPackageAddress((size_t) (routineOffset + 3));
-
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (uint16_t) (pkgAdrr / 8), false);
+void RoutineGenerator::callRoutine(string nameOfRoutine) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (u_int16_t) 3000, false);
     addBitset(instructions);
-
-    size_t padding = Utils::paddingToNextPackageAddress(routineZcode.size(), routineOffset);
-
-    for (size_t i = 0; i < padding; i++) {
-        addBitset(numberToBitset(0));
-    }
+    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = nameOfRoutine;
+    std::cout << "Call Routine at:::" << offsetOfRoutine + routineZcode.size() - 2 << "\n";
 }
 
 std::bitset<8> RoutineGenerator::numberToBitset(unsigned int number) {
@@ -78,19 +70,19 @@ std::bitset<8> RoutineGenerator::numberToBitset(unsigned int number) {
 }
 
 void RoutineGenerator::newLine() {
-    addBitset(numberToBitset(NEW_LINE));
+    addOneByte(numberToBitset(NEW_LINE));
 }
 
 // The destination of the jump opcode is:
 // Address after instruction + Offset - 2
 void RoutineGenerator::jump(string toLabel) {
-    addBitset(numberToBitset(JUMP));
+    addOneByte(numberToBitset(JUMP));
     jumps.newJump(toLabel);
-    addLargeNumber(1 << (JUMP_UNCOND_OFFSET_PLACEHOLDER + 7)); // placeholder, will be replaced in getRoutine()
+    addTwoBytes(1 << (JUMP_UNCOND_OFFSET_PLACEHOLDER + 7)); // placeholder, will be replaced in getRoutine()
 }
 
 void RoutineGenerator::quitRoutine() {
-    addBitset(numberToBitset(QUIT));
+    addOneByte(numberToBitset(QUIT));
 }
 
 // adds label and next instruction address to 'branches' map
@@ -99,7 +91,8 @@ void RoutineGenerator::newLabel(string label) {
 }
 
 void RoutineGenerator::jumpZero(string toLabel, bool jumpIfTrue, int16_t parameter, bool parameterIsVariable) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JZ, (u_int16_t) parameter, parameterIsVariable);
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JZ, (u_int16_t) parameter,
+                                                                            parameterIsVariable);
     addBitset(instructions);
 
     jumps.newJump(toLabel);
@@ -110,8 +103,8 @@ void RoutineGenerator::jumpZero(string toLabel, bool jumpIfTrue, int16_t paramet
     offsetFirstBits.set(JUMP_UNCOND_OFFSET_PLACEHOLDER, false);
 
     // placeholder, will be replaced in getRoutine()
-    addBitset(offsetFirstBits);
-    addBitset(numberToBitset(0));
+    addOneByte(offsetFirstBits);
+    addOneByte(numberToBitset(0));
 }
 
 void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t param, bool paramIsVariable) {
@@ -126,8 +119,8 @@ void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t par
     offsetFirstBits.set(JUMP_UNCOND_OFFSET_PLACEHOLDER, false);
 
     // placeholder, will be replaced in getRoutine()
-    addBitset(offsetFirstBits);
-    addBitset(numberToBitset(0));
+    addOneByte(offsetFirstBits);
+    addOneByte(numberToBitset(0));
 }
 
 void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2,
@@ -159,8 +152,8 @@ void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel,
     offsetFirstBits.set(JUMP_UNCOND_OFFSET_PLACEHOLDER, false);
 
     // placeholder, will be replaced in getRoutine()
-    addBitset(offsetFirstBits);
-    addBitset(numberToBitset(0));
+    addOneByte(offsetFirstBits);
+    addOneByte(numberToBitset(0));
 }
 
 void RoutineGenerator::store(u_int8_t address, u_int16_t value) {
@@ -172,7 +165,7 @@ void RoutineGenerator::load(u_int8_t address, u_int8_t result_address) {
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, address, true);
     addBitset(instructions);
 
-    addBitset(numberToBitset(result_address));
+    addOneByte(numberToBitset(result_address));
 }
 
 void RoutineGenerator::printStringAtAddress(u_int8_t address) {
@@ -180,11 +173,19 @@ void RoutineGenerator::printStringAtAddress(u_int8_t address) {
     addBitset(instructions);
 }
 
-void RoutineGenerator::addLargeNumber(int16_t number) {
-    addLargeNumber(number, -1);
+void RoutineGenerator::resolveCallInstructions(std::vector<std::bitset<8>> &zCode) {
+    typedef map<size_t, string>::iterator it_type;
+    for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {
+        size_t calledRoutineOffset = RoutineGenerator::routines[it->second];
+        size_t callOffset = it->first;
+        vector<bitset<8>> callAdress = vector<bitset<8>>();
+        Utils::addTwoBytes(calledRoutineOffset / 8, callAdress);
+        zCode[callOffset] = callAdress[0];
+        zCode[callOffset + 1] = callAdress[1];
+    }
 }
 
-void RoutineGenerator::addLargeNumber(int16_t number, int pos) {
+void RoutineGenerator::addTwoBytes(int16_t number, int pos) {
     bitset<16> shortVal((unsigned long long int) number);
     bitset<8> firstHalf, secondHalf;
 
@@ -197,10 +198,14 @@ void RoutineGenerator::addLargeNumber(int16_t number, int pos) {
     }
 
     if (pos >= 0) {
-        addBitset(firstHalf, pos);
-        addBitset(secondHalf, pos + 1);
+        addOneByte(firstHalf, pos);
+        addOneByte(secondHalf, pos + 1);
     } else {
-        addBitset(firstHalf);
-        addBitset(secondHalf);
+        addOneByte(firstHalf);
+        addOneByte(secondHalf);
     }
+}
+
+void RoutineGenerator::addOneByte(std::bitset<8> byte, int pos) {
+    routineZcode[pos < 0 ? routineZcode.size() : (unsigned long) pos] = byte;
 }

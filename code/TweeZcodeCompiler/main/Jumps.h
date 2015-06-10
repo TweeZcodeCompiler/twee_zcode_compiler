@@ -15,7 +15,6 @@ private:
     std::map<std::string, int> branches;        // maps branch label to instruction address
     std::map<int, std::string> jumpToBranch;    // keys = addresses that need to be filled with branch offset, values = jump destination label
 
-
     int addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondTrue);
     int getOffset(int jumpPosition, int labelPosition);
 
@@ -26,6 +25,10 @@ public:
     void newJump(std::string toLabel);
     void calculateOffsets();
     void setRoutineBitsetMap(std::map<int, std::bitset<8>> &opcodes);
+
+    void calculateCallOffsets(size_t position);
+
+    size_t routineOffset;
 };
 
 

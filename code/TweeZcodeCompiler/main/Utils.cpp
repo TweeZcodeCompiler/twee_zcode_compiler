@@ -7,8 +7,7 @@
 using std::bitset;
 using std::vector;
 
-// splits short value up to 2 bytes and pushes them into the headerBits
-void Utils::setShortVal(unsigned short val, vector<bitset<8>> &bitvector) {
+void Utils::addTwoBytes(uint16_t val, vector<bitset<8>> &bitvector) {
     bitset<16> shortVal(val);
     bitset<8> firstHalf, secondHalf;
 
@@ -35,8 +34,8 @@ size_t Utils::calculateNextPackageAddress(size_t currentOffset) {
 }
 
 size_t Utils::paddingToNextPackageAddress(size_t vector_size, size_t offset) {
-    size_t pkgAdrr = Utils::calculateNextPackageAddress(offset + 3);
-    size_t empty = pkgAdrr - vector_size - offset;
+    size_t pkgAdrr = Utils::calculateNextPackageAddress(offset + vector_size + 3);
+    size_t empty = (pkgAdrr - vector_size - offset) % 8;
     return (empty > 0) ? empty : 0;
 }
 

@@ -3,7 +3,6 @@
 //
 
 #include "SimpleCompilerPipeline.h"
-#include "Utils.h"
 
 #include <TweeParser.h>
 #include <fstream>
@@ -55,6 +54,8 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     Utils::append(zCode, staticMemory);
     Utils::append(zCode, highMemory);
 
+    RoutineGenerator::resolveCallInstructions(zCode);
+
     //calculate fileSize
     size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
     zCode = addFileSizeToHeader(zCode, fileSize);
@@ -105,26 +106,74 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHe
 std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader &header, size_t offset) {
     vector<bitset<8>> highMemoryZcode = vector<bitset<8>>();
 
-    RoutineGenerator callToMainroutineGenerator = RoutineGenerator();
-    callToMainroutineGenerator.callRoutine(offset);
-
+    // this part creates call to first routine
+    RoutineGenerator callToMainroutineGenerator = RoutineGenerator(offset);
     vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, routine);
 
-    RoutineGenerator testRoutineGenerator = RoutineGenerator(0);
-    testRoutineGenerator.printString("Dies ist ein Test");
+    RoutineGenerator testRoutineGenerator = RoutineGenerator("main", 0, highMemoryZcode, offset);
+    testRoutineGenerator.printString("Dies ist 1 Test");
     testRoutineGenerator.newLine();
-    testRoutineGenerator.printString("print 1 to exit");
+    testRoutineGenerator.printString("1: gehe in den Wald!");
+    testRoutineGenerator.newLine();
+    testRoutineGenerator.printString("2: gehe in die Stadt!");
+    testRoutineGenerator.newLine();
+    testRoutineGenerator.printString("3: gehe zum Weg!");
     testRoutineGenerator.readChar(0x10);
-    testRoutineGenerator.jumpEquals("w", false, 0x10, 49, true, false);
-    testRoutineGenerator.printString("correct");
+    testRoutineGenerator.jumpEquals("w", true, 0x10, 49, true, false);
+    testRoutineGenerator.jumpEquals("s", true, 0x10, 50, true, false);
+    testRoutineGenerator.jumpEquals("weg", true, 0x10, 51, true, false);
+    testRoutineGenerator.printString("Keine valide eingabe!");
     testRoutineGenerator.quitRoutine();
     testRoutineGenerator.newLabel("w");
-    testRoutineGenerator.printString("wrong");
+    testRoutineGenerator.printString("korrekt");
+    testRoutineGenerator.callRoutine("wald");
     testRoutineGenerator.quitRoutine();
+    testRoutineGenerator.newLabel("s");
+    testRoutineGenerator.printString("korrekt");
+    testRoutineGenerator.callRoutine("stadt");
+    testRoutineGenerator.quitRoutine();
+    testRoutineGenerator.newLabel("weg");
+    testRoutineGenerator.printString("korrekt");
+    testRoutineGenerator.callRoutine("weg");
+    testRoutineGenerator.quitRoutine();
+
 
     vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, testRoutine);
+
+    RoutineGenerator routine1 = RoutineGenerator("wald", 0, highMemoryZcode, offset);
+    routine1.newLine();
+    routine1.newLine();
+    routine1.printString("Dies ist der Wald!");
+    routine1.newLine();
+    routine1.callRoutine("main");
+    routine1.quitRoutine();
+
+    vector<bitset<8>> vroutine1 = routine1.getRoutine();
+    Utils::append(highMemoryZcode, vroutine1);
+
+    RoutineGenerator routine2 = RoutineGenerator("stadt", 0, highMemoryZcode, offset);
+    routine2.newLine();
+    routine2.newLine();
+    routine2.printString("Dies ist die Stadt!");
+    routine2.newLine();
+    routine2.callRoutine("main");
+    routine2.quitRoutine();
+
+    vector<bitset<8>> vroutine2 = routine2.getRoutine();
+    Utils::append(highMemoryZcode, vroutine2);
+
+    RoutineGenerator routine3 = RoutineGenerator("weg", 0, highMemoryZcode, offset);
+    routine3.newLine();
+    routine3.newLine();
+    routine3.printString("Dies der Weg!");
+    routine3.newLine();
+    routine3.callRoutine("main");
+    routine3.quitRoutine();
+
+    vector<bitset<8>> vroutine3 = routine3.getRoutine();
+    Utils::append(highMemoryZcode, vroutine3);
 
     return highMemoryZcode;
 }
