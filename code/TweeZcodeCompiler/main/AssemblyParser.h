@@ -25,6 +25,7 @@ private:
     static const std::string JE_COMMAND; //jump equals
     static const std::string QUIT_COMMAND;
     static const std::string READ_CHAR_COMMAND;
+    static const std::string CALL_COMMAND;
 
 
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
@@ -39,6 +40,7 @@ private:
     RoutineGenerator executePRINTCommand(std::string printCommand,RoutineGenerator routineGenerator);
     RoutineGenerator executeREADCommand(std::string readCommand,RoutineGenerator routineGenerator);
     RoutineGenerator executeJECommand(std::string jeCommand,RoutineGenerator routineGenerator);
+    RoutineGenerator executeCALLCommand(std::string callCommand,RoutineGenerator routineGenerator);
 
 
 

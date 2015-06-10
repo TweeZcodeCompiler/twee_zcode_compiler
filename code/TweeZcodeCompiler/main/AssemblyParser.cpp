@@ -17,9 +17,11 @@ const std::string AssemblyParser::PRINT_COMMAND = "print";
 const std::string AssemblyParser::JE_COMMAND = "je";
 const std::string AssemblyParser::QUIT_COMMAND = "quit";
 const std::string AssemblyParser::READ_CHAR_COMMAND = "read_char";
+const std::string AssemblyParser::CALL_COMMAND = "call";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMS_IN_AN_COMMAND = ' '; // 9 is ascii for tab
 const char AssemblyParser::STRING_IDENTIFIER = '\"'; // 9 is ascii for tab
+
 
 
 
@@ -32,15 +34,20 @@ std::vector<std::bitset<8>> AssemblyParser::readAssembly(std::string assFilePath
 
     std::vector<std::bitset<8>> zCode;
     std::vector<std::bitset<8>> routineZCode;
-    std::vector<std::string> routineList = this->getRoutinesFromFile(assFilePath);
+    std::vector<std::string> routineList = getRoutinesFromFile(assFilePath);
+
+
+    for(int i =0;i<routineList.size();i++)
+    {
+        routineZCode = getZCodeForRoutine(routineList.at(i),highMemoryZcode,offset);
+        Utils::append(zCode, routineZCode);
+    }
 
 
 
-    routineZCode = getZCodeForRoutine(routineList.at(0),highMemoryZcode,offset);
 
 
 
-    Utils::append(zCode, routineZCode);
 
 
 
@@ -53,14 +60,17 @@ std::vector<std::bitset<8>> AssemblyParser::getZCodeForRoutine(std::string routi
 {
 
   std::vector<std::bitset<8>> zCodeRoutine;
-    RoutineGenerator routineGenerator = RoutineGenerator("main", 0, highMemoryZcode, offset);
-std::vector<std::string> commands = this->split(routine,'\n');
-std::cout << "\n";
+
+
+    std::vector<std::string> commands = this->split(routine,'\n');
+    std::string routineName = split(commands.at(0),' ').at(1);
+    std::cout << ":::::: routine " << routineName << std::endl;
+    RoutineGenerator routineGenerator = RoutineGenerator(routineName, 0, highMemoryZcode, offset);
+
 std::string command;
 for(int i = 0;i<commands.size();i++)
 {
     command = commands.at(i);
-  //  std::cout << "\n\n" << i <<": " << commands.at(i) << "\n";
     routineGenerator = executeCommand(command,routineGenerator);
 }
 
@@ -97,6 +107,17 @@ RoutineGenerator AssemblyParser::executeJECommand(std::string jeCommand,RoutineG
     std::cout  << label << std::endl;
     routineGenerator.jumpEquals(label, false, 0x10, 49, true, false);
 
+    return routineGenerator;
+}
+
+RoutineGenerator AssemblyParser::executeCALLCommand(std::string callCommand,RoutineGenerator routineGenerator)
+{
+
+    std::vector<std::string> commandParts = this->split(callCommand,' ');
+    std::string callRoutineName = commandParts.at(1);
+    std::cout << callRoutineName << std::endl;
+
+    routineGenerator.callRoutine(callRoutineName);
     return routineGenerator;
 }
 
@@ -147,6 +168,13 @@ RoutineGenerator AssemblyParser::executeCommand(std::string command,RoutineGener
             std::cout << ":::::: new read"<< std::endl;
         }
 
+        if(commandPart.compare(AssemblyParser::CALL_COMMAND) == 0)
+        {
+            std::cout << ":::::: new call ";
+            routineGenerator = executeCALLCommand(command,routineGenerator);
+
+        }
+
 
 
     }
@@ -175,7 +203,7 @@ std::vector<std::string> AssemblyParser::getRoutinesFromFile(std::string assFile
             {
                 if (checkIfCommandRoutineStart(command)== true) {
                     if (routine.compare("") != 0) {
-                     //   std::cout << "routine: " << routine << " routine end" << "\n\n";
+                      std::cout << "routine: " << routine << " routine end" << "\n\n";
                         routineList.push_back(routine);
                     }
                     routine = "";
@@ -188,11 +216,11 @@ std::vector<std::string> AssemblyParser::getRoutinesFromFile(std::string assFile
     }
     if(routine.compare("") != 0)
     {
-        //std::cout << "routine: " << routine << " routine end" << "\n\n";
+        std::cout << "routine: " << routine << " routine end" << "\n\n";
         routineList.push_back(routine);
     }
 
-    std::cout << "Amount of Routines:"  << routineList.size();
+    std::cout << "Amount of Routines:"  << routineList.size() << std::endl;
     return routineList;
 
 }
