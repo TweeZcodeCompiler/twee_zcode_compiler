@@ -94,17 +94,29 @@ RoutineGenerator AssemblyParser::executeREADCommand(std::string readCommand,Rout
     std::cout << globalVariable << std::endl;
 
     this->globalVariableStack.insert(std::pair<std::string,int>(globalVariable,variableUsed));
+    routineGenerator.readChar(variableUsed);
     variableUsed++;
-    routineGenerator.readChar(0x10); //TODO: get avialabe address
     return routineGenerator;
 }
 RoutineGenerator AssemblyParser::executeJECommand(std::string jeCommand,RoutineGenerator &routineGenerator)
 {
-
+    //label
     std::vector<std::string> commandParts = this->split(jeCommand,'?');
     std::string label = commandParts.at(1);
     std::cout  << label << std::endl;
-    routineGenerator.jumpEquals(label, false, 0x10, 49, true, false);
+
+    //global variable
+    commandParts = this->split(jeCommand,' ');
+    std::string globalVariableName = commandParts.at(2);
+
+    int zcodeAdress = this->globalVariableStack.at(globalVariableName);
+
+
+
+    std::cout << zcodeAdress;
+
+
+    routineGenerator.jumpEquals(label, false, zcodeAdress, 49, true, false);
 
     return routineGenerator;
 }
