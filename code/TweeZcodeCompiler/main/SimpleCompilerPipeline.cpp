@@ -112,7 +112,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, routine);
 
-    RoutineGenerator testRoutineGenerator = RoutineGenerator("main",0,highMemoryZcode,offset);
+    RoutineGenerator testRoutineGenerator = RoutineGenerator("main", 0, highMemoryZcode, offset);
     testRoutineGenerator.printString("Dies ist 1 Test");
     testRoutineGenerator.newLine();
     testRoutineGenerator.printString("1: gehe in den Wald!");
@@ -122,8 +122,8 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     testRoutineGenerator.printString("3: gehe zum Weg!");
     testRoutineGenerator.readChar(0x10);
     testRoutineGenerator.jumpEquals("w", true, 0x10, 49, true, false);
-    testRoutineGenerator.jumpEquals("s",true,0x10,50,true,false);
-    testRoutineGenerator.jumpEquals("weg",true,0x10,51,true,false);
+    testRoutineGenerator.jumpEquals("s", true, 0x10, 50, true, false);
+    testRoutineGenerator.jumpEquals("weg", true, 0x10, 51, true, false);
     testRoutineGenerator.printString("Keine valide eingabe!");
     testRoutineGenerator.quitRoutine();
     testRoutineGenerator.newLabel("w");
@@ -143,7 +143,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, testRoutine);
 
-    RoutineGenerator routine1 = RoutineGenerator("wald",0,highMemoryZcode,offset);
+    RoutineGenerator routine1 = RoutineGenerator("wald", 0, highMemoryZcode, offset);
     routine1.newLine();
     routine1.newLine();
     routine1.printString("Dies ist der Wald!");
@@ -154,7 +154,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     vector<bitset<8>> vroutine1 = routine1.getRoutine();
     Utils::append(highMemoryZcode, vroutine1);
 
-    RoutineGenerator routine2 = RoutineGenerator("stadt",0,highMemoryZcode,offset);
+    RoutineGenerator routine2 = RoutineGenerator("stadt", 0, highMemoryZcode, offset);
     routine2.newLine();
     routine2.newLine();
     routine2.printString("Dies ist die Stadt!");
@@ -165,7 +165,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     vector<bitset<8>> vroutine2 = routine2.getRoutine();
     Utils::append(highMemoryZcode, vroutine2);
 
-    RoutineGenerator routine3 = RoutineGenerator("weg",0,highMemoryZcode,offset);
+    RoutineGenerator routine3 = RoutineGenerator("weg", 0, highMemoryZcode, offset);
     routine3.newLine();
     routine3.newLine();
     routine3.printString("Dies der Weg!");

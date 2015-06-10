@@ -38,7 +38,7 @@ void Jumps::calculateOffsets() {
             bool jumpIfCondTrue = jumpInstruction.test(RoutineGenerator::JUMP_COND_TRUE);
 
             offset = addCondBranchOffset(indexOfJumpInstruction, offset, jumpIfCondTrue);
-            if(offset > 0 && (offset - 1) < 64){
+            if (offset > 0 && (offset - 1) < 64) {
                 calculateCallOffsets(indexOfJumpInstruction);
             }
             calculatedCondOffsets[indexOfJumpInstruction] = offset;
@@ -170,18 +170,18 @@ void Jumps::addBitset(std::bitset<8> byte, int pos) {
 }
 
 void Jumps::calculateCallOffsets(size_t position) {
-    vector<size_t > offsets = vector<size_t>();
+    vector<size_t> offsets = vector<size_t>();
     typedef map<size_t, string>::iterator it_type;
     for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {
 
-        if(it->first > position+routineOffset){
+        if (it->first > position + routineOffset) {
             offsets.push_back(it->first);
         }
     }
 
-    for(int i = 0; i < offsets.size(); i++){
-        RoutineGenerator::callTo[offsets[i]-1] = RoutineGenerator::callTo[offsets[i]];
+    for (int i = 0; i < offsets.size(); i++) {
+        RoutineGenerator::callTo[offsets[i] - 1] = RoutineGenerator::callTo[offsets[i]];
         RoutineGenerator::callTo.erase(offsets[i]);
-        std::cout <<(offsets[i]-1) <<"\n";
+        std::cout << (offsets[i] - 1) << "\n";
     }
 }
