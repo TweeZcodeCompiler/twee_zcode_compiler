@@ -29,29 +29,33 @@ private:
 
 
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
+
     std::vector<std::string> split(const std::string &s, char delim);
+
     bool checkIfCommandRoutineStart(std::string command);
 
     std::vector<std::string> getRoutinesFromFile(std::string fileNames);
-    std::vector<std::bitset<8>> getZCodeForRoutine(std::string routine,std::vector<std::bitset<8>> highMemoryZcode,size_t offset);
 
-    RoutineGenerator executeCommand(std::string command,RoutineGenerator routineGenerator);
+    std::vector<std::bitset<8>> getZCodeForRoutine(std::string routine, std::vector<std::bitset<8>> &highMemoryZcode,
+                                                   size_t offset);
 
-    RoutineGenerator executePRINTCommand(std::string printCommand,RoutineGenerator routineGenerator);
-    RoutineGenerator executeREADCommand(std::string readCommand,RoutineGenerator routineGenerator);
-    RoutineGenerator executeJECommand(std::string jeCommand,RoutineGenerator routineGenerator);
-    RoutineGenerator executeCALLCommand(std::string callCommand,RoutineGenerator routineGenerator);
+    RoutineGenerator executeCommand(std::string command, RoutineGenerator &routineGenerator);
+
+    RoutineGenerator executePRINTCommand(std::string printCommand, RoutineGenerator &routineGenerator);
+
+    RoutineGenerator executeREADCommand(std::string readCommand, RoutineGenerator &routineGenerator);
+
+    RoutineGenerator executeJECommand(std::string jeCommand, RoutineGenerator &routineGenerator);
+
+    RoutineGenerator executeCALLCommand(std::string callCommand, RoutineGenerator &routineGenerator);
 
 
-
-
-    std::map<std::string,int> globalVariableStack;
+    std::map<std::string, int> globalVariableStack;
     int variableUsed;
 
 
-
 public:
-    std::vector<std::bitset<8>> readAssembly(std::string assFilePath,std::vector<std::bitset<8>> highMemoryZcode,size_t offset);
+    void readAssembly(std::string assFilePath, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
 
 };
 
