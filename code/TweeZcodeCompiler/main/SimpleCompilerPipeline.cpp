@@ -116,7 +116,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, routine);
 
-<<<<<<< HEAD
+/*
     RoutineGenerator testRoutineGenerator = RoutineGenerator("main", 0, highMemoryZcode, offset);
     testRoutineGenerator.printString("Dies ist 1 Test");
     testRoutineGenerator.newLine();
@@ -147,17 +147,18 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
 
     vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, testRoutine);
-=======
+    */
+
 
     AssemblyParser assemblyParser;
 
-    vector<bitset<8>> zProgramCode = assemblyParser.readAssembly("eat_apple.zap");
+    vector<bitset<8>> zProgramCode = assemblyParser.readAssembly("eat_apple.zap",highMemoryZcode,offset);
 
 
 
     Utils::append(highMemoryZcode, zProgramCode);
->>>>>>> assembly backendparser v3.
 
+/*
     RoutineGenerator routine1 = RoutineGenerator("wald", 0, highMemoryZcode, offset);
     routine1.newLine();
     routine1.newLine();
@@ -189,7 +190,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     routine3.quitRoutine();
 
     vector<bitset<8>> vroutine3 = routine3.getRoutine();
-    Utils::append(highMemoryZcode, vroutine3);
+    Utils::append(highMemoryZcode, vroutine3); */
 
     return highMemoryZcode;
 }

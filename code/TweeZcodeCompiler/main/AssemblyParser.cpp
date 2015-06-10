@@ -25,7 +25,7 @@ const char AssemblyParser::STRING_IDENTIFIER = '\"'; // 9 is ascii for tab
 
 
 
-std::vector<std::bitset<8>> AssemblyParser::readAssembly(std::string assFilePath){
+std::vector<std::bitset<8>> AssemblyParser::readAssembly(std::string assFilePath,std::vector<std::bitset<8>> highMemoryZcode,size_t offset){
 
     std::cout << "Compiler: Parse Assembly File\n";
     this->variableUsed = 0;
@@ -36,7 +36,7 @@ std::vector<std::bitset<8>> AssemblyParser::readAssembly(std::string assFilePath
 
 
 
-    routineZCode = getZCodeForRoutine(routineList.at(0));
+    routineZCode = getZCodeForRoutine(routineList.at(0),highMemoryZcode,offset);
 
 
 
@@ -49,28 +49,11 @@ std::vector<std::bitset<8>> AssemblyParser::readAssembly(std::string assFilePath
 
 }
 
-std::vector<std::bitset<8>> AssemblyParser::getZCodeForRoutine(std::string routine)
+std::vector<std::bitset<8>> AssemblyParser::getZCodeForRoutine(std::string routine,std::vector<std::bitset<8>> highMemoryZcode,size_t offset)
 {
-  /*
-   * THAT WORKS
-   *
-   *
-   * RoutineGenerator testRoutineGenerator = RoutineGenerator(0);
-  testRoutineGenerator.printString("Dies ist ein Test");
-  testRoutineGenerator.newLine();
-  testRoutineGenerator.printString("print 1 to exit");
-  testRoutineGenerator.readChar(0x10);
-  testRoutineGenerator.jumpEquals("w", false, 0x10, 49, true, false);
-  testRoutineGenerator.printString("correct");
-  testRoutineGenerator.quitRoutine();
-  testRoutineGenerator.newLabel("w");
-  testRoutineGenerator.printString("wrong");
-  testRoutineGenerator.quitRoutine();
-  return testRoutineGenerator.getRoutine(); */
-
 
   std::vector<std::bitset<8>> zCodeRoutine;
-    RoutineGenerator routineGenerator = RoutineGenerator(0);
+    RoutineGenerator routineGenerator = RoutineGenerator("main", 0, highMemoryZcode, offset);
 std::vector<std::string> commands = this->split(routine,'\n');
 std::cout << "\n";
 std::string command;
