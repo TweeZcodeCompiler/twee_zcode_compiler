@@ -13,13 +13,13 @@
 class OpcodeParameterGenerator {
 private:
     void addLargeNumber(int16_t val, std::vector<std::bitset<8>> &vectorBitset);
-    std::vector<std::bitset<8>> generateTypeBitsetAndParameterBitsets(std::vector<u_int16_t> params,
+    std::vector<std::bitset<8>> generateTypeBitsetAndParameterBitsets(std::vector<uint16_t> params,
                                                                       std::vector<bool> paramIsVariable);
 
 public:
-    std::vector<std::bitset<8>> generate1OPInstruction(unsigned int opcode, u_int16_t param, bool paramIsVariable);
-    std::vector<std::bitset<8>> generate2OPInstruction(unsigned int opcode, u_int16_t param1, u_int16_t param2, bool param1IsVariable, bool param2IsVariable);
-    std::vector<std::bitset<8>> generateVarOPInstruction(unsigned int opcode, std::vector<u_int16_t> params, std::vector<bool> paramIsVariable);
+    std::vector<std::bitset<8>> generate1OPInstruction(unsigned int opcode, uint16_t param, bool paramIsVariable);
+    std::vector<std::bitset<8>> generate2OPInstruction(unsigned int opcode, uint16_t param1, uint16_t param2, bool param1IsVariable, bool param2IsVariable);
+    std::vector<std::bitset<8>> generateVarOPInstruction(unsigned int opcode, std::vector<uint16_t> params, std::vector<bool> paramIsVariable);
 
     enum OPERAND_TYPES {
         LARGE, SMALL, VARIABLE, OMITTED
