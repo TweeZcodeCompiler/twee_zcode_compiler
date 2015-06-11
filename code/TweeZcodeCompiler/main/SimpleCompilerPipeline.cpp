@@ -3,11 +3,11 @@
 //
 
 #include "SimpleCompilerPipeline.h"
-#include "Utils.h"
 
 #include <TweeParser.h>
 #include <fstream>
 #include <memory>
+#include "AssemblyParser.h"
 
 using namespace std;
 
@@ -35,7 +35,7 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     //create memory sections
     vector<bitset<8>> dynamicMemory = generateDynamicMemory(header, 0x3f);
-    vector<bitset<8>> staticMemory = generateStaticMemory(header, (int) (0x3f + staticMemory.size()));
+    vector<bitset<8>> staticMemory = generateStaticMemory(header, (int) (0x3f + dynamicMemory.size()));
     vector<bitset<8>> highMemory = generateHighMemory(header,
                                                       (int) (0x3f + staticMemory.size() + dynamicMemory.size()));
 
@@ -54,6 +54,12 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     Utils::append(zCode, dynamicMemory);
     Utils::append(zCode, staticMemory);
     Utils::append(zCode, highMemory);
+
+
+
+    RoutineGenerator::resolveCallInstructions(zCode);
+
+
 
     //calculate fileSize
     size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
@@ -103,27 +109,87 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHe
 }
 
 std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader &header, size_t offset) {
-    RoutineGenerator routineGenerator = RoutineGenerator();
-    vector<bitset<8>> akk = vector<bitset<8>>();
+    vector<bitset<8>> highMemoryZcode = vector<bitset<8>>();
 
-    vector<bitset<8>> main = routineGenerator.printCallToMainAndMain(offset, 0);
-    Utils::append(akk, main);
+    // this part creates call to first routine
+    RoutineGenerator callToMainroutineGenerator = RoutineGenerator(offset);
+    vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
+    Utils::append(highMemoryZcode, routine);
 
-    vector<bitset<8>> readChar = routineGenerator.printReadCharInstruction(0x10);
-    Utils::append(akk, readChar);
+/*
+    RoutineGenerator testRoutineGenerator = RoutineGenerator("main", 0, highMemoryZcode, offset);
+    testRoutineGenerator.printString("Dies ist 1 Test");
+    testRoutineGenerator.newLine();
+    testRoutineGenerator.printString("1: gehe in den Wald!");
+    testRoutineGenerator.newLine();
+    testRoutineGenerator.printString("2: gehe in die Stadt!");
+    testRoutineGenerator.newLine();
+    testRoutineGenerator.printString("3: gehe zum Weg!");
+    testRoutineGenerator.readChar(0x10);
+    testRoutineGenerator.jumpEquals("w", true, 0x10, 49, true, false);
+    testRoutineGenerator.jumpEquals("s", true, 0x10, 50, true, false);
+    testRoutineGenerator.jumpEquals("weg", true, 0x10, 51, true, false);
+    testRoutineGenerator.printString("Keine valide eingabe!");
+    testRoutineGenerator.quitRoutine();
+    testRoutineGenerator.newLabel("w");
+    testRoutineGenerator.printString("korrekt");
+    testRoutineGenerator.callRoutine("wald");
+    testRoutineGenerator.quitRoutine();
+    testRoutineGenerator.newLabel("s");
+    testRoutineGenerator.printString("korrekt");
+    testRoutineGenerator.callRoutine("stadt");
+    testRoutineGenerator.quitRoutine();
+    testRoutineGenerator.newLabel("weg");
+    testRoutineGenerator.printString("korrekt");
+    testRoutineGenerator.callRoutine("weg");
+    testRoutineGenerator.quitRoutine();
 
-    vector<bitset<8>> printChar = routineGenerator.printPrintCharInstruction(0x10);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
-    Utils::append(akk, printChar);
 
-    akk.push_back(bitset<8>(RoutineGenerator::NEW_LINE));
-    akk.push_back(bitset<8>(RoutineGenerator::QUIT));
+    vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
+    Utils::append(highMemoryZcode, testRoutine);
+    */
 
-    return akk;
+
+    AssemblyParser assemblyParser;
+
+    assemblyParser.readAssembly("hello.zap",highMemoryZcode,offset);
+    //assemblyParser.readAssembly("haus.zap",highMemoryZcode,offset);
+
+/*
+    RoutineGenerator routine1 = RoutineGenerator("wald", 0, highMemoryZcode, offset);
+    routine1.newLine();
+    routine1.newLine();
+    routine1.printString("Dies ist der Wald!");
+    routine1.newLine();
+    routine1.callRoutine("main");
+    routine1.quitRoutine();
+
+    vector<bitset<8>> vroutine1 = routine1.getRoutine();
+    Utils::append(highMemoryZcode, vroutine1);
+
+    RoutineGenerator routine2 = RoutineGenerator("stadt", 0, highMemoryZcode, offset);
+    routine2.newLine();
+    routine2.newLine();
+    routine2.printString("Dies ist die Stadt!");
+    routine2.newLine();
+    routine2.callRoutine("main");
+    routine2.quitRoutine();
+
+    vector<bitset<8>> vroutine2 = routine2.getRoutine();
+    Utils::append(highMemoryZcode, vroutine2);
+
+    RoutineGenerator routine3 = RoutineGenerator("weg", 0, highMemoryZcode, offset);
+    routine3.newLine();
+    routine3.newLine();
+    routine3.printString("Dies der Weg!");
+    routine3.newLine();
+    routine3.callRoutine("main");
+    routine3.quitRoutine();
+
+    vector<bitset<8>> vroutine3 = routine3.getRoutine();
+    Utils::append(highMemoryZcode, vroutine3); */
+
+    return highMemoryZcode;
 }
 
 std::vector<std::bitset<8>> SimpleCompilerPipeline::addFileSizeToHeader(std::vector<std::bitset<8>> zCode,
