@@ -8,6 +8,9 @@ call garten
 quit
 
 .FUNCT garten
+<<<<<<< HEAD
 new_line
+=======
+>>>>>>> ade2bdfa473153efd92b1df1fbec6d89dbd1251a
 print "Du bist im Garten!"
 quit

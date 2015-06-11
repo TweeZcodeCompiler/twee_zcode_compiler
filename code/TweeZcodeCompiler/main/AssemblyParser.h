@@ -26,6 +26,7 @@ private:
     static const std::string QUIT_COMMAND;
     static const std::string READ_CHAR_COMMAND;
     static const std::string CALL_COMMAND;
+    static const std::string JUMP_COMMAND;
 
 
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
@@ -48,6 +49,7 @@ private:
     RoutineGenerator executeJECommand(std::string jeCommand, RoutineGenerator &routineGenerator);
 
     RoutineGenerator executeCALLCommand(std::string callCommand, RoutineGenerator &routineGenerator);
+    RoutineGenerator executeJUMPCommand(std::string jumpCommand, RoutineGenerator &routineGenerator);
 
 
     std::map<std::string, int> globalVariableStack;

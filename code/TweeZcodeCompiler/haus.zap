@@ -9,4 +9,5 @@ quit
 
 .FUNCT garten
 print "Du bist im Garten!"
+new_line
 quit

@@ -8,6 +8,4 @@ print "correct"
 quit
 w:
 print "wrong"
-b:
-print "shit"
 quit
