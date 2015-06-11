@@ -35,7 +35,7 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     //create memory sections
     vector<bitset<8>> dynamicMemory = generateDynamicMemory(header, 0x3f);
-    vector<bitset<8>> staticMemory = generateStaticMemory(header, (int) (0x3f + staticMemory.size()));
+    vector<bitset<8>> staticMemory = generateStaticMemory(header, (int) (0x3f + dynamicMemory.size()));
     vector<bitset<8>> highMemory = generateHighMemory(header,
                                                       (int) (0x3f + staticMemory.size() + dynamicMemory.size()));
 
