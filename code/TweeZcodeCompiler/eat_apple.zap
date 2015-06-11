@@ -6,8 +6,8 @@ new_line
 print "0...Nicht essen"
 new_line
 print "Was willst du tun "
-read_char 1 -> sp
-je 49 ?ESSEN
+read_char 1 -> user_input
+je 49 user_input ?ESSEN
 new_line
 print "Ich hab noch immer hunger"
 new_line

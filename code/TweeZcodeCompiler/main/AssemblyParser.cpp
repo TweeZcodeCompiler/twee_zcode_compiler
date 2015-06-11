@@ -74,9 +74,12 @@ RoutineGenerator AssemblyParser::executePRINTCommand(std::string printCommand, R
 
 RoutineGenerator AssemblyParser::executeREADCommand(std::string readCommand, RoutineGenerator &routineGenerator) {
 
-    this->globalVariableStack.insert(std::pair<std::string, int>("sp", variableUsed));
+    std::vector <std::string> commandParts = split(readCommand,' ');
+    std::string variableName = commandParts.at(3);
+    std::cout << variableName << std::endl;
+    this->globalVariableStack.insert(std::pair<std::string, int>(variableName, variableUsed));
+    routineGenerator.readChar(variableUsed); //TODO: get avialabe address
     variableUsed++;
-    routineGenerator.readChar(0x10); //TODO: get avialabe address
     return routineGenerator;
 }
 
@@ -84,8 +87,17 @@ RoutineGenerator AssemblyParser::executeJECommand(std::string jeCommand, Routine
 
     std::vector <std::string> commandParts = this->split(jeCommand, '?');
     std::string label = commandParts.at(1);
-    std::cout << label << std::endl;
-    routineGenerator.jumpEquals(label, true, 0x10, 49, true, false);
+
+    commandParts = split(jeCommand,' ');
+    std::string variableName = commandParts.at(2);
+    std::string valueString = commandParts.at(1);
+    int value =  std::stoi(valueString);
+    std::cout << variableName << "," << "" << value;
+
+    int globalZCodeAdress = this->globalVariableStack.at(variableName);
+
+    std::cout <<" "  << label << std::endl;
+    routineGenerator.jumpEquals(label, true, globalZCodeAdress, value, true, false);
 
     return routineGenerator;
 }
@@ -145,8 +157,9 @@ RoutineGenerator AssemblyParser::executeCommand(std::string command, RoutineGene
             std::cout << ":::::: new quit" << std::endl;
         }
         if (commandPart.compare(AssemblyParser::READ_CHAR_COMMAND) == 0) {
+            std::cout << ":::::: new read in ";
             routineGenerator = executeREADCommand(command, routineGenerator);
-            std::cout << ":::::: new read" << std::endl;
+
         }
 
         if (commandPart.compare(AssemblyParser::CALL_COMMAND) == 0) {
