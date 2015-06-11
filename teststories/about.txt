@@ -1,0 +1,11 @@
+This folder contains various examples for Twee / Twine stories.
+
+The linkTest subfolder contains non functioning examples which should produces a appropriate compuler warning and the compiler should stop compilation.
+
+The passageTest subfolder contains non functioning examples which should produce a appropriate compuler warning and the compiler should stop compilation.
+
+The completeStories subfolder contains fully functioning examples which should produces no compiler warnings at all and compile to executable Z Code.
+
+The legacy subfolder contains the first test story by Michaela.
+
+These are the cases I could come up with - if I missed any, let me know rightaway.
