@@ -5,9 +5,8 @@
 #include "AssemblyParser.h"
 #include <fstream>
 #include <sstream>
-#include <string>
 #include <algorithm>
-#include <bitset>
+
 
 
 const std::string AssemblyParser::ROUTINE_COMMAND = ".FUNCT";
@@ -92,6 +91,7 @@ RoutineGenerator AssemblyParser::executeJECommand(std::string jeCommand, Routine
     std::string variableName = commandParts.at(2);
     std::string valueString = commandParts.at(1);
     int value =  std::stoi(valueString);
+    value = value + 48; //TODO: save in constant
     std::cout << variableName << "," << "" << value;
 
     int globalZCodeAdress = this->globalVariableStack.at(variableName);
