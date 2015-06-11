@@ -104,7 +104,7 @@ MACRO_TEXT              [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
     /*To:   HeaderTitle    */
 
     /* :: */
-<INITIAL>^{PASSAGE_START} {
+<INITIAL>^{PASSAGE_START}       {
                                 //enter condition HeaderTitle
                                 BEGIN(HeaderTitle);
                                 lex_log("enter condition HeaderTitle");
