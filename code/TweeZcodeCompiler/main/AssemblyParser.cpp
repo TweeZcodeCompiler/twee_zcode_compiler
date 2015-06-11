@@ -17,6 +17,7 @@ const std::string AssemblyParser::JE_COMMAND = "je";
 const std::string AssemblyParser::QUIT_COMMAND = "quit";
 const std::string AssemblyParser::READ_CHAR_COMMAND = "read_char";
 const std::string AssemblyParser::CALL_COMMAND = "call";
+const std::string AssemblyParser::JUMP_COMMAND = "jump";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMS_IN_AN_COMMAND = ' '; // 9 is ascii for tab
 const char AssemblyParser::STRING_IDENTIFIER = '\"'; // 9 is ascii for tab
@@ -88,6 +89,15 @@ RoutineGenerator AssemblyParser::executeJECommand(std::string jeCommand, Routine
 
     return routineGenerator;
 }
+RoutineGenerator AssemblyParser::executeJUMPCommand(std::string jumpCommand, RoutineGenerator &routineGenerator) {
+
+    std::vector <std::string> commandParts = this->split(jumpCommand, '?');
+    std::string label = commandParts.at(1);
+    std::cout << label << std::endl;
+    routineGenerator.jump(label);
+
+    return routineGenerator;
+}
 
 RoutineGenerator AssemblyParser::executeCALLCommand(std::string callCommand, RoutineGenerator &routineGenerator) {
 
@@ -143,6 +153,10 @@ RoutineGenerator AssemblyParser::executeCommand(std::string command, RoutineGene
             std::cout << ":::::: new call ";
             routineGenerator = executeCALLCommand(command, routineGenerator);
 
+        }
+        if(command.compare(AssemblyParser::JUMP_COMMAND) == 0) {
+            std::cout << ":::::: new jump ";
+            routineGenerator = executeJUMPCommand(command, routineGenerator);
         }
 
 
