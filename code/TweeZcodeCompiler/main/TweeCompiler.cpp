@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iostream>
 #include <Passage/Body/Link.h>
+#include <Passage/Body/Text.h>
 
 using namespace std;
 
@@ -14,14 +15,20 @@ static const string PASSAGE_GLOB = "PASSAGE_PTR",
         JUMP_TABLE_LABEL = "JUMP_TABLE_START",
         JUMP_TABLE_END_LABEL = "JUMP_TABLE_END",
         MAIN_ROUTINE = "main",
-        USER_INPUT = "USER_INPUT";
+        USER_INPUT = "USER_INPUT",
+        READ_BEGIN = "READ_BEGIN";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
 //#define ZAS_DEBUG
 
+void maskString(std::string& string) {
+    std::replace( string.begin(), string.end(), ' ', '_');
+}
+
 string routineNameForPassageName(std::string passageName) {
     stringstream ss;
+    maskString(passageName);
     ss << "R_" << passageName;
     return ss.str();
 }
@@ -33,7 +40,9 @@ string routineNameForPassage(Passage& passage) {
 
 string labelForPassage(Passage& passage) {
     stringstream ss;
-    ss << "L_" << passage.getHead().getName();
+    string passageName = passage.getHead().getName();
+    maskString(passageName);
+    ss << "L_" << passageName;
     return ss.str();
 }
 
@@ -81,16 +90,25 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // passage routines
     {
         for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
-            // declare passage routine, print passage contents and read user input
+            auto bodyParts = passage->getBody().getBodyParts();
+
+            // declare passage routine
             assgen.addRoutine(routineNameForPassage(*passage));
 
-            assgen.println(passage->getHead().getName())
-                    .read_char(USER_INPUT);
+            assgen.println(string("***** ") + passage->getHead().getName() + string(" *****"));
+
+            //  print passage contents
+            for(auto bodyPart = bodyParts.begin(); bodyPart != bodyParts.end(); bodyPart++) {
+                if(Text* text = dynamic_cast<Text*>(*bodyPart)) {
+                    assgen.print(text->getContent());
+                }
+            }
+
+            assgen.newline();
 
             vector<Link*> links;
-            auto bodyParts = passage->getBody().getBodyParts();
             // get links from passage
-            for(vector<BodyPart*>::iterator bodyPart = bodyParts.begin(); bodyPart != bodyParts.end();
+            for(auto bodyPart = bodyParts.begin(); bodyPart != bodyParts.end();
                 ++bodyPart)
             {
                 if(Link* link = dynamic_cast<Link*>(*bodyPart)) {
@@ -98,9 +116,21 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 }
             }
 
+            // present choices to user
+            assgen.println("Select one of the following options:");
+            int i = 1;
+            for (auto link = links.begin(); link != links.end(); link++) {
+                assgen.println(string("    ") + to_string(i) + string(") ") + (*link)->getTarget() );
+                i++;
+            }
+
+            assgen.addLabel(READ_BEGIN);
+
+            // read user input
+            assgen.read_char(USER_INPUT);
 
             // jump to according link selection
-            int i = 0;
+            i = 0;
             for (auto link = links.begin(); link != links.end(); link++) {
                 string label = string("L") + to_string(i);
                 assgen.jumpEquals(ZAssemblyGenerator::makeArgs({USER_INPUT, to_string(ZSCII_NUM_OFFSET + i)}), label);
@@ -109,7 +139,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             }
 
             // no proper selection was made
-            assgen.ret("-1");
+            assgen.jump(READ_BEGIN);
 
             i = 0;
             for (auto link = links.begin(); link != links.end(); link++) {
@@ -122,7 +152,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     #endif
                     assgen.ret(to_string(targetPassageId));
                 } catch (out_of_range &err) {
-                    cerr << "could not find passage for link \"" << *link << "\"" << endl;
+                    cerr << "could not find passage for link target \"" << (*link)->getTarget() << "\"" << endl;
                     throw;
                 }
                 i++;
