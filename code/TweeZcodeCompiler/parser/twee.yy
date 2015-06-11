@@ -231,7 +231,7 @@ link :
     |LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
     {
     parser_log("generate Link object, separate name & destination");
-    $$ = new Link(*$2, *$4);
+    $$ = new Link(*$4, *$2);
     }
   ;
 
