@@ -7,7 +7,7 @@
 
 using namespace std;
 
-vector<bitset<8>> OpcodeParameterGenerator::generate1OPInstruction(unsigned int opcode, u_int16_t param,
+vector<bitset<8>> OpcodeParameterGenerator::generate1OPInstruction(unsigned int opcode, uint16_t param,
                                                                    bool paramIsVariable) {
     vector<bitset<8>> instructions;
 
@@ -41,8 +41,8 @@ vector<bitset<8>> OpcodeParameterGenerator::generate1OPInstruction(unsigned int 
     return instructions;
 }
 
-vector<bitset<8>> OpcodeParameterGenerator::generate2OPInstruction(unsigned int opcode, u_int16_t param1,
-                                                                   u_int16_t param2, bool param1IsVariable,
+vector<bitset<8>> OpcodeParameterGenerator::generate2OPInstruction(unsigned int opcode, uint16_t param1,
+                                                                   uint16_t param2, bool param1IsVariable,
                                                                    bool param2IsVariable) {
     bitset<8> opcodeByte = bitset<8>(opcode);
     bool longForm = true; // used for 2 operands
@@ -75,7 +75,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generate2OPInstruction(unsigned int 
         // variable form with 2 operands
         opcodeByte.set(5, false);
 
-        vector<u_int16_t> params;
+        vector<uint16_t> params;
         vector<bool> paramIsVariable;
 
         params.push_back(param1);
@@ -96,7 +96,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generate2OPInstruction(unsigned int 
     return instructions;
 }
 
-vector<bitset<8>> OpcodeParameterGenerator::generateVarOPInstruction(unsigned int opcode, vector<u_int16_t> params,
+vector<bitset<8>> OpcodeParameterGenerator::generateVarOPInstruction(unsigned int opcode, vector<uint16_t> params,
                                                                      vector<bool> paramIsVariable) {
     bitset<8> opcodeByte = bitset<8>(opcode);
 
@@ -119,7 +119,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generateVarOPInstruction(unsigned in
     return instructions;
 }
 
-vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitsets(vector<u_int16_t> params,
+vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitsets(vector<uint16_t> params,
                                                                                   vector<bool> paramIsVariable) {
     vector<bitset<8>> instructions;
     bitset<8> paramTypes;

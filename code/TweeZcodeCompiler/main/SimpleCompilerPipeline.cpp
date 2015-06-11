@@ -7,6 +7,7 @@
 #include <TweeParser.h>
 #include <fstream>
 #include <memory>
+#include "AssemblyParser.h"
 
 using namespace std;
 
@@ -34,7 +35,7 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     //create memory sections
     vector<bitset<8>> dynamicMemory = generateDynamicMemory(header, 0x3f);
-    vector<bitset<8>> staticMemory = generateStaticMemory(header, (int) (0x3f + staticMemory.size()));
+    vector<bitset<8>> staticMemory = generateStaticMemory(header, (int) (0x3f + dynamicMemory.size()));
     vector<bitset<8>> highMemory = generateHighMemory(header,
                                                       (int) (0x3f + staticMemory.size() + dynamicMemory.size()));
 
@@ -54,7 +55,11 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     Utils::append(zCode, staticMemory);
     Utils::append(zCode, highMemory);
 
+
+
     RoutineGenerator::resolveCallInstructions(zCode);
+
+
 
     //calculate fileSize
     size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
@@ -111,6 +116,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, routine);
 
+/*
     RoutineGenerator testRoutineGenerator = RoutineGenerator("main", 0, highMemoryZcode, offset);
     testRoutineGenerator.printString("Dies ist 1 Test");
     testRoutineGenerator.newLine();
@@ -141,7 +147,15 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
 
     vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, testRoutine);
+    */
 
+
+    AssemblyParser assemblyParser;
+
+    assemblyParser.readAssembly("hello.zap",highMemoryZcode,offset);
+    //assemblyParser.readAssembly("haus.zap",highMemoryZcode,offset);
+
+/*
     RoutineGenerator routine1 = RoutineGenerator("wald", 0, highMemoryZcode, offset);
     routine1.newLine();
     routine1.newLine();
@@ -173,7 +187,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     routine3.quitRoutine();
 
     vector<bitset<8>> vroutine3 = routine3.getRoutine();
-    Utils::append(highMemoryZcode, vroutine3);
+    Utils::append(highMemoryZcode, vroutine3); */
 
     return highMemoryZcode;
 }
