@@ -12,6 +12,7 @@
 #include <TweeFile.h>
 #include "TweeCompiler.h"
 #include "AssemblyParser.h"
+#include <sstream>
 
 using namespace std;
 
@@ -34,14 +35,14 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     log("Parsed twee file");
 
-    ofstream out = ofstream("test.zas", ofstream::out);
+    //ofstream out = ofstream("test.zas", ofstream::out);
+    stringstream buffer = stringstream();
 
     TweeCompiler compiler;
-    compiler.compile(*tweeFile, out);
+    compiler.compile(*tweeFile, buffer);
 
-    out.close();
+    //out.close();
 
-    std::vector<std::bitset<8>> zCode;
     //create header
     ZCodeHeader header = ZCodeHeader();
 
@@ -49,7 +50,8 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     vector<bitset<8>> dynamicMemory = generateDynamicMemory(header, 0x3f);
     vector<bitset<8>> staticMemory = generateStaticMemory(header, (int) (0x3f + dynamicMemory.size()));
     vector<bitset<8>> highMemory = generateHighMemory(header,
-                                                      (int) (0x3f + staticMemory.size() + dynamicMemory.size()));
+                                                      (int) (0x3f + staticMemory.size() + dynamicMemory.size()),
+                                                      buffer);
 
     //init header
     header.setRoutinesOffset(88);
@@ -81,7 +83,7 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     BinaryFileWriter binaryFileWriter;
     binaryFileWriter.write(zCodeFileName, zCode);
-    log("ZCode File '" + zCodeFileName + "' generated");*/
+    log("ZCode File '" + zCodeFileName + "' generated");
 }
 
 std::vector<std::bitset<8>> SimpleCompilerPipeline::generateDynamicMemory(ZCodeHeader &header, size_t offset) {
@@ -118,7 +120,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHe
     return akk;
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader &header, size_t offset) {
+std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader &header, size_t offset, std::istream& instructionsInput) {
     vector<bitset<8>> highMemoryZcode = vector<bitset<8>>();
 
     // this part creates call to first routine
@@ -162,7 +164,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
 
     AssemblyParser assemblyParser;
 
-    assemblyParser.readAssembly("hello.zap",highMemoryZcode,offset);
+    assemblyParser.readAssembly(instructionsInput, highMemoryZcode, offset);
     //assemblyParser.readAssembly("haus.zap",highMemoryZcode,offset);
 
 /*

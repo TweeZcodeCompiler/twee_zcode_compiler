@@ -35,7 +35,7 @@ private:
 
     bool checkIfCommandRoutineStart(std::string command);
 
-    std::vector<std::string> getRoutinesFromFile(std::string fileNames);
+    std::vector<std::string> getRoutinesFromFile(std::istream& input);
 
     std::vector<std::bitset<8>> getZCodeForRoutine(std::string routine, std::vector<std::bitset<8>> &highMemoryZcode,
                                                    size_t offset);
@@ -56,7 +56,7 @@ private:
     int variableUsed;
 
 public:
-    void readAssembly(std::string assFilePath, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
+    void readAssembly(std::istream& input, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
 
 };
 

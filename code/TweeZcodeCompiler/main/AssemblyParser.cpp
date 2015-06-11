@@ -27,13 +27,13 @@ const char AssemblyParser::STRING_IDENTIFIER = '\"'; // 9 is ascii for tab
 
 
 
-void AssemblyParser::readAssembly(std::string assFilePath, std::vector <std::bitset<8>> &highMemoryZcode,
+void AssemblyParser::readAssembly(std::istream& input, std::vector <std::bitset<8>> &highMemoryZcode,
                                   size_t offset) {
 
     std::cout << "Compiler: Parse Assembly File\n";
     this->variableUsed = 0;
 
-    std::vector <std::string> routineList = getRoutinesFromFile(assFilePath);
+    std::vector <std::string> routineList = getRoutinesFromFile(input);
 
     for (int i = 0; i < routineList.size(); i++) {
         std::vector <std::bitset<8>> routineZCode;
@@ -168,11 +168,9 @@ RoutineGenerator AssemblyParser::executeCommand(std::string command, RoutineGene
 
 }
 
-std::vector <std::string> AssemblyParser::getRoutinesFromFile(std::string assFilePath) {
-
+std::vector <std::string> AssemblyParser::getRoutinesFromFile(std::istream& input) {
     std::vector <std::string> routineList;
     std::string routine = "";
-    std::ifstream input(assFilePath);
 
 
     //get all routines in own strings
@@ -181,7 +179,7 @@ std::vector <std::string> AssemblyParser::getRoutinesFromFile(std::string assFil
         if (command.size() != 0) {
             if (command.at(0) != ';') //comment symbol
             {
-                if (checkIfCommandRoutineStart(command) == true) {
+                if (checkIfCommandRoutineStart(command)) {
                     if (routine.compare("") != 0) {
                         std::cout << "routine: " << routine << " routine end" << "\n\n";
                         routineList.push_back(routine);
