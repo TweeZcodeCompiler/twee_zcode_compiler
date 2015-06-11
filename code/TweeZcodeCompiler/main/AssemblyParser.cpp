@@ -174,7 +174,7 @@ RoutineGenerator AssemblyParser::executeCommand(std::string command, RoutineGene
         }
         if(command.compare(AssemblyParser::RET_COMMAND) == 0) {
             std::cout << ":::::: new return routine ";
-           // routineGenerator.quitRoutine();
+            routineGenerator.returnValue(0, false);
         }
 
 
