@@ -7,6 +7,7 @@
 #include <iostream>
 #include <limits>
 #include "ZCodeHeader.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -34,27 +35,27 @@ vector<bitset<8>> ZCodeHeader::getHeaderBits() {
     setFlags1(headerBits);                           // Hex 1 - 3
     setAddresses(headerBits);                        // Hex 4 - F
     setFlags2(headerBits);                           // Hex 10 - 17
-    setShortVal(locOfAbbrTable, headerBits);         // Hex 18 - 19
-    setShortVal(fileLength, headerBits);             // Hex 1A - 1B
-    setShortVal(fileChecksum, headerBits);           // Hex 1C - 1D
+    Utils::addTwoBytes(locOfAbbrTable, headerBits);         // Hex 18 - 19
+    Utils::addTwoBytes(fileLength, headerBits);             // Hex 1A - 1B
+    Utils::addTwoBytes(fileChecksum, headerBits);           // Hex 1C - 1D
     headerBits.push_back(INTERPRETER_NUMBER);       // Hex 1E
     headerBits.push_back(INTERPRETER_VERSION);      // Hex 1F
     headerBits.push_back(screenHeight);             // Hex 20
     headerBits.push_back(screenWidthCharacters);    // Hex 21
-    setShortVal(screenWidthUnits, headerBits);       // Hex 22 - 23
-    setShortVal(screenHeightUnits, headerBits);      // Hex 24 - 25
+    Utils::addTwoBytes(screenWidthUnits, headerBits);       // Hex 22 - 23
+    Utils::addTwoBytes(screenHeightUnits, headerBits);      // Hex 24 - 25
     headerBits.push_back(fontWidthUnits);           // Hex 26
     headerBits.push_back(fontHeightUnits);         // Hex 27
-    setShortVal(routinesOffset, headerBits);         // Hex 28 - 29
-    setShortVal(staticStringsOffset, headerBits);    // Hex 2A - 2B
+    Utils::addTwoBytes(routinesOffset, headerBits);         // Hex 28 - 29
+    Utils::addTwoBytes(staticStringsOffset, headerBits);    // Hex 2A - 2B
     headerBits.push_back(defBackgroundColor);       // Hex 2C
     headerBits.push_back(defForegroundColor);       // Hex 2D
-    setShortVal(addressOfCharTable, headerBits);     // Hex 2E - 2F
-    setShortVal(totalWidthInPixels, headerBits);     // Hex 30 - 31
+    Utils::addTwoBytes(addressOfCharTable, headerBits);     // Hex 2E - 2F
+    Utils::addTwoBytes(totalWidthInPixels, headerBits);     // Hex 30 - 31
     headerBits.push_back(STANDARD_REVISION_MAIN);   // Hex 32
     headerBits.push_back(STANDARD_REVISION_SUB);    // Hex 33
-    setShortVal(alphabetTableAddress, headerBits);   // Hex 34 - 35
-    setShortVal(headerExtensionTableAddress, headerBits);// Hex 36 - 38
+    Utils::addTwoBytes(alphabetTableAddress, headerBits);   // Hex 34 - 35
+    Utils::addTwoBytes(headerExtensionTableAddress, headerBits);// Hex 36 - 38
 
     for (size_t i = 0; i < 7; i++) {
         headerBits.push_back(0);           // Hex 39 - 3F
@@ -127,13 +128,12 @@ void ZCodeHeader::setFlags1(vector<bitset<8>> &header) {
 
 // sets bytes 4 - F
 void ZCodeHeader::setAddresses(vector<bitset<8>> &header) {
-    setShortVal(baseOfHighMem, header);         // Hex 4 - 5
-    header.push_back(initValOfPC);             // Hex 6
-    header.push_back(packedAddressOfMain);     // Hex 7
-    setShortVal(locOfDict, header);             // Hex 8 - 9
-    setShortVal(locOfObjTable, header);         // Hex A - B
-    setShortVal(locOfGlobVarTable, header);     // Hex C - D
-    setShortVal(baseOfStatMem, header);         // Hex E - F
+    Utils::addTwoBytes(baseOfHighMem, header);         // Hex 4 - 5
+    Utils::addTwoBytes(initValOfPC, header);           // Hex 6 - 7
+    Utils::addTwoBytes(locOfDict, header);             // Hex 8 - 9
+    Utils::addTwoBytes(locOfObjTable, header);         // Hex A - B
+    Utils::addTwoBytes(locOfGlobVarTable, header);     // Hex C - D
+    Utils::addTwoBytes(baseOfStatMem, header);         // Hex E - F
 }
 
 // sets bytes 10 - 17
@@ -157,21 +157,4 @@ void ZCodeHeader::setFlags2(std::vector<std::bitset<8>> &header) {
     flags2.reset();                             // Hex 17
     flags2.set(0, useMenus);
     header.push_back(flags2);
-}
-
-// splits short value up to 2 bytes and pushes them into the headerBits
-void ZCodeHeader::setShortVal(unsigned short val, vector<bitset<8>> &header) {
-    bitset<16> shortVal (val);
-    bitset<8> firstHalf, secondHalf;
-
-    for (size_t i = 0; i < 8; i++) {
-        secondHalf.set(i, shortVal[i]);
-    }
-
-    for (size_t i = 8; i < 16; i++) {
-        firstHalf.set(i - 8, shortVal[i]);
-    }
-
-    header.push_back(firstHalf);
-    header.push_back(secondHalf);
 }

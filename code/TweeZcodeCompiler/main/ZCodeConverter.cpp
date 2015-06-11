@@ -4,6 +4,7 @@
 
 #include "ZCodeConverter.h"
 #include <iostream>
+
 using std::bitset;
 using std::vector;
 
@@ -86,7 +87,7 @@ int ZCodeConverter::calculateSpecialCharacters(int asciiValue) {
         //range of characters from '0' to '9'
         return asciiValue - 40;
     }
-        switch (asciiValue) {
+    switch (asciiValue) {
         case '\n':
             return 7;
         case '.':
@@ -128,21 +129,19 @@ int ZCodeConverter::calculateSpecialCharacters(int asciiValue) {
 //return 2 : punctuation/ unknown
 //return 3 : space
 int ZCodeConverter::getAlphabet(int asciiValue) {
-    if(asciiValue > 96 && asciiValue && asciiValue < 123){
+    if (asciiValue > 96 && asciiValue && asciiValue < 123) {
         return 0;
-    }else
-        if(asciiValue > 64 && asciiValue < 91){
-            return 1;
-        }else
-        if(asciiValue == ' '){
-            return 3;
-        }else{
-            return 2;
-        }
+    } else if (asciiValue > 64 && asciiValue < 91) {
+        return 1;
+    } else if (asciiValue == ' ') {
+        return 3;
+    } else {
+        return 2;
+    }
 }
 
 //the following code translate 5 bit Z-characters into a 8 bit string, as we store it
-vector<bitset<8>>  ZCodeConverter::convert5BitTo8Bit(vector<bitset<5>> source){
+vector<bitset<8>>  ZCodeConverter::convert5BitTo8Bit(vector<bitset<5>> source) {
     vector<bitset<8>> returnVector = vector<bitset<8>>();
 
     //use padding to expand the size of Z-characters to multiple of 3
@@ -165,19 +164,19 @@ vector<bitset<8>>  ZCodeConverter::convert5BitTo8Bit(vector<bitset<5>> source){
         }
         //write first Z-char
         for (unsigned long pos = 2; pos < 7; pos++) {
-            firstByte.set(pos, firstZChar[6-pos]);
+            firstByte.set(pos, firstZChar[6 - pos]);
         }
         //write second Z-char
         for (unsigned long pos = 0; pos < 2; pos++) {
-            firstByte.set(pos, secondZChar[1-pos]);
+            firstByte.set(pos, secondZChar[1 - pos]);
         }
         returnVector.push_back(firstByte);
         for (unsigned long pos = 5; pos < 8; pos++) {
-            secondByte.set(pos, secondZChar[9-pos]);
+            secondByte.set(pos, secondZChar[9 - pos]);
         }
         //write third Z-char
         for (unsigned long pos = 0; pos < 5; pos++) {
-            secondByte.set(pos, thirdZChar[4-pos]);
+            secondByte.set(pos, thirdZChar[4 - pos]);
         }
         returnVector.push_back(secondByte);
     }

@@ -12,8 +12,11 @@
 class ZCodeConverter {
 private:
     std::bitset<5> convertIntToBitset(int i);
+
     std::vector<std::bitset<8>> convert5BitTo8Bit(std::vector<std::bitset<5>> source);
+
     int calculateSpecialCharacters(int ascii);
+
     int getAlphabet(int asciiValue);
 
 public:

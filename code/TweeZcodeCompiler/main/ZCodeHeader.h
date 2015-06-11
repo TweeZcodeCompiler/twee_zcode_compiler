@@ -26,16 +26,15 @@ private:
 
     // set special parts of headerBits
     void setFlags1(std::vector<std::bitset<8>> &header);
+
     void setAddresses(std::vector<std::bitset<8>> &header);
+
     void setFlags2(std::vector<std::bitset<8>> &header);
 
-    // split short values upt to 2 bytes
-    void setShortVal(uint16_t val, std::vector<std::bitset<8>> &header);
 
 public:
     //HEADER POSITIONS
     static const int HEADER_FILE_SIZE_POSITION = 26;
-
     // Flags 1 in Hex position 1 to 3
     bool colAvail = false;
     bool picDisplayAvail = false;
@@ -47,8 +46,7 @@ public:
 
     // byte addresses
     uint16_t baseOfHighMem = 0;        // 2 bytes
-    uint8_t initValOfPC = 0;           // initial value of program counter
-    uint8_t packedAddressOfMain = 0;   // packed address of initial "main" routine
+    uint16_t initValOfPC = 0;           // initial value of program counter
     uint16_t locOfDict = 0;            // location of dictionary
     uint16_t locOfObjTable = 0;        // location of object table
     uint16_t locOfGlobVarTable = 0;    // location of global variable table
