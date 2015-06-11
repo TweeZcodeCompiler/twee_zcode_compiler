@@ -16,10 +16,13 @@ new_line
 print "Wir gehen nun in den Garten!"
 new_line
 call garten
+new_line
+print "du bist wieder im Haus"
+new_line
 quit
 
 .FUNCT garten
 new_line
 print "Du bist im Garten!"
 new_line
-quit
+ret

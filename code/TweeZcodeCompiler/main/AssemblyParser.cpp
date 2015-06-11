@@ -17,6 +17,7 @@ const std::string AssemblyParser::QUIT_COMMAND = "quit";
 const std::string AssemblyParser::READ_CHAR_COMMAND = "read_char";
 const std::string AssemblyParser::CALL_COMMAND = "call";
 const std::string AssemblyParser::JUMP_COMMAND = "jump";
+const std::string AssemblyParser::RET_COMMAND = "ret";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMS_IN_AN_COMMAND = ' '; // 9 is ascii for tab
 const char AssemblyParser::STRING_IDENTIFIER = '\"'; // 9 is ascii for tab
@@ -170,6 +171,10 @@ RoutineGenerator AssemblyParser::executeCommand(std::string command, RoutineGene
         if(command.compare(AssemblyParser::JUMP_COMMAND) == 0) {
             std::cout << ":::::: new jump ";
             routineGenerator = executeJUMPCommand(command, routineGenerator);
+        }
+        if(command.compare(AssemblyParser::RET_COMMAND) == 0) {
+            std::cout << ":::::: new return routine ";
+           // routineGenerator.quitRoutine();
         }
 
 
