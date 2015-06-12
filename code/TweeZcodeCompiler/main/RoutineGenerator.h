@@ -18,6 +18,8 @@
 class RoutineGenerator {
 
 private:
+    bool printLogs = true;
+
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
     static std::map<std::string, size_t> routines;  //keys = name of routine, value = offset.
 

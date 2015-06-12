@@ -43,6 +43,10 @@ void RoutineGenerator::printString(std::string stringToPrint) {
         }
         addOneByte(zsciiString[i]);
     }
+
+    if (printLogs) {
+        cout << "RoutineGenerator: print " << stringToPrint;
+    }
 }
 
 void RoutineGenerator::readChar(uint8_t var) {

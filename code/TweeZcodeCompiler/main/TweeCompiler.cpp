@@ -8,6 +8,7 @@
 #include <iostream>
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
+#include <algorithm>
 
 using namespace std;
 

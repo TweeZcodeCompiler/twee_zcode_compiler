@@ -36,7 +36,7 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     log("Parsed twee file");
 
     //ofstream out = ofstream("test.zas", ofstream::out);
-    stringstream buffer = stringstream();
+    stringstream buffer;
 
     TweeCompiler compiler;
     compiler.compile(*tweeFile, buffer);
