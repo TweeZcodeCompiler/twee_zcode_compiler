@@ -25,21 +25,27 @@
 	namespace Twee {
 		class TweeScanner;
 	}
-	#define DEBUG_PARSER std::cout << "\t\tPARSER DEBUG: " <<
 }
 
 %code {
+    TweeFile *tweeStructure; /* the result data model */
+
+    //TODO: use this function to pass parse errors to the exceptions, also look for Twee::BisonParser::error
 	void yyerror(const char *s) { printf("ERROR: %s\n", s); }
+
 	// Prototype for the yylex function
 	static int yylex(Twee::BisonParser::semantic_type * yylval, Twee::TweeScanner &scanner);
 
-	void parser_log(std::string message) {
-        std::cout << "\tParser: " << message << "\n";
+    //TODO: implement plog for logging
+	void logDebug(std::string message) {
+        std::cout << "Parser: " << message << "\n";
     }
 
-	TweeFile *tweeStructure; /* the result data model */
+    //TODO: make a formattedText function
+    /*to get the bold, italic etc. values of the FORMATTING_OPEN
+     * and FORMATTING_CLOSE tokens
+     */
 
-	//TODO: declare the passage list globally or look if it can be integrated into the parse tree
 }
 
 
@@ -83,7 +89,6 @@
 	<token> FORMATTING_CLOSE
     <string> TEXT_TOKEN
 
- //TODO: apply new Syntax Tree implementation
 %type <tweefile> TweeDocument
 
 %type <passage> passage
@@ -108,31 +113,33 @@
 TweeDocument :
     passages
     {
-    //TODO: make a TweeDocument out of the passages
-    parser_log("make a TweeDocument out of the passages");
+    logDebug("TweeDocument -> passages");
     tweeStructure = $1;
     }
   ;
 passages :
     passages passage
     {
-    parser_log("pass the TweeFile upwards");
+    logDebug("passages -> passages passage");
+    logDebug("pass passages:type(TweeFile) to top:passages:type(TweeFile)");
     $$ = $1;
-    parser_log("add the passage to the twee file");
+    logDebug("add the passage:type(Passage) to the passages:type(TweeFile)");
     *$$ += *$2;
     }
 	|passage
 	{
-    parser_log("create a TweeFile");
+	logDebug("passages -> passage");
+    logDebug("create a passages:type(TweeFile)");
     $$ = new TweeFile();
-    parser_log("add passage to TweeFile");
+    logDebug("add passage:type(Passage) to passages:type(TweeFile)");
     *$$ += *$1;
     }
   ;
 passage :
     head body
     {
-    parser_log("make a passage out of the Head and Body objects");
+    logDebug("passage -> head body");
+    logDebug("create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects");
     $$ = new Passage(*$1, *$2);
     }
   ;
@@ -140,7 +147,8 @@ passage :
 head :
     PASSAGE_START title
     {
-    parser_log("pass Head object of title upwards");
+    logDebug("head -> PASSAGE_START title");
+    logDebug("pass title:type(Head) to head:type(Head)");
     $$ = $2;
     }
   ;
@@ -148,12 +156,14 @@ head :
 title :
     TITLE NEWLINE
     {
-    parser_log("generate Head object");
+    logDebug("title -> TITLE NEWLINE");
+    logDebug("create title:type(Head) out of token:TITLE");
     $$ = new Head(*$1);
     }
     |TITLE TAGS_OPEN tags TAGS_CLOSE NEWLINE
     {
-    parser_log("generate Head object, add the list of token strings to it");
+    logDebug("title -> TITLE TAGS_OPEN tags TAGS_CLOSE NEWLINE");
+    logDebug("create title:type(Head) out of token:TITLE");
     //TODO: incorporate tags
     $$ = new Head(*$1);
     }
@@ -162,31 +172,31 @@ title :
 tags :
     tags TAG
     {
+    logDebug("tags -> tags TAG");
     //TODO: TAG token vector: tags TAG production
-    parser_log("add the TAG-Token's string to the tags list");
     }
     |TAG
     {
+    logDebug("tags -> TAG");
     //TODO: TAG token vector: tags TAG production
-    parser_log("generate tags list");
-    parser_log("add TAG to tags list");
     }
   ;
 
 body :
     body bodypart
     {
-    //TODO: add the bodypart to the bodypart list
-    parser_log("pass body upwards");
+    logDebug("body -> body bodypart");
+    logDebug("pass body:type(Body) to top:body:type(Body)");
     $$ = $1;
-    parser_log("pass it upwards");
+    logDebug("add bodypart:type(BodyPart) to top:body:type(Body)");
     *$$ += $2;
     }
     |bodypart
     {
-    parser_log("generate body");
+    logDebug("body -> bodypart");
+    logDebug("create top:body:type(Body)");
     $$ = new Body();
-    parser_log("add bodypart to body");
+    logDebug("add bodypart:type(BodyPart) to top:body:type(Body)");
     *$$ += $1;
     }
   ;
@@ -194,22 +204,28 @@ body :
 bodypart :
     text
     {
-    parser_log("pass the Text object up");
+    logDebug("bodypart -> text");
+    logDebug("pass text:type(text) to bodypart:type(BodyPart)");
     $$ = $1;
     }
     |link
     {
-    parser_log("pass the Link object up");
+    logDebug("bodypart -> link");
+    logDebug("pass link:type(Link) to bodypart:type(BodyPart)");
     $$ = $1;
     }
     |macro
     {
-    parser_log("pass the Macro object up");
+    logDebug("bodypart -> macro");
+    //TODO: implement Macro:BodyType
+    logDebug("pass macro:type(--Text--) to bodypart:type(BodyPart)");
     $$ = $1;
     }
     |formatted
     {
-    parser_log("pass the FormattedText object up");
+    logDebug("bodypart -> formatted");
+    //TODO: implement FormattedText parsing
+    logDebug("pass formatted:type(--Text--) to bodypart:type(BodyPart)");
     $$ = $1;
     }
   ;
@@ -217,7 +233,8 @@ bodypart :
 text :
     TEXT_TOKEN
     {
-    parser_log("generate Text object");
+    logDebug("text -> TEXT_TOKEN");
+    logDebug("create top:text:type(Text)");
     $$ = new Text(*$1);
     }
   ;
@@ -225,12 +242,14 @@ text :
 link :
     LINK_OPEN TEXT_TOKEN LINK_CLOSE
     {
-    parser_log("generate Link object, name == destination");
+    logDebug("link -> LINK_OPEN TEXT_TOKEN LINK_CLOSE");
+    logDebug("create top:link:type(Link) with 2:token:TEXT_TOKEN & 2:token:TEXT_TOKEN");
     $$ = new Link(*$2);
     }
     |LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
     {
-    parser_log("generate Link object, separate name & destination");
+    logDebug("link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE");
+    logDebug("create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN");
     $$ = new Link(*$4, *$2);
     }
   ;
@@ -239,7 +258,8 @@ macro :
     MACRO_OPEN TEXT_TOKEN MACRO_CLOSE
     {
     //TODO: data model: implement macro
-    parser_log("generate Macro object");
+    logDebug("macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE");
+    logDebug("create top:macro:type(--Text--) with 2:token:TEXT_TOKEN");
     $$ = new Text(*$2);
     }
   ;
@@ -248,23 +268,23 @@ formatted:
     FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
     {
     //TODO:check if F_OPEN and F_CLOSE are the same
-    //TODO:implement bold,underlined, italic-differenciate function
-    parser_log("make new Formatted Text");
+    logDebug("formatted -> FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE");
+    logDebug("create top:formatted:type(--Text--) with 2:token:TEXT_TOKEN");
     $$ = new FormattedText(*$2);
-    $$->setIsBold(true);
     }
     |FORMATTING_OPEN formatted FORMATTING_CLOSE
     {
     //TODO:check if F_OPEN and F_CLOSE are the same
-    //TODO:implement bold,underlined, italic-differenciate function
+    logDebug("FORMATTING_OPEN formatted FORMATTING_CLOSE");
+    logDebug("pass formatted:type(--Text--) up to top:formatted:type(--Text--)");
     $$ = $2;
-    $$->setIsBold(!$$->isBold());
     }
   ;
 
 %%
 
 // We have to implement the error function
+//TODO: use this function to pass parse errors to the exceptions, also look for yyerror
 void Twee::BisonParser::error(const std::string& msg) {
 	std::cerr << "Error: " << msg << std::endl;
 }
