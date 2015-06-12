@@ -54,12 +54,20 @@ void RoutineGenerator::readChar(uint8_t var) {
     addOneByte(numberToBitset(0xbf));
     addOneByte(numberToBitset(1));
     addOneByte(numberToBitset(var));
+
+    if (printLogs) {
+        cout << "RoutineGenerator: readChar " << var;
+    }
 }
 
 void RoutineGenerator::printChar(uint8_t var) {
     addOneByte(numberToBitset(PRINT_CHAR));
     addOneByte(numberToBitset(0xbf));
     addOneByte(numberToBitset(var));
+
+    if (printLogs) {
+        cout << "RoutineGenerator: printChar " << var;
+    }
 }
 
 void RoutineGenerator::callRoutine(string nameOfRoutine) {
@@ -67,6 +75,10 @@ void RoutineGenerator::callRoutine(string nameOfRoutine) {
     addBitset(instructions);
     RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = nameOfRoutine;
     std::cout << "Call Routine at:::" << offsetOfRoutine + routineZcode.size() - 2 << "\n";
+
+    if (printLogs) {
+        cout << "RoutineGenerator: callRoutine " << nameOfRoutine;
+    }
 }
 
 std::bitset<8> RoutineGenerator::numberToBitset(unsigned int number) {
@@ -83,15 +95,27 @@ void RoutineGenerator::jump(string toLabel) {
     addOneByte(numberToBitset(JUMP));
     jumps.newJump(toLabel);
     addTwoBytes(1 << (JUMP_UNCOND_OFFSET_PLACEHOLDER + 7)); // placeholder, will be replaced in getRoutine()
+
+    if (printLogs) {
+        cout << "RoutineGenerator: jump " << toLabel;
+    }
 }
 
 void RoutineGenerator::quitRoutine() {
     addOneByte(numberToBitset(QUIT));
+
+    if (printLogs) {
+        cout << "RoutineGenerator: quit ";
+    }
 }
 
 // adds label and next instruction address to 'branches' map
 void RoutineGenerator::newLabel(string label) {
     jumps.newLabel(label);
+
+    if (printLogs) {
+        cout << "RoutineGenerator: newLabel " << label;
+    }
 }
 
 void RoutineGenerator::jumpZero(string toLabel, bool jumpIfTrue, int16_t parameter, bool parameterIsVariable) {
@@ -109,6 +133,11 @@ void RoutineGenerator::jumpZero(string toLabel, bool jumpIfTrue, int16_t paramet
     // placeholder, will be replaced in getRoutine()
     addOneByte(offsetFirstBits);
     addOneByte(numberToBitset(0));
+
+    if (printLogs) {
+        cout << "RoutineGenerator: jz (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param: "
+                << parameter << ", paramIsVariable: " << parameterIsVariable << ")";
+    }
 }
 
 void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t param, bool paramIsVariable) {
@@ -125,21 +154,44 @@ void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t par
     // placeholder, will be replaced in getRoutine()
     addOneByte(offsetFirstBits);
     addOneByte(numberToBitset(0));
+
+    if (printLogs) {
+        cout << "RoutineGenerator: je (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param: "
+        << param << ", paramIsVariable: " << paramIsVariable << ")";
+    }
 }
 
 void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2,
                                   bool param1IsVariable, bool param2IsVariable) {
     conditionalJump(JE, toLabel, jumpIfTrue, (int16_t) param1, param2, param1IsVariable, param2IsVariable);
+
+    if (printLogs) {
+        cout << "RoutineGenerator: je (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param1: "
+                << param1 << ", Param2: " << param2 << ", param1IsVariable: " << param1IsVariable
+                << ", param2IsVariable: " << param2IsVariable << ")";
+    }
 }
 
 void RoutineGenerator::jumpLessThan(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2,
                                     bool param1IsVariable, bool param2IsVariable) {
     conditionalJump(JL, toLabel, jumpIfTrue, (int16_t) param1, param2, param1IsVariable, param2IsVariable);
+
+    if (printLogs) {
+        cout << "RoutineGenerator: jl (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param1: "
+        << param1 << ", Param2: " << param2 << ", param1IsVariable: " << param1IsVariable
+        << ", param2IsVariable: " << param2IsVariable << ")";
+    }
 }
 
 void RoutineGenerator::jumpGreaterThan(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2,
                                        bool param1IsVariable, bool param2IsVariable) {
     conditionalJump(JG, toLabel, jumpIfTrue, (int16_t) param1, param2, param1IsVariable, param2IsVariable);
+
+    if (printLogs) {
+        cout << "RoutineGenerator: jg (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param1: "
+        << param1 << ", Param2: " << param2 << ", param1IsVariable: " << param1IsVariable
+        << ", param2IsVariable: " << param2IsVariable << ")";
+    }
 }
 
 void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, int16_t param1,
@@ -163,18 +215,30 @@ void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel,
 void RoutineGenerator::store(u_int8_t address, u_int16_t value) {
     vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(STORE, address, value, true, false);
     addBitset(instructions);
+
+    if (printLogs) {
+        cout << "RoutineGenerator: store (address: " << address << ", value: " << value << ")";
+    }
 }
 
-void RoutineGenerator::load(u_int8_t address, u_int8_t result_address) {
+void RoutineGenerator::load(u_int8_t address, u_int8_t resultAddress) {
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, address, true);
     addBitset(instructions);
 
-    addOneByte(numberToBitset(result_address));
+    addOneByte(numberToBitset(resultAddress));
+
+    if (printLogs) {
+        cout << "RoutineGenerator: load (address: " << address << ", resultAddress: " << resultAddress << ")";
+    }
 }
 
 void RoutineGenerator::printStringAtAddress(u_int8_t address) {
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(PRINT_ADDR, address, true);
     addBitset(instructions);
+
+    if (printLogs) {
+        cout << "RoutineGenerator: printStringAtAddress " << address;
+    }
 }
 
 void RoutineGenerator::resolveCallInstructions(std::vector<std::bitset<8>> &zCode) {

@@ -115,7 +115,7 @@ public:
 
     void store(u_int8_t address, u_int16_t value);
 
-    void load(u_int8_t address, u_int8_t result_address);
+    void load(u_int8_t address, u_int8_t resultAddress);
 
     void quitRoutine();
 
