@@ -173,6 +173,33 @@ void RoutineGenerator::printStringAtAddress(u_int8_t address) {
     addBitset(instructions);
 }
 
+void RoutineGenerator::setLocalVariable(string name, int16_t value) {
+    if (++addedLocalVariables > maxLocalVariables) {
+        cout << "Added " << addedLocalVariables << " local variables to routine but only "
+            << maxLocalVariables << " specified at routine start!";
+        throw;
+    }
+
+    size_t size = locVariables.size() + 1;
+    locVariables[name] = size;   // first local variable is at address 1 in stack
+    store(locVariables[name], value);
+}
+
+void RoutineGenerator::printNum(unsigned int address) {
+    vector<uint16_t> addresses;
+    addresses.push_back(address);
+
+    vector<bool> isParam;
+    isParam.push_back(true);
+
+    vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(PRINT_SIGNED_NUM, addresses, isParam);
+    addBitset(instructions);
+}
+
+u_int8_t RoutineGenerator::getAddressOfVariable(std::string name) {
+    return locVariables[name];
+}
+
 void RoutineGenerator::resolveCallInstructions(std::vector<std::bitset<8>> &zCode) {
     typedef map<size_t, string>::iterator it_type;
     for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {

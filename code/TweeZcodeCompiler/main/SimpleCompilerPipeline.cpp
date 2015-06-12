@@ -116,43 +116,35 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, routine);
 
-/*
-    RoutineGenerator testRoutineGenerator = RoutineGenerator("main", 0, highMemoryZcode, offset);
-    testRoutineGenerator.printString("Dies ist 1 Test");
+
+    RoutineGenerator testRoutineGenerator = RoutineGenerator("main", 5, highMemoryZcode, offset);
+    testRoutineGenerator.printString("Dies ist ein Test");
     testRoutineGenerator.newLine();
-    testRoutineGenerator.printString("1: gehe in den Wald!");
+    testRoutineGenerator.printNum(0x10);
+    testRoutineGenerator.printStringAtAddress(0x10);
+    testRoutineGenerator.store(0x10, 4);
+    /*testRoutineGenerator.store(0x02, 4);
+
+    size_t address1 = testRoutineGenerator.getAddressOfVariable("var 1");
+    size_t address2 = testRoutineGenerator.getAddressOfVariable("var 2");
+    testRoutineGenerator.jumpEquals("label", true, 0x01,0x02, true, true);
     testRoutineGenerator.newLine();
-    testRoutineGenerator.printString("2: gehe in die Stadt!");
-    testRoutineGenerator.newLine();
-    testRoutineGenerator.printString("3: gehe zum Weg!");
-    testRoutineGenerator.readChar(0x10);
-    testRoutineGenerator.jumpEquals("w", true, 0x10, 49, true, false);
-    testRoutineGenerator.jumpEquals("s", true, 0x10, 50, true, false);
-    testRoutineGenerator.jumpEquals("weg", true, 0x10, 51, true, false);
-    testRoutineGenerator.printString("Keine valide eingabe!");
-    testRoutineGenerator.quitRoutine();
-    testRoutineGenerator.newLabel("w");
-    testRoutineGenerator.printString("korrekt");
-    testRoutineGenerator.callRoutine("wald");
-    testRoutineGenerator.quitRoutine();
-    testRoutineGenerator.newLabel("s");
-    testRoutineGenerator.printString("korrekt");
-    testRoutineGenerator.callRoutine("stadt");
-    testRoutineGenerator.quitRoutine();
-    testRoutineGenerator.newLabel("weg");
-    testRoutineGenerator.printString("korrekt");
-    testRoutineGenerator.callRoutine("weg");
+    testRoutineGenerator.printString("Nicht gesprungen");
     testRoutineGenerator.quitRoutine();
 
+    testRoutineGenerator.newLabel("label");
+    testRoutineGenerator.newLine();
+    testRoutineGenerator.printString("gesprungen");*/
+    testRoutineGenerator.quitRoutine();
 
     vector<bitset<8>> testRoutine = testRoutineGenerator.getRoutine();
     Utils::append(highMemoryZcode, testRoutine);
-    */
 
 
-    AssemblyParser assemblyParser;
 
-    assemblyParser.readAssembly("hello.zap",highMemoryZcode,offset);
+    //AssemblyParser assemblyParser;
+
+    //assemblyParser.readAssembly("hello.zap",highMemoryZcode,offset);
     //assemblyParser.readAssembly("haus.zap",highMemoryZcode,offset);
 
 /*

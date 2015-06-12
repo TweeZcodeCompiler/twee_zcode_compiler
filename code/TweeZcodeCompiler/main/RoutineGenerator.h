@@ -19,8 +19,11 @@ class RoutineGenerator {
 
 private:
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
+    std::map<std::string, u_int8_t> locVariables;   // keys = variable name, value = number in stack
     static std::map<std::string, size_t> routines;  //keys = name of routine, value = offset.
 
+    size_t maxLocalVariables = 0;
+    size_t addedLocalVariables = 0;
     size_t offsetOfRoutine = 0;
     Jumps jumps;
     OpcodeParameterGenerator opcodeGenerator;
@@ -64,6 +67,12 @@ public:
         jumps.setRoutineBitsetMap(routineZcode);
         jumps.routineOffset = this->offsetOfRoutine;
         addOneByte(numberToBitset(locVar));
+        maxLocalVariables = locVar;
+
+        if (locVar > 15) {
+            std::cout << "Cannot add more than 15 local variables to routine " << name << "!";
+            throw;
+        }
     }
 
     // returns complete zcode of Routine as a bitset vector
@@ -76,6 +85,14 @@ public:
     static void resolveCallInstructions(std::vector<std::bitset<8>> &zCode);
 
     static std::map<size_t, std::string> callTo;    //keys = offset of call, value = name of routine
+
+    /*
+     *      methods to access/set local variables
+     */
+
+    void setLocalVariable(std::string name, int16_t value);
+
+    u_int8_t getAddressOfVariable(std::string name);
 
     /*
      *      methods to add intermediate code instructions to routine
@@ -107,6 +124,8 @@ public:
     void printString(std::string stringToPrint);
 
     void printStringAtAddress(u_int8_t address);
+
+    void printNum(unsigned int address);
 
     //Call to a routine with spezific name
     void callRoutine(std::string nameOfRoutine);
@@ -146,7 +165,9 @@ public:
         // Opcode: load a variable
                 LOAD = 142,
         // Opcode: print zscii encoded string at address
-                PRINT_ADDR = 135
+                PRINT_ADDR = 135,
+        // Opcode: print signed num value in decimal
+                PRINT_SIGNED_NUM = 230
     };
 
     enum BranchOffset {
