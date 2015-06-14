@@ -5,7 +5,6 @@
 #include "AssemblyParser.h"
 #include <fstream>
 #include <sstream>
-#include <string>
 #include <algorithm>
 #include <bitset>
 #include <cstdint>
@@ -21,6 +20,7 @@ const std::string AssemblyParser::QUIT_COMMAND = "quit";
 const std::string AssemblyParser::READ_CHAR_COMMAND = "read_char";
 const std::string AssemblyParser::CALL_COMMAND = "call";
 const std::string AssemblyParser::JUMP_COMMAND = "jump";
+const std::string AssemblyParser::RET_COMMAND = "ret";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND = ' '; // 9 is ascii for tab
 const char AssemblyParser::STRING_IDENTIFIER = '\"'; // 9 is ascii for tab
@@ -126,7 +126,6 @@ RoutineGenerator& AssemblyParser::executePRINTCommand(const std::string &printCo
 }
 
 RoutineGenerator& AssemblyParser::executeREADCommand(const std::string &readCommand, RoutineGenerator &routineGenerator) {
-    //this->globalVariableStack.insert(std::pair<std::string, int>("sp", variableUsed));
     std::vector <std::string> commandParts = this->split(readCommand, AssemblyParser::ASSIGNMENT_OPERATOR);
     if(commandParts.size() < 2) {
         // TODO: decide on whether to allow no args for read_char
@@ -141,8 +140,17 @@ RoutineGenerator& AssemblyParser::executeJECommand(const std::string &jeCommand,
 
     std::vector <std::string> commandParts = this->split(jeCommand, '?');
     std::string label = commandParts.at(1);
-    std::cout << label << std::endl;
-    routineGenerator.jumpEquals(label, true, 0x10, 49, true, false);
+
+    commandParts = split(jeCommand,' ');
+    std::string variableName = commandParts.at(2);
+    std::string valueString = commandParts.at(1);
+    uint16_t value =  std::stoul(valueString); // TODO: check if this fits 8 or 16 bits, then set small or large constant
+    std::cout << variableName << "," << "" << value;
+
+    uint8_t globalZCodeAdress = getAddressForId(variableName);
+
+    std::cout << " "  << label << std::endl;
+    routineGenerator.jumpEquals(label, true, globalZCodeAdress, value, true, false);
 
     return routineGenerator;
 }
@@ -198,6 +206,9 @@ RoutineGenerator& AssemblyParser::executeCommand(const std::string& command, Rou
     } else if(command.compare(AssemblyParser::JUMP_COMMAND) == 0) {
         std::cout << ":::::: new jump ";
         routineGenerator = executeJUMPCommand(command, routineGenerator);
+    } else if(command.compare(AssemblyParser::RET_COMMAND) == 0) {
+        std::cout << ":::::: new return routine ";
+        routineGenerator.returnValue(0, false);
     } else {
         // TODO: handle this error more appropriately
         std::cout << "unknown command: " << command << std::endl;
