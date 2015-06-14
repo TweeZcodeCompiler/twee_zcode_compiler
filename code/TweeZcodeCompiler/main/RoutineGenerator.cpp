@@ -197,7 +197,12 @@ void RoutineGenerator::printNum(unsigned int address) {
 }
 
 u_int8_t RoutineGenerator::getAddressOfVariable(std::string name) {
-    return locVariables[name];
+    if (locVariables[name] == NULL) {
+        cout << "Undefined local variable used: " << name << endl;
+        throw;
+    } else {
+        return locVariables[name];
+    }
 }
 
 void RoutineGenerator::resolveCallInstructions(std::vector<std::bitset<8>> &zCode) {
