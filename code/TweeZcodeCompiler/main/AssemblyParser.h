@@ -39,8 +39,6 @@ private:
 
     bool checkIfCommandRoutineStart(const std::string &command);
 
-    std::vector<std::string> getRoutines(std::istream& input);
-
     RoutineGenerator& executeCommand(const std::string &command, RoutineGenerator &routineGenerator);
 
     RoutineGenerator& executePRINTCommand(const std::string &printCommand, RoutineGenerator &routineGenerator);

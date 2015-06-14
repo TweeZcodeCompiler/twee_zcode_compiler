@@ -206,35 +206,6 @@ RoutineGenerator& AssemblyParser::executeCommand(const std::string& command, Rou
     return routineGenerator;
 }
 
-std::vector <std::string> AssemblyParser::getRoutines(std::istream& input) {
-
-    std::vector <std::string> routineList;
-    std::string routine = "";
-
-    //get all routines in own strings
-    for (std::string command; getline(input, command);) {
-        if (command.size() != 0 && command.at(0) != ';') {
-            if (checkIfCommandRoutineStart(command)) {
-                if (routine.compare("") != 0) {
-                    std::cout << "routine: " << routine << " routine end" << "\n\n";
-                    routineList.push_back(routine);
-                }
-                routine = "";
-            }
-            routine += command + "\n";
-        }
-    }
-
-
-    if (routine.compare("") != 0) {
-        std::cout << "routine: " << routine << " routine end" << "\n\n";
-        routineList.push_back(routine);
-    }
-
-    std::cout << "Amount of Routines:" << routineList.size() << std::endl;
-    return routineList;
-}
-
 
 bool AssemblyParser::checkIfCommandRoutineStart(const std::string &command) {
     std::vector <std::string> commandParts = this->split(command, ' ');
