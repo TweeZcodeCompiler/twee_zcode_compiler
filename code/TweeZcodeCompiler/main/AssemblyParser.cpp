@@ -132,7 +132,7 @@ RoutineGenerator& AssemblyParser::executeREADCommand(const std::string &readComm
         return routineGenerator;
     }
     auto last = trim(commandParts.back());
-    routineGenerator.readChar(getAddressForId(last)); //TODO: get avialabe address
+    routineGenerator.readChar(getAddressForId(last)); //TODO: get available address
     return routineGenerator;
 }
 

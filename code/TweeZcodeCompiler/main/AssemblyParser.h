@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <bitset>
+#include <memory>
 #include "RoutineGenerator.h"
 #include "Utils.h"
 
