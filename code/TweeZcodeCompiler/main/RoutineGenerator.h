@@ -117,6 +117,8 @@ public:
 
     void quitRoutine();
 
+    void returnValue(int16_t value, bool paramIsVariable);
+
 
     /*
      *      Enumerations
@@ -146,7 +148,9 @@ public:
         // Opcode: load a variable
                 LOAD = 142,
         // Opcode: print zscii encoded string at address
-                PRINT_ADDR = 135
+                PRINT_ADDR = 135,
+        // Opcode: return value
+                RET_VALUE = 139
     };
 
     enum BranchOffset {
