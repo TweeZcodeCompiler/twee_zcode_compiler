@@ -157,7 +157,7 @@ void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel,
 }
 
 void RoutineGenerator::store(u_int8_t address, u_int16_t value) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(STORE, address, value, true, false);
+    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(STORE, address, value, false, false);
     addBitset(instructions);
 }
 

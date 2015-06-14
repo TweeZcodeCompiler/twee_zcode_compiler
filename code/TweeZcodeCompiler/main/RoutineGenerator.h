@@ -20,7 +20,7 @@ class RoutineGenerator {
 private:
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
     std::map<std::string, u_int8_t> locVariables;   // keys = variable name, value = number in stack
-    static std::map<std::string, size_t> routines;  //keys = name of routine, value = offset.
+    static std::map<std::string, size_t> routines;  // keys = name of routine, value = offset.
 
     size_t maxLocalVariables = 0;
     size_t addedLocalVariables = 0;
@@ -66,6 +66,7 @@ public:
         std::cout << padding << "/" << this->offsetOfRoutine << "\n";
         jumps.setRoutineBitsetMap(routineZcode);
         jumps.routineOffset = this->offsetOfRoutine;
+
         addOneByte(numberToBitset(locVar));
         maxLocalVariables = locVar;
 
@@ -90,7 +91,7 @@ public:
      *      methods to access/set local variables
      */
 
-    void setLocalVariable(std::string name, int16_t value);
+    void setLocalVariable(std::string name, int16_t value = 0);
 
     u_int8_t getAddressOfVariable(std::string name);
 
