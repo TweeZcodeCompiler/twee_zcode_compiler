@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "SimpleCompilerPipeline.h"
-#include "logger/Logger.h"
+#include "Logger.h"
 
 int main(int argc, char *argv[]) {
     // TODO: parse args properly (GNU getopt?)

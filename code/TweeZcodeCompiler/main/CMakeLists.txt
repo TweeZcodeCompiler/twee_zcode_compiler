@@ -5,8 +5,7 @@ include_directories(${TweeParser_SOURCE_DIR}/include)
 
 set(SOURCE_FILES ZCodeConverter.cpp ZCodeConverter.h
                                              ZCodeHeader.cpp ZCodeHeader.h BinaryFileWriter.cpp BinaryFileWriter.h
-                                             RoutineGenerator.cpp RoutineGenerator.h SimpleCompilerPipeline.cpp SimpleCompilerPipeline.h logger/Logger.cpp logger
-             logger/Logger.h)
+                                             RoutineGenerator.cpp RoutineGenerator.h SimpleCompilerPipeline.cpp SimpleCompilerPipeline.h Logger.cpp)
 add_executable(TweeZcodeCompiler ${SOURCE_FILES} main.cpp)
 target_link_libraries (TweeZcodeCompiler TweeParser)
 
@@ -14,9 +13,4 @@ add_executable(TestCompiler ${SOURCE_FILES} test/MainTest.cpp test/BinaryFileWri
 test/RoutineGeneratorTest.h test/RoutineGeneratorTest.cpp test/Test.cpp test/Test.h test/ZCodeHeaderTest.cpp test/ZCodeHeaderTest.h)
 target_link_libraries(TestCompiler TweeParser)
 
-find_library(usr/local/include plog)
-
-
-# set the path to the library folder
-link_directories(/usr/local/include)
-
+include_directories("logger")

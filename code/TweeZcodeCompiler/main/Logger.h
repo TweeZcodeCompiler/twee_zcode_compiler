@@ -6,8 +6,9 @@
 #define PROJECT_LOGGER_H
 
 
-#include<iostream>
-#include<plog/Log.h>
+#include <iostream>
+#include <plog/Log.h>
+
 class Logger {
 
 public:
