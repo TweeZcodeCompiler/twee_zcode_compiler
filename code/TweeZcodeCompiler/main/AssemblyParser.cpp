@@ -45,6 +45,7 @@ void AssemblyParser::readAssembly(std::istream& input, std::vector <std::bitset<
     std::cout << "Compiler: Parse Assembly File\n";
 
     for(std::string line; getline(input, line);) {
+        line = trim(line);
         std::vector<std::string> lineComps;
         this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND, lineComps);
         if(lineComps.size()) {
@@ -89,7 +90,7 @@ void AssemblyParser::readAssembly(std::istream& input, std::vector <std::bitset<
                     std::cout << labelName << std::endl;
 
                     std::string afterLabel = line.substr(pos + 1, line.length() - 1);
-                    executeCommand(afterLabel, *currentGenerator);
+                    executeCommand(trim(afterLabel), *currentGenerator);
                 } else {
                     executeCommand(line, *currentGenerator);
                 }
