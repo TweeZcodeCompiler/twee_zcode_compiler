@@ -16,3 +16,5 @@ target_link_libraries (TweeZcodeCompiler TweeParser)
 add_executable(TestCompiler ${SOURCE_FILES} test/MainTest.cpp test/BinaryFileWriterTest.h test/BinaryFileWriterTest.cpp
 test/RoutineGeneratorTest.h test/RoutineGeneratorTest.cpp test/Test.cpp test/Test.h test/ZCodeHeaderTest.cpp test/ZCodeHeaderTest.h AssemblyParser.cpp AssemblyParser.h test/LocalVariablesTest.cpp test/LocalVariablesTest.h)
 target_link_libraries(TestCompiler TweeParser)
+
+include_directories("logger")
