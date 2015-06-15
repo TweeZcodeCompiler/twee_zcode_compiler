@@ -117,8 +117,12 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     Utils::append(highMemoryZcode, routine);
 
     AssemblyParser assemblyParser;
-    assemblyParser.readAssembly("hello.zap",highMemoryZcode,offset);
+
+    std::ifstream inputFile("hello.zap");
+
+    assemblyParser.readAssembly(inputFile, highMemoryZcode, offset);
     //assemblyParser.readAssembly("haus.zap",highMemoryZcode,offset);
+
 
     return highMemoryZcode;
 }
