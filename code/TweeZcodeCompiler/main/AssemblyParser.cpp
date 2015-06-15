@@ -102,6 +102,7 @@ RoutineGenerator AssemblyParser::executeJECommand(std::string jeCommand, Routine
 
     return routineGenerator;
 }
+
 RoutineGenerator AssemblyParser::executeJUMPCommand(std::string jumpCommand, RoutineGenerator &routineGenerator) {
 
     std::vector <std::string> commandParts = this->split(jumpCommand, '?');
