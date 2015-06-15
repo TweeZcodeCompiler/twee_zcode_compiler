@@ -170,7 +170,7 @@ public:
         // Opcode: print zscii encoded string at address
                 PRINT_ADDR = 135,
         // Opcode: print signed num value in decimal
-                PRINT_SIGNED_NUM = 230
+                PRINT_SIGNED_NUM = 230,
         // Opcode: return value
                 RET_VALUE = 139
     };
