@@ -5,9 +5,8 @@
 #include "AssemblyParser.h"
 #include <fstream>
 #include <sstream>
-#include <string>
 #include <algorithm>
-#include <bitset>
+
 
 
 const std::string AssemblyParser::ROUTINE_COMMAND = ".FUNCT";
@@ -18,6 +17,7 @@ const std::string AssemblyParser::QUIT_COMMAND = "quit";
 const std::string AssemblyParser::READ_CHAR_COMMAND = "read_char";
 const std::string AssemblyParser::CALL_COMMAND = "call";
 const std::string AssemblyParser::JUMP_COMMAND = "jump";
+const std::string AssemblyParser::RET_COMMAND = "ret";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMS_IN_AN_COMMAND = ' '; // 9 is ascii for tab
 const char AssemblyParser::STRING_IDENTIFIER = '\"'; // 9 is ascii for tab
@@ -74,9 +74,12 @@ RoutineGenerator AssemblyParser::executePRINTCommand(std::string printCommand, R
 
 RoutineGenerator AssemblyParser::executeREADCommand(std::string readCommand, RoutineGenerator &routineGenerator) {
 
-    this->globalVariableStack.insert(std::pair<std::string, int>("sp", variableUsed));
+    std::vector <std::string> commandParts = split(readCommand,' ');
+    std::string variableName = commandParts.at(3);
+    std::cout << variableName << std::endl;
+    this->globalVariableStack.insert(std::pair<std::string, int>(variableName, variableUsed));
+    routineGenerator.readChar(variableUsed); //TODO: get avialabe address
     variableUsed++;
-    routineGenerator.readChar(0x10); //TODO: get avialabe address
     return routineGenerator;
 }
 
@@ -84,8 +87,18 @@ RoutineGenerator AssemblyParser::executeJECommand(std::string jeCommand, Routine
 
     std::vector <std::string> commandParts = this->split(jeCommand, '?');
     std::string label = commandParts.at(1);
-    std::cout << label << std::endl;
-    routineGenerator.jumpEquals(label, true, 0x10, 49, true, false);
+
+    commandParts = split(jeCommand,' ');
+    std::string variableName = commandParts.at(2);
+    std::string valueString = commandParts.at(1);
+    int value =  std::stoi(valueString);
+    value = value + 48; //TODO: save in constant
+    std::cout << variableName << "," << "" << value;
+
+    int globalZCodeAdress = this->globalVariableStack.at(variableName);
+
+    std::cout <<" "  << label << std::endl;
+    routineGenerator.jumpEquals(label, true, globalZCodeAdress, value, true, false);
 
     return routineGenerator;
 }
@@ -146,8 +159,9 @@ RoutineGenerator AssemblyParser::executeCommand(std::string command, RoutineGene
             std::cout << ":::::: new quit" << std::endl;
         }
         if (commandPart.compare(AssemblyParser::READ_CHAR_COMMAND) == 0) {
+            std::cout << ":::::: new read in ";
             routineGenerator = executeREADCommand(command, routineGenerator);
-            std::cout << ":::::: new read" << std::endl;
+
         }
 
         if (commandPart.compare(AssemblyParser::CALL_COMMAND) == 0) {
@@ -158,6 +172,10 @@ RoutineGenerator AssemblyParser::executeCommand(std::string command, RoutineGene
         if(command.compare(AssemblyParser::JUMP_COMMAND) == 0) {
             std::cout << ":::::: new jump ";
             routineGenerator = executeJUMPCommand(command, routineGenerator);
+        }
+        if(command.compare(AssemblyParser::RET_COMMAND) == 0) {
+            std::cout << ":::::: new return routine ";
+            routineGenerator.returnValue(0, false);
         }
 
 

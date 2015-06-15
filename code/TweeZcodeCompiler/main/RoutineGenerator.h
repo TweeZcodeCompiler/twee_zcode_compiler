@@ -137,6 +137,8 @@ public:
 
     void quitRoutine();
 
+    void returnValue(int16_t value, bool paramIsVariable);
+
 
     /*
      *      Enumerations
@@ -169,6 +171,8 @@ public:
                 PRINT_ADDR = 135,
         // Opcode: print signed num value in decimal
                 PRINT_SIGNED_NUM = 230
+        // Opcode: return value
+                RET_VALUE = 139
     };
 
     enum BranchOffset {

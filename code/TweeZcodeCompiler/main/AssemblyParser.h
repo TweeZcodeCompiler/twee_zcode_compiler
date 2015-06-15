@@ -27,6 +27,7 @@ private:
     static const std::string READ_CHAR_COMMAND;
     static const std::string CALL_COMMAND;
     static const std::string JUMP_COMMAND;
+    static const std::string RET_COMMAND;
 
 
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);

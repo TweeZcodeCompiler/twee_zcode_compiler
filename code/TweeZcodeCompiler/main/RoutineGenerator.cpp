@@ -205,6 +205,11 @@ u_int8_t RoutineGenerator::getAddressOfVariable(std::string name) {
     }
 }
 
+void RoutineGenerator::returnValue(int16_t value, bool paramIsVariable) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(RET_VALUE, value, paramIsVariable);
+    addBitset(instructions);
+}
+
 void RoutineGenerator::resolveCallInstructions(std::vector<std::bitset<8>> &zCode) {
     typedef map<size_t, string>::iterator it_type;
     for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {
