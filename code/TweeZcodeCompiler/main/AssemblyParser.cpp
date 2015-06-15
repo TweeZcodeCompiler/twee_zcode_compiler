@@ -22,6 +22,7 @@ const string AssemblyParser::READ_CHAR_COMMAND = "read_char";
 const string AssemblyParser::CALL_COMMAND = "call";
 const string AssemblyParser::JUMP_COMMAND = "jump";
 const string AssemblyParser::RET_COMMAND = "ret";
+const string AssemblyParser::SET_TEXT_STYLE = "set_text_style";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND = ' '; // 9 is ascii for tab
 const char AssemblyParser::STRING_IDENTIFIER = '\"'; // 9 is ascii for tab
@@ -128,6 +129,41 @@ RoutineGenerator& AssemblyParser::executePRINTCommand(const string &printCommand
     return routineGenerator;
 }
 
+RoutineGenerator& AssemblyParser::executeSETTEXTSTYLECommand(const string &printCommand, RoutineGenerator &routineGenerator) {
+
+    vector <string> commandParts = this->split(printCommand, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND);
+    bool bold = false, italic = false, underlined = false, roman = false;
+
+    for(size_t i = 0; i < commandParts[1].size(); i++) {
+        switch (commandParts[1][i]) {
+            case 'b':
+                bold = true;
+                break;
+            case 'i':
+                italic = true;
+                break;
+            case 'u':
+                underlined = true;
+                break;
+            case 'r':
+                roman = true;
+                break;
+            default:
+                cerr << "problem with set_text_style parameter parsing: " << printCommand ;
+        }
+        if(roman) {
+            bold = false;
+            italic = false;
+            underlined = false;
+            break;
+        }
+    }
+
+    routineGenerator.setTextStyle( roman, false, bold, italic, underlined );
+    cout << commandParts.at(1) << endl;
+    return routineGenerator;
+}
+
 RoutineGenerator& AssemblyParser::executeREADCommand(const string &readCommand, RoutineGenerator &routineGenerator) {
     vector <string> commandParts = this->split(readCommand, AssemblyParser::ASSIGNMENT_OPERATOR);
     if(commandParts.size() < 2) {
@@ -212,6 +248,9 @@ RoutineGenerator& AssemblyParser::executeCommand(const string& command, RoutineG
     } else if(command.compare(AssemblyParser::RET_COMMAND) == 0) {
         cout << ":::::: new return routine ";
         routineGenerator.returnValue(0, false);
+    } else if(commandPart.compare(AssemblyParser::SET_TEXT_STYLE) == 0) {
+        cout << ":::::: new set_text_style ";
+        routineGenerator = executeSETTEXTSTYLECommand(command, routineGenerator);
     } else {
         // TODO: handle this error more appropriately
         cout << "unknown command: " << command << endl;

@@ -9,6 +9,7 @@
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
 #include <algorithm>
+#include <Passage/Body/FormattedText.h>
 
 using namespace std;
 
@@ -102,6 +103,11 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             for(auto bodyPart = bodyParts.begin(); bodyPart != bodyParts.end(); bodyPart++) {
                 if(Text* text = dynamic_cast<Text*>(*bodyPart)) {
                     assgen.print(text->getContent());
+                }
+                if(FormattedText* formText = dynamic_cast<FormattedText*>(*bodyPart)) {
+                    assgen.set_text_style(formText->isItalic(), formText->isBold(), formText->isUnderlined());
+                    assgen.print(formText->getContent());
+                    assgen.set_text_style(false,false,false);
                 }
             }
 

@@ -33,6 +33,7 @@ namespace instruction {
     INST_TYPE PRINT = "print";
     INST_TYPE READ_CHAR = "read_char";
     INST_TYPE JUMP_GREATER = "jg";
+    INST_TYPE SET_TEXT_STYLE = "set_text_style";
 }
 
 ZAssemblyGenerator::ZAssemblyGenerator(ostream& out) : out(out) { }
@@ -166,6 +167,23 @@ ZAssemblyGenerator &ZAssemblyGenerator::newline() {
 
 ZAssemblyGenerator &ZAssemblyGenerator::print(std::string str) {
     return addInstruction(instruction::PRINT, string("\"") + str + string("\""), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::set_text_style(bool italic, bool bold, bool underlined) {
+    std::string result;
+    if(italic) {
+        result += "i";
+    }
+    if ( bold ) {
+        result += "b";
+    }
+    if (underlined) {
+        result += "u";
+    }
+    if (!(italic && bold && underlined)) {
+        result = "r";
+    }
+    return addInstruction(instruction::SET_TEXT_STYLE, result, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::read_char(std::string storeTarget) {

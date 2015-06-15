@@ -270,7 +270,7 @@ formatted:
     //TODO:check if F_OPEN and F_CLOSE are the same
     logDebug("formatted -> FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE");
     logDebug("create top:formatted:type(--Text--) with 2:token:TEXT_TOKEN");
-    $$ = new FormattedText(*$2);
+    $$ = new FormattedText(*$2, true, false, false);
     }
     |FORMATTING_OPEN formatted FORMATTING_CLOSE
     {

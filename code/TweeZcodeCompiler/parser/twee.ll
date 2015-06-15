@@ -86,6 +86,22 @@ MACRO_CLOSE             >{2}
  /*MACRO_TEXT_CHAR         [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
 MACRO_TEXT              [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
 
+    /*Macro Tokens*/
+MACRO_IF                if
+MACRO_ELSE              else
+MACRO_ENDIF             endif
+
+MACRO_PRINT             print
+MACRO_DISPLAY           display
+MACRO_RANDOM            random
+
+MACRO_VISITED           visited
+MACRO_PREVIOUS          previous
+MACRO_TURNS             turns
+
+
+
+
  /*Parser Conditions */
     /*Naming convention in this file: CamelCase*/
     /*Conditions are exclusive*/

@@ -29,6 +29,20 @@ void RoutineGenerator::addBitset(vector<bitset<8>> bitsets) {
     }
 }
 
+//VAR:241 11 4 set_text_style style
+//Roman (if 0), Reverse Video (if 1), Bold (if 2), Italic (4), Fixed Pitch (8)
+
+void RoutineGenerator::setTextStyle(bool roman, bool reverseVideo, bool bold, bool italic, bool fixedPitch) {
+    vector<uint16_t> param;
+    param.push_back(roman ? 0 : (reverseVideo*1) + (bold*2) + (italic*4) + (fixedPitch*8));
+
+    vector<bool> paramBools;
+    paramBools.push_back(false);
+
+    vector<bitset<8>> command = opcodeGenerator.generateVarOPInstruction(SET_TEXT_STYLE, param, paramBools);
+    addBitset(command);
+}
+
 void RoutineGenerator::printString(std::string stringToPrint) {
     ZCodeConverter converter = ZCodeConverter();
     vector<bitset<8>> zsciiString = converter.convertStringToZSCII(stringToPrint);
@@ -314,3 +328,17 @@ void RoutineGenerator::addTwoBytes(int16_t number, int pos) {
 void RoutineGenerator::addOneByte(std::bitset<8> byte, int pos) {
     routineZcode[pos < 0 ? routineZcode.size() : (unsigned long) pos] = byte;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

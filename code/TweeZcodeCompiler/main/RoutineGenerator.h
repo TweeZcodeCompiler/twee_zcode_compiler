@@ -124,6 +124,8 @@ public:
 
     void printChar(uint8_t var);
 
+    void setTextStyle(bool roman, bool reverseVideo, bool bold, bool italic, bool fixedPitch);
+
     void printString(std::string stringToPrint);
 
     void printStringAtAddress(u_int8_t address);
@@ -174,7 +176,9 @@ public:
         // Opcode: print signed num value in decimal
                 PRINT_SIGNED_NUM = 230,
         // Opcode: return value
-                RET_VALUE = 139
+                RET_VALUE = 139,
+        // Opcode: set the text style
+                SET_TEXT_STYLE = 241
     };
 
     enum BranchOffset {

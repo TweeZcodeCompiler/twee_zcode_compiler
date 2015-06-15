@@ -31,7 +31,7 @@ private:
     static const std::string CALL_COMMAND;
     static const std::string JUMP_COMMAND;
     static const std::string RET_COMMAND;
-
+    static const std::string SET_TEXT_STYLE;
 
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
 
@@ -43,6 +43,7 @@ private:
     RoutineGenerator& executeCommand(const std::string &command, RoutineGenerator &routineGenerator);
 
     RoutineGenerator& executePRINTCommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
+    RoutineGenerator& executeSETTEXTSTYLECommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
 
     RoutineGenerator& executeREADCommand(const std::string &readCommand, RoutineGenerator &routineGenerator);
 
@@ -50,6 +51,8 @@ private:
 
     RoutineGenerator& executeCALLCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
     RoutineGenerator& executeJUMPCommand(const std::string &jumpCommand, RoutineGenerator &routineGenerator);
+
+
 
 
     std::map<std::string, unsigned int> globalVariableStack;
