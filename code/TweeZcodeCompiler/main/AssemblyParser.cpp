@@ -75,7 +75,7 @@ void AssemblyParser::readAssembly(istream &input, vector<bitset<8>> &highMemoryZ
                         string var = lineComps[locVariablesCount + 1];
 
                         size_t nameEnd = var.find_first_of("=");
-                        size_t varEnd = var.size() - 1;
+                        size_t varEnd = var.size();
 
                         if (withoutComma) {         // last locale variable has no comma as last char
                             withoutComma = false;
@@ -85,7 +85,7 @@ void AssemblyParser::readAssembly(istream &input, vector<bitset<8>> &highMemoryZ
 
                         if (nameEnd != string::npos) {
                             int val;
-                            const char* valueString = var.substr(nameEnd + 1, varEnd - nameEnd).c_str();
+                            const char* valueString = var.substr(nameEnd + 1, varEnd - 1 - nameEnd).c_str();
 
                             try {
                                 val = atoi(valueString);
@@ -94,9 +94,11 @@ void AssemblyParser::readAssembly(istream &input, vector<bitset<8>> &highMemoryZ
                                 throw;
                             }
 
-                            currentGenerator->setLocalVariable(var.substr(0, nameEnd), val);
+                            string name = var.substr(0, nameEnd);
+                            currentGenerator->setLocalVariable(name, val);
                         } else {
-                            currentGenerator->setLocalVariable(var.substr(0, varEnd));
+                            string name = var.substr(0, varEnd);
+                            currentGenerator->setLocalVariable(name);
                         }
                     }
                 } else if (firstComp.compare(GVAR_DIRECTIVE) == 0) {
@@ -112,19 +114,7 @@ void AssemblyParser::readAssembly(istream &input, vector<bitset<8>> &highMemoryZ
                     addGlobal(gvar);
                 }
             } else { // normal instruction
-                // check for label
-                auto pos = line.find(":");
-                if (pos != string::npos) {
-                    cout << ":::::: new label: ";
-                    string labelName = line.substr(0, pos);
-                    currentGenerator->newLabel(labelName);
-                    cout << labelName << endl;
-
-                    string afterLabel = line.substr(pos + 1, line.length() - 1);
-                    executeCommand(trim(afterLabel), *currentGenerator);
-                } else {
-                    executeCommand(line, *currentGenerator);
-                }
+                executeCommand(line, *currentGenerator);
             }
         }
     }
@@ -143,9 +133,9 @@ void AssemblyParser::finishRoutine(vector<bitset<8>> &highMemoryZcode) {
 
 void AssemblyParser::addGlobal(string globalName) {
     // TODO: check if maximum gvar limit is reached
-    unsigned index = (unsigned) globalVariableStack.size();
+    unsigned index = (unsigned) globalVariables.size();
     cout << "adding gvar " << globalName << " at index " << to_string(index) << endl;
-    this->globalVariableStack[globalName] = index;
+    this->globalVariables[globalName] = index;
 }
 
 RoutineGenerator &AssemblyParser::executePRINTCommand(const string &printCommand, RoutineGenerator &routineGenerator) {
@@ -163,7 +153,7 @@ RoutineGenerator &AssemblyParser::executeREADCommand(const string &readCommand, 
         return routineGenerator;
     }
     auto last = trim(commandParts.back());
-    routineGenerator.readChar(getAddressForId(last)); //TODO: get available address
+    routineGenerator.readChar(getAddressForId(last));
     return routineGenerator;
 }
 
@@ -240,6 +230,13 @@ RoutineGenerator &AssemblyParser::executeCommand(const string &command, RoutineG
     } else if (command.compare(AssemblyParser::RET_COMMAND) == 0) {
         cout << ":::::: new return routine ";
         routineGenerator.returnValue(0, false);
+    } else if (commandPart.at(commandPart.size() - 1) == ':') {
+        string label = commandPart.substr(0, commandPart.size() - 1);
+        cout << ":::::: new label: " << label << endl;
+        routineGenerator.newLabel(label);
+
+        string afterLabel = command.substr(commandPart.size());
+        executeCommand(trim(afterLabel), *currentGenerator);
     } else {
         // TODO: handle this error more appropriately
         cout << "unknown command: " << command << endl;
@@ -263,15 +260,17 @@ bool AssemblyParser::checkIfCommandRoutineStart(const string &command) {
 
 
 uint8_t AssemblyParser::getAddressForId(const string &id) {
-    // TODO: check local variables
     if (id.compare("sp") == 0) {
-        return 0x0;
+        return 0;
     }
+
     // check global variables
-    try {
-        return globalVariableStack.at(id);
-    } catch (out_of_range) {
-        cout << "Could not find global " << id << endl;
+    if (globalVariables.count(id)) {
+        return globalVariables[id];
+    } else if (currentGenerator->containsLocalVariable(id)) {
+        return currentGenerator->getAddressOfVariable(id);
+    } else {
+        cout << "Could not find variable " << id << endl;
         throw;
     }
 }

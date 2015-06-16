@@ -52,7 +52,7 @@ private:
     RoutineGenerator& executeJUMPCommand(const std::string &jumpCommand, RoutineGenerator &routineGenerator);
 
 
-    std::map<std::string, unsigned int> globalVariableStack;
+    std::map<std::string, unsigned int> globalVariables;
 
     std::unique_ptr<RoutineGenerator> currentGenerator;
 
