@@ -19,7 +19,7 @@ private:
 
     static const char SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND;
     static const std::string GVAR_DIRECTIVE;
-    static const char STRING_IDENTIFIER;
+    static const char STRING_DELIMITER;
     static const std::string ASSIGNMENT_OPERATOR;
 
     static const std::string ROUTINE_DIRECTIVE;
