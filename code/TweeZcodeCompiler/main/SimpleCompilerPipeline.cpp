@@ -130,9 +130,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
 
     AssemblyParser assemblyParser;
 
-    ifstream input("eat_apple.zap", ifstream::in);
-
-    assemblyParser.readAssembly(input, highMemoryZcode, offset);
+    assemblyParser.readAssembly(instructionsInput, highMemoryZcode, offset);
 
     return highMemoryZcode;
 }
