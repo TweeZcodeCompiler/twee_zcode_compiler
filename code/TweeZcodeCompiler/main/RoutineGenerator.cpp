@@ -213,7 +213,7 @@ void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel,
 }
 
 void RoutineGenerator::store(u_int8_t address, u_int16_t value) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(STORE, address, value, true, false);
+    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(STORE, address, value, false, false);
     addBitset(instructions);
 
     if (printLogs) {
@@ -239,6 +239,43 @@ void RoutineGenerator::printStringAtAddress(u_int8_t address) {
     if (printLogs) {
         cout << "RoutineGenerator: printStringAtAddress " << address;
     }
+}
+
+void RoutineGenerator::setLocalVariable(string name, int16_t value) {
+    if (++addedLocalVariables > maxLocalVariables) {
+        cout << "Added " << addedLocalVariables << " local variables to routine but only "
+            << maxLocalVariables << " specified at routine start!";
+        throw;
+    }
+
+    size_t size = locVariables.size() + 1;
+    locVariables[name] = size;   // first local variable is at address 1 in stack
+    store(locVariables[name], value);
+}
+
+void RoutineGenerator::printNum(unsigned int address) {
+    vector<uint16_t> addresses;
+    addresses.push_back(address);
+
+    vector<bool> isParam;
+    isParam.push_back(true);
+
+    vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(PRINT_SIGNED_NUM, addresses, isParam);
+    addBitset(instructions);
+}
+
+u_int8_t RoutineGenerator::getAddressOfVariable(std::string name) {
+    if (locVariables[name] == NULL) {
+        cout << "Undefined local variable used: " << name << endl;
+        throw;
+    } else {
+        return locVariables[name];
+    }
+}
+
+void RoutineGenerator::returnValue(int16_t value, bool paramIsVariable) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(RET_VALUE, value, paramIsVariable);
+    addBitset(instructions);
 }
 
 void RoutineGenerator::resolveCallInstructions(std::vector<std::bitset<8>> &zCode) {

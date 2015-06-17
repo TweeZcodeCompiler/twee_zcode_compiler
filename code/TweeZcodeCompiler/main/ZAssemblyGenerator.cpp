@@ -24,7 +24,7 @@ namespace directive {
 }
 
 namespace instruction {
-    INST_TYPE CALL = "call_vs";
+    INST_TYPE CALL = "call";
     INST_TYPE JUMP_EQUALS = ZAssemblyGenerator::ZAPF_MODE ? "jeq" : "je";
     INST_TYPE JUMP = "jump";
     INST_TYPE QUIT = "quit";
