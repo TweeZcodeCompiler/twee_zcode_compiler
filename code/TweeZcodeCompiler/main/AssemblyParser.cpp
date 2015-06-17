@@ -22,6 +22,8 @@ const string AssemblyParser::READ_CHAR_COMMAND = "read_char";
 const string AssemblyParser::CALL_COMMAND = "call";
 const string AssemblyParser::JUMP_COMMAND = "jump";
 const string AssemblyParser::RET_COMMAND = "ret";
+const string AssemblyParser::CALL_VS_COMMAND = "call_vs";
+const string AssemblyParser::CALL_1N_COMMAND = "call_1n";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND = ' '; // 9 is ascii for tab
 const char AssemblyParser::STRING_IDENTIFIER = '\"'; // 9 is ascii for tab
@@ -113,6 +115,30 @@ void AssemblyParser::finishRoutine(vector <bitset<8>> &highMemoryZcode) {
 }
 
 
+unique_ptr<ZParam> AssemblyParser::createZParam(const string& paramString) {
+    unique_ptr<ZParam> param;
+    int paramNum;
+
+    try {
+        paramNum = stoi(paramString);
+        ZValueParam* valueParam = new ZValueParam((uint16_t) paramNum);
+        param.reset(valueParam);
+
+        return param;
+    } catch(const invalid_argument& invalidArgument){
+
+    }
+
+    // not catching exception on purpose so we always return a proper value
+    paramNum = getAddressForId(paramString);
+
+    ZVariableParam* variableParam = new ZVariableParam((uint16_t) paramNum);
+    param.reset(variableParam);
+
+    return param;
+}
+
+
 void AssemblyParser::addGlobal(string globalName) {
     // TODO: check if maximum gvar limit is reached
     unsigned index = (unsigned) globalVariableStack.size();
@@ -145,15 +171,11 @@ RoutineGenerator& AssemblyParser::executeJECommand(const string &jeCommand, Rout
     string label = commandParts.at(1);
 
     commandParts = split(jeCommand,' ');
-    string variableName = commandParts.at(2);
-    string valueString = commandParts.at(1);
-    uint16_t value =  stoul(valueString); // TODO: check if this fits 8 or 16 bits, then set small or large constant
-    cout << variableName << "," << "" << value;
-
-    uint8_t globalZCodeAdress = getAddressForId(variableName);
+    unique_ptr<ZParam> param1 = createZParam(commandParts.at(1));
+    unique_ptr<ZParam> param2 = createZParam(commandParts.at(2));
 
     cout << " "  << label << endl;
-    routineGenerator.jumpEquals(label, true, globalZCodeAdress, value, true, false);
+    routineGenerator.jumpEquals(label, true, *param1, *param2);
 
     return routineGenerator;
 }
@@ -169,12 +191,51 @@ RoutineGenerator& AssemblyParser::executeJUMPCommand(const string &jumpCommand, 
 }
 
 RoutineGenerator& AssemblyParser::executeCALLCommand(const string &callCommand, RoutineGenerator &routineGenerator) {
+    vector <string> commandParts = this->split(callCommand, ' ');
+    string callRoutineName = commandParts.at(1);
+
+    // TODO: extract so it can be used for other instructions
+    // TODO: what to do with a statement like "call_vs routine_name"?
+
+    // last part is storetarget
+    string storeVarName = commandParts.back();
+    auto storeId = getAddressForId(storeVarName);
+
+    vector<unique_ptr<ZParam>> params(4);
+
+    int paramsCount = 0;
+    for(auto part = commandParts.begin() + 2; part != commandParts.end() - 2; part++) {
+        params.push_back(createZParam(*part));
+        paramsCount++;
+
+        if(paramsCount > 4) {
+            cerr << "More than 4 params provided for instruction" << endl;
+            throw;
+        }
+    }
+
+    routineGenerator.callRoutine(callRoutineName, storeId, &*params.at(0), &*params.at(1), &*params.at(2), &*params.at(3));
+
+    return routineGenerator;
+}
+
+RoutineGenerator& AssemblyParser::executeCALL1nCommand(const string &callCommand, RoutineGenerator &routineGenerator) {
 
     vector <string> commandParts = this->split(callCommand, ' ');
     string callRoutineName = commandParts.at(1);
     cout << callRoutineName << endl;
 
-    routineGenerator.callRoutine(callRoutineName);
+    routineGenerator.callRoutine1n(callRoutineName);
+    return routineGenerator;
+}
+
+
+RoutineGenerator& AssemblyParser::executeRETCommand(const string &callCommand, RoutineGenerator &routineGenerator) {
+    vector <string> commandParts = this->split(callCommand, ' ');
+    string value = commandParts.at(1);
+
+    routineGenerator.returnValue(*createZParam(value));
+
     return routineGenerator;
 }
 
@@ -203,17 +264,17 @@ RoutineGenerator& AssemblyParser::executeCommand(const string& command, RoutineG
     } else if (commandPart.compare(AssemblyParser::READ_CHAR_COMMAND) == 0) {
         routineGenerator = executeREADCommand(command, routineGenerator);
         cout << ":::::: new read" << endl;
-    } else if (commandPart.compare(AssemblyParser::CALL_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::CALL_COMMAND) == 0
+               || commandPart.compare(AssemblyParser::CALL_COMMAND) == 0) {
         cout << ":::::: new call ";
         routineGenerator = executeCALLCommand(command, routineGenerator);
-    } else if(command.compare(AssemblyParser::JUMP_COMMAND) == 0) {
+    } else if(commandPart.compare(AssemblyParser::JUMP_COMMAND) == 0) {
         cout << ":::::: new jump ";
         routineGenerator = executeJUMPCommand(command, routineGenerator);
-    } else if(command.compare(AssemblyParser::RET_COMMAND) == 0) {
+    } else if(commandPart.compare(AssemblyParser::RET_COMMAND) == 0) {
         cout << ":::::: new return routine ";
-        routineGenerator.returnValue(0, false);
+        routineGenerator = executeRETCommand(command, routineGenerator);
     } else {
-        // TODO: handle this error more appropriately
         cout << "unknown command: " << command << endl;
         throw;
     }
