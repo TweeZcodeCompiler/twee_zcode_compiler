@@ -302,7 +302,7 @@ uint8_t AssemblyParser::getAddressForId(const string& id) {
     }
     // check global variables
     try {
-        return globalVariableStack.at(id);
+        return 0x10 + globalVariableStack.at(id);
     } catch(out_of_range) {
         cout << "Could not find global " << id << endl;
         throw;

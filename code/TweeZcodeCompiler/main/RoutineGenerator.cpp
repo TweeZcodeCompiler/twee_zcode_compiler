@@ -73,7 +73,10 @@ void RoutineGenerator::callRoutine(std::string routineName, const uint8_t storeT
         }
     }
 
-    opcodeGenerator.generateVarOPInstruction(CALL_VS, params, isVariable);
+    auto instructions = opcodeGenerator.generateVarOPInstruction(CALL_VS, params, isVariable);
+    addBitset(instructions);
+    addOneByte(numberToBitset(storeTarget));
+    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = routineName;
 }
 
 void RoutineGenerator::callRoutine1n(string routineName) {
