@@ -284,6 +284,9 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
                || commandPart.compare(AssemblyParser::CALL_COMMAND) == 0) {
         cout << ":::::: new call ";
         executeCALLCommand(command, routineGenerator);
+    } else if (commandPart.compare(AssemblyParser::CALL_1N_COMMAND) == 0) {
+        cout << ":::::: new call_1n";
+        executeCALL1nCommand(command, routineGenerator);
     } else if(commandPart.compare(AssemblyParser::JUMP_COMMAND) == 0) {
         cout << ":::::: new jump ";
         executeJUMPCommand(command, routineGenerator);
