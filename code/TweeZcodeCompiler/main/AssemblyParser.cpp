@@ -67,7 +67,7 @@ void AssemblyParser::readAssembly(istream &input, vector<bitset<8>> &highMemoryZ
                         finishRoutine(highMemoryZcode);
                     }
 
-                    size_t locVariablesCount = lineComps.size() - 2;
+                    unsigned locVariablesCount = (unsigned) (lineComps.size() - 2);
                     currentGenerator.reset(new RoutineGenerator(routineName, locVariablesCount, highMemoryZcode, offset));
 
                     bool withoutComma = true;
@@ -85,13 +85,20 @@ void AssemblyParser::readAssembly(istream &input, vector<bitset<8>> &highMemoryZ
 
                         if (nameEnd != string::npos) {
                             int val;
-                            const char* valueString = var.substr(nameEnd + 1, varEnd - 1 - nameEnd).c_str();
+                            string valueString = var.substr(nameEnd + 1, varEnd - 1 - nameEnd);
 
                             try {
-                                val = atoi(valueString);
-                            } catch (...) {
+                                val = stoi(valueString);
+                            } catch (const invalid_argument& invaldArgument) {
                                 cout << "Given value for local variable is not an integer: " << valueString << endl;
                                 throw;
+                            } catch (const out_of_range& outOfRange) {
+                                cout << "Given value for local variable too large or too small: " << valueString << endl;
+                                throw;
+                            }
+
+                            if(val > INT16_MAX || val < INT16_MIN) {
+                                throw out_of_range(string("Given value for local variable too large or too small: ") + to_string(val) );
                             }
 
                             string name = var.substr(0, nameEnd);
