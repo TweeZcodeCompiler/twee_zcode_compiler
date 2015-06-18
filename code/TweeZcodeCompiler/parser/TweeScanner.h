@@ -11,7 +11,7 @@
 #define YY_DECL int Twee::TweeScanner::yylex()
 
 // Include Bison for types / tokens
-#include "GeneratedTweeParser.hpp"
+#include "GeneratedTweeParser.h"
 #include <fstream>
 
 
@@ -22,12 +22,12 @@ namespace Twee {
 
 			// save the pointer to yylval so we can change it, and invoke scanner
 			int yylex(Twee::BisonParser::semantic_type * lval){yylval = lval; return yylex();}
-		
+
 		private:
 			// Scanning function created by Flex; make this private to force usage
 			// of the overloaded method so we can get a pointer to Bison's yylval
 			int yylex();
-			
+
 			// point to yylval (provided by Bison in overloaded yylex)
 			Twee::BisonParser::semantic_type * yylval;
 	};

@@ -22,6 +22,7 @@ const string AssemblyParser::READ_CHAR_COMMAND = "read_char";
 const string AssemblyParser::CALL_COMMAND = "call";
 const string AssemblyParser::JUMP_COMMAND = "jump";
 const string AssemblyParser::RET_COMMAND = "ret";
+const string AssemblyParser::SET_TEXT_STYLE = "set_text_style";
 const string AssemblyParser::CALL_VS_COMMAND = "call_vs";
 const string AssemblyParser::CALL_1N_COMMAND = "call_1n";
 
@@ -42,12 +43,14 @@ string trim(const string &str,
     return str.substr(strBegin, strRange);
 }
 
-void AssemblyParser::readAssembly(istream &input, vector<bitset<8>> &highMemoryZcode,
+
+void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemoryZcode,
                                   size_t offset) {
 
     cout << "Compiler: Parse Assembly File\n";
 
-    for (string line; getline(input, line);) {
+
+    for(string line; getline(input, line);) {
         line = trim(line);
         vector<string> lineComps;
         this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND, lineComps);
@@ -178,6 +181,40 @@ void AssemblyParser::executePRINTCommand(const string &printCommand, RoutineGene
     cout << commandParts.at(1) << endl;
 }
 
+void AssemblyParser::executeSETTEXTSTYLECommand(const string &printCommand, RoutineGenerator &routineGenerator) {
+
+    vector <string> commandParts = this->split(printCommand, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND);
+    bool bold = false, italic = false, underlined = false, roman = false;
+
+    for(size_t i = 0; i < commandParts[1].size(); i++) {
+        switch (commandParts[1][i]) {
+            case 'b':
+                bold = true;
+                break;
+            case 'i':
+                italic = true;
+                break;
+            case 'u':
+                underlined = true;
+                break;
+            case 'r':
+                roman = true;
+                break;
+            default:
+                cerr << "problem with set_text_style parameter parsing: " << printCommand ;
+        }
+        if(roman) {
+            bold = false;
+            italic = false;
+            underlined = false;
+            break;
+        }
+    }
+
+    routineGenerator.setTextStyle( roman, false, bold, italic, underlined );
+    cout << commandParts.at(1) << endl;
+}
+
 void AssemblyParser::executeREADCommand(const string &readCommand, RoutineGenerator &routineGenerator) {
     vector<string> commandParts = this->split(readCommand, AssemblyParser::ASSIGNMENT_OPERATOR);
     if (commandParts.size() < 2) {
@@ -300,6 +337,9 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
 
         string afterLabel = command.substr(commandPart.size());
         executeCommand(trim(afterLabel), *currentGenerator);
+    } else if(commandPart.compare(AssemblyParser::SET_TEXT_STYLE) == 0) {
+        cout << ":::::: new set_text_style ";
+        executeSETTEXTSTYLECommand(command, routineGenerator);
     } else {
         cout << "unknown command: " << command << endl;
         throw;

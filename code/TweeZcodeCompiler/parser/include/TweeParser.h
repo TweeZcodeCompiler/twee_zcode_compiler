@@ -8,7 +8,7 @@
 */
 
 #include <iostream>
-#include "Passage.h"
+#include "TweeFile.h"
 #include "ParseException.h"
 
 namespace Twee {
@@ -18,7 +18,7 @@ namespace Twee {
         TweeParser(std::istream* input);
         ~TweeParser();
 
-        Passage* parse();
+        TweeFile* parse();
 
     private:
         class TweeParserImpl;

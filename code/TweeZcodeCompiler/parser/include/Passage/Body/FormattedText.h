@@ -12,19 +12,27 @@
 class FormattedText : public Text {
 
 private:
-    bool isItalic;
-    bool isBold;
-    bool isUnderlined;
+    bool italic;
+    bool bold;
+    bool underlined;
 
 public:
 
+    FormattedText(std::string);
+
     FormattedText(std::string, bool, bool, bool);
 
-    bool getIsItalic();
+    bool isItalic();
 
-    bool getIsBold();
+    bool isBold();
 
-    bool getIsUnderlined();
+    bool isUnderlined();
+
+    void setIsItalic(bool italic);
+
+    void setIsBold(bool bold);
+
+    void setIsUnderlined(bool underlined);
 
     std::string to_string();
 

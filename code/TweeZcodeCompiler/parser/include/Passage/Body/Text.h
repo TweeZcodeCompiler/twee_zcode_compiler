@@ -15,7 +15,7 @@ private:
     std::string content;
 
 public:
-    Text(std::string);
+    Text(std::string content);
 
     std::string getContent();
 

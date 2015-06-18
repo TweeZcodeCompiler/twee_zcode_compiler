@@ -33,6 +33,7 @@ private:
     static const std::string CALL_1N_COMMAND;
     static const std::string JUMP_COMMAND;
     static const std::string RET_COMMAND;
+    static const std::string SET_TEXT_STYLE;
 
 
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
@@ -45,6 +46,8 @@ private:
     void executeCommand(const std::string &command, RoutineGenerator &routineGenerator);
 
     void executePRINTCommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
+    
+    void executeSETTEXTSTYLECommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
 
     void executeREADCommand(const std::string &readCommand, RoutineGenerator &routineGenerator);
 

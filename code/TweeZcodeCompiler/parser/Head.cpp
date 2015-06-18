@@ -34,6 +34,11 @@ std::vector <std::string> Head::getTags() {
 
 std::string Head::to_string() {
 
-    return "Head" + std::endl + "Name: " + this->name + std::endl + "Tags: " + this->tags;
+    std::string result = std::string("  Head\n    Name: ") + this->getName() + std::string("\n    Tags: ");
+
+    for (std::vector<std::string>::iterator iter = this->getTags().begin(); iter != this->getTags().end(); ++iter)
+        result += (*iter + std::string(" "));
+
+    return result;
 
 }

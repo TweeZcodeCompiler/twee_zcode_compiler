@@ -15,6 +15,8 @@ private:
     std::vector <std::string> tags;
 
 public:
+    Head();
+
     Head(std::string);
 
     Head(std::string, std::vector <std::string>);

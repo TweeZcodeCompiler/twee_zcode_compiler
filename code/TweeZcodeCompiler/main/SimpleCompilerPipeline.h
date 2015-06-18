@@ -21,7 +21,7 @@ private:
 
     std::vector<std::bitset<8>> generateStaticMemory(ZCodeHeader &header, size_t offset);
 
-    std::vector<std::bitset<8>> generateHighMemory(ZCodeHeader &header, size_t offset);
+    std::vector<std::bitset<8>> generateHighMemory(ZCodeHeader &header, size_t offset, std::istream& instructionsInput);
 
     std::vector<std::bitset<8>> printGlobalTable(int offset);
 
@@ -32,6 +32,7 @@ private:
     std::vector<std::bitset<8>> addFileSizeToHeader(std::vector<std::bitset<8>> zCode, size_t fileSize);
 
     void log(std::string message);
+
 };
 
 

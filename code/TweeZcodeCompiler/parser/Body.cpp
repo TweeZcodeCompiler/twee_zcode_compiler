@@ -1,24 +1,34 @@
 //
-// Created by micha on 14.05.15.
+// Created by lars on 05.06.15.
 //
 
-#include "include/Body.h"
-#include <iostream>
+#include "include/Passage/Body.h"
+#include "include/Passage/Body/BodyPart.h"
 
-Body::Body(std::string c) {
-    content=c;
+Body::Body() { }
+
+
+Body::~Body() {
+
 }
 
-std::string Body::getContent() const {
-    return this->content;
+std::vector<BodyPart *> &Body::getBodyParts() {
+    return this->bodyparts;
 }
 
-Body& Body::operator+=(const std::string& right) {
-    this->content += right;
+Body &Body::operator+=(BodyPart *bodyPart) {
+    this->bodyparts.push_back(bodyPart);
     return *this;
 }
 
-Body& Body::operator+=(const Body& right) {
-    this->operator+=(right.getContent());
-    return *this;
+std::string Body::to_string() {
+
+    std::string result = "  Body \n";
+
+    for (std::vector<BodyPart *>::iterator iter = bodyparts.begin();
+         iter != this->getBodyParts().end(); ++iter)
+        result += "    " + (*iter)->to_string() + "\n";
+
+    return result;
+
 }
