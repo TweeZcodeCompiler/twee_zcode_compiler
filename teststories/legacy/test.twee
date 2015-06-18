@@ -1,0 +1,76 @@
+
+::Start
+Es war ein Sonntag Morgen, als Sherlok Holmes aufwachte, und eine interaktive Fiktion spielen wollte.
+Weil Sherlok auf Retro steht, hat er die Wahl zwischen folgenden Möglichkeiten um eine Interaktive Fiktion zu spielen:
+
+<<set $Watson = "Watson", $flueche to -+-2>>
+
+[[Grammophon]]
+[[Zettel und Papier]]
+[[Das spannenste Buch ever|Buch]]
+
+::Grammophon
+Leider ist seine lieblings Schallplatte bereits von früheren Spielen total zerkratzt.
+"Verdammte Technik!", fluchte Sherlok. <<set $flueche =$flueche + 1>>
+
+[[previous()]]
+
+::Zettel und Papier
+Hierfür braucht er aber einen weiteren Mitspieler.
+
+
+[[Schreie: "WATSOOOOOOON! KOMM SOFORT HER!" |watsonsuchen][$spieler = 2]]
+[[Sherlok ist so clever, er spielt einfach gegen sich selbst|Buch]]
+
+::Buch
+
+''DAS BUCH''
+
+<<if $spieler is 2>>
+<<print $Watson>> ließt das erste Kapitel in einer //unheimlichen// Stimme vor: Ich bin ALIEN! <<set $Watson = "Alien">>
+<<endif>>
+
+<<<
+Es war ein mal ein Alien bla keks kuchen murks...
+----
+<<<
+
+<<if $spieler is 2>>
+"Verdammt, ließ richtig vor!", schrie Sherlok, völlig außer sich. <<set $flueche to $flueche+1>>
+<<else>>
+Langsam verlor Sherlok die Lust, er hatte einfach zu viel Hunger.
+<<endif>>
+
+[["So ein Quark, ich geh jetzt in die Küche", grummelte Sherlok][$flueche +=1]]
+
+
+:: watsonsuchen
+Watson der Idiot antwortet nicht, wahrscheinlich hat er wieder zu viel getrunken.
+"!#+*", fluchte Shelrok, "So ein schieß!" <<set $flueche *= 2>>
+
+<<display "So ein Quark, ich geh jetzt in die Küche", grummelte Sherlok>>
+
+
+::"So ein Quark, ich geh jetzt in die Küche", grummelte Sherlok
+
+Als Sherlok in die Küche kam, sah er <<print $Watson>>, halb tot in der Ecke rumkomern, seine Wodkaflasche fest umschlungen.
+
+"Was zur Hölle machst du da <<print $Watson>>?", schrie Sherlok <<set $flueche = $flueche+1>>
+
+"Nenn mich Superman", grummelte <<print $Watson>>. <<set $Watson to "Superman">>
+
+Sherlok: "NIEMALS DU IDIOT!" <<set $flueche = $flueche+1>>
+
+Er wandte sich zur Keksdose.
+
+<<if $flueche > 5>>
+Es sind leider keine Kekse mehr da, du hast zu viel geflucht!
+<<else if $flueche -2 gte 1 and $flueche <= 5>>
+Es gibt noch einen Keks für dich. Den anderen musst du mit <<print $Watson>> teilen, weil du so viel geflucht hast.
+<<else>>
+Njumnjumnjum Kekse :)
+<<endif>>
+
+
+
+
