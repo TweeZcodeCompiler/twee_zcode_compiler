@@ -191,30 +191,31 @@ RoutineGenerator& AssemblyParser::executeJUMPCommand(const string &jumpCommand, 
 }
 
 RoutineGenerator& AssemblyParser::executeCALLCommand(const string &callCommand, RoutineGenerator &routineGenerator) {
+    static const unsigned MAX_PARAMS = 3;
     vector <string> commandParts = this->split(callCommand, ' ');
     string callRoutineName = commandParts.at(1);
 
-    // TODO: extract so it can be used for other instructions
     // TODO: what to do with a statement like "call_vs routine_name"?
 
+    // TODO: extract so it can be used for other instructions
     // last part is storetarget
     string storeVarName = commandParts.back();
     auto storeId = getAddressForId(storeVarName);
 
-    vector<unique_ptr<ZParam>> params(4);
+    vector<unique_ptr<ZParam>> params(MAX_PARAMS);
 
     int paramsCount = 0;
     for(auto part = commandParts.begin() + 2; part != commandParts.end() - 2; part++) {
         params.push_back(createZParam(*part));
         paramsCount++;
 
-        if(paramsCount > 4) {
-            cerr << "More than 4 params provided for instruction" << endl;
+        if(paramsCount > MAX_PARAMS) {
+            cerr << "More than " << MAX_PARAMS << " params provided for instruction" << endl;
             throw;
         }
     }
 
-    routineGenerator.callRoutine(callRoutineName, storeId, &*params.at(0), &*params.at(1), &*params.at(2), &*params.at(3));
+    routineGenerator.callRoutine(callRoutineName, storeId, params.at(0).get(), params.at(1).get(), params.at(2).get());
 
     return routineGenerator;
 }

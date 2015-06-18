@@ -59,12 +59,15 @@ void RoutineGenerator::printChar(uint8_t var) {
 }
 
 void RoutineGenerator::callRoutine(std::string routineName, const uint8_t storeTarget, const ZParam *param1,
-                                   const ZParam *param2, const ZParam *param3, const ZParam *param4)
+                                   const ZParam *param2, const ZParam *param3)
 {
 
-    vector<const ZParam*> inputParams = {param1, param2, param3, param4};
+    vector<const ZParam*> inputParams = {param1, param2, param3};
     vector<bool> isVariable;
     vector<uint16_t> params;
+
+    params.push_back(3000);
+    isVariable.push_back(false);
 
     for(auto p = inputParams.begin(); p != inputParams.end(); p++) {
         if(*p) {
@@ -76,7 +79,7 @@ void RoutineGenerator::callRoutine(std::string routineName, const uint8_t storeT
     auto instructions = opcodeGenerator.generateVarOPInstruction(CALL_VS, params, isVariable);
     addBitset(instructions);
     addOneByte(numberToBitset(storeTarget));
-    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = routineName;
+    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 3] = routineName;
 }
 
 void RoutineGenerator::callRoutine1n(string routineName) {

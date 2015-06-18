@@ -155,12 +155,8 @@ public:
     //Call to a routine with spezific name
     void callRoutine1n(std::string routineName);
 
-    void callRoutine(std::string routineName,
-                     const uint8_t storeTarget,
-                     const ZParam* param1 = NULL,
-                     const ZParam* param2 = NULL,
-                     const ZParam* param3 = NULL,
-                     const ZParam* param4 = NULL);
+    void callRoutine(std::string routineName, const uint8_t storeTarget, const ZParam *param1,
+                                       const ZParam *param2, const ZParam *param3);
 
     void store(u_int8_t address, u_int16_t value);
 
