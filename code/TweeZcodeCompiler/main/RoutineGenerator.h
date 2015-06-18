@@ -122,6 +122,8 @@ public:
 
     u_int8_t getAddressOfVariable(std::string name);
 
+    bool containsLocalVariable(std::string name);
+
     /*
      *      methods to add intermediate code instructions to routine
      */

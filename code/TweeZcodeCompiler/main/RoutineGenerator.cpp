@@ -228,7 +228,12 @@ u_int8_t RoutineGenerator::getAddressOfVariable(std::string name) {
     }
 }
 
-void RoutineGenerator::returnValue(const ZParam &param) {
+
+bool RoutineGenerator::containsLocalVariable(string name) {
+    return locVariables.count(name);
+}
+
+void RoutineGenerator::returnValue(const ZParam& param) {
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(RET_VALUE, param.getZCodeValue(), param.isVariableArgument());
     addBitset(instructions);
 }
