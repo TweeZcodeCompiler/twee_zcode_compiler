@@ -205,6 +205,10 @@ u_int8_t RoutineGenerator::getAddressOfVariable(std::string name) {
     }
 }
 
+bool RoutineGenerator::containsLocalVariable(string name) {
+    return locVariables.count(name);
+}
+
 void RoutineGenerator::returnValue(int16_t value, bool paramIsVariable) {
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(RET_VALUE, value, paramIsVariable);
     addBitset(instructions);
