@@ -181,7 +181,7 @@ void AssemblyParser::executePRINTCommand(const string &printCommand, RoutineGene
     cout << commandParts.at(1) << endl;
 }
 
-RoutineGenerator& AssemblyParser::executeSETTEXTSTYLECommand(const string &printCommand, RoutineGenerator &routineGenerator) {
+void AssemblyParser::executeSETTEXTSTYLECommand(const string &printCommand, RoutineGenerator &routineGenerator) {
 
     vector <string> commandParts = this->split(printCommand, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND);
     bool bold = false, italic = false, underlined = false, roman = false;
@@ -213,7 +213,6 @@ RoutineGenerator& AssemblyParser::executeSETTEXTSTYLECommand(const string &print
 
     routineGenerator.setTextStyle( roman, false, bold, italic, underlined );
     cout << commandParts.at(1) << endl;
-    return routineGenerator;
 }
 
 void AssemblyParser::executeREADCommand(const string &readCommand, RoutineGenerator &routineGenerator) {
@@ -340,7 +339,7 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         executeCommand(trim(afterLabel), *currentGenerator);
     } else if(commandPart.compare(AssemblyParser::SET_TEXT_STYLE) == 0) {
         cout << ":::::: new set_text_style ";
-        routineGenerator = executeSETTEXTSTYLECommand(command, routineGenerator);
+        executeSETTEXTSTYLECommand(command, routineGenerator);
     } else {
         cout << "unknown command: " << command << endl;
         throw;
