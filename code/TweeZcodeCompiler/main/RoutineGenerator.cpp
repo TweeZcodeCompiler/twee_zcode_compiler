@@ -58,10 +58,34 @@ void RoutineGenerator::printChar(uint8_t var) {
     addOneByte(numberToBitset(var));
 }
 
-void RoutineGenerator::callRoutine(string nameOfRoutine) {
+void RoutineGenerator::callRoutine(std::string routineName, const uint8_t storeTarget, const ZParam *param1,
+                                   const ZParam *param2, const ZParam *param3)
+{
+
+    vector<const ZParam*> inputParams = {param1, param2, param3};
+    vector<bool> isVariable;
+    vector<uint16_t> params;
+
+    params.push_back(3000);
+    isVariable.push_back(false);
+
+    for(auto p = inputParams.begin(); p != inputParams.end(); p++) {
+        if(*p) {
+            params.push_back((*p)->getZCodeValue());
+            isVariable.push_back((*p)->isVariableArgument());
+        }
+    }
+
+    auto instructions = opcodeGenerator.generateVarOPInstruction(CALL_VS, params, isVariable);
+    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() + 2] = routineName;
+    addBitset(instructions);
+    addOneByte(numberToBitset(storeTarget));
+}
+
+void RoutineGenerator::callRoutine1n(string routineName) {
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (u_int16_t) 3000, false);
     addBitset(instructions);
-    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = nameOfRoutine;
+    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = routineName;
     std::cout << "Call Routine at:::" << offsetOfRoutine + routineZcode.size() - 2 << "\n";
 }
 
@@ -90,9 +114,9 @@ void RoutineGenerator::newLabel(string label) {
     jumps.newLabel(label);
 }
 
-void RoutineGenerator::jumpZero(string toLabel, bool jumpIfTrue, int16_t parameter, bool parameterIsVariable) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JZ, (u_int16_t) parameter,
-                                                                            parameterIsVariable);
+void RoutineGenerator::jumpZero(string toLabel, bool jumpIfTrue, const ZParam& param) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JZ, param.getZCodeValue(),
+                                                                            param.isVariableArgument());
     addBitset(instructions);
 
     jumps.newJump(toLabel);
@@ -107,8 +131,8 @@ void RoutineGenerator::jumpZero(string toLabel, bool jumpIfTrue, int16_t paramet
     addOneByte(numberToBitset(0));
 }
 
-void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t param, bool paramIsVariable) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JE, param, paramIsVariable);
+void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, const ZParam& param) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JE, param.getZCodeValue(), param.isVariableArgument());
     addBitset(instructions);
 
     jumps.newJump(toLabel);
@@ -123,25 +147,24 @@ void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t par
     addOneByte(numberToBitset(0));
 }
 
-void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2,
-                                  bool param1IsVariable, bool param2IsVariable) {
-    conditionalJump(JE, toLabel, jumpIfTrue, (int16_t) param1, param2, param1IsVariable, param2IsVariable);
+void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2) {
+    conditionalJump(JE, toLabel, jumpIfTrue, param1, param2);
 }
 
-void RoutineGenerator::jumpLessThan(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2,
-                                    bool param1IsVariable, bool param2IsVariable) {
-    conditionalJump(JL, toLabel, jumpIfTrue, (int16_t) param1, param2, param1IsVariable, param2IsVariable);
+void RoutineGenerator::jumpLessThan(string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2) {
+    conditionalJump(JL, toLabel, jumpIfTrue, param1, param2);
 }
 
-void RoutineGenerator::jumpGreaterThan(string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2,
-                                       bool param1IsVariable, bool param2IsVariable) {
-    conditionalJump(JG, toLabel, jumpIfTrue, (int16_t) param1, param2, param1IsVariable, param2IsVariable);
+void RoutineGenerator::jumpGreaterThan(string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2) {
+    conditionalJump(JG, toLabel, jumpIfTrue, param1, param2);
 }
 
-void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, int16_t param1,
-                                       u_int16_t param2, bool param1IsVariable, bool param2IsVariable) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(opcode, param1, param2, param1IsVariable,
-                                                                            param2IsVariable);
+void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(opcode,
+                                                                            param1.getZCodeValue(),
+                                                                            param2.getZCodeValue(),
+                                                                            param1.isVariableArgument(),
+                                                                            param2.isVariableArgument());
     addBitset(instructions);
 
     jumps.newJump(toLabel);
@@ -205,12 +228,13 @@ u_int8_t RoutineGenerator::getAddressOfVariable(std::string name) {
     }
 }
 
+
 bool RoutineGenerator::containsLocalVariable(string name) {
     return locVariables.count(name);
 }
 
-void RoutineGenerator::returnValue(int16_t value, bool paramIsVariable) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(RET_VALUE, value, paramIsVariable);
+void RoutineGenerator::returnValue(const ZParam& param) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(RET_VALUE, param.getZCodeValue(), param.isVariableArgument());
     addBitset(instructions);
 }
 
@@ -250,3 +274,5 @@ void RoutineGenerator::addTwoBytes(int16_t number, int pos) {
 void RoutineGenerator::addOneByte(std::bitset<8> byte, int pos) {
     routineZcode[pos < 0 ? routineZcode.size() : (unsigned long) pos] = byte;
 }
+
+

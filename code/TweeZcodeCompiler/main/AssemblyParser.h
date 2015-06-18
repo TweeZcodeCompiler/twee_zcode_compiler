@@ -29,6 +29,8 @@ private:
     static const std::string QUIT_COMMAND;
     static const std::string READ_CHAR_COMMAND;
     static const std::string CALL_COMMAND;
+    static const std::string CALL_VS_COMMAND;
+    static const std::string CALL_1N_COMMAND;
     static const std::string JUMP_COMMAND;
     static const std::string RET_COMMAND;
 
@@ -40,19 +42,25 @@ private:
 
     bool checkIfCommandRoutineStart(const std::string &command);
 
-    RoutineGenerator& executeCommand(const std::string &command, RoutineGenerator &routineGenerator);
+    void executeCommand(const std::string &command, RoutineGenerator &routineGenerator);
 
-    RoutineGenerator& executePRINTCommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
+    void executePRINTCommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
 
-    RoutineGenerator& executeREADCommand(const std::string &readCommand, RoutineGenerator &routineGenerator);
+    void executeREADCommand(const std::string &readCommand, RoutineGenerator &routineGenerator);
 
-    RoutineGenerator& executeJECommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+    void executeJECommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
 
-    RoutineGenerator& executeCALLCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
-    RoutineGenerator& executeJUMPCommand(const std::string &jumpCommand, RoutineGenerator &routineGenerator);
+    void executeCALL1nCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
+    void executeCALLCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
+
+    void executeJUMPCommand(const std::string &jumpCommand, RoutineGenerator &routineGenerator);
+
+    void executeRETCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
+
+    std::unique_ptr<ZParam> createZParam(const std::string &paramString);
 
 
-    std::map<std::string, unsigned int> globalVariables;
+    std::map<std::string, uint8_t> globalVariables;
 
     std::unique_ptr<RoutineGenerator> currentGenerator;
 
@@ -62,7 +70,6 @@ private:
 
 public:
     void readAssembly(std::istream& input, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
-
 
 };
 
