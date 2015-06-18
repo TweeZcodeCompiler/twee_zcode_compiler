@@ -1,0 +1,27 @@
+﻿2015-06-06 19:11:50.715 DEBUG [18947] [main@14] debug hello 
+2015-06-06 19:12:12.148 DEBUG [18996] [main@14] debug hello hurra 
+2015-06-06 19:14:50.303 DEBUG [19096] [main@14] debug hello hurra 
+2015-06-06 19:20:00.508 DEBUG [19335] [main@14] debug hello hurra 
+2015-06-06 19:20:00.509 DEBUG [19335] [main@16] debug
+2015-06-06 19:20:00.509 INFO  [19335] [main@17] info
+2015-06-06 19:20:00.509 WARN  [19335] [main@18] warning
+2015-06-06 19:20:00.509 ERROR [19335] [main@19] error
+2015-06-06 19:20:00.509 FATAL [19335] [main@20] fatal
+2015-06-06 19:20:00.509 DEBUG [19335] [main@22] debug
+2015-06-06 19:20:00.509 INFO  [19335] [main@23] info
+2015-06-06 19:20:00.509 WARN  [19335] [main@24] warning
+2015-06-06 19:20:00.509 ERROR [19335] [main@25] error
+2015-06-06 19:20:00.509 FATAL [19335] [main@26] fatal
+2015-06-06 19:25:41.124 DEBUG [19479] [main@14] debug hello hurra 
+2015-06-06 19:25:41.125 DEBUG [19479] [main@16] debug
+2015-06-06 19:25:41.125 INFO  [19479] [main@17] info
+2015-06-06 19:25:41.125 WARN  [19479] [main@18] warning
+2015-06-06 19:25:41.125 ERROR [19479] [main@19] error
+2015-06-06 19:25:41.125 FATAL [19479] [main@20] fatal
+2015-06-06 19:25:41.125 DEBUG [19479] [main@22] debug
+2015-06-06 19:25:41.125 INFO  [19479] [main@23] info
+2015-06-06 19:25:41.125 WARN  [19479] [main@24] warning
+2015-06-06 19:25:41.125 ERROR [19479] [main@25] error
+2015-06-06 19:25:41.125 FATAL [19479] [main@26] fatal
+2015-06-06 19:28:54.693 DEBUG [19577] [main@13] Compiler started
+2015-06-06 19:37:45.226 DEBUG [19807] [main@13] Compiler started

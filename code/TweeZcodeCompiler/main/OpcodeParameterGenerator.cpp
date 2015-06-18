@@ -130,7 +130,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitset
     }
 
     int param = 0;
-    for (size_t i = 7; i > 0; i -= 2) {
+    for (int i = 7; i > 0; i -= 2) {
         if (param >= params.size()) {
             // if less than 4 parameter types needed set last bits to type omitted
             paramTypes.set(i, true);

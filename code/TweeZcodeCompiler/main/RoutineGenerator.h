@@ -14,13 +14,44 @@
 #include "Jumps.h"
 #include "OpcodeParameterGenerator.h"
 #include "Utils.h"
+#include <memory>
+
+struct ZParam {
+    virtual bool isVariableArgument() const = 0;
+
+    uint16_t getZCodeValue() const {
+        return valueOrAddress;
+    }
+
+protected:
+    uint16_t valueOrAddress;
+};
+
+struct ZValueParam : public ZParam {
+    ZValueParam(uint16_t value) {
+        valueOrAddress = value;
+    }
+
+    bool isVariableArgument() const { return false; }
+};
+
+struct ZVariableParam : public ZParam {
+    ZVariableParam(uint16_t variableAddr) {
+        valueOrAddress = variableAddr;
+    }
+
+    bool isVariableArgument() const { return true; }
+};
 
 class RoutineGenerator {
 
 private:
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
-    static std::map<std::string, size_t> routines;  //keys = name of routine, value = offset.
+    std::map<std::string, u_int8_t> locVariables;   // keys = variable name, value = number in stack
+    static std::map<std::string, size_t> routines;  // keys = name of routine, value = offset.
 
+    size_t maxLocalVariables = 0;
+    size_t addedLocalVariables = 0;
     size_t offsetOfRoutine = 0;
     Jumps jumps;
     OpcodeParameterGenerator opcodeGenerator;
@@ -33,8 +64,7 @@ private:
 
     void addOneByte(std::bitset<8> byte, int pos = -1);  // add one byte to routineZcode
 
-    void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, int16_t param1, u_int16_t param2,
-                         bool param1IsVariable, bool param2IsVariable);
+    void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2);
 
 public:
     // constructor needed to create first jump to main call
@@ -63,7 +93,14 @@ public:
         std::cout << padding << "/" << this->offsetOfRoutine << "\n";
         jumps.setRoutineBitsetMap(routineZcode);
         jumps.routineOffset = this->offsetOfRoutine;
+
         addOneByte(numberToBitset(locVar));
+        maxLocalVariables = locVar;
+
+        if (locVar > 15) {
+            std::cout << "Cannot add more than 15 local variables to routine " << name << "!";
+            throw;
+        }
     }
 
     // returns complete zcode of Routine as a bitset vector
@@ -78,6 +115,16 @@ public:
     static std::map<size_t, std::string> callTo;    //keys = offset of call, value = name of routine
 
     /*
+     *      methods to access/set local variables
+     */
+
+    void setLocalVariable(std::string name, int16_t value = 0);
+
+    u_int8_t getAddressOfVariable(std::string name);
+
+    bool containsLocalVariable(std::string name);
+
+    /*
      *      methods to add intermediate code instructions to routine
      */
 
@@ -87,18 +134,15 @@ public:
 
     void jump(std::string toLabel);
 
-    void jumpZero(std::string toLabel, bool jumpIfTrue, int16_t variable, bool parameterIsVariable);
+    void jumpZero(std::string toLabel, bool jumpIfTrue, const ZParam& param);
 
-    void jumpLessThan(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable,
-                      bool param2IsVariable);
+    void jumpLessThan(std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2);
 
-    void jumpGreaterThan(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2,
-                         bool param1IsVariable, bool param2IsVariable);
+    void jumpGreaterThan(std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2);
 
-    void jumpEquals(std::string toLabel, bool jumpIfTrue, u_int16_t param1, u_int16_t param2, bool param1IsVariable,
-                    bool param2IsVariable);
+    void jumpEquals(std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2);
 
-    void jumpEquals(std::string toLabel, bool jumpIfTrue, u_int16_t param, bool paramIsVariable);
+    void jumpEquals(std::string toLabel, bool jumpIfTrue, const ZParam& param);
 
     void readChar(uint8_t var);
 
@@ -108,14 +152,21 @@ public:
 
     void printStringAtAddress(u_int8_t address);
 
+    void printNum(unsigned int address);
+
     //Call to a routine with spezific name
-    void callRoutine(std::string nameOfRoutine);
+    void callRoutine1n(std::string routineName);
+
+    void callRoutine(std::string routineName, const uint8_t storeTarget, const ZParam *param1,
+                                       const ZParam *param2, const ZParam *param3);
 
     void store(u_int8_t address, u_int16_t value);
 
     void load(u_int8_t address, u_int8_t result_address);
 
     void quitRoutine();
+
+    void returnValue(const ZParam &param);
 
 
     /*
@@ -129,6 +180,8 @@ public:
                 PRINT_CHAR = 229,
         //Opcode: 1OP:143 F 5 call_1n routine
                 CALL_1N = 143,
+                CALL = 224,
+                CALL_VS = 224,
         // Print new line
                 NEW_LINE = 187,
         // Opcodes for jump instructions
@@ -146,7 +199,11 @@ public:
         // Opcode: load a variable
                 LOAD = 142,
         // Opcode: print zscii encoded string at address
-                PRINT_ADDR = 135
+                PRINT_ADDR = 135,
+        // Opcode: print signed num value in decimal
+                PRINT_SIGNED_NUM = 230,
+        // Opcode: return value
+                RET_VALUE = 139
     };
 
     enum BranchOffset {
