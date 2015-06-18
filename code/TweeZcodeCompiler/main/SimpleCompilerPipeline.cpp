@@ -35,13 +35,13 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     log("Parsed twee file");
 
-    //ofstream out = ofstream("test.zas", ofstream::out);
     stringstream buffer;
 
     TweeCompiler compiler;
     compiler.compile(*tweeFile, buffer);
 
-    //out.close();
+    ofstream testFile("test.zas");
+    testFile << buffer.str();
 
     //create header
     ZCodeHeader header = ZCodeHeader();
@@ -72,8 +72,6 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
 
     RoutineGenerator::resolveCallInstructions(zCode);
-
-
 
     //calculate fileSize
     size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
@@ -132,11 +130,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
 
     AssemblyParser assemblyParser;
 
-    std::ifstream inputFile("hello.zap");
-
-    assemblyParser.readAssembly(inputFile, highMemoryZcode, offset);
-    //assemblyParser.readAssembly("haus.zap",highMemoryZcode,offset);
-
+    assemblyParser.readAssembly(instructionsInput, highMemoryZcode, offset);
 
     return highMemoryZcode;
 }

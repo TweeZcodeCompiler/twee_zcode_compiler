@@ -124,7 +124,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             }
 
             // present choices to user
-            assgen.println("Select one of the following options:");
+            assgen.println("Select one of the following options");
             int i = 1;
             for (auto link = links.begin(); link != links.end(); link++) {
                 assgen.println(string("    ") + to_string(i) + string(") ") + (*link)->getTarget() );
@@ -140,7 +140,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             i = 0;
             for (auto link = links.begin(); link != links.end(); link++) {
                 string label = string("L") + to_string(i);
-                assgen.jumpEquals(ZAssemblyGenerator::makeArgs({USER_INPUT, to_string(ZSCII_NUM_OFFSET + i)}), label);
+                assgen.jumpEquals(ZAssemblyGenerator::makeArgs({to_string(ZSCII_NUM_OFFSET + i), USER_INPUT}), label);
 
                 i++;
             }
