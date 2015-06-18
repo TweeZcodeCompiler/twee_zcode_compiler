@@ -1,7 +1,9 @@
 #include <iostream>
 #include <plog/Log.h>
+#include <plog/Appenders/ConsoleAppender.h>
 #include "stacktrace.h"
 #include "SimpleCompilerPipeline.h"
+#include "UserSideFormatter.h"
 
 /*
  * How to use Logger:
@@ -36,9 +38,15 @@ int main(int argc, char *argv[]) {
     std::string inputFile = argv[argc - 1];
     std::string outputFile = "hello_world.z8";
 
-    plog::init(plog::debug, "Compiler_Log.txt"); // initialize the logger
-    LOG_DEBUG  << "Compiler started";
+    //static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Compiler_Log.txt");
+    static plog::ConsoleAppender<plog::UserSideFormatter> consoleAppender; // Console Appender for user friendly output
 
+    plog::init(plog::debug, "Compiler_Log.txt");
+    plog::init(plog::error, &consoleAppender);
+
+    LOG_DEBUG  << "Compiler started";
+    LOG_ERROR  << "LOG_ERROR test";
+    LOG_DEBUG  << "LOG_DEBUG test";
     SimpleCompilerPipeline compiler;
     compiler.compile(inputFile, outputFile);
 

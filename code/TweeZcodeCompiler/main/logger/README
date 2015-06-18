@@ -1,0 +1,11 @@
+Integration of Logging in your class
+
+Step one:
+make sure you have
+include_directories("logger")
+in the CMakeLists.txt you are coding for
+
+Step two:
+#include <plog/Log.h>
+
+Step three:

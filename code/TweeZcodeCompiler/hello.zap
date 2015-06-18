@@ -1,12 +1,8 @@
 .FUNCT main
-print "Dies ist ein Test"
 new_line
-print "print 1 to exit"
-read_char 1 -> sp
-je 1 sp ?w
-print "wrong"
+print "Du bist im Haus"
+set_text_style b
+print "Du bist im Haus"
+set_text_style r
+print "Du bist im Haus"
 quit
-w:
-print "correct"
-quit
-

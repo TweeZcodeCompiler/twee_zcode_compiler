@@ -20,6 +20,8 @@ some stated 'goals':
 #include <memory>
 #include <vector>
 #include <string>
+#include <plog/Log.h>
+#include <plog/Appenders/ConsoleAppender.h>
 
 //TweeScanner.h for the Tokens
 #include "TweeScanner.h"
@@ -29,10 +31,6 @@ some stated 'goals':
 // TODO: check memory stuff for SAVE_TOKEN, does the parser clear that?
 #define SAVE_TOKEN yylval->string = new std::string(YYText(), YYLeng())
 // TODO: decide if this is needed, look at that tutorial again: #define TOKEN(t) (yylval.token = t)
-
-void lex_log(std::string message) {
-    std::cout << "Lexer: " << message << " . . ." << "\n";
-}
 
 %}
 
@@ -69,10 +67,21 @@ TAG                     [a-zA-Z0-9\-_="'!+\\/?.,]+
 
  /*BODY_TEXT_CHAR          [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
 BODY_TEXT               [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
+    /*these chars are used by FORMATTING tokens:*/
+    /* / " _ = ~ ^ { % */
 
-FORMATTING_OPEN         \^{3}
-FORMATTING_CLOSE        \^{3}
-BODY_TEXT_FORMATTED     [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
+FORMATTING_ITALICS          \/{2}
+FORMATTING_BOLDFACE         \"{2}
+FORMATTING_UNDERLINE        _{2}
+FORMATTING_STRIKETHROUGH    ={2}
+FORMATTING_SUBSCRIPT        ~{2}
+FORMATTING_SUPERSCRIPT      \^{2}
+FORMATTING_ERROR_STYLING    @{2}
+
+FORMATTING_MONOSPACE_OPEN   \{{3}
+FORMATTING_MONOSPACE_CLOSE  \}{3}
+FORMATTING_COMMENT_OPEN     \/%
+FORMATTING_COMMENT_CLOSE    %\/
 
 LINK_OPEN               \[{2}
 LINK_CLOSE              \]{2}
@@ -109,7 +118,8 @@ MACRO_TURNS             turns
 %x HeaderTags
 %x HeaderTagsClose
 %x Body
-%x BodyFormattedText
+%x FormattingErrorInlineStyling
+%x FormattingComment
 %x BodyLink
 %x BodyMacro
 
@@ -123,16 +133,18 @@ MACRO_TURNS             turns
 <INITIAL>^{PASSAGE_START}       {
                                 //enter condition HeaderTitle
                                 BEGIN(HeaderTitle);
-                                lex_log("enter condition HeaderTitle");
+                                LOG_DEBUG << "enter condition HeaderTitle";
                                 //return the PASSAGE_START token
-                                lex_log("return the PASSAGE_START token");
+                                LOG_DEBUG << "return the PASSAGE_START token";
                                 return BisonParser::token::PASSAGE_START;
                                 }
 
     /* unexpected Token(s) */
 <INITIAL>.                      {
                                 //TODO: lexer error in INITIAL
-                                lex_log("lexer error in INITIAL");
+                                LOG_ERROR << "lexer error in condition INITIAL";
+                                LOG_ERROR << "\t matched:";
+                                LOG_ERROR << YYText();
                                 }
 
  /* ___NEW CONDITION___ HeaderTitle*/
@@ -142,11 +154,11 @@ MACRO_TURNS             turns
     /* Title of the Passage */
 <HeaderTitle>{TITLE}+            {
                                 //stay in condition HeaderTitle, look for next token
-                                lex_log("stay in condition HeaderTitle, look for next token");
+                                LOG_DEBUG << "stay in condition HeaderTitle, look for next token";
                                 //return the TITLE Token
-                                lex_log("return the TITLE Token");
-                                lex_log("\t matched:");
-                                lex_log(YYText());
+                                LOG_DEBUG << "return the TITLE Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
                                 SAVE_TOKEN;
                                 return BisonParser::token::TITLE;
                                 }
@@ -154,29 +166,29 @@ MACRO_TURNS             turns
     /* square bracket opened, indicating Tags segment */
 <HeaderTitle>{TAGS_OPEN}          {
                                 //enter condition HeaderTags
-                                lex_log("enter condition HeaderTags");
+                                LOG_DEBUG << "enter condition HeaderTags";
                                 BEGIN(HeaderTags);
                                 //return the TAGS_OPEN token
-                                lex_log("return the TAGS_OPEN token");
+                                LOG_DEBUG << "return the TAGS_OPEN token";
                                 return BisonParser::token::TAGS_OPEN;
                                 }
 
     /* Everything except :: */
 <HeaderTitle>{NEWLINE}          {
                                 //enter condition Body
-                                lex_log("enter condition Body");
+                                LOG_DEBUG << "enter condition Body";
                                 BEGIN(Body);
                                 //return the NEWLINE token
-                                lex_log("return the NEWLINE token");
+                                LOG_DEBUG << "return the NEWLINE token";
                                 return BisonParser::token::NEWLINE;
                                 }
 
     /* unexpected Token(s) */
 <HeaderTitle>.                  {
                                 //TODO: lexer error in HeaderTitle
-                                lex_log("lexer error in HeaderTitle");
-                                lex_log("\t matched:");
-                                lex_log(YYText());
+                                LOG_ERROR << "lexer error in condition HeaderTitle";
+                                LOG_ERROR << "\t matched:";
+                                LOG_ERROR << YYText();
                                 }
 
  /* ___NEW CONDITION___ HeaderTags*/
@@ -186,11 +198,11 @@ MACRO_TURNS             turns
     /* Title of the Passage */
 <HeaderTags>{TAG}                 {
                                 //stay in condition HeaderTags, look for next token
-                                lex_log("stay in condition HeaderTags, look for next token");
+                                LOG_DEBUG << "stay in condition HeaderTags, look for next token";
                                 //return the TAG Token
-                                lex_log("return the TAG Token");
-                                lex_log("\t matched:");
-                                lex_log(YYText());
+                                LOG_DEBUG << "return the TAG Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
                                 SAVE_TOKEN;
                                 return BisonParser::token::TAG;
                                 }
@@ -198,17 +210,19 @@ MACRO_TURNS             turns
     /* square bracket opened, indicating Tags segment */
 <HeaderTags>{TAGS_CLOSE}        { //Problem, can't return 2 Tokens; so enter HeaderTagsClose
                                 //enter condition HeaderTagsClose
-                                lex_log("enter condition HeaderTagsClose");
+                                LOG_DEBUG << "enter condition HeaderTagsClose";
                                 BEGIN(HeaderTagsClose);
                                 //return the TAGS_CLOSE token
-                                lex_log("return the TAGS_CLOSE token");
+                                LOG_DEBUG << "return the TAGS_CLOSE token";
                                 return BisonParser::token::TAGS_CLOSE;
                                 }
 
     /* unexpected Token(s) */
 <HeaderTags>.                   {
                                 //TODO: lexer error in HeaderTags
-                                lex_log("lexer error in HeaderTags");
+                                LOG_DEBUG << "lexer error in condition HeaderTags";
+                                LOG_ERROR << "\t matched:";
+                                LOG_ERROR << YYText();
                                 }
 
  /* ___NEW CONDITION___ HeaderTagsClose*/
@@ -218,19 +232,19 @@ MACRO_TURNS             turns
     /* End of HeaderTags */
 <HeaderTagsClose>{NEWLINE}      {
                                 //enter condition Body
-                                lex_log("enter condition Body");
+                                LOG_DEBUG << "enter condition Body";
                                 BEGIN(Body);
                                 //return the NEWLINE token
-                                lex_log("return the NEWLINE token");
+                                LOG_DEBUG << "return the NEWLINE token";
                                 return BisonParser::token::NEWLINE;
                                 }
 
     /* unexpected Token(s) */
 <HeaderTagsClose>.              {
                                 //TODO: lexer error in HeaderTagsClose
-                                lex_log("lexer error in HeaderTagsClose");
-                                lex_log("\t matched:");
-                                lex_log(YYText());
+                                LOG_ERROR << "lexer error in condition HeaderTagsClose";
+                                LOG_ERROR << "\t matched:";
+                                LOG_ERROR << YYText();
                                 }
 
  /* ___NEW CONDITION___ Body*/
@@ -240,11 +254,11 @@ MACRO_TURNS             turns
     /* Passage text */
 <Body>{BODY_TEXT}               {
                                 //stay in condition Body, look for next token
-                                lex_log("stay in condition Body, look for next token");
+                                LOG_DEBUG << "stay in condition Body, look for next token";
                                 //return the TEXT Token
-                                lex_log("return the TEXT Token");
-                                lex_log("\t matched:");
-                                lex_log(YYText());
+                                LOG_DEBUG << "return the TEXT Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
                                 SAVE_TOKEN;
                                 return BisonParser::token::TEXT_TOKEN;
                                 }
@@ -252,87 +266,175 @@ MACRO_TURNS             turns
     /* :: */
 <Body>^{PASSAGE_START} {
                                 //enter condition HeaderTitle
-                                lex_log("enter condition HeaderTitle");
+                                LOG_DEBUG << "enter condition HeaderTitle";
                                 BEGIN(HeaderTitle);
                                 //return the PASSAGE_START token
-                                lex_log("return the PASSAGE_START token");
+                                LOG_DEBUG << "return the PASSAGE_START token";
                                 return BisonParser::token::PASSAGE_START;
-                                }
-
-    /* formatting encountered */
-<Body>{FORMATTING_OPEN}         {
-                                //enter condition BodyFormattedText
-                                lex_log("enter condition BodyFormattedText");
-                                BEGIN(BodyFormattedText);
-                                //return the FORMATTING_OPEN token
-                                lex_log("return the FORMATTING_OPEN token");
-                                return BisonParser::token::FORMATTING_OPEN;
                                 }
 
     /* Link encountered */
 <Body>{LINK_OPEN}               {
                                 //enter condition BodyLink
-                                lex_log("enter condition BodyLink");
+                                LOG_DEBUG << "enter condition BodyLink";
                                 BEGIN(BodyLink);
                                 //return the LINK_OPEN token
-                                lex_log("return the LINK_OPEN token");
+                                LOG_DEBUG << "return the LINK_OPEN token";
                                 return BisonParser::token::LINK_OPEN;
                                 }
 
     /* Macro encountered */
 <Body>{MACRO_OPEN}              {
-                                //enter condition BodyMacro
-                                lex_log("enter condition BodyMacro");
+                                LOG_DEBUG << "enter condition BodyMacro";
                                 BEGIN(BodyMacro);
-                                //return the MACRO_OPEN token
-                                lex_log("return the MACRO_OPEN token");
+                                LOG_DEBUG << "return the MACRO_OPEN token";
                                 return BisonParser::token::MACRO_OPEN;
                                 }
 
-    /* New line means we have to check the next few tokens TODO New Passage after Passage */
-<Body>{NEWLINE}                 {
-                                //TODO New Passage after Passage
-                                lex_log("New Passage after Passage");
+<Body>{FORMATTING_ITALICS}      { //TODO: enable correct matching, BODY_TEXT
+                                LOG_DEBUG << "return the FORMATTING Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::FORMATTING;
+                                }
+
+<Body>{FORMATTING_BOLDFACE}      { //TODO: enable correct matching, BODY_TEXT
+                                LOG_DEBUG << "return the FORMATTING Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::FORMATTING;
+                                }
+
+<Body>{FORMATTING_UNDERLINE}      { //TODO: enable correct matching, BODY_TEXT
+                                LOG_DEBUG << "return the FORMATTING Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::FORMATTING;
+                                }
+
+<Body>{FORMATTING_STRIKETHROUGH}      { //TODO: enable correct matching, BODY_TEXT
+                                LOG_DEBUG << "return the FORMATTING Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::FORMATTING;
+                                }
+
+<Body>{FORMATTING_SUBSCRIPT}      {
+                                 LOG_DEBUG << "return the FORMATTING Token";
+                                 LOG_DEBUG << "\t matched:";
+                                 LOG_DEBUG << YYText();
+                                 SAVE_TOKEN;
+                                 return BisonParser::token::FORMATTING;
+                                 }
+
+<Body>{FORMATTING_SUPERSCRIPT}      {
+                                LOG_DEBUG << "return the FORMATTING Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::FORMATTING;
+                                }
+
+<Body>{FORMATTING_MONOSPACE_OPEN}      {
+                                //TODO: new condition for monospace open&close lexing
+                                LOG_DEBUG << "return the FORMATTING_COMMENT_OPEN token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::FORMATTING_COMMENT_OPEN;
+                                }
+
+<Body>{FORMATTING_MONOSPACE_CLOSE}      { //TODO: new condition for monospace open&close lexing: delete this
+                                LOG_DEBUG << "return the FORMATTING_COMMENT_CLOSE token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::FORMATTING_COMMENT_CLOSE;
+                                }
+
+<Body>{FORMATTING_COMMENT_OPEN} {
+                                LOG_DEBUG << "enter condition FormattingComment";
+                                BEGIN(FormattingComment);
+                                LOG_DEBUG << "return the FORMATTING_COMMENT_OPEN token";
+                                return BisonParser::token::FORMATTING_COMMENT_OPEN;
+                                }
+
+<Body>{FORMATTING_ERROR_STYLING} {
+                                LOG_DEBUG << "enter condition FormattingErrorInlineStyling";
+                                BEGIN(FormattingErrorInlineStyling);
+                                return BisonParser::token::FORMATTING_ERROR_STYLING;
                                 }
 
     /* unexpected Token(s) */
 <Body>.                         {
                                 //TODO: lexer error in Body
-                                lex_log("lexer error in Body");
-                                lex_log("\t matched:");
-                                lex_log(YYText());
+                                LOG_ERROR << "lexer error in condition Body";
+                                LOG_ERROR << "\t matched:";
+                                LOG_ERROR << YYText();
                                 }
 
- /* ___NEW CONDITION___ BodyFormattedText*/
+ /* ___NEW CONDITION___ FormattingErrorInlineStyling*/
     /*From: Body */
     /*To:   Body */
+    /*TODO: implement error/inline text lexing*/
 
-    /* formatted text */
-<BodyFormattedText>{BODY_TEXT_FORMATTED}  {
-                                //stay in condition BodyFormattedText, look for next token
-                                lex_log("stay in condition BodyFormattedText, look for next token");
+    /* text */
+<FormattingErrorInlineStyling>{BODY_TEXT} {
+                                LOG_DEBUG << "stay in condition FormattingErrorInlineStyling, look for next token";
                                 //return the TEXT Token
-                                lex_log("return the TEXT Token");
-                                lex_log("\t matched:");
-                                lex_log(YYText());
+                                LOG_DEBUG << "return the TEXT Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
                                 SAVE_TOKEN;
                                 return BisonParser::token::TEXT_TOKEN;
                                 }
 
-    /* leave formatting */
-<BodyFormattedText>{FORMATTING_CLOSE}         {
-                                //enter condition Body
-                                lex_log("enter condition Body");
+<FormattingErrorInlineStyling>{FORMATTING_ERROR_STYLING} {  //TODO: enable correct matching, BODY_TEXT
+                                LOG_DEBUG << "enter condition Body";
                                 BEGIN(Body);
-                                //return the FORMATTING_CLOSE token
-                                lex_log("return the FORMATTING_CLOSE token");
-                                return BisonParser::token::FORMATTING_CLOSE;
+                                return BisonParser::token::FORMATTING_ERROR_STYLING;
                                 }
 
     /* unexpected Token(s) */
-<BodyFormattedText>.            {
-                                //TODO: lexer error in BodyFormattedText
-                                lex_log("lexer error in BodyFormattedText");
+<FormattingErrorInlineStyling>. {
+                                //TODO: lexer error in FormattingErrorInlineStyling
+                                LOG_ERROR << "lexer error in condition FormattingErrorInlineStyling";
+                                LOG_ERROR << "\t matched:";
+                                LOG_ERROR << YYText();
+                                }
+
+ /* ___NEW CONDITION___ FormattingComment*/
+    /*From: Body */
+    /*To:   Body */
+    /* maybe comments should be lexed out? */
+
+    /* text */
+<FormattingComment>{BODY_TEXT} {
+                                LOG_DEBUG << "stay in condition FormattingComment, look for next token";
+                                //return the TEXT Token
+                                LOG_DEBUG << "return the TEXT Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::TEXT_TOKEN;
+                                }
+
+<FormattingComment>{FORMATTING_COMMENT_CLOSE} {
+                                LOG_DEBUG << "enter condition Body";
+                                BEGIN(Body);
+                                return BisonParser::token::FORMATTING_COMMENT_CLOSE;
+                                }
+
+    /* unexpected Token(s) */
+<FormattingComment>.            {
+                                //TODO: lexer error in FormattingComment
+                                LOG_ERROR << "lexer error in condition FormattingComment";
+                                LOG_ERROR << "\t matched:";
+                                LOG_ERROR << YYText();
                                 }
 
  /* ___NEW CONDITION___ BodyLink*/
@@ -340,13 +442,13 @@ MACRO_TURNS             turns
     /*To:   Body */
 
     /* link text */
-<BodyLink>{LINK_TEXT}  {
+<BodyLink>{LINK_TEXT}           {
                                 //stay in condition BodyLink, look for next token
-                                lex_log("stay in condition BodyLink, look for next token");
+                                LOG_DEBUG << "stay in condition BodyLink, look for next token";
                                 //return the TEXT Token
-                                lex_log("return the TEXT Token");
-                                lex_log("\t matched:");
-                                lex_log(YYText());
+                                LOG_DEBUG << "return the TEXT Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
                                 SAVE_TOKEN;
                                 return BisonParser::token::TEXT_TOKEN;
                                 }
@@ -354,19 +456,19 @@ MACRO_TURNS             turns
     /* separator */
 <BodyLink>{LINK_SEPARATOR}      {
                                 //stay in condition BodyLink, look for next token
-                                lex_log("stay in condition BodyLink, look for next token");
+                                LOG_DEBUG << "stay in condition BodyLink, look for next token";
                                 //return the LINK_CLOSE token
-                                lex_log("return the LINK_CLOSE token");
+                                LOG_DEBUG << "return the LINK_CLOSE token";
                                 return BisonParser::token::LINK_SEPARATOR;
                                 }
 
     /* leave the link */
 <BodyLink>{LINK_CLOSE}         {
                                 //enter condition Body
-                                lex_log("enter condition Body");
+                                LOG_DEBUG << "enter condition Body";
                                 BEGIN(Body);
                                 //return the LINK_CLOSE token
-                                lex_log("return the LINK_CLOSE token");
+                                LOG_DEBUG << "return the LINK_CLOSE token";
                                 return BisonParser::token::LINK_CLOSE;
                                 }
 
@@ -374,7 +476,9 @@ MACRO_TURNS             turns
     /* unexpected Token(s) */
 <BodyLink>.                         {
                                 //TODO: lexer error in BodyLink
-                                lex_log("lexer error in BodyLink");
+                                LOG_ERROR << "lexer error in condition BodyLink";
+                                LOG_ERROR << "\t matched:";
+                                LOG_ERROR << YYText();
                                 }
 
  /* ___NEW CONDITION___ BodyMacro*/
@@ -384,10 +488,11 @@ MACRO_TURNS             turns
     /* macro text */
 <BodyMacro>{MACRO_TEXT}         {
                                 //stay in condition BodyMacro, look for next token
-                                lex_log("stay in condition BodyMacro, look for next token");
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the TEXT Token
-                                lex_log("return the TEXT Token");
-                                lex_log("\t matched:");
+                                LOG_DEBUG << "return the TEXT Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
                                 SAVE_TOKEN;
                                 return BisonParser::token::TEXT_TOKEN;
                                 }
@@ -395,17 +500,19 @@ MACRO_TURNS             turns
     /* leave the macro */
 <BodyMacro>{MACRO_CLOSE}         {
                                 //enter condition Body
-                                lex_log("enter condition Body");
+                                LOG_DEBUG << "enter condition Body";
                                 BEGIN(Body);
                                 //return the MACRO_CLOSE token
-                                lex_log("return the MACRO_CLOSE token");
+                                LOG_DEBUG << "return the MACRO_CLOSE token";
                                 return BisonParser::token::MACRO_CLOSE;
                                 }
 
     /* unexpected Token(s) */
 <BodyMacro>.                         {
                                 //TODO: lexer error in BodyMacro
-                                lex_log("lexer error in BodyMacro");
+                                LOG_ERROR << "lexer error in condition BodyMacro";
+                                LOG_ERROR << "\t matched:";
+                                LOG_ERROR << YYText();
                                 }
 
 %%
