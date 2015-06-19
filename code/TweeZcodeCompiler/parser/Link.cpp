@@ -7,35 +7,25 @@
 #include <string>
 
 Link::Link(std::string target) {
-
     this->target = target;
     this->altName = target;
-
 }
 
 Link::Link(std::string target, std::string altName) {
-
     this->target = target;
     this->altName = altName;
-
 }
 
 std::string Link::getTarget() {
-
     return this->target;
-
 }
 
 std::string Link::getAltName() {
-
     return this->altName;
-
 }
 
 std::string Link::to_string() {
-
     return std::string("Link \n")
            + std::string("      Target: ") + this->getTarget() + std::string("\n")
            + std::string("      AltName: ") + this->getAltName();
-
 }

@@ -8,24 +8,22 @@
 #include "Body/BodyPart.h"
 
 #include <vector>
+#include <memory>
 #include <string>
 
 class Body {
-
 private:
-    std::vector<BodyPart*> bodyparts;
+    std::vector<std::unique_ptr<BodyPart>> bodyparts;
+    Body(const Body& that) = delete;
 
 public:
 
-    Body();
-    ~Body();
+    std::vector<std::unique_ptr<BodyPart>> &getBodyParts();
 
-    std::vector<BodyPart*> &getBodyParts();
-
-    Body &operator+=(BodyPart*);
+    Body& operator+=(std::unique_ptr<BodyPart>&);
+    Body& operator+=(BodyPart* bodyPart);
 
     std::string to_string();
-
 };
 
 #endif //BODY_H

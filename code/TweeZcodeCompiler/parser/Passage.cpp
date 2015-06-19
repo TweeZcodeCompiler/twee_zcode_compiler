@@ -9,27 +9,19 @@
 #include <string>
 
 Passage::Passage(Head &head, Body &body) : head(head), body(body) {
-
     this->head = head;
     this->body = body;
-
 }
 
-Head Passage::getHead() {
-
+Head& Passage::getHead() {
     return this->head;
-
 }
 
-Body Passage::getBody() {
-
+Body& Passage::getBody() {
     return this->body;
-
 }
 
 std::string Passage::to_string() {
-
     return std::string("Passage \n") + this->getHead().to_string() + std::string("\n") + this->getBody().to_string();
-
 }
 
