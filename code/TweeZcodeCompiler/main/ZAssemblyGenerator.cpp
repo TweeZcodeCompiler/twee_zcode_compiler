@@ -169,7 +169,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::print(std::string str) {
     return addInstruction(instruction::PRINT, string("\"") + str + string("\""), nullopt, nullopt);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::set_text_style(bool italic, bool bold, bool underlined) {
+ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(bool italic, bool bold, bool underlined) {
     std::string result;
     if(italic) {
         result += "i";

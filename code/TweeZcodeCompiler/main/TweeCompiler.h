@@ -5,11 +5,10 @@
 #ifndef PROJECT_TWEECOMPILER_H
 #define PROJECT_TWEECOMPILER_H
 
-#include <TweeFile.h>
-#include <ostream>
+#include "ITweeCompiler.h"
 #include <map>
 
-class TweeCompiler {
+class TweeCompiler : public ITweeCompiler {
 public:
     void compile(TweeFile& tweeDoc, std::ostream& out);
 private:
