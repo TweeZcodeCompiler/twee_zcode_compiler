@@ -8,7 +8,7 @@
 
 #include <string>
 
-Passage::Passage(Head &head, Body &body) : head(head), body(body) {
+Passage::Passage(Head &head, Body &body) : head(Head(head)), body(Body(body)) {
 
 }
 

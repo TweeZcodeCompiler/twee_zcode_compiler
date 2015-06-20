@@ -11,8 +11,8 @@
 
 class Passage {
 private:
-    Head &head;
-    Body &body;
+    Head head;
+    Body body;
 
 public:
     Passage(Head&, Body&);

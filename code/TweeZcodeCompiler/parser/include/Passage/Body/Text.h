@@ -15,12 +15,15 @@ private:
     std::string content;
 
 public:
+    virtual Text* clone() const {
+        return new Text(*this);
+    }
+
     Text(std::string content);
 
     std::string getContent();
 
     std::string to_string();
-
 };
 
 

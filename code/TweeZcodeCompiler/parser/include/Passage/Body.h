@@ -10,6 +10,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <algorithm>
 
 class Body {
 private:
@@ -22,10 +23,27 @@ public:
 
     ~Body() {}
 
-    Body(const Body& that) {};
+    Body(const Body& that) {
+        copyParts(that);
+    };
 
-    Body& operator=(const Body& that) {return *this;}
+    Body(const Body&& that) {
+        copyParts(that);
+    }
 
+    Body& operator=(const Body& that) {
+        copyParts(that);
+    };
+
+    Body& operator=(const Body&& that) {
+        copyParts(that);
+    };
+
+    void copyParts(const Body& that) {
+        for(auto it = that.bodyparts.begin(); it != that.bodyparts.end(); it++) {
+            bodyparts.push_back(std::unique_ptr<BodyPart>(it->get()->clone()));
+        }
+    }
 
     const std::vector<std::unique_ptr<BodyPart>> &getBodyParts() const;
 

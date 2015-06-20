@@ -20,6 +20,10 @@ public:
 
     Link(std::string, std::string);
 
+    virtual Link* clone() const {
+        return new Link(*this);
+    }
+
     std::string getTarget();
 
     std::string getAltName();
