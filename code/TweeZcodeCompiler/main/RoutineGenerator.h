@@ -16,33 +16,6 @@
 #include "Utils.h"
 #include <memory>
 
-struct ZParam {
-    virtual bool isVariableArgument() const = 0;
-
-    uint16_t getZCodeValue() const {
-        return valueOrAddress;
-    }
-
-protected:
-    uint16_t valueOrAddress;
-};
-
-struct ZValueParam : public ZParam {
-    ZValueParam(uint16_t value) {
-        valueOrAddress = value;
-    }
-
-    bool isVariableArgument() const { return false; }
-};
-
-struct ZVariableParam : public ZParam {
-    ZVariableParam(uint16_t variableAddr) {
-        valueOrAddress = variableAddr;
-    }
-
-    bool isVariableArgument() const { return true; }
-};
-
 class RoutineGenerator {
 
 private:
@@ -66,7 +39,7 @@ private:
 
     void addOneByte(std::bitset<8> byte, int pos = -1);  // add one byte to routineZcode
 
-    void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2);
+    void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, ZParam& param1, ZParam& param2);
 
 public:
     // constructor needed to create first jump to main call
@@ -134,17 +107,15 @@ public:
 
     void newLabel(std::string label);
 
-    void jump(std::string toLabel);
+    void jump(std::vector<std::unique_ptr<ZParam>> params);
 
-    void jumpZero(std::string toLabel, bool jumpIfTrue, const ZParam& param);
+    void jumpZero(std::vector<std::unique_ptr<ZParam>> params);
 
-    void jumpLessThan(std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2);
+    void jumpLessThan(std::vector<std::unique_ptr<ZParam>> params);
 
-    void jumpGreaterThan(std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2);
+    void jumpGreaterThan(std::vector<std::unique_ptr<ZParam>> params);
 
-    void jumpEquals(std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2);
-
-    void jumpEquals(std::string toLabel, bool jumpIfTrue, const ZParam& param);
+    void jumpEquals(std::vector<std::unique_ptr<ZParam>> params);
 
     void readChar(uint8_t var);
 

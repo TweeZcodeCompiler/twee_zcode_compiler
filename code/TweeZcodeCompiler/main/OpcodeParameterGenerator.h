@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <bitset>
 #include <vector>
+#include <bits/unique_ptr.h>
+#include "ParamStructs.h"
 
 class OpcodeParameterGenerator {
 private:
@@ -18,8 +20,13 @@ private:
 
 public:
     std::vector<std::bitset<8>> generate1OPInstruction(unsigned int opcode, uint16_t param, bool paramIsVariable);
+    std::vector<std::bitset<8>> generate1OPInstruction(unsigned int opcode, ZParam &param);
+
     std::vector<std::bitset<8>> generate2OPInstruction(unsigned int opcode, uint16_t param1, uint16_t param2, bool param1IsVariable, bool param2IsVariable);
+    std::vector<std::bitset<8>> generate2OPInstruction(unsigned int opcode, ZParam &param1, ZParam &param2);
+
     std::vector<std::bitset<8>> generateVarOPInstruction(unsigned int opcode, std::vector<uint16_t> params, std::vector<bool> paramIsVariable);
+    std::vector<std::bitset<8>> generateVarOPInstruction(unsigned int opcode, std::vector<std::unique_ptr<ZParam>> &params);
 
     enum OPERAND_TYPES {
         LARGE, SMALL, VARIABLE, OMITTED

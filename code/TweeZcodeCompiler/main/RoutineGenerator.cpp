@@ -124,18 +124,6 @@ void RoutineGenerator::newLine() {
     addOneByte(numberToBitset(NEW_LINE));
 }
 
-// The destination of the jump opcode is:
-// Address after instruction + Offset - 2
-void RoutineGenerator::jump(string toLabel) {
-    addOneByte(numberToBitset(JUMP));
-    jumps.newJump(toLabel);
-    addTwoBytes(1 << (JUMP_UNCOND_OFFSET_PLACEHOLDER + 7)); // placeholder, will be replaced in getRoutine()
-
-    if (printLogs) {
-        cout << "RoutineGenerator: jump " << toLabel;
-    }
-}
-
 void RoutineGenerator::quitRoutine() {
     addOneByte(numberToBitset(QUIT));
 
@@ -153,12 +141,52 @@ void RoutineGenerator::newLabel(string label) {
     }
 }
 
-void RoutineGenerator::jumpZero(string toLabel, bool jumpIfTrue, const ZParam& param) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JZ, param.getZCodeValue(),
-                                                                            param.isVariableArgument());
+void setLabelValues(ZParam &labelParam, string &label, bool &jumpIfTrue) {
+    label = labelParam.name;
+    jumpIfTrue = true;
+    if (label.at(0) == '~') {
+        jumpIfTrue = false;
+        label = label.substr(1);
+    }
+}
+
+// params: label
+void RoutineGenerator::jump(vector<unique_ptr<ZParam>> params) {
+    if (params.size() != 1) {
+        cout << "Wrong param count for jump zero" << endl;
+        throw;
+    } else if (!(*params.at(0)).isNameParam) {
+        cout << "No label for jump zero available" << endl;;
+        throw;
+    }
+
+    string label;
+    bool jumpIfTrue;
+    setLabelValues(*params.at(0), label, jumpIfTrue);
+
+    addOneByte(numberToBitset(JUMP));
+    jumps.newJump(label);
+    addTwoBytes(1 << (JUMP_UNCOND_OFFSET_PLACEHOLDER + 7)); // placeholder, will be replaced in getRoutine()
+}
+
+// params: param1, label
+void RoutineGenerator::jumpZero(std::vector<std::unique_ptr<ZParam>> params) {
+    if (params.size() != 2) {
+        cout << "Wrong param count for jump zero" << endl;
+        throw;
+    } else if (!(*params.at(params.size() - 1)).isNameParam) {
+        cout << "No label for jump zero available" << endl;;
+        throw;
+    }
+
+    string label;
+    bool jumpIfTrue;
+    setLabelValues(*params.at(params.size() - 1), label, jumpIfTrue);
+
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JZ, *params.at(0));
     addBitset(instructions);
 
-    jumps.newJump(toLabel);
+    jumps.newJump(label);
 
     bitset<8> offsetFirstBits;
     offsetFirstBits.set(JUMP_COND_TRUE, jumpIfTrue);
@@ -168,18 +196,35 @@ void RoutineGenerator::jumpZero(string toLabel, bool jumpIfTrue, const ZParam& p
     // placeholder, will be replaced in getRoutine()
     addOneByte(offsetFirstBits);
     addOneByte(numberToBitset(0));
-
-    if (printLogs) {
-        cout << "RoutineGenerator: jz (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param: "
-                << param.getZCodeValue() << ", paramIsVariable: " << param.isVariableArgument() << ")";
-    }
 }
 
-void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, const ZParam& param) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JE, param.getZCodeValue(), param.isVariableArgument());
-    addBitset(instructions);
+// params: param1, (param2, (param3, param4,)) label
+void RoutineGenerator::jumpEquals(vector<unique_ptr<ZParam>> params) {
+    if (params.size() < 2 || params.size() > 5) {
+        cout << "Wrong param count for jump equals" << endl;
+        throw;
+    } else if (!(*params.at(params.size() - 1)).isNameParam) {
+        cout << "No label for jump equals available" << endl;;
+        throw;
+    }
 
-    jumps.newJump(toLabel);
+    string label;
+    bool jumpIfTrue;
+    setLabelValues(*params.at(params.size() - 1), label, jumpIfTrue);
+
+    if (params.size() == 3) {
+        conditionalJump(JE, label, jumpIfTrue, (*params.at(0)), (*params.at(1)));
+        return;
+    } else if (params.size() == 2) {
+        auto instructions = opcodeGenerator.generate1OPInstruction(JE, *params.at(0));
+        addBitset(instructions);
+    } else {
+        params.erase(params.end()); // erase label param
+        auto instructions = opcodeGenerator.generateVarOPInstruction(JE, params);
+        addBitset(instructions);
+    }
+
+    jumps.newJump(label);
 
     bitset<8> offsetFirstBits;
     offsetFirstBits.set(JUMP_COND_TRUE, jumpIfTrue);
@@ -189,49 +234,44 @@ void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, const ZParam&
     // placeholder, will be replaced in getRoutine()
     addOneByte(offsetFirstBits);
     addOneByte(numberToBitset(0));
-
-    if (printLogs) {
-        cout << "RoutineGenerator: je (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param: "
-        << param.getZCodeValue() << ", paramIsVariable: " << param.isVariableArgument() << ")";
-    }
 }
 
-void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2) {
-    conditionalJump(JE, toLabel, jumpIfTrue, param1, param2);
-    
-    if (printLogs) {
-        cout << "RoutineGenerator: je (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param1: "
-        << param1.getZCodeValue() << ", Param2: " << param2.getZCodeValue() << ", param1IsVariable: " << param1.isVariableArgument()
-        << ", param2IsVariable: " << param2.isVariableArgument() << ")";
+// params: param1, param2, label
+void RoutineGenerator::jumpLessThan(vector<unique_ptr<ZParam>> params) {
+    if (params.size() != 3) {
+        cout << "Wrong param count for jump less than" << endl;
+        throw;
+    } else if (!(*params.at(params.size() - 1)).isNameParam) {
+        cout << "No label for jump less than available" << endl;;
+        throw;
     }
+
+    string label;
+    bool jumpIfTrue;
+    setLabelValues(*params.at(params.size() - 1), label, jumpIfTrue);
+
+    conditionalJump(JL, label, jumpIfTrue, *params.at(0), *params.at(1));
 }
 
-void RoutineGenerator::jumpLessThan(string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2) {
-    conditionalJump(JL, toLabel, jumpIfTrue, param1, param2);
-    
-    if (printLogs) {
-        cout << "RoutineGenerator: jl (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param1: "
-        << param1.getZCodeValue() << ", Param2: " << param2.getZCodeValue() << ", param1IsVariable: " << param1.isVariableArgument()
-        << ", param2IsVariable: " << param2.isVariableArgument() << ")";
+// params: param1, param2, label
+void RoutineGenerator::jumpGreaterThan(vector<unique_ptr<ZParam>> params) {
+    if (params.size() != 3) {
+        cout << "Wrong param count for jump greater than" << endl;
+        throw;
+    } else if (!(*params.at(params.size() - 1)).isNameParam) {
+        cout << "No label for jump greater than available" << endl;;
+        throw;
     }
+
+    string label;
+    bool jumpIfTrue;
+    setLabelValues(*params.at(params.size() - 1), label, jumpIfTrue);
+
+    conditionalJump(JG, label, jumpIfTrue, *params.at(0), *params.at(1));
 }
 
-void RoutineGenerator::jumpGreaterThan(string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2) {
-    conditionalJump(JG, toLabel, jumpIfTrue, param1, param2);
-
-    if (printLogs) {
-        cout << "RoutineGenerator: jg (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param1: "
-        << param1.getZCodeValue() << ", Param2: " << param2.getZCodeValue() << ", param1IsVariable: " << param1.isVariableArgument()
-        << ", param2IsVariable: " << param2.isVariableArgument() << ")";
-    }
-}
-
-void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(opcode,
-                                                                            param1.getZCodeValue(),
-                                                                            param2.getZCodeValue(),
-                                                                            param1.isVariableArgument(),
-                                                                            param2.isVariableArgument());
+void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, ZParam& param1, ZParam& param2) {
+    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(opcode, param1, param2);
     addBitset(instructions);
 
     jumps.newJump(toLabel);

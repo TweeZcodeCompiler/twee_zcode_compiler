@@ -25,7 +25,10 @@ private:
     static const std::string ROUTINE_DIRECTIVE;
     static const std::string NEW_LINE_COMMAND;
     static const std::string PRINT_COMMAND;
-    static const std::string JE_COMMAND; //jump equals
+    static const std::string JE_COMMAND;
+    static const std::string JG_COMMAND;
+    static const std::string JL_COMMAND;
+    static const std::string JZ_COMMAND;
     static const std::string QUIT_COMMAND;
     static const std::string READ_CHAR_COMMAND;
     static const std::string CALL_COMMAND;
@@ -52,6 +55,9 @@ private:
     void executeREADCommand(const std::string &readCommand, RoutineGenerator &routineGenerator);
 
     void executeJECommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+    void executeJGCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+    void executeJLCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+    void executeJZCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
 
     void executeCALL1nCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
     void executeCALLCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
@@ -60,7 +66,8 @@ private:
 
     void executeRETCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
-    std::unique_ptr<ZParam> createZParam(const std::string &paramString);
+    std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction);
+    std::unique_ptr<ZParam> createZParam(const std::string& paramString);
 
 
     std::map<std::string, uint8_t> globalVariables;
