@@ -14,13 +14,22 @@
 class Body {
 private:
     std::vector<std::unique_ptr<BodyPart>> bodyparts;
-    Body(const Body& that) = delete;
+
 
 public:
 
-    std::vector<std::unique_ptr<BodyPart>> &getBodyParts();
+    Body() {}
 
-    Body& operator+=(std::unique_ptr<BodyPart>&);
+    ~Body() {}
+
+    Body(const Body& that) {};
+
+    Body& operator=(const Body& that) {return *this;}
+
+
+    const std::vector<std::unique_ptr<BodyPart>> &getBodyParts() const;
+
+    Body& operator+=(std::unique_ptr<BodyPart>&&);
     Body& operator+=(BodyPart* bodyPart);
 
     std::string to_string();

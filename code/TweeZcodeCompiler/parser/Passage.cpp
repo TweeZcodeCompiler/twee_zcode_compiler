@@ -9,8 +9,7 @@
 #include <string>
 
 Passage::Passage(Head &head, Body &body) : head(head), body(body) {
-    this->head = head;
-    this->body = body;
+
 }
 
 Head& Passage::getHead() {

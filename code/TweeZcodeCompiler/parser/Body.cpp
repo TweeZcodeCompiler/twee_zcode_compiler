@@ -3,16 +3,15 @@
 //
 
 #include "include/Passage/Body.h"
-#include "memory.h"
 #include "include/Passage/Body/BodyPart.h"
 
 using namespace std;
 
-vector<unique_ptr<BodyPart>> &Body::getBodyParts() {
-    return this->bodyparts;
+const vector<unique_ptr<BodyPart>>& Body::getBodyParts() const {
+    return bodyparts;
 }
 
-Body &Body::operator+=(unique_ptr<BodyPart>& bodyPart) {
+Body &Body::operator+=(unique_ptr<BodyPart>&& bodyPart) {
     this->bodyparts.push_back(move(bodyPart));
     return *this;
 }
