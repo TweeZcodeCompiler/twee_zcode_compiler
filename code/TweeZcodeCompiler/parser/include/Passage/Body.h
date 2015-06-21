@@ -49,8 +49,7 @@ public:
 
     const std::vector<std::unique_ptr<BodyPart>> &getBodyParts() const;
 
-    Body& operator+=(std::unique_ptr<BodyPart>&&);
-    Body& operator+=(BodyPart* bodyPart);
+    Body& operator+=(BodyPart&);
 
     std::string to_string();
 };

@@ -171,6 +171,7 @@ title :
     LOG_DEBUG << "title -> TITLE NEWLINE";
     LOG_DEBUG << "create title:type(Head) out of token:TITLE";
     $$ = new Head(*$1);
+    delete $1;
     }
     |TITLE TAGS_OPEN tags TAGS_CLOSE NEWLINE
     {
@@ -178,6 +179,7 @@ title :
     LOG_DEBUG << "create title:type(Head) out of token:TITLE";
     //TODO: incorporate tags
     $$ = new Head(*$1);
+    delete $1;
     }
   ;
 
@@ -250,6 +252,7 @@ text :
     LOG_DEBUG << "text -> TEXT_TOKEN";
     LOG_DEBUG << "create top:text:type(Text)";
     $$ = new Text(*$1);
+    delete $1;
     }
   ;
 
@@ -259,12 +262,15 @@ link :
     LOG_DEBUG << "link -> LINK_OPEN TEXT_TOKEN LINK_CLOSE";
     LOG_DEBUG << "create top:link:type(Link) with 2:token:TEXT_TOKEN & 2:token:TEXT_TOKEN";
     $$ = new Link(*$2);
+    delete $2;
     }
     |LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
     {
     LOG_DEBUG << "link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE";
     LOG_DEBUG << "create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN";
     $$ = new Link(*$4, *$2);
+    delete $4;
+    delete $2;
     }
   ;
 
@@ -275,6 +281,7 @@ macro :
     LOG_DEBUG << "macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE";
     LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
     $$ = new Text(*$2);
+    delete $2;
     }
   ;
 
@@ -282,13 +289,16 @@ formatted:
     FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
     {
     //TODO:check if F_OPEN and F_CLOSE are the same
+    //TODO:check if anything needs to be deleted here
     LOG_DEBUG << "formatted -> FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE";
     LOG_DEBUG << "create top:formatted:type(--Text--) with 2:token:TEXT_TOKEN";
     $$ = new FormattedText(*$2, true, false, false);
+    delete $2;
     }
     |FORMATTING_OPEN formatted FORMATTING_CLOSE
     {
     //TODO:check if F_OPEN and F_CLOSE are the same
+    //TODO:check if anything needs to be deleted here
     LOG_DEBUG << "formatted -> FORMATTING_OPEN formatted FORMATTING_CLOSE";
     LOG_DEBUG << "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
     $$ = $2;
@@ -299,10 +309,14 @@ formatted:
     LOG_DEBUG << "formatted -> FORMATTING TEXT_TOKEN FORMATTING";
     LOG_DEBUG << "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
     $$ = new FormattedText(*$2, true, false, false);
+    delete $1;
+    delete $2;
+    delete $3;
     }
     |FORMATTING formatted FORMATTING
     {
     //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
+    //TODO:check if anything needs to be deleted here
     LOG_DEBUG << "formatted -> FORMATTING formatted FORMATTING";
     LOG_DEBUG << "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
     $$ = $2;

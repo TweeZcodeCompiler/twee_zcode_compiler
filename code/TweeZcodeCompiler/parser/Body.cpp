@@ -16,11 +16,6 @@ Body &Body::operator+=(BodyPart& bodyPart) {
     return *this;
 }
 
-Body& Body::operator+=(BodyPart* bodyPart) {
-    bodyparts.push_back(unique_ptr<BodyPart>(bodyPart));
-    return *this;
-}
-
 std::string Body::to_string() {
     std::string result = "  Body \n";
 
