@@ -22,6 +22,10 @@ public:
 
     FormattedText(std::string, bool, bool, bool);
 
+    virtual FormattedText* clone() const{
+        return new FormattedText(*this);
+    }
+
     bool isItalic();
 
     bool isBold();

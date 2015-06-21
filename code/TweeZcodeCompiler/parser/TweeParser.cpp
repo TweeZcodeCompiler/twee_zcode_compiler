@@ -7,11 +7,12 @@
 #include <stdio.h>
 
 using namespace Twee;
+using namespace std;
 
 class TweeParser::TweeParserImpl {
 public:
     TweeParserImpl(std::istream* input) : scanner(input), parser(scanner) { }
-    TweeFile* parse();
+    unique_ptr<TweeFile> parse();
 
 private:
     TweeScanner scanner;
@@ -26,18 +27,21 @@ TweeParser::~TweeParser() {
     delete this->impl;
 }
 
-TweeFile* TweeParser::parse() {
+unique_ptr<TweeFile> TweeParser::parse() {
     return impl->parse();
 }
 
 /* impl */
 
-TweeFile* TweeParser::TweeParserImpl::parse() {
+unique_ptr<TweeFile> TweeParser::TweeParserImpl::parse() {
     parser.parse();
 
     if(!tweeStructure) {
         throw new ParseException();
     }
-    // TODO: return a copy of the passage. global will be changed on next parse run.
-    return tweeStructure;
+
+    unique_ptr<TweeFile> tweeFilePtr(tweeStructure);
+    tweeStructure = nullptr;
+
+    return tweeFilePtr;
 }
