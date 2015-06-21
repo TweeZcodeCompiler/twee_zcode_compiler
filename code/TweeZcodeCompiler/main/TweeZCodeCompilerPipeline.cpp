@@ -35,10 +35,17 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
 
     stringstream buffer;
 
-    tweeCompiler.compile(*tweeFile, buffer);
+  //tweeCompiler.compile(*tweeFile, buffer);
 
-    ofstream testFile("test.zas");
-    testFile << buffer.str();
+
+    //direct assembly compile start
+    std::ifstream in( "eat_apple_simple.zap" );
+    buffer << in.rdbuf();
+    std::string contents(buffer.str());
+
+    cout << contents;
+
+    //direct assembly compile end end
 
     //create header
     ZCodeHeader header = ZCodeHeader();
