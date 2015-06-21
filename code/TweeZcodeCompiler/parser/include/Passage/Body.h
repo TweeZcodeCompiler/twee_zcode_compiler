@@ -33,10 +33,12 @@ public:
 
     Body& operator=(const Body& that) {
         copyParts(that);
+        return *this;
     };
 
     Body& operator=(const Body&& that) {
         copyParts(that);
+        return *this;
     };
 
     void copyParts(const Body& that) {

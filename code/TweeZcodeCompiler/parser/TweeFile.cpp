@@ -19,7 +19,7 @@ TweeFile::~TweeFile() {
 }
 
 TweeFile &TweeFile::operator+=(const Passage &passage) {
-    this->passages.push_back(passage);
+    this->passages.push_back(Passage(passage));
     return *this;
 }
 

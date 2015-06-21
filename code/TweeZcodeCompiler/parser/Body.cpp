@@ -11,8 +11,8 @@ const vector<unique_ptr<BodyPart>>& Body::getBodyParts() const {
     return bodyparts;
 }
 
-Body &Body::operator+=(unique_ptr<BodyPart>&& bodyPart) {
-    this->bodyparts.push_back(move(bodyPart));
+Body &Body::operator+=(BodyPart& bodyPart) {
+    this->bodyparts.push_back(unique_ptr<BodyPart>(bodyPart.clone()));
     return *this;
 }
 

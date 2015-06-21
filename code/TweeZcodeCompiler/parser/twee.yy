@@ -133,6 +133,7 @@ passages :
     $$ = $1;
     LOG_DEBUG << "add the passage:type(Passage) to the passages:type(TweeFile)";
     *$$ += *$2;
+    delete $2;
     }
 	|passage
 	{
@@ -141,6 +142,7 @@ passages :
     $$ = new TweeFile();
     LOG_DEBUG << "add passage:type(Passage) to passages:type(TweeFile)";
     *$$ += *$1;
+    delete $1;
     }
   ;
 passage :
@@ -149,6 +151,8 @@ passage :
     LOG_DEBUG << "passage -> head body";
     LOG_DEBUG << "create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects";
     $$ = new Passage(*$1, *$2);
+    delete $1;
+    delete $2;
     }
   ;
 
@@ -197,7 +201,8 @@ body :
     LOG_DEBUG << "pass body:type(Body) to top:body:type(Body)";
     $$ = $1;
     LOG_DEBUG << "add bodypart:type(BodyPart) to top:body:type(Body)";
-    *$$ += $2;
+    *$$ += *$2;
+    delete $2;
     }
     |bodypart
     {
@@ -205,7 +210,8 @@ body :
     LOG_DEBUG << "create top:body:type(Body)";
     $$ = new Body();
     LOG_DEBUG << "add bodypart:type(BodyPart) to top:body:type(Body)";
-    *$$ += $1;
+    *$$ += *$1;
+    delete $1;
     }
   ;
 
