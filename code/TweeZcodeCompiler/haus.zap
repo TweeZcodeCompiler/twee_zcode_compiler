@@ -1,5 +1,4 @@
 .FUNCT main test=49, bla, a=4, b=5
-new_line
 print "Du bist im Haus"
 new_line
 

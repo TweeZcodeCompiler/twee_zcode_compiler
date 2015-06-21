@@ -19,8 +19,6 @@
 class RoutineGenerator {
 
 private:
-    bool printLogs = true;
-
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
     std::map<std::string, u_int8_t> locVariables;   // keys = variable name, value = number in stack
     static std::map<std::string, size_t> routines;  // keys = name of routine, value = offset.
@@ -130,10 +128,9 @@ public:
     void printNum(std::vector<std::unique_ptr<ZParam>> params);
 
     //Call to a routine with spezific name
-    void callRoutine1n(std::string routineName);
+    void call1n(std::vector<std::unique_ptr<ZParam>> params);
 
-    void callRoutine(std::string routineName, const uint8_t storeTarget, const ZParam *param1,
-                                       const ZParam *param2, const ZParam *param3);
+    void callVS(std::vector<std::unique_ptr<ZParam>> params);
 
     void store(std::vector<std::unique_ptr<ZParam>> params);
 
@@ -161,10 +158,10 @@ public:
                 NEW_LINE = 187,
         // Opcodes for jump instructions
                 JE = 1,
-        JL = 2,
-        JG = 3,
-        JZ = 128,
-        JUMP = 140,
+                JL = 2,
+                JG = 3,
+                JZ = 128,
+                JUMP = 140,
         // Opcode for print operation; following by Z-character String
                 PRINT = 178,
         // Opcode: quit the main; no arguments.

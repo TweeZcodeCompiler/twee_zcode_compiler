@@ -25,10 +25,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generate1OPInstruction(unsigned int 
     if (paramIsVariable) {
         opcodeByte.set(5, paramIsVariable); // type variable (10)
     } else {
-        if (param < 0) {
-            cout << "Constant < 0 not allowed" << endl;
-            throw;
-        } else if (param < 256) {
+        if (param < 256) {
             opcodeByte.set(4, true);  // type small constant (01)
         } else {
             oneByteParameter = false;   // type large constant (00)
@@ -56,7 +53,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generate2OPInstruction(unsigned int 
     bitset<8> opcodeByte = bitset<8>(opcode);
     bool longForm = true; // used for 2 operands
 
-    if (param1 < 0 || param1 > 255 || param2 < 0 || param2 > 255) {
+    if (param1 > 255 || param2 > 255) {
         // variable form needed
         longForm = false;
     }
@@ -154,7 +151,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitset
         throw;
     }
 
-    int param = 0;
+    size_t param = 0;
     for (int i = 7; i > 0; i -= 2) {
         if (param >= params.size()) {
             // if less than 4 parameter types needed set last bits to type omitted
@@ -166,7 +163,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitset
             paramTypes.set(i - 1, false);
 
             instructions.push_back(bitset<8>(params[param]));
-        } else if (params[param] > -1 && params[param] < 256) {
+        } else if (params[param] < 256) {
             // type small constant
             paramTypes.set(i, false);
             paramTypes.set(i - 1, true);

@@ -179,7 +179,7 @@ void Jumps::calculateCallOffsets(size_t position) {
         }
     }
 
-    for (int i = 0; i < offsets.size(); i++) {
+    for (size_t i = 0; i < offsets.size(); i++) {
         RoutineGenerator::callTo[offsets[i] - 1] = RoutineGenerator::callTo[offsets[i]];
         RoutineGenerator::callTo.erase(offsets[i]);
         std::cout << (offsets[i] - 1) << "\n";

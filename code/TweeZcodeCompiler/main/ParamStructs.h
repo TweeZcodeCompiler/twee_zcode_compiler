@@ -10,7 +10,7 @@
 #include <stdint.h>
 
 enum ZParamType {
-    VALUE, VARIABLE, STORE, NAME,
+    VALUE, VARIABLE, STORE_ADDRESS, NAME,
 
     // needed for special cases in RoutineGenerator:
     EMPTY, VARIABLE_OR_VALUE
@@ -20,7 +20,7 @@ struct ZParam {
     bool isStoreAddress = false, isNameParam = false;
     std::string name;
     virtual bool isVariableArgument() const = 0;
-    virtual ZParamType getParamType();
+    virtual ZParamType getParamType() = 0;
 
     uint16_t getZCodeValue() const {
         return valueOrAddress;
@@ -63,7 +63,7 @@ struct ZStoreParam : public ZParam {
     bool isVariableArgument() const { return true; }
 
     ZParamType getParamType() {
-        return STORE;
+        return STORE_ADDRESS;
     }
 };
 

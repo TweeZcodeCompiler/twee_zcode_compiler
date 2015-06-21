@@ -31,12 +31,12 @@ private:
     static const std::string JZ_COMMAND;
     static const std::string QUIT_COMMAND;
     static const std::string READ_CHAR_COMMAND;
-    static const std::string CALL_COMMAND;
     static const std::string CALL_VS_COMMAND;
     static const std::string CALL_1N_COMMAND;
     static const std::string JUMP_COMMAND;
     static const std::string RET_COMMAND;
     static const std::string SET_TEXT_STYLE;
+    static const std::string STORE_COMMAND;
 
 
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
@@ -60,7 +60,7 @@ private:
     void executeJZCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
 
     void executeCALL1nCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
-    void executeCALLCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
+    void executeCALL_VSCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
     void executeJUMPCommand(const std::string &jumpCommand, RoutineGenerator &routineGenerator);
 
