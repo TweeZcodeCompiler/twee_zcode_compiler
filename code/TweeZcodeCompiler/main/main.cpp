@@ -2,8 +2,9 @@
 #include <plog/Log.h>
 #include <plog/Appenders/ConsoleAppender.h>
 #include "stacktrace.h"
-#include "SimpleCompilerPipeline.h"
+#include "TweeZCodeCompilerPipeline.h"
 #include "UserSideFormatter.h"
+#include "TweeCompiler.h"
 
 /*
  * How to use Logger:
@@ -31,6 +32,7 @@ void handler()
 }
 
 int main(int argc, char *argv[]) {
+    // install exception handler
     std::set_terminate(handler);
 
     // TODO: parse args properly (GNU getopt?)
@@ -39,7 +41,7 @@ int main(int argc, char *argv[]) {
     std::string outputFile = "hello_world.z8";
 
     //static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Compiler_Log.txt");
-    static plog::ConsoleAppender<plog::UserSideFormatter> consoleAppender; // Console Appender for user friendly output
+    plog::ConsoleAppender<plog::UserSideFormatter> consoleAppender; // Console Appender for user friendly output
 
     plog::init(plog::debug, "Compiler_Log.txt");
     plog::init(plog::error, &consoleAppender);
@@ -47,8 +49,9 @@ int main(int argc, char *argv[]) {
     LOG_DEBUG  << "Compiler started";
     LOG_ERROR  << "LOG_ERROR test";
     LOG_DEBUG  << "LOG_DEBUG test";
-    SimpleCompilerPipeline compiler;
-    compiler.compile(inputFile, outputFile);
+    TweeCompiler compiler;
+    TweeZCodeCompilerPipeline pipeline;
+    pipeline.compile(inputFile, outputFile, compiler);
 
     return 0;
 }

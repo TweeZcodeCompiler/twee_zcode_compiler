@@ -105,9 +105,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     assgen.print(text->getContent());
                 }
                 if(FormattedText* formText = dynamic_cast<FormattedText*>(*bodyPart)) {
-                    assgen.set_text_style(formText->isItalic(), formText->isBold(), formText->isUnderlined());
+                    assgen.setTextStyle(formText->isItalic(), formText->isBold(), formText->isUnderlined());
                     assgen.print(formText->getContent());
-                    assgen.set_text_style(false,false,false);
+                    assgen.setTextStyle(false, false, false);
                 }
             }
 
