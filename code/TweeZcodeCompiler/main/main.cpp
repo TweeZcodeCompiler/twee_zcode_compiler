@@ -43,12 +43,12 @@ int main(int argc, char *argv[]) {
     //static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Compiler_Log.txt");
     plog::ConsoleAppender<plog::UserSideFormatter> consoleAppender; // Console Appender for user friendly output
 
+    remove("Compiler_Log.txt"); //reset Compiler Log file
     plog::init(plog::debug, "Compiler_Log.txt");
     plog::init(plog::error, &consoleAppender);
 
     LOG_DEBUG  << "Compiler started";
-    LOG_ERROR  << "LOG_ERROR test";
-    LOG_DEBUG  << "LOG_DEBUG test";
+
     TweeCompiler compiler;
     TweeZCodeCompilerPipeline pipeline;
     pipeline.compile(inputFile, outputFile, compiler);

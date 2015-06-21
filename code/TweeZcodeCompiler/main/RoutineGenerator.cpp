@@ -6,6 +6,7 @@
 #include "ZCodeConverter.h"
 #include <iostream>
 #include <algorithm>
+#include <plog/Log.h>
 
 using namespace std;
 
@@ -56,7 +57,7 @@ void RoutineGenerator::printString(std::string stringToPrint) {
     }
 
     if (printLogs) {
-        cout << "RoutineGenerator: print " << stringToPrint;
+        LOG_DEBUG << "RoutineGenerator: print " << stringToPrint;
     }
 }
 
@@ -67,7 +68,7 @@ void RoutineGenerator::readChar(uint8_t var) {
     addOneByte(numberToBitset(var));
 
     if (printLogs) {
-        cout << "RoutineGenerator: readChar " << var;
+        LOG_DEBUG << "RoutineGenerator: readChar " << var;
     }
 }
 
@@ -77,7 +78,7 @@ void RoutineGenerator::printChar(uint8_t var) {
     addOneByte(numberToBitset(var));
 
     if (printLogs) {
-        cout << "RoutineGenerator: printChar " << var;
+        LOG_DEBUG << "RoutineGenerator: printChar " << var;
     }
 }
 
@@ -110,10 +111,10 @@ void RoutineGenerator::callRoutine1n(string routineName) {
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (u_int16_t) 3000, false);
     addBitset(instructions);
     RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = routineName;
-    std::cout << "Call Routine at:::" << offsetOfRoutine + routineZcode.size() - 2 << "\n";
+    LOG_DEBUG << "Call Routine at:::" << offsetOfRoutine + routineZcode.size() - 2 << "\n";
 
     if (printLogs) {
-        cout << "RoutineGenerator: callRoutine " << routineName;
+        LOG_DEBUG << "RoutineGenerator: callRoutine " << routineName;
     }
 }
 
@@ -133,7 +134,7 @@ void RoutineGenerator::jump(string toLabel) {
     addTwoBytes(1 << (JUMP_UNCOND_OFFSET_PLACEHOLDER + 7)); // placeholder, will be replaced in getRoutine()
 
     if (printLogs) {
-        cout << "RoutineGenerator: jump " << toLabel;
+        LOG_DEBUG << "RoutineGenerator: jump " << toLabel;
     }
 }
 
@@ -141,7 +142,7 @@ void RoutineGenerator::quitRoutine() {
     addOneByte(numberToBitset(QUIT));
 
     if (printLogs) {
-        cout << "RoutineGenerator: quit ";
+        LOG_DEBUG << "RoutineGenerator: quit ";
     }
 }
 
@@ -150,7 +151,7 @@ void RoutineGenerator::newLabel(string label) {
     jumps.newLabel(label);
 
     if (printLogs) {
-        cout << "RoutineGenerator: newLabel " << label;
+        LOG_DEBUG << "RoutineGenerator: newLabel " << label;
     }
 }
 
@@ -171,7 +172,7 @@ void RoutineGenerator::jumpZero(string toLabel, bool jumpIfTrue, const ZParam& p
     addOneByte(numberToBitset(0));
 
     if (printLogs) {
-        cout << "RoutineGenerator: jz (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param: "
+        LOG_DEBUG << "RoutineGenerator: jz (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param: "
                 << param.getZCodeValue() << ", paramIsVariable: " << param.isVariableArgument() << ")";
     }
 }
@@ -192,7 +193,7 @@ void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, const ZParam&
     addOneByte(numberToBitset(0));
 
     if (printLogs) {
-        cout << "RoutineGenerator: je (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param: "
+        LOG_DEBUG << "RoutineGenerator: je (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param: "
         << param.getZCodeValue() << ", paramIsVariable: " << param.isVariableArgument() << ")";
     }
 }
@@ -201,7 +202,7 @@ void RoutineGenerator::jumpEquals(string toLabel, bool jumpIfTrue, const ZParam&
     conditionalJump(JE, toLabel, jumpIfTrue, param1, param2);
     
     if (printLogs) {
-        cout << "RoutineGenerator: je (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param1: "
+        LOG_DEBUG << "RoutineGenerator: je (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param1: "
         << param1.getZCodeValue() << ", Param2: " << param2.getZCodeValue() << ", param1IsVariable: " << param1.isVariableArgument()
         << ", param2IsVariable: " << param2.isVariableArgument() << ")";
     }
@@ -211,7 +212,7 @@ void RoutineGenerator::jumpLessThan(string toLabel, bool jumpIfTrue, const ZPara
     conditionalJump(JL, toLabel, jumpIfTrue, param1, param2);
     
     if (printLogs) {
-        cout << "RoutineGenerator: jl (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param1: "
+        LOG_DEBUG << "RoutineGenerator: jl (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param1: "
         << param1.getZCodeValue() << ", Param2: " << param2.getZCodeValue() << ", param1IsVariable: " << param1.isVariableArgument()
         << ", param2IsVariable: " << param2.isVariableArgument() << ")";
     }
@@ -221,7 +222,7 @@ void RoutineGenerator::jumpGreaterThan(string toLabel, bool jumpIfTrue, const ZP
     conditionalJump(JG, toLabel, jumpIfTrue, param1, param2);
 
     if (printLogs) {
-        cout << "RoutineGenerator: jg (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param1: "
+        LOG_DEBUG << "RoutineGenerator: jg (label: " << toLabel << ", jumpIfTrue: " << jumpIfTrue << ", Param1: "
         << param1.getZCodeValue() << ", Param2: " << param2.getZCodeValue() << ", param1IsVariable: " << param1.isVariableArgument()
         << ", param2IsVariable: " << param2.isVariableArgument() << ")";
     }
@@ -252,7 +253,7 @@ void RoutineGenerator::store(u_int8_t address, u_int16_t value) {
     addBitset(instructions);
 
     if (printLogs) {
-        cout << "RoutineGenerator: store (address: " << address << ", value: " << value << ")";
+        LOG_DEBUG << "RoutineGenerator: store (address: " << address << ", value: " << value << ")";
     }
 }
 
@@ -263,7 +264,7 @@ void RoutineGenerator::load(u_int8_t address, u_int8_t resultAddress) {
     addOneByte(numberToBitset(resultAddress));
 
     if (printLogs) {
-        cout << "RoutineGenerator: load (address: " << address << ", resultAddress: " << resultAddress << ")";
+        LOG_DEBUG << "RoutineGenerator: load (address: " << address << ", resultAddress: " << resultAddress << ")";
     }
 }
 
@@ -272,13 +273,13 @@ void RoutineGenerator::printStringAtAddress(u_int8_t address) {
     addBitset(instructions);
 
     if (printLogs) {
-        cout << "RoutineGenerator: printStringAtAddress " << address;
+        LOG_DEBUG << "RoutineGenerator: printStringAtAddress " << address;
     }
 }
 
 void RoutineGenerator::setLocalVariable(string name, int16_t value) {
     if (++addedLocalVariables > maxLocalVariables) {
-        cout << "Added " << addedLocalVariables << " local variables to routine but only "
+        LOG_DEBUG << "Added " << addedLocalVariables << " local variables to routine but only "
             << maxLocalVariables << " specified at routine start!";
         throw;
     }
@@ -301,7 +302,7 @@ void RoutineGenerator::printNum(unsigned int address) {
 
 u_int8_t RoutineGenerator::getAddressOfVariable(std::string name) {
     if (locVariables[name] == NULL) {
-        cout << "Undefined local variable used: " << name << endl;
+        LOG_DEBUG << "Undefined local variable used: " << name;
         throw;
     } else {
         return locVariables[name];
