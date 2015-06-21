@@ -4,6 +4,7 @@
 
 #include "OpcodeParameterGenerator.h"
 #include <iostream>
+#include <plog/Log.h>
 
 using namespace std;
 
@@ -22,7 +23,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generate1OPInstruction(unsigned int 
         opcodeByte.set(5, paramIsVariable); // type variable (10)
     } else {
         if (param < 0) {
-            cout << "Constant < 0 not allowed" << endl;
+            LOG_DEBUG << "Constant < 0 not allowed";
             throw;
         } else if (param < 256) {
             opcodeByte.set(4, true);  // type small constant (01)
@@ -125,7 +126,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitset
     bitset<8> paramTypes;
 
     if (params.size() > 4) {
-        cout << "More than 4 operands are not allowed!" << endl;
+        LOG_DEBUG << "More than 4 operands are not allowed!";
         throw;
     }
 

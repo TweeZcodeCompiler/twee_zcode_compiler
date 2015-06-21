@@ -53,6 +53,8 @@ int main(int argc, char *argv[]) {
     TweeZCodeCompilerPipeline pipeline;
     pipeline.compile(inputFile, outputFile, compiler);
 
+    std::cout << inputFile << " compiled into --> " << outputFile << std::endl;
+
     return 0;
 }
 
