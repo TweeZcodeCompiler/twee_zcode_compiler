@@ -198,9 +198,9 @@ void RoutineGenerator::jumpZero(std::vector<std::unique_ptr<ZParam>> params) {
     addOneByte(numberToBitset(0));
 }
 
-// params: param1, (param2, (param3, param4,)) label
+// params: param1, param2, (param3, (param4,)) label
 void RoutineGenerator::jumpEquals(vector<unique_ptr<ZParam>> params) {
-    if (params.size() < 2 || params.size() > 5) {
+    if (params.size() < 3 || params.size() > 5) {
         cout << "Wrong param count for jump equals" << endl;
         throw;
     } else if (!(*params.at(params.size() - 1)).isNameParam) {
@@ -214,26 +214,22 @@ void RoutineGenerator::jumpEquals(vector<unique_ptr<ZParam>> params) {
 
     if (params.size() == 3) {
         conditionalJump(JE, label, jumpIfTrue, (*params.at(0)), (*params.at(1)));
-        return;
-    } else if (params.size() == 2) {
-        auto instructions = opcodeGenerator.generate1OPInstruction(JE, *params.at(0));
-        addBitset(instructions);
     } else {
         params.erase(params.end()); // erase label param
         auto instructions = opcodeGenerator.generateVarOPInstruction(JE, params);
         addBitset(instructions);
+
+        jumps.newJump(label);
+
+        bitset<8> offsetFirstBits;
+        offsetFirstBits.set(JUMP_COND_TRUE, jumpIfTrue);
+        offsetFirstBits.set(JUMP_COND_OFFSET_PLACEHOLDER, true);
+        offsetFirstBits.set(JUMP_UNCOND_OFFSET_PLACEHOLDER, false);
+
+        // placeholder, will be replaced in getRoutine()
+        addOneByte(offsetFirstBits);
+        addOneByte(numberToBitset(0));
     }
-
-    jumps.newJump(label);
-
-    bitset<8> offsetFirstBits;
-    offsetFirstBits.set(JUMP_COND_TRUE, jumpIfTrue);
-    offsetFirstBits.set(JUMP_COND_OFFSET_PLACEHOLDER, true);
-    offsetFirstBits.set(JUMP_UNCOND_OFFSET_PLACEHOLDER, false);
-
-    // placeholder, will be replaced in getRoutine()
-    addOneByte(offsetFirstBits);
-    addOneByte(numberToBitset(0));
 }
 
 // params: param1, param2, label

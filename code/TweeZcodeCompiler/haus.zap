@@ -3,7 +3,7 @@ new_line
 print "Du bist im Haus"
 new_line
 
-jz 9 ?ZERO
+je 9 1 9 ?ZERO
 print "n"
 jump ?WEITER
 

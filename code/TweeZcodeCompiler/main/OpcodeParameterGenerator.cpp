@@ -121,12 +121,16 @@ vector<bitset<8>> OpcodeParameterGenerator::generateVarOPInstruction(unsigned in
                                                                      vector<bool> paramIsVariable) {
     bitset<8> opcodeByte = bitset<8>(opcode);
 
+    // variable form with 2OP instruction (2OP Opcodes start with 00)
+    if (!opcodeByte.test(7) && !opcodeByte.test(6)) {
+        opcodeByte.set(5, false);
+    } else {
+        opcodeByte.set(5, true);
+    }
+
     // variable form
     opcodeByte.set(7, true);
     opcodeByte.set(6, true);
-
-    // variable form with more than 2 operands
-    opcodeByte.set(5, true);
 
     vector<bitset<8>> parameters = generateTypeBitsetAndParameterBitsets(params, paramIsVariable);
 

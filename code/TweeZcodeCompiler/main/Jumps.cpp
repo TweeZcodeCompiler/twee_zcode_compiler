@@ -4,7 +4,6 @@
 
 #include "Jumps.h"
 #include "RoutineGenerator.h"
-#include <iostream>
 
 using namespace std;
 
@@ -84,7 +83,6 @@ void Jumps::calculateOffsets() {
             }
         }
     }
-    int i;
 }
 
 void Jumps::setRoutineBitsetMap(map<int, bitset<8>> &opcodes) {
