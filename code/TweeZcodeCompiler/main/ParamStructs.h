@@ -9,10 +9,18 @@
 #include <bits/basic_string.h>
 #include <stdint.h>
 
+enum ZParamType {
+    VALUE, VARIABLE, STORE, NAME,
+
+    // needed for special cases in RoutineGenerator:
+    EMPTY, VARIABLE_OR_VALUE
+};
+
 struct ZParam {
     bool isStoreAddress = false, isNameParam = false;
     std::string name;
     virtual bool isVariableArgument() const = 0;
+    virtual ZParamType getParamType();
 
     uint16_t getZCodeValue() const {
         return valueOrAddress;
@@ -28,6 +36,10 @@ struct ZValueParam : public ZParam {
     }
 
     bool isVariableArgument() const { return false; }
+
+    ZParamType getParamType() {
+        return VALUE;
+    }
 };
 
 struct ZVariableParam : public ZParam {
@@ -36,6 +48,10 @@ struct ZVariableParam : public ZParam {
     }
 
     bool isVariableArgument() const { return true; }
+
+    ZParamType getParamType() {
+        return VARIABLE;
+    }
 };
 
 struct ZStoreParam : public ZParam {
@@ -45,6 +61,10 @@ struct ZStoreParam : public ZParam {
     }
 
     bool isVariableArgument() const { return true; }
+
+    ZParamType getParamType() {
+        return STORE;
+    }
 };
 
 struct ZNameParam : public ZParam {
@@ -54,6 +74,10 @@ struct ZNameParam : public ZParam {
     }
 
     bool isVariableArgument() const { return false; }
+
+    ZParamType getParamType() {
+        return NAME;
+    }
 };
 
 #endif //PROJECT_PARAMSTRUCTS_H

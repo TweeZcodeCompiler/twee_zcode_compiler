@@ -29,7 +29,7 @@ const string AssemblyParser::SET_TEXT_STYLE = "set_text_style";
 const string AssemblyParser::CALL_VS_COMMAND = "call_vs";
 const string AssemblyParser::CALL_1N_COMMAND = "call_1n";
 
-const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND = ' ';
+const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
 const string AssemblyParser::ASSIGNMENT_OPERATOR = "->";
 
@@ -56,7 +56,7 @@ void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemory
     for(string line; getline(input, line);) {
         line = trim(line);
         vector<string> lineComps;
-        this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND, lineComps);
+        this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND, lineComps);
         if (lineComps.size()) {
             string firstComp = lineComps.at(0);
 
@@ -119,7 +119,7 @@ void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemory
                 } else if (firstComp.compare(GVAR_DIRECTIVE) == 0) {
                     cout << "found gvar" << endl;
 
-                    this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND, lineComps);
+                    this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND, lineComps);
                     if (lineComps.size() < 2) {
                         cerr << "empty gvar declaration" << endl;
                     }
@@ -146,7 +146,7 @@ void AssemblyParser::finishRoutine(vector<bitset<8>> &highMemoryZcode) {
 }
 
 vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instruction) {
-    vector <string> commandParts = this->split(instruction, ' ');
+    vector <string> commandParts = this->split(instruction, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
     vector<unique_ptr<ZParam>> params;
 
     if (commandParts.size() < 2) {  // first argument is opcode instruction
@@ -182,8 +182,14 @@ vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instructi
     }
 
     if (containsStoreAddress) {
-        int address = getAddressForId(commandParts.at(commandParts.size() - 1));
-        params.push_back(unique_ptr<ZStoreParam>(new ZStoreParam((uint16_t) address)));
+        string storeAddress = commandParts.at(commandParts.size() - 1)
+        auto address = getAddressForId(storeAddress);
+        if (address) {
+            params.push_back(unique_ptr<ZStoreParam>(new ZStoreParam((uint16_t) address)));
+        } else {
+            cout << endl << endl << "Unknown store address" << storeAddress << endl << endl;
+            throw;
+        }
     } else if (containsLabel) {
         auto label = split(instruction, '?').at(1);
         params.push_back(unique_ptr<ZNameParam>(new ZNameParam(label)));
@@ -194,10 +200,9 @@ vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instructi
 
 unique_ptr<ZParam> AssemblyParser::createZParam(const string& paramString) {
     unique_ptr<ZParam> param;
-    int paramNum;
 
     try {
-        paramNum = stoi(paramString);
+        int paramNum = stoi(paramString);
         ZValueParam* valueParam = new ZValueParam((uint16_t) paramNum);
         param.reset(valueParam);
 
@@ -207,10 +212,18 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string& paramString) {
     }
 
     // not catching exception on purpose so we always return a proper value
-    paramNum = getAddressForId(paramString);
+    auto paramId = getAddressForId(paramString);
 
-    ZVariableParam* variableParam = new ZVariableParam((uint16_t) paramNum);
-    param.reset(variableParam);
+    if (paramId) {
+        ZVariableParam *variableParam = new ZVariableParam((uint16_t) *paramId);
+        param.reset(variableParam);
+    } else if (count(paramString.begin(), paramString.end(), AssemblyParser::STRING_DELIMITER) == 2){
+        ZNameParam *nameParam = new ZNameParam(paramString);
+        param.reset(nameParam);
+    } else {
+        cout << endl << endl << "Could not parse parameter: " << paramString << endl << endl;
+        throw;
+    }
 
     return param;
 }
@@ -225,14 +238,12 @@ void AssemblyParser::addGlobal(string globalName) {
 
 void AssemblyParser::executePRINTCommand(const string &printCommand, RoutineGenerator &routineGenerator) {
 
-    vector<string> commandParts = this->split(printCommand, AssemblyParser::STRING_DELIMITER);
-    routineGenerator.printString(commandParts.at(1));
-    cout << commandParts.at(1) << endl;
+    routineGenerator.printString(parseArguments(printCommand));
 }
 
 void AssemblyParser::executeSETTEXTSTYLECommand(const string &printCommand, RoutineGenerator &routineGenerator) {
 
-    vector <string> commandParts = this->split(printCommand, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND);
+    vector <string> commandParts = this->split(printCommand, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
     bool bold = false, italic = false, underlined = false, roman = false;
 
     for(size_t i = 0; i < commandParts[1].size(); i++) {
@@ -350,7 +361,7 @@ void AssemblyParser::executeRETCommand(const string &callCommand, RoutineGenerat
 void AssemblyParser::executeCommand(const string &command, RoutineGenerator &routineGenerator) {
 
     vector<string> commandParts = this->split(command,
-                                              AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND);
+                                              AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
 
     if (!commandParts.size()) return;
 
@@ -422,19 +433,18 @@ bool AssemblyParser::checkIfCommandRoutineStart(const string &command) {
 }
 
 
-uint8_t AssemblyParser::getAddressForId(const string &id) {
+unique_ptr<uint8_t> AssemblyParser::getAddressForId(const string &id) {
     if (id.compare("sp") == 0) {
         return 0;
     }
 
     // check global variables
     if (globalVariables.count(id)) {
-        return (uint8_t) (globalVariables[id] + 0x10);
+        return unique_ptr<uint8_t>(new ((uint8_t) (globalVariables[id] + 0x10)));
     } else if (currentGenerator->containsLocalVariable(id)) {
-        return currentGenerator->getAddressOfVariable(id);
+        return unique_ptr<uint8_t>(new (currentGenerator->getAddressOfVariable(id)));
     } else {
-        cout << "Could not find variable " << id << endl;
-        throw;
+        return unique_ptr<uint8_t>();
     }
 }
 

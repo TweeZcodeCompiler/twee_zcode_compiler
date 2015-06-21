@@ -12,6 +12,64 @@ using namespace std;
 map<string, size_t> RoutineGenerator::routines = map<string, size_t>();
 std::map<size_t, std::string> RoutineGenerator::callTo = std::map<size_t, std::string>();
 
+void checkParamCount(vector<unique_ptr<ZParam>> &params, unsigned int paramCount1, unsigned int paramCount2 = 0,
+                     unsigned int paramCount3 = 0, unsigned int paramCount4 = 0) {
+
+    if (params.size() != paramCount1 && (paramCount2 != 0 && params.size() != paramCount2)
+        && (paramCount3 != 0 && params.size() != paramCount3) && (paramCount4 != 0 && params.size() != paramCount4)) {
+
+        cout << endl << endl << "Wrong parameter count" << endl << endl;
+        throw;
+    }
+}
+
+bool sameType(ZParamType paramType, ZParamType neededType) {
+    if (paramType == VARIABLE_OR_VALUE) {
+        return neededType == VARIABLE || neededType == VALUE;
+    } else if (neededType == EMPTY) {
+        return false;
+    } else {
+        return paramType == neededType;
+    }
+}
+
+void checkParamType(vector<unique_ptr<ZParam>> &params, ZParamType type1, ZParamType type2 = EMPTY, ZParamType type3 = EMPTY,
+                    ZParamType type4 = EMPTY) {
+
+    for (int i = 0; i < params.size(); i++) {
+        switch (i) {
+            case 0:
+                if (!sameType((*params.at(0)).getParamType(), type1)) {
+                    cout << endl << endl << "Wrong param type for parameter 1" << endl << endl;
+                    throw;
+                }
+                break;
+            case 1:
+                if (!sameType((*params.at(1)).getParamType(), type2)) {
+                    cout << endl << endl << "Wrong param type for parameter 2" << endl << endl;
+                    throw;
+                }
+                break;
+            case 2:
+                if (!sameType((*params.at(2)).getParamType(), type3)) {
+                    cout << endl << endl << "Wrong param type for parameter 3" << endl << endl;
+                    throw;
+                }
+                break;
+            case 3:
+                if (!sameType((*params.at(3)).getParamType(), type4)) {
+                    cout << endl << endl << "Wrong param type for parameter 4" << endl << endl;
+                    throw;
+                }
+                break;
+            default:
+                cout << endl << endl << "Too many arguments!" << endl << endl;
+                throw;
+        }
+    }
+
+}
+
 vector<bitset<8>> RoutineGenerator::getRoutine() {
     jumps.calculateOffsets();
 
@@ -40,9 +98,13 @@ void RoutineGenerator::setTextStyle(bool roman, bool reverseVideo, bool bold, bo
     addBitset(command);
 }
 
-void RoutineGenerator::printString(std::string stringToPrint) {
+// params: stringToPrint
+void RoutineGenerator::printString(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1);
+    checkParamType(params, NAME);
+
     ZCodeConverter converter = ZCodeConverter();
-    vector<bitset<8>> zsciiString = converter.convertStringToZSCII(stringToPrint);
+    vector<bitset<8>> zsciiString = converter.convertStringToZSCII((*params.at(0)).name);
 
     unsigned long len = zsciiString.size();
     for (int i = 0; i < len; i++) {
@@ -54,31 +116,27 @@ void RoutineGenerator::printString(std::string stringToPrint) {
         }
         addOneByte(zsciiString[i]);
     }
-
-    if (printLogs) {
-        cout << "RoutineGenerator: print " << stringToPrint;
-    }
 }
 
-void RoutineGenerator::readChar(uint8_t var) {
+// params: variable
+void RoutineGenerator::readChar(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1);
+    checkParamType(params, VARIABLE);
+
     addOneByte(numberToBitset(READ_CHAR));
     addOneByte(numberToBitset(0xbf));
     addOneByte(numberToBitset(1));
-    addOneByte(numberToBitset(var));
-
-    if (printLogs) {
-        cout << "RoutineGenerator: readChar " << var;
-    }
+    addOneByte(numberToBitset((*params.at(0)).getZCodeValue()));
 }
 
-void RoutineGenerator::printChar(uint8_t var) {
+// params: variable
+void RoutineGenerator::printChar(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1);
+    checkParamType(params, VARIABLE);
+
     addOneByte(numberToBitset(PRINT_CHAR));
     addOneByte(numberToBitset(0xbf));
-    addOneByte(numberToBitset(var));
-
-    if (printLogs) {
-        cout << "RoutineGenerator: printChar " << var;
-    }
+    addOneByte(numberToBitset((*params.at(0)).getZCodeValue()));
 }
 
 void RoutineGenerator::callRoutine(std::string routineName, const uint8_t storeTarget, const ZParam *param1,
@@ -170,7 +228,7 @@ void RoutineGenerator::jump(vector<unique_ptr<ZParam>> params) {
 }
 
 // params: param1, label
-void RoutineGenerator::jumpZero(std::vector<std::unique_ptr<ZParam>> params) {
+void RoutineGenerator::jumpZero(vector<unique_ptr<ZParam>> params) {
     if (params.size() != 2) {
         cout << "Wrong param count for jump zero" << endl;
         throw;
@@ -282,33 +340,33 @@ void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel,
     addOneByte(numberToBitset(0));
 }
 
-void RoutineGenerator::store(u_int8_t address, u_int16_t value) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(STORE, address, value, false, false);
-    addBitset(instructions);
+// params: address, value
+void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 2);
+    checkParamType(params, VARIABLE, VALUE);
 
-    if (printLogs) {
-        cout << "RoutineGenerator: store (address: " << address << ", value: " << value << ")";
-    }
+    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(STORE, *params.at(0), *params.at(1));
+    addBitset(instructions);
 }
 
-void RoutineGenerator::load(u_int8_t address, u_int8_t resultAddress) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, address, true);
+// params: address, resultAddress
+void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 2);
+    checkParamType(params, VARIABLE, VARIABLE);
+
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, (*params.at(0)).getZCodeValue(), true);
     addBitset(instructions);
 
-    addOneByte(numberToBitset(resultAddress));
-
-    if (printLogs) {
-        cout << "RoutineGenerator: load (address: " << address << ", resultAddress: " << resultAddress << ")";
-    }
+    addOneByte(numberToBitset((*params.at(1)).getZCodeValue()));
 }
 
-void RoutineGenerator::printStringAtAddress(u_int8_t address) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(PRINT_ADDR, address, true);
-    addBitset(instructions);
+// params: address
+void RoutineGenerator::printStringAtAddress(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1);
+    checkParamType(params, VARIABLE);
 
-    if (printLogs) {
-        cout << "RoutineGenerator: printStringAtAddress " << address;
-    }
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(PRINT_ADDR, (*params.at(0)).getZCodeValue(), true);
+    addBitset(instructions);
 }
 
 void RoutineGenerator::setLocalVariable(string name, int16_t value) {
@@ -320,12 +378,21 @@ void RoutineGenerator::setLocalVariable(string name, int16_t value) {
 
     size_t size = locVariables.size() + 1;
     locVariables[name] = size;   // first local variable is at address 1 in stack
-    store(locVariables[name], value);
+
+    vector<unique_ptr<ZParam>> params;
+    params.push_back(unique_ptr<ZParam> (new ZVariableParam(locVariables[name])));
+    params.push_back(unique_ptr<ZParam> (new ZValueParam(value)));
+
+    store(params);
 }
 
-void RoutineGenerator::printNum(unsigned int address) {
+// params: address
+void RoutineGenerator::printNum(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1);
+    checkParamType(params, VARIABLE);
+
     vector<uint16_t> addresses;
-    addresses.push_back(address);
+    addresses.push_back((*params.at(0)).getZCodeValue());
 
     vector<bool> isParam;
     isParam.push_back(true);
@@ -348,8 +415,12 @@ bool RoutineGenerator::containsLocalVariable(string name) {
     return locVariables.count(name);
 }
 
-void RoutineGenerator::returnValue(const ZParam& param) {
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(RET_VALUE, param.getZCodeValue(), param.isVariableArgument());
+// params: variableOrConstant
+void RoutineGenerator::returnValue(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1);
+    checkParamType(params, VARIABLE_OR_VALUE);
+
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(RET_VALUE, *params.at(0));
     addBitset(instructions);
 }
 

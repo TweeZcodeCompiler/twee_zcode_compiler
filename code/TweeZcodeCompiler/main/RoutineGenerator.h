@@ -117,17 +117,17 @@ public:
 
     void jumpEquals(std::vector<std::unique_ptr<ZParam>> params);
 
-    void readChar(uint8_t var);
+    void readChar(std::vector<std::unique_ptr<ZParam>> params);
 
-    void printChar(uint8_t var);
+    void printChar(std::vector<std::unique_ptr<ZParam>> params);
 
     void setTextStyle(bool roman, bool reverseVideo, bool bold, bool italic, bool fixedPitch);
 
-    void printString(std::string stringToPrint);
+    void printString(std::vector<std::unique_ptr<ZParam>> params);
 
-    void printStringAtAddress(u_int8_t address);
+    void printStringAtAddress(std::vector<std::unique_ptr<ZParam>> params);
 
-    void printNum(unsigned int address);
+    void printNum(std::vector<std::unique_ptr<ZParam>> params);
 
     //Call to a routine with spezific name
     void callRoutine1n(std::string routineName);
@@ -135,13 +135,13 @@ public:
     void callRoutine(std::string routineName, const uint8_t storeTarget, const ZParam *param1,
                                        const ZParam *param2, const ZParam *param3);
 
-    void store(u_int8_t address, u_int16_t value);
+    void store(std::vector<std::unique_ptr<ZParam>> params);
 
-    void load(u_int8_t address, u_int8_t resultAddress);
+    void load(std::vector<std::unique_ptr<ZParam>> params);
 
     void quitRoutine();
 
-    void returnValue(const ZParam &param);
+    void returnValue(std::vector<std::unique_ptr<ZParam>> params);
 
 
     /*

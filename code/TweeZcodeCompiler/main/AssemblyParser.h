@@ -17,7 +17,7 @@ class AssemblyParser {
 
 private:
 
-    static const char SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND;
+    static const char SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND;
     static const std::string GVAR_DIRECTIVE;
     static const char STRING_DELIMITER;
     static const std::string ASSIGNMENT_OPERATOR;
@@ -76,7 +76,7 @@ private:
 
     void finishRoutine(std::vector <std::bitset<8>> &highMemoryZcode);
     void addGlobal(std::string globalName);
-    uint8_t getAddressForId(const std::string& id);
+    std::unique_ptr<uint8_t> getAddressForId(const std::string& id);
 
 public:
     void readAssembly(std::istream& input, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
