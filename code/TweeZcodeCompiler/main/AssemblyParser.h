@@ -62,8 +62,11 @@ private:
 
     std::unique_ptr<ZParam> createZParam(const std::string &paramString);
 
+    bool checkIfRoutineNameExists(std::string routineName);
+
 
     std::map<std::string, uint8_t> globalVariables;
+    std::vector<std::string> routineNameList;
 
     std::unique_ptr<RoutineGenerator> currentGenerator;
 

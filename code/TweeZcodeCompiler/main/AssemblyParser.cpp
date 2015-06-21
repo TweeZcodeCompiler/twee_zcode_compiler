@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <bitset>
 #include <cstdint>
+#include <plog/Log.h>
 
 using namespace std;
 
@@ -43,6 +44,15 @@ string trim(const string &str,
     return str.substr(strBegin, strRange);
 }
 
+bool AssemblyParser::checkIfRoutineNameExists(std::string routineName)
+{
+    if(std::find(routineNameList.begin(), routineNameList.end(), routineName) != routineNameList.end()) {
+        return true;
+    }
+    return false;
+
+}
+
 
 void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemoryZcode,
                                   size_t offset) {
@@ -66,6 +76,13 @@ void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemory
                         throw;
                     }
                     string routineName = lineComps.at(1);
+
+                    if(checkIfRoutineNameExists(routineName) == true)
+                    {
+                     LOG_ERROR << "two routines have the same name";
+
+                    }
+                    routineNameList.push_back(routineName);
 
                     // currentGenerator exists, so we can get its code
                     if (currentGenerator) {
@@ -171,6 +188,11 @@ void AssemblyParser::addGlobal(string globalName) {
     // TODO: check if maximum gvar limit is reached
     unsigned index = (unsigned) globalVariables.size();
     cout << "adding gvar " << globalName << " at index " << to_string(index) << endl;
+    this->globalVariables.find(globalName);
+    if((globalVariables.find(globalName) == globalVariables.end()) == false)
+    {
+        LOG_ERROR << "two global variable have the same name";
+    }
     this->globalVariables[globalName] = index;
 }
 
