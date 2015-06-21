@@ -2,7 +2,7 @@
 // Created by Manuel Polzhofer on 19.05.15.
 //
 
-#include "SimpleCompilerPipeline.h"
+#include "TweeZCodeCompilerPipeline.h"
 
 #include <TweeParser.h>
 #include <fstream>
@@ -10,14 +10,12 @@
 #include <memory>
 #include <map>
 #include <TweeFile.h>
-#include "TweeCompiler.h"
 #include "AssemblyParser.h"
 #include <sstream>
 
 using namespace std;
 
-//Just a Simple Compiler Pipeline
-void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
+void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, ITweeCompiler& tweeCompiler) {
 
     log("Simple Compiler Pipeline started");
 
@@ -37,8 +35,7 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
 
     stringstream buffer;
 
-    TweeCompiler compiler;
-    compiler.compile(*tweeFile, buffer);
+    tweeCompiler.compile(*tweeFile, buffer);
 
     ofstream testFile("test.zas");
     testFile << buffer.str();
@@ -86,7 +83,7 @@ void SimpleCompilerPipeline::compile(string filename, string zCodeFileName) {
     log("ZCode File '" + zCodeFileName + "' generated");
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::generateDynamicMemory(ZCodeHeader &header, size_t offset) {
+std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::generateDynamicMemory(ZCodeHeader &header, size_t offset) {
     vector<bitset<8>> akk = vector<bitset<8>>();
     //abbervation strings
     Utils::fillWithBytes(akk, 0, 2);
@@ -105,7 +102,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateDynamicMemory(ZCodeH
     return akk;
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHeader &header, size_t offset) {
+std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::generateStaticMemory(ZCodeHeader &header, size_t offset) {
     vector<bitset<8>> akk = vector<bitset<8>>();
     //grammar table
     Utils::fillWithBytes(akk, 0, 0x55f);
@@ -120,7 +117,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateStaticMemory(ZCodeHe
     return akk;
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHeader &header, size_t offset, std::istream& instructionsInput) {
+std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::generateHighMemory(ZCodeHeader &header, size_t offset, std::istream& instructionsInput) {
     vector<bitset<8>> highMemoryZcode = vector<bitset<8>>();
 
     // this part creates call to first routine
@@ -135,7 +132,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::generateHighMemory(ZCodeHead
     return highMemoryZcode;
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::addFileSizeToHeader(std::vector<std::bitset<8>> zCode,
+std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::addFileSizeToHeader(std::vector<std::bitset<8>> zCode,
                                                                         size_t fileSize) {
     //change fileSize in header
     bitset<16> shortVal(fileSize / 8);
@@ -154,7 +151,7 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::addFileSizeToHeader(std::vec
 }
 
 
-void SimpleCompilerPipeline::printHex(std::vector<std::bitset<8>> bitsetList) {
+void TweeZCodeCompilerPipeline::printHex(std::vector<std::bitset<8>> bitsetList) {
     cout << endl << endl;
     for (unsigned int i = 0; i < bitsetList.size(); i++) {
         bitset<8> set(bitsetList.at(i));
@@ -163,7 +160,7 @@ void SimpleCompilerPipeline::printHex(std::vector<std::bitset<8>> bitsetList) {
     cout << endl;
 }
 
-std::vector<std::bitset<8>> SimpleCompilerPipeline::printGlobalTable(int offset) {
+std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::printGlobalTable(int offset) {
     vector<bitset<8>> akk = vector<bitset<8>>();
     for (int i = 0; i < (0xff - 0x10); i++) {
         int adr = offset + (0xff - 0x10) * 2 + i * 100;
@@ -183,6 +180,6 @@ std::vector<std::bitset<8>> SimpleCompilerPipeline::printGlobalTable(int offset)
     return akk;
 }
 
-void SimpleCompilerPipeline::log(string message) {
+void TweeZCodeCompilerPipeline::log(string message) {
     cout << "Compiler: " << message << " . . ." << "\n";
 }

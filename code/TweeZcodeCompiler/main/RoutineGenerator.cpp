@@ -89,6 +89,7 @@ void RoutineGenerator::callRoutine(std::string routineName, const uint8_t storeT
     vector<bool> isVariable;
     vector<uint16_t> params;
 
+    // first param is routine addr
     params.push_back(3000);
     isVariable.push_back(false);
 
