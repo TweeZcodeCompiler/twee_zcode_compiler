@@ -8,7 +8,7 @@ print "0...Nicht essen"
 new_line
 print "Was willst du tun "
 read_char 1 -> USER_INPUT
-je 49 USER_INPUT ?L0
+jg 52 USER_INPUT ?L0
 new_line
 print "Deine Aktion wird ausgefuehrt ..."
 new_line

@@ -17,6 +17,9 @@ const string AssemblyParser::GVAR_DIRECTIVE = ".GVAR";
 const string AssemblyParser::NEW_LINE_COMMAND = "new_line";
 const string AssemblyParser::PRINT_COMMAND = "print";
 const string AssemblyParser::JE_COMMAND = "je";
+const string AssemblyParser::JUMP_GREATER_COMMAND = "jg";
+const string AssemblyParser::JUMP_SMALLER_COMMAND = "jl";
+
 const string AssemblyParser::QUIT_COMMAND = "quit";
 const string AssemblyParser::READ_CHAR_COMMAND = "read_char";
 const string AssemblyParser::CALL_COMMAND = "call";
@@ -267,6 +270,32 @@ void AssemblyParser::executeJECommand(const string &jeCommand, RoutineGenerator 
     routineGenerator.jumpEquals(label, true, *param1, *param2);
 }
 
+void AssemblyParser::executeJumpGreaterCommand(const string &command, RoutineGenerator &routineGenerator) {
+
+    vector<string> commandParts = this->split(command, '?');
+    string label = commandParts.at(1);
+
+    commandParts = split(command,' ');
+    unique_ptr<ZParam> param1 = createZParam(commandParts.at(1));
+    unique_ptr<ZParam> param2 = createZParam(commandParts.at(2));
+
+    cout << " "  << label << endl;
+    routineGenerator.jumpGreaterThan(label, true, *param1, *param2);
+}
+void AssemblyParser::executeJumpSmallerCommand(const string &jumpSmallerCommand, RoutineGenerator &routineGenerator) {
+
+    vector<string> commandParts = this->split(jumpSmallerCommand, '?');
+    string label = commandParts.at(1);
+
+    commandParts = split(jumpSmallerCommand,' ');
+    unique_ptr<ZParam> param1 = createZParam(commandParts.at(1));
+    unique_ptr<ZParam> param2 = createZParam(commandParts.at(2));
+
+    cout << " "  << label << endl;
+    routineGenerator.jumpLessThan(label, true, *param1, *param2);
+}
+
+
 void AssemblyParser::executeJUMPCommand(const string &jumpCommand, RoutineGenerator &routineGenerator) {
 
     vector<string> commandParts = this->split(jumpCommand, '?');
@@ -340,6 +369,12 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::JE_COMMAND) == 0) {
         cout << ":::::: new je ";
         executeJECommand(command, routineGenerator);
+    }else if (commandPart.compare(AssemblyParser::JUMP_GREATER_COMMAND) == 0) {
+        cout << ":::::: new jump greater ";
+        executeJumpGreaterCommand(command, routineGenerator);
+    }else if (commandPart.compare(AssemblyParser::JUMP_SMALLER_COMMAND) == 0) {
+        cout << ":::::: new jump smaller ";
+        executeJumpSmallerCommand(command, routineGenerator);
     } else if (commandPart.compare(AssemblyParser::QUIT_COMMAND) == 0) {
         routineGenerator.quitRoutine();
         cout << ":::::: new quit" << endl;
