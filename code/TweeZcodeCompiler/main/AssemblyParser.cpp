@@ -46,11 +46,7 @@ string trim(const string &str,
 
 bool AssemblyParser::checkIfRoutineNameExists(std::string routineName)
 {
-    if(std::find(routineNameList.begin(), routineNameList.end(), routineName) != routineNameList.end()) {
-        return true;
-    }
-    return false;
-
+    return std::find(routineNameList.begin(), routineNameList.end(), routineName) != routineNameList.end());
 }
 
 
@@ -77,10 +73,8 @@ void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemory
                     }
                     string routineName = lineComps.at(1);
 
-                    if(checkIfRoutineNameExists(routineName) == true)
-                    {
-                     LOG_ERROR << "two routines have the same name";
-
+                    if(checkIfRoutineNameExists(routineName)) {
+                        LOG_ERROR << "two routines have the same name";
                     }
                     routineNameList.push_back(routineName);
 
@@ -189,8 +183,7 @@ void AssemblyParser::addGlobal(string globalName) {
     unsigned index = (unsigned) globalVariables.size();
     cout << "adding gvar " << globalName << " at index " << to_string(index) << endl;
     this->globalVariables.find(globalName);
-    if((globalVariables.find(globalName) == globalVariables.end()) == false)
-    {
+    if(globalVariables.find(globalName) != globalVariables.end()) {
         LOG_ERROR << "two global variable have the same name";
     }
     this->globalVariables[globalName] = index;
