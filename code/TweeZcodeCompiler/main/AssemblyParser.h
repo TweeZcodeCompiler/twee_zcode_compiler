@@ -26,6 +26,8 @@ private:
     static const std::string NEW_LINE_COMMAND;
     static const std::string PRINT_COMMAND;
     static const std::string JE_COMMAND; //jump equals
+    static const std::string JUMP_GREATER_COMMAND; //jump greater
+    static const std::string JUMP_SMALLER_COMMAND; //jump smaller
     static const std::string QUIT_COMMAND;
     static const std::string READ_CHAR_COMMAND;
     static const std::string CALL_COMMAND;
@@ -52,6 +54,8 @@ private:
     void executeREADCommand(const std::string &readCommand, RoutineGenerator &routineGenerator);
 
     void executeJECommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+    void executeJumpGreaterCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+    void executeJumpSmallerCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
 
     void executeCALL1nCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
     void executeCALLCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
@@ -59,6 +63,12 @@ private:
     void executeJUMPCommand(const std::string &jumpCommand, RoutineGenerator &routineGenerator);
 
     void executeRETCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
+
+    bool checkIfLineIsDirective(std::string line);
+
+    void performRoutineDirectiveCommand( std::vector<std::string> lineComps, std::vector <std::bitset<8>> &highMemoryZcode,size_t offset);
+    void performRoutineGlobalVarCommand(std::string line);
+
 
     std::unique_ptr<ZParam> createZParam(const std::string &paramString);
 
