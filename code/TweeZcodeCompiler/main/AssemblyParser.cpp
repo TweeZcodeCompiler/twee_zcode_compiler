@@ -75,6 +75,7 @@ void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemory
 
                     if(checkIfRoutineNameExists(routineName)) {
                         LOG_ERROR << "two routines have the same name";
+                        throw;
                     }
                     routineNameList.push_back(routineName);
 
@@ -185,6 +186,7 @@ void AssemblyParser::addGlobal(string globalName) {
     this->globalVariables.find(globalName);
     if(globalVariables.find(globalName) != globalVariables.end()) {
         LOG_ERROR << "two global variable have the same name";
+        throw;
     }
     this->globalVariables[globalName] = index;
 }
