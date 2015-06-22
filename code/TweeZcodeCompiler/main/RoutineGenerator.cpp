@@ -378,15 +378,9 @@ void RoutineGenerator::setLocalVariable(string name, int16_t value) {
 // params: address
 void RoutineGenerator::printNum(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1);
-    checkParamType(params, VARIABLE);
+    checkParamType(params, VALUE);
 
-    vector<uint16_t> addresses;
-    addresses.push_back((*params.at(0)).getZCodeValue());
-
-    vector<bool> isParam;
-    isParam.push_back(true);
-
-    vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(PRINT_SIGNED_NUM, addresses, isParam);
+    vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(PRINT_SIGNED_NUM, params);
     addBitset(instructions);
 }
 

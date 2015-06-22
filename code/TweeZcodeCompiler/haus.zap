@@ -1,6 +1,5 @@
 .FUNCT main test=49, bla, a=4, b=5
-read_char -> test
-print_char test
+print_num 47
 
 print "Du bist im Haus_"
 print "_Willst du in den Garten? (ja..1/nein...2):"
