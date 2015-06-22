@@ -81,13 +81,13 @@ ZAssemblyGenerator& ZAssemblyGenerator::addRoutine(std::string routineName,
                                                    std::vector<ZRoutineArgument> args) {
     stringstream ss;
     ss << routineName << INST_SEPARATOR;
-    for(auto it = args.begin(); it != args.end(); it++) {
+    for(auto it = args.begin(); it != args.end(); ++it) {
         ss << it->argName;
         if(it->value) {
             ss << ARGS_EQ << *(it->value);
         }
 
-        if(!((it != args.end()) && (it + 1 == args.end()))) {
+        if(it + 1 != args.end()) {
             ss << ARGS_SEPARATOR;
         }
     }
