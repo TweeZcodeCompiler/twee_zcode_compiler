@@ -123,7 +123,7 @@ public:
 
     void printString(std::vector<std::unique_ptr<ZParam>> params);
 
-    void printStringAtAddress(std::vector<std::unique_ptr<ZParam>> params);
+    void printAddress(std::vector<std::unique_ptr<ZParam>> params);
 
     void printNum(std::vector<std::unique_ptr<ZParam>> params);
 
@@ -152,7 +152,6 @@ public:
                 PRINT_CHAR = 229,
         //Opcode: 1OP:143 F 5 call_1n routine
                 CALL_1N = 143,
-                CALL = 224,
                 CALL_VS = 224,
         // Print new line
                 NEW_LINE = 187,

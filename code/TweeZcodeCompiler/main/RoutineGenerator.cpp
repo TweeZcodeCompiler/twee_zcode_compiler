@@ -350,9 +350,11 @@ void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {
 }
 
 // params: address
-void RoutineGenerator::printStringAtAddress(vector<unique_ptr<ZParam>> params) {
+void RoutineGenerator::printAddress(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1);
-    checkParamType(params, VARIABLE);
+    checkParamType(params, VARIABLE_OR_VALUE);
+
+    // TODO: Test this opcode with extra string table
 
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(PRINT_ADDR, *params.at(0));
     addBitset(instructions);
@@ -384,7 +386,7 @@ void RoutineGenerator::printNum(vector<unique_ptr<ZParam>> params) {
     addBitset(instructions);
 }
 
-u_int8_t RoutineGenerator::getAddressOfVariable(std::string name) {
+u_int8_t RoutineGenerator::getAddressOfVariable(string name) {
     if (locVariables.count(name) == 0) {
         cout << "Undefined local variable used: " << name << endl;
         throw;

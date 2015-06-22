@@ -33,6 +33,7 @@ private:
     static const std::string READ_CHAR_COMMAND;
     static const std::string PRINT_CHAR_COMMAND;
     static const std::string PRINT_NUM_COMMAND;
+    static const std::string PRINT_ADDR_COMMAND;
     static const std::string CALL_VS_COMMAND;
     static const std::string CALL_1N_COMMAND;
     static const std::string JUMP_COMMAND;
