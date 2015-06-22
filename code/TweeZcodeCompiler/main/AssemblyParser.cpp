@@ -9,6 +9,7 @@
 #include <plog/Log.h>
 #include <bitset>
 #include <cstdint>
+#include <plog/Log.h>
 
 using namespace std;
 
@@ -45,6 +46,11 @@ string trim(const string &str,
     const auto strRange = strEnd - strBegin + 1;
 
     return str.substr(strBegin, strRange);
+}
+
+bool AssemblyParser::checkIfRoutineNameExists(std::string routineName)
+{
+    return (std::find(routineNameList.begin(), routineNameList.end(), routineName) != routineNameList.end());
 }
 
 void AssemblyParser::performRoutineDirectiveCommand( vector<string> lineComps, vector <bitset<8>> &highMemoryZcode,size_t offset)
@@ -120,8 +126,6 @@ void AssemblyParser::performRoutineGlobalVarCommand(string line) {
     addGlobal(gvar);
 }
 
-
-
 void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemoryZcode,
                                   size_t offset) {
 
@@ -190,6 +194,10 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string& paramString) {
 void AssemblyParser::addGlobal(string globalName) {
     // TODO: check if maximum gvar limit is reached
     unsigned index = (unsigned) globalVariables.size();
+    if(globalVariables.find(globalName) != globalVariables.end()) {
+        LOG_ERROR << "two global variable have the same name";
+        throw;
+    }
     LOG_DEBUG << "adding gvar " << globalName << " at index " << to_string(index) ;
     this->globalVariables[globalName] = index;
 }
