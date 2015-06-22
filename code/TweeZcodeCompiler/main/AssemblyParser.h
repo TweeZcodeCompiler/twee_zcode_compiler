@@ -64,8 +64,6 @@ private:
 
     void executeRETCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
-    bool checkIfLineIsDirective(std::string line);
-
     void performRoutineDirectiveCommand( std::vector<std::string> lineComps, std::vector <std::bitset<8>> &highMemoryZcode,size_t offset);
     void performRoutineGlobalVarCommand(std::string line);
 
