@@ -140,7 +140,11 @@ void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemory
                 if (firstComp.compare(ROUTINE_DIRECTIVE) == 0) {
                     performRoutineDirectiveCommand(lineComps,highMemoryZcode,offset);
                 } else if (firstComp.compare(GVAR_DIRECTIVE) == 0) { //global variable directive
-                    performRoutineGlobalVarCommand(line);                }
+                    performRoutineGlobalVarCommand(line);
+                } else {
+                    cerr << "unknown directive";
+                    throw;
+                }
             } else { // normal instruction
                 executeCommand(line, *currentGenerator);
             }

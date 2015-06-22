@@ -7,19 +7,13 @@
 #include <string>
 
 Text::Text(std::string content) {
-
     this->content = content;
-
 }
 
 std::string Text::getContent() {
-
     return this->content;
-
 }
 
 std::string Text::to_string() {
-
     return "Text: " + this->getContent();
-
 }

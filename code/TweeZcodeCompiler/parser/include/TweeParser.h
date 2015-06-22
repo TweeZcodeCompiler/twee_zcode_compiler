@@ -18,7 +18,7 @@ namespace Twee {
         TweeParser(std::istream* input);
         ~TweeParser();
 
-        TweeFile* parse();
+        std::unique_ptr<TweeFile> parse();
 
     private:
         class TweeParserImpl;

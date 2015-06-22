@@ -26,7 +26,7 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
 
     std::unique_ptr<TweeFile> tweeFile;
     try {
-        tweeFile.reset(parser.parse());
+        tweeFile = parser.parse();
     } catch (Twee::ParseException e) {
         log("Parse error");
         throw e;
@@ -36,7 +36,7 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
 
     stringstream buffer;
 
-  tweeCompiler.compile(*tweeFile, buffer);
+    tweeCompiler.compile(*tweeFile, buffer);
 
 
     //direct assembly compile start

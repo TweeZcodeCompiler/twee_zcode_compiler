@@ -5,30 +5,22 @@
 #include "include/Passage/Body.h"
 #include "include/Passage/Body/BodyPart.h"
 
-Body::Body() { }
+using namespace std;
 
-
-Body::~Body() {
-
+const vector<unique_ptr<BodyPart>>& Body::getBodyParts() const {
+    return bodyparts;
 }
 
-std::vector<BodyPart *> &Body::getBodyParts() {
-    return this->bodyparts;
-}
-
-Body &Body::operator+=(BodyPart *bodyPart) {
-    this->bodyparts.push_back(bodyPart);
+Body &Body::operator+=(BodyPart& bodyPart) {
+    this->bodyparts.push_back(unique_ptr<BodyPart>(bodyPart.clone()));
     return *this;
 }
 
 std::string Body::to_string() {
-
     std::string result = "  Body \n";
 
-    for (std::vector<BodyPart *>::iterator iter = bodyparts.begin();
-         iter != this->getBodyParts().end(); ++iter)
+    for (auto iter = bodyparts.begin(); iter != bodyparts.end(); ++iter)
         result += "    " + (*iter)->to_string() + "\n";
 
     return result;
-
 }
