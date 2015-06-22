@@ -1,7 +1,7 @@
-.FUNCT main test=49, bla, a=4, b=5
+.FUNCT main test=80, bla, a=4, b=5
 
-print "Du bist im Haus_"
-print "_Willst du in den Garten? (ja..1/nein...2):"
+print "Du bist im Haus"
+print "Willst du in den Garten? (ja..1/nein...2):"
 print "Test"
 new_line
 

@@ -31,6 +31,7 @@ const string AssemblyParser::SET_TEXT_STYLE = "set_text_style";
 const string AssemblyParser::CALL_VS_COMMAND = "call_vs";
 const string AssemblyParser::CALL_1N_COMMAND = "call_1n";
 const string AssemblyParser::STORE_COMMAND = "store";
+const string AssemblyParser::LOAD_COMMAND = "load";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -411,6 +412,9 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::STORE_COMMAND) == 0) {
         cout << ":::::: new store" << endl;
         routineGenerator.store(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::LOAD_COMMAND) == 0) {
+        cout << ":::::: new load" << endl;
+        routineGenerator.load(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         cout << ":::::: new label: " << label << endl;

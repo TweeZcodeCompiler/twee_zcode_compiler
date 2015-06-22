@@ -341,7 +341,9 @@ void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
 // params: address, resultAddress
 void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 2);
-    checkParamType(params, VARIABLE, VARIABLE);
+    checkParamType(params, VARIABLE, STORE_ADDRESS);
+
+    // TODO: Test again
 
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, *params.at(0));
     addBitset(instructions);
@@ -380,7 +382,7 @@ void RoutineGenerator::setLocalVariable(string name, int16_t value) {
 // params: address
 void RoutineGenerator::printNum(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1);
-    checkParamType(params, VALUE);
+    checkParamType(params, VARIABLE_OR_VALUE);
 
     vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(PRINT_SIGNED_NUM, params);
     addBitset(instructions);

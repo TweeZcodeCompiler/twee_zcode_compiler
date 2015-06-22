@@ -40,6 +40,7 @@ private:
     static const std::string RET_COMMAND;
     static const std::string SET_TEXT_STYLE;
     static const std::string STORE_COMMAND;
+    static const std::string LOAD_COMMAND;
 
 
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
