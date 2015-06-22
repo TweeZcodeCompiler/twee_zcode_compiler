@@ -47,18 +47,6 @@ string trim(const string &str,
     return str.substr(strBegin, strRange);
 }
 
-
-bool AssemblyParser::checkIfLineIsDirective(std::string line)
-{
-    if(line.at(0) == '.'){
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
 void AssemblyParser::performRoutineDirectiveCommand( vector<string> lineComps, vector <bitset<8>> &highMemoryZcode,size_t offset)
 {
     LOG_DEBUG << "found routine" ;
@@ -118,8 +106,7 @@ void AssemblyParser::performRoutineDirectiveCommand( vector<string> lineComps, v
 
 }
 
-void AssemblyParser::performRoutineGlobalVarCommand(std::string line)
-{
+void AssemblyParser::performRoutineGlobalVarCommand(string line) {
     LOG_DEBUG << "found gvar" ;
     vector<string> lineComps;
 
@@ -131,7 +118,6 @@ void AssemblyParser::performRoutineGlobalVarCommand(std::string line)
     string gvar = lineComps.at(1);
 
     addGlobal(gvar);
-
 }
 
 
@@ -146,18 +132,15 @@ void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemory
         line = trim(line);
         vector<string> lineComps;
         this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND, lineComps);
+
         if (lineComps.size()) {
             string firstComp = lineComps.at(0);
 
-            if (checkIfLineIsDirective(line) == true) { // routine directive
+            if (line.at(0) == '.') { // routine directive
                 if (firstComp.compare(ROUTINE_DIRECTIVE) == 0) {
                     performRoutineDirectiveCommand(lineComps,highMemoryZcode,offset);
-
-
                 } else if (firstComp.compare(GVAR_DIRECTIVE) == 0) { //global variable directive
-                    performRoutineGlobalVarCommand(line);
-
-                }
+                    performRoutineGlobalVarCommand(line);                }
             } else { // normal instruction
                 executeCommand(line, *currentGenerator);
             }
