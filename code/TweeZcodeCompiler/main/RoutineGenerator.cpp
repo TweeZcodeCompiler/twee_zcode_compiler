@@ -130,6 +130,7 @@ void RoutineGenerator::readChar(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1);
     checkParamType(params, STORE_ADDRESS);
 
+    // Read char needs '1' as first parameter (cannot be handled by OpcodeParameterGenerator)
     addOneByte(numberToBitset(READ_CHAR));
     addOneByte(numberToBitset(0xbf));
     addOneByte(numberToBitset(1));
@@ -141,9 +142,8 @@ void RoutineGenerator::printChar(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1);
     checkParamType(params, VARIABLE);
 
-    addOneByte(numberToBitset(PRINT_CHAR));
-    addOneByte(numberToBitset(0xbf));
-    addOneByte(numberToBitset((*params.at(0)).getZCodeValue()));
+    vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(PRINT_CHAR, params);
+    addBitset(instructions);
 }
 
 // params: routineName, (arg1, (arg2, (arg3))) resultAddress

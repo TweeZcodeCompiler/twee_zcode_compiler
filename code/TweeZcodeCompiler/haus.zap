@@ -1,4 +1,7 @@
 .FUNCT main test=49, bla, a=4, b=5
+read_char -> test
+print_char test
+
 print "Du bist im Haus_"
 print "_Willst du in den Garten? (ja..1/nein...2):"
 print "Test"
@@ -14,6 +17,7 @@ print "ist null"
 WEITER:
 print "Willst du in den Garten? (ja..1/nein...2): "
 read_char -> test
+print_char test
 je 49 test ?GARTEN_CALL
 new_line
 new_line

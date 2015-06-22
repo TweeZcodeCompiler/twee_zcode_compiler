@@ -31,6 +31,7 @@ private:
     static const std::string JZ_COMMAND;
     static const std::string QUIT_COMMAND;
     static const std::string READ_CHAR_COMMAND;
+    static const std::string PRINT_CHAR_COMMAND;
     static const std::string CALL_VS_COMMAND;
     static const std::string CALL_1N_COMMAND;
     static const std::string JUMP_COMMAND;

@@ -22,6 +22,7 @@ const string AssemblyParser::JL_COMMAND = "jl";
 const string AssemblyParser::JZ_COMMAND = "jz";
 const string AssemblyParser::QUIT_COMMAND = "quit";
 const string AssemblyParser::READ_CHAR_COMMAND = "read_char";
+const string AssemblyParser::PRINT_CHAR_COMMAND = "print_char";
 const string AssemblyParser::JUMP_COMMAND = "jump";
 const string AssemblyParser::RET_COMMAND = "ret";
 const string AssemblyParser::SET_TEXT_STYLE = "set_text_style";
@@ -383,7 +384,10 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         cout << ":::::: new quit" << endl;
     } else if (commandPart.compare(AssemblyParser::READ_CHAR_COMMAND) == 0) {
         executeREADCommand(command, routineGenerator);
-        cout << ":::::: new read" << endl;
+        cout << ":::::: new read_char" << endl;
+    } else if (commandPart.compare(AssemblyParser::PRINT_CHAR_COMMAND) == 0) {
+        cout << ":::::: new print_char" << endl;
+        routineGenerator.printChar(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::CALL_VS_COMMAND) == 0) {
         cout << ":::::: new call_vs " << endl;
         executeCALL_VSCommand(command, routineGenerator);
