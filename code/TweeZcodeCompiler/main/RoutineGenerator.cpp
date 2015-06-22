@@ -327,11 +327,14 @@ void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel,
 }
 
 // params: address, value
+// both parameters need to be constansts!!! (first argument is not an addressParameter!)
 void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 2);
-    checkParamType(params, VARIABLE, VALUE);
+    checkParamType(params, VARIABLE_OR_VALUE, VALUE);
 
-    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(STORE, *params.at(0), *params.at(1));
+    unique_ptr<ZParam> address (new ZValueParam((*params.at(0)).getZCodeValue()));
+
+    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(STORE, *address, *params.at(1));
     addBitset(instructions);
 }
 

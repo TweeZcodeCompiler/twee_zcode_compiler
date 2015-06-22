@@ -1,8 +1,10 @@
 .FUNCT main test=49, bla, a=4, b=5
-print "Du bist im Haus"
+print "Du bist im Haus_"
+print "_Willst du in den Garten? (ja..1/nein...2):"
+print "Test"
 new_line
 
-je 9 1 9 ?ZERO
+je 9 1 0 ?ZERO
 print "n"
 jump ?WEITER
 

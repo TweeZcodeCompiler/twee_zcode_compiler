@@ -151,6 +151,10 @@ vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instructi
 
     if (commandParts.size() < 2) {  // first argument is opcode instruction
         return params;
+    } else if ((count(instruction.begin(), instruction.end(), AssemblyParser::STRING_DELIMITER) % 2) != 0) {
+        // checks if there are always 2 quotation marks for hard coded string
+        cout << endl << endl << "String does not end!" << endl << endl;
+        throw;
     }
 
     // if this is a call instruction first argument is routine name
@@ -162,7 +166,7 @@ vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instructi
         params.push_back(unique_ptr<ZNameParam>(new ZNameParam(commandParts.at(1))));
     }
 
-    int paramsCount;
+    int paramsCount;   // count of parameters to parse (wihthout first instruction and store address parts)
     bool containsStoreAddress = false, containsLabel = false;
     if (instruction.find(AssemblyParser::ASSIGNMENT_OPERATOR) != string::npos) {   // contains instruction store address?
         paramsCount = commandParts.size() - 3;  // - instruction - "->" - storeAddress
@@ -171,33 +175,54 @@ vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instructi
         paramsCount = commandParts.size() - 1;  // - instruction
     }
 
-    if (instruction.find('?') != string::npos) {    // contains label?
-        containsLabel = true;
-        paramsCount--;
+    int start = 1;
+    int parsedCommandChars = commandParts.at(0).size() + 1;
+    if (isCallInstruction) {
+        start += 1;
+        parsedCommandChars += commandParts.at(1).size() + 1;
     }
 
-    int start = isCallInstruction ? 2 : 1;
-    string stringParameter;
-    bool putStringTogether = false;
+    int stringEndChar = 0;  // position of last char in 'instruction' of parsed string parameter
     for(auto part = commandParts.begin() + start; part != commandParts.begin() + paramsCount + 1; ++part) {
         string paramString = *part;
-        if (!putStringTogether && paramString.at(0) == AssemblyParser::STRING_DELIMITER) {
-            paramString = paramString.substr(1);
-            putStringTogether = true;
-            stringParameter = paramString;
-            continue;
-        } else if (putStringTogether) {
-            if (paramString.at(paramString.size() - 1) == AssemblyParser::STRING_DELIMITER) {
-                stringParameter.append(" ").append(paramString.substr(0, paramString.size() - 1));
-                putStringTogether = false;
-                params.push_back(unique_ptr<ZNameParam>(new ZNameParam(stringParameter)));
-            } else {
-                stringParameter.append(" ").append(paramString);
-            }
+
+        // skip commandParts if they are part of a string parameter
+        if (parsedCommandChars < stringEndChar) {
+            parsedCommandChars += (paramString.size() + 1);
             continue;
         }
 
-        params.push_back(createZParam(*part));
+        // is this commandPart start of a string parameter?
+        if (paramString.at(0) == AssemblyParser::STRING_DELIMITER) {
+            int stringStartChar = parsedCommandChars;
+            stringEndChar = parsedCommandChars;
+
+            // get index of next quotation mark
+            while (++stringEndChar != instruction.size() - 1) {
+                if (instruction.at(stringEndChar) == AssemblyParser::STRING_DELIMITER) {
+                    break;
+                }
+            }
+
+            string stringParam = instruction.substr(stringStartChar + 1, stringEndChar - stringStartChar - 1);
+            params.push_back(unique_ptr<ZNameParam>(new ZNameParam(stringParam)));
+
+            stringEndChar += 2;     // point to first char of next commandPart
+            if (stringEndChar >= instruction.size()) {  //
+                break;
+            }
+            parsedCommandChars += paramString.size() + 1;
+            continue;
+        }
+
+        // label parameter?
+        if (paramString.at(0) == '?') {
+            containsLabel = true;
+            break;
+        }
+
+        params.push_back(createZParam(paramString));
+        parsedCommandChars += paramString.size() + 1;
     }
 
     if (containsStoreAddress) {
