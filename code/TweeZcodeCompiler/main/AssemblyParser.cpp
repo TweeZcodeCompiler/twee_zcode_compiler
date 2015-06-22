@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <bitset>
 #include <cstdint>
+#include <plog/Log.h>
 
 using namespace std;
 
@@ -49,13 +50,7 @@ string trim(const string &str,
 
 bool AssemblyParser::checkIfLineIsDirective(std::string line)
 {
-    if(line.at(0) == '.'){
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return line.at(0) == '.';
 }
 
 void AssemblyParser::performRoutineDirectiveCommand( vector<string> lineComps, vector <bitset<8>> &highMemoryZcode,size_t offset)
@@ -130,7 +125,6 @@ void AssemblyParser::performRoutineGlobalVarCommand(std::string line)
     string gvar = lineComps.at(1);
 
     addGlobal(gvar);
-
 }
 
 
@@ -148,14 +142,14 @@ void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemory
         if (lineComps.size()) {
             string firstComp = lineComps.at(0);
 
-            if (checkIfLineIsDirective(line) == true) { // routine directive
+            if (checkIfLineIsDirective(line)) { // routine directive
                 if (firstComp.compare(ROUTINE_DIRECTIVE) == 0) {
-                    performRoutineDirectiveCommand(lineComps,highMemoryZcode,offset);
-
-
+                    performRoutineDirectiveCommand(lineComps, highMemoryZcode, offset);
                 } else if (firstComp.compare(GVAR_DIRECTIVE) == 0) { //global variable directive
                     performRoutineGlobalVarCommand(line);
-
+                } else {
+                    LOG_ERROR << "unknown directive";
+                    throw;
                 }
             } else { // normal instruction
                 executeCommand(line, *currentGenerator);

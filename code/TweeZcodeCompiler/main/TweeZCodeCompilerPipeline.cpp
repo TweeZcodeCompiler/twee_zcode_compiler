@@ -35,7 +35,7 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
 
     stringstream buffer;
 
-  tweeCompiler.compile(*tweeFile, buffer);
+    tweeCompiler.compile(*tweeFile, buffer);
 
 
     //direct assembly compile start
