@@ -12,6 +12,7 @@
 #include <TweeFile.h>
 #include "AssemblyParser.h"
 #include <sstream>
+#include <plog/Log.h>
 
 using namespace std;
 
@@ -37,8 +38,13 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
 
     tweeCompiler.compile(*tweeFile, buffer);
 
-    ofstream testFile("test.zas");
-    testFile << buffer.str();
+
+    //direct assembly compile start
+    /*std::ifstream in( "eat_apple_simple.zap" );
+    buffer << in.rdbuf();
+    std::string contents(buffer.str());
+    */
+    //direct assembly compile end end
 
     //create header
     ZCodeHeader header = ZCodeHeader();
@@ -152,12 +158,12 @@ std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::addFileSizeToHeader(std::
 
 
 void TweeZCodeCompilerPipeline::printHex(std::vector<std::bitset<8>> bitsetList) {
-    cout << endl << endl;
+
     for (unsigned int i = 0; i < bitsetList.size(); i++) {
         bitset<8> set(bitsetList.at(i));
-        cout << hex << set.to_ulong() << endl;
+        LOG_DEBUG << hex << set.to_ulong();
     }
-    cout << endl;
+    LOG_DEBUG;
 }
 
 std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::printGlobalTable(int offset) {
@@ -181,5 +187,5 @@ std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::printGlobalTable(int offs
 }
 
 void TweeZCodeCompilerPipeline::log(string message) {
-    cout << "Compiler: " << message << " . . ." << "\n";
+    LOG_DEBUG << "Compiler: " << message << " . . ." << "\n";
 }

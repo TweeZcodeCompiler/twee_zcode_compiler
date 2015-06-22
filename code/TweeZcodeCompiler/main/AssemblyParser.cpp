@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <plog/Log.h>
 #include <bitset>
 #include <cstdint>
 #include <plog/Log.h>
@@ -18,6 +19,9 @@ const string AssemblyParser::GVAR_DIRECTIVE = ".GVAR";
 const string AssemblyParser::NEW_LINE_COMMAND = "new_line";
 const string AssemblyParser::PRINT_COMMAND = "print";
 const string AssemblyParser::JE_COMMAND = "je";
+const string AssemblyParser::JUMP_GREATER_COMMAND = "jg";
+const string AssemblyParser::JUMP_SMALLER_COMMAND = "jl";
+
 const string AssemblyParser::QUIT_COMMAND = "quit";
 const string AssemblyParser::READ_CHAR_COMMAND = "read_char";
 const string AssemblyParser::CALL_COMMAND = "call";
@@ -46,96 +50,104 @@ string trim(const string &str,
 
 bool AssemblyParser::checkIfRoutineNameExists(std::string routineName)
 {
-    return std::find(routineNameList.begin(), routineNameList.end(), routineName) != routineNameList.end());
+    return (std::find(routineNameList.begin(), routineNameList.end(), routineName) != routineNameList.end());
 }
 
+void AssemblyParser::performRoutineDirectiveCommand( vector<string> lineComps, vector <bitset<8>> &highMemoryZcode,size_t offset)
+{
+    LOG_DEBUG << "found routine" ;
+
+    if (lineComps.size() < 2) {
+        cerr << "invalid routine declaration (no name specified)" ;
+        throw;
+    }
+    string routineName = lineComps.at(1);
+
+    // currentGenerator exists, so we can get its code
+    if (currentGenerator) {
+        finishRoutine(highMemoryZcode);
+    }
+
+    unsigned locVariablesCount = (unsigned) (lineComps.size() - 2);
+    currentGenerator.reset(new RoutineGenerator(routineName, locVariablesCount, highMemoryZcode, offset));
+
+    bool withoutComma = true;
+    for (;locVariablesCount > 0; locVariablesCount--) {     // parse locale variables
+        string var = lineComps[locVariablesCount + 1];
+
+        size_t nameEnd = var.find_first_of("=");
+        size_t varEnd = var.size();
+
+        if (withoutComma) {         // last locale variable has no comma as last char
+            withoutComma = false;
+        } else {
+            varEnd -= 1;
+        }
+
+        if (nameEnd != string::npos) {
+            int val;
+            string valueString = var.substr(nameEnd + 1, varEnd - 1 - nameEnd);
+
+            try {
+                val = stoi(valueString);
+            } catch (const invalid_argument& invaldArgument) {
+                LOG_DEBUG << "Given value for local variable is not an integer: " << valueString ;
+                throw;
+            } catch (const out_of_range& outOfRange) {
+                LOG_DEBUG << "Given value for local variable too large or too small: " << valueString ;
+                throw;
+            }
+
+            if(val > INT16_MAX || val < INT16_MIN) {
+                throw out_of_range(string("Given value for local variable too large or too small: ") + to_string(val) );
+            }
+
+            string name = var.substr(0, nameEnd);
+            currentGenerator->setLocalVariable(name, val);
+        } else {
+            string name = var.substr(0, varEnd);
+            currentGenerator->setLocalVariable(name);
+        }
+    }
+
+}
+
+void AssemblyParser::performRoutineGlobalVarCommand(string line) {
+    LOG_DEBUG << "found gvar" ;
+    vector<string> lineComps;
+
+    this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND, lineComps);
+    if (lineComps.size() < 2) {
+        cerr << "empty gvar declaration" ;
+    }
+
+    string gvar = lineComps.at(1);
+
+    addGlobal(gvar);
+}
 
 void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemoryZcode,
                                   size_t offset) {
 
-    cout << "Compiler: Parse Assembly File\n";
+    LOG_DEBUG << "Compiler: Parse Assembly File\n";
 
 
     for(string line; getline(input, line);) {
         line = trim(line);
         vector<string> lineComps;
         this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND, lineComps);
+
         if (lineComps.size()) {
             string firstComp = lineComps.at(0);
 
-            if (line.at(0) == '.') { // directive
+            if (line.at(0) == '.') { // routine directive
                 if (firstComp.compare(ROUTINE_DIRECTIVE) == 0) {
-                    cout << "found routine" << endl;
-
-                    if (lineComps.size() < 2) {
-                        cerr << "invalid routine declaration (no name specified)" << endl;
-                        throw;
-                    }
-                    string routineName = lineComps.at(1);
-
-                    if(checkIfRoutineNameExists(routineName)) {
-                        LOG_ERROR << "two routines have the same name";
-                        throw;
-                    }
-                    routineNameList.push_back(routineName);
-
-                    // currentGenerator exists, so we can get its code
-                    if (currentGenerator) {
-                        finishRoutine(highMemoryZcode);
-                    }
-
-                    unsigned locVariablesCount = (unsigned) (lineComps.size() - 2);
-                    currentGenerator.reset(new RoutineGenerator(routineName, locVariablesCount, highMemoryZcode, offset));
-
-                    bool withoutComma = true;
-                    for (;locVariablesCount > 0; locVariablesCount--) {     // parse locale variables
-                        string var = lineComps[locVariablesCount + 1];
-
-                        size_t nameEnd = var.find_first_of("=");
-                        size_t varEnd = var.size();
-
-                        if (withoutComma) {         // last locale variable has no comma as last char
-                            withoutComma = false;
-                        } else {
-                            varEnd -= 1;
-                        }
-
-                        if (nameEnd != string::npos) {
-                            int val;
-                            string valueString = var.substr(nameEnd + 1, varEnd - 1 - nameEnd);
-
-                            try {
-                                val = stoi(valueString);
-                            } catch (const invalid_argument& invaldArgument) {
-                                cout << "Given value for local variable is not an integer: " << valueString << endl;
-                                throw;
-                            } catch (const out_of_range& outOfRange) {
-                                cout << "Given value for local variable too large or too small: " << valueString << endl;
-                                throw;
-                            }
-
-                            if(val > INT16_MAX || val < INT16_MIN) {
-                                throw out_of_range(string("Given value for local variable too large or too small: ") + to_string(val) );
-                            }
-
-                            string name = var.substr(0, nameEnd);
-                            currentGenerator->setLocalVariable(name, val);
-                        } else {
-                            string name = var.substr(0, varEnd);
-                            currentGenerator->setLocalVariable(name);
-                        }
-                    }
-                } else if (firstComp.compare(GVAR_DIRECTIVE) == 0) {
-                    cout << "found gvar" << endl;
-
-                    this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND, lineComps);
-                    if (lineComps.size() < 2) {
-                        cerr << "empty gvar declaration" << endl;
-                    }
-
-                    string gvar = lineComps.at(1);
-
-                    addGlobal(gvar);
+                    performRoutineDirectiveCommand(lineComps,highMemoryZcode,offset);
+                } else if (firstComp.compare(GVAR_DIRECTIVE) == 0) { //global variable directive
+                    performRoutineGlobalVarCommand(line);
+                } else {
+                    cerr << "unknown directive";
+                    throw;
                 }
             } else { // normal instruction
                 executeCommand(line, *currentGenerator);
@@ -149,7 +161,7 @@ void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemory
 }
 
 void AssemblyParser::finishRoutine(vector<bitset<8>> &highMemoryZcode) {
-    cout << "adding routine to zcode" << endl;
+    LOG_DEBUG << "adding routine to zcode" ;
     auto routineCode = currentGenerator->getRoutine();
     Utils::append(highMemoryZcode, routineCode);
 }
@@ -182,12 +194,11 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string& paramString) {
 void AssemblyParser::addGlobal(string globalName) {
     // TODO: check if maximum gvar limit is reached
     unsigned index = (unsigned) globalVariables.size();
-    cout << "adding gvar " << globalName << " at index " << to_string(index) << endl;
-    this->globalVariables.find(globalName);
     if(globalVariables.find(globalName) != globalVariables.end()) {
         LOG_ERROR << "two global variable have the same name";
         throw;
     }
+    LOG_DEBUG << "adding gvar " << globalName << " at index " << to_string(index) ;
     this->globalVariables[globalName] = index;
 }
 
@@ -195,7 +206,7 @@ void AssemblyParser::executePRINTCommand(const string &printCommand, RoutineGene
 
     vector<string> commandParts = this->split(printCommand, AssemblyParser::STRING_DELIMITER);
     routineGenerator.printString(commandParts.at(1));
-    cout << commandParts.at(1) << endl;
+    LOG_DEBUG << commandParts.at(1) ;
 }
 
 void AssemblyParser::executeSETTEXTSTYLECommand(const string &printCommand, RoutineGenerator &routineGenerator) {
@@ -229,7 +240,7 @@ void AssemblyParser::executeSETTEXTSTYLECommand(const string &printCommand, Rout
     }
 
     routineGenerator.setTextStyle( roman, false, bold, italic, underlined );
-    cout << commandParts.at(1) << endl;
+    LOG_DEBUG << commandParts.at(1) ;
 }
 
 void AssemblyParser::executeREADCommand(const string &readCommand, RoutineGenerator &routineGenerator) {
@@ -251,15 +262,41 @@ void AssemblyParser::executeJECommand(const string &jeCommand, RoutineGenerator 
     unique_ptr<ZParam> param1 = createZParam(commandParts.at(1));
     unique_ptr<ZParam> param2 = createZParam(commandParts.at(2));
 
-    cout << " "  << label << endl;
+    LOG_DEBUG << " "  << label ;
     routineGenerator.jumpEquals(label, true, *param1, *param2);
 }
+
+void AssemblyParser::executeJumpGreaterCommand(const string &command, RoutineGenerator &routineGenerator) {
+
+    vector<string> commandParts = this->split(command, '?');
+    string label = commandParts.at(1);
+
+    commandParts = split(command,' ');
+    unique_ptr<ZParam> param1 = createZParam(commandParts.at(1));
+    unique_ptr<ZParam> param2 = createZParam(commandParts.at(2));
+
+    LOG_DEBUG << " "  << label ;
+    routineGenerator.jumpGreaterThan(label, true, *param1, *param2);
+}
+void AssemblyParser::executeJumpSmallerCommand(const string &jumpSmallerCommand, RoutineGenerator &routineGenerator) {
+
+    vector<string> commandParts = this->split(jumpSmallerCommand, '?');
+    string label = commandParts.at(1);
+
+    commandParts = split(jumpSmallerCommand,' ');
+    unique_ptr<ZParam> param1 = createZParam(commandParts.at(1));
+    unique_ptr<ZParam> param2 = createZParam(commandParts.at(2));
+
+    LOG_DEBUG << " "  << label ;
+    routineGenerator.jumpLessThan(label, true, *param1, *param2);
+}
+
 
 void AssemblyParser::executeJUMPCommand(const string &jumpCommand, RoutineGenerator &routineGenerator) {
 
     vector<string> commandParts = this->split(jumpCommand, '?');
     string label = commandParts.at(1);
-    cout << label << endl;
+    LOG_DEBUG << label ;
     routineGenerator.jump(label);
 }
 
@@ -283,7 +320,7 @@ void AssemblyParser::executeCALLCommand(const string &callCommand, RoutineGenera
         paramsCount++;
 
         if(paramsCount > MAX_PARAMS) {
-            cerr << "More than " << MAX_PARAMS << " params provided for instruction" << endl;
+            cerr << "More than " << MAX_PARAMS << " params provided for instruction" ;
             throw;
         }
     }
@@ -295,7 +332,7 @@ void AssemblyParser::executeCALL1nCommand(const string &callCommand, RoutineGene
 
     vector<string> commandParts = this->split(callCommand, ' ');
     string callRoutineName = commandParts.at(1);
-    cout << callRoutineName << endl;
+    LOG_DEBUG << callRoutineName ;
 
     routineGenerator.callRoutine1n(callRoutineName);
 }
@@ -321,44 +358,50 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
 
     if (commandPart.compare(AssemblyParser::NEW_LINE_COMMAND) == 0) {
         routineGenerator.newLine();
-        cout << ":::::: new line" << endl;
+        LOG_DEBUG << ":::::: new line" ;
     } else if (commandPart.compare(AssemblyParser::PRINT_COMMAND) == 0) {
-        cout << ":::::: new print ";
+        LOG_DEBUG << ":::::: new print ";
         executePRINTCommand(command, routineGenerator);
     } else if (commandPart.compare(AssemblyParser::JE_COMMAND) == 0) {
-        cout << ":::::: new je ";
+        LOG_DEBUG << ":::::: new je ";
         executeJECommand(command, routineGenerator);
+    }else if (commandPart.compare(AssemblyParser::JUMP_GREATER_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new jump greater ";
+        executeJumpGreaterCommand(command, routineGenerator);
+    }else if (commandPart.compare(AssemblyParser::JUMP_SMALLER_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new jump smaller ";
+        executeJumpSmallerCommand(command, routineGenerator);
     } else if (commandPart.compare(AssemblyParser::QUIT_COMMAND) == 0) {
         routineGenerator.quitRoutine();
-        cout << ":::::: new quit" << endl;
+        LOG_DEBUG << ":::::: new quit" ;
     } else if (commandPart.compare(AssemblyParser::READ_CHAR_COMMAND) == 0) {
         executeREADCommand(command, routineGenerator);
-        cout << ":::::: new read" << endl;
+        LOG_DEBUG << ":::::: new read" ;
     } else if (commandPart.compare(AssemblyParser::CALL_VS_COMMAND) == 0
                || commandPart.compare(AssemblyParser::CALL_COMMAND) == 0) {
-        cout << ":::::: new call ";
+        LOG_DEBUG << ":::::: new call ";
         executeCALLCommand(command, routineGenerator);
     } else if (commandPart.compare(AssemblyParser::CALL_1N_COMMAND) == 0) {
-        cout << ":::::: new call_1n";
+        LOG_DEBUG << ":::::: new call_1n";
         executeCALL1nCommand(command, routineGenerator);
     } else if(commandPart.compare(AssemblyParser::JUMP_COMMAND) == 0) {
-        cout << ":::::: new jump ";
+        LOG_DEBUG << ":::::: new jump ";
         executeJUMPCommand(command, routineGenerator);
     } else if(commandPart.compare(AssemblyParser::RET_COMMAND) == 0) {
-        cout << ":::::: new return routine ";
+        LOG_DEBUG << ":::::: new return routine ";
         executeRETCommand(command, routineGenerator);
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
-        cout << ":::::: new label: " << label << endl;
+        LOG_DEBUG << ":::::: new label: " << label ;
         routineGenerator.newLabel(label);
 
         string afterLabel = command.substr(commandPart.size());
         executeCommand(trim(afterLabel), *currentGenerator);
     } else if(commandPart.compare(AssemblyParser::SET_TEXT_STYLE) == 0) {
-        cout << ":::::: new set_text_style ";
+        LOG_DEBUG << ":::::: new set_text_style ";
         executeSETTEXTSTYLECommand(command, routineGenerator);
     } else {
-        cout << "unknown command: " << command << endl;
+        LOG_DEBUG << "unknown command: " << command ;
         throw;
     }
 }
@@ -387,7 +430,7 @@ uint8_t AssemblyParser::getAddressForId(const string &id) {
     } else if (currentGenerator->containsLocalVariable(id)) {
         return currentGenerator->getAddressOfVariable(id);
     } else {
-        cout << "Could not find variable " << id << endl;
+        LOG_DEBUG << "Could not find variable " << id ;
         throw;
     }
 }
@@ -415,7 +458,7 @@ vector<string> AssemblyParser::split(const string &s, const string &delim) {
     vector<string> tokens;
     while ((pos = s_copy.find(delim)) != string::npos) {
         token = s_copy.substr(0, pos);
-        cout << "found token " << token << endl;
+        LOG_DEBUG << "found token " << token ;
         tokens.push_back(token);
         s_copy.erase(0, pos + delim.length());
     }
