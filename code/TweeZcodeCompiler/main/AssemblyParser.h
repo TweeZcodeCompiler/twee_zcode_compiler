@@ -76,8 +76,6 @@ private:
     void performRoutineDirectiveCommand( std::vector<std::string> lineComps, std::vector <std::bitset<8>> &highMemoryZcode,size_t offset);
     void performRoutineGlobalVarCommand(std::string line);
 
-    std::unique_ptr<ZParam> createZParam(const std::string &paramString);
-
     bool checkIfRoutineNameExists(std::string routineName);
 
 

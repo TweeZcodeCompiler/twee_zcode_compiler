@@ -128,8 +128,12 @@ void RoutineGenerator::printString(vector<unique_ptr<ZParam>> params) {
 // params: storeAddress
 void RoutineGenerator::readChar(vector<unique_ptr<ZParam>> params) {
     // TODO: decide on whether to allow no args for read_char
-    checkParamCount(params, 1);
-    checkParamType(params, STORE_ADDRESS);
+    checkParamCount(params, 1, 2);
+    if (params.size() == 1) {
+        checkParamType(params, STORE_ADDRESS);
+    } else {
+        checkParamType(params, VALUE, STORE_ADDRESS);
+    }
 
     // Read char needs '1' as first parameter (cannot be handled by OpcodeParameterGenerator)
     addOneByte(numberToBitset(READ_CHAR));
@@ -179,12 +183,8 @@ void RoutineGenerator::call1n(vector<unique_ptr<ZParam>> params) {
 
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (u_int16_t) 3000, false);
     addBitset(instructions);
-    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = routineName;
-    std::cout << "Call Routine at:::" << offsetOfRoutine + routineZcode.size() - 2 << "\n";
-
-    if (printLogs) {
-        cout << "RoutineGenerator: callRoutine " << routineName;
-    }
+    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = (*params.at(0)).name;
+    LOG_DEBUG << "Call Routine at:::" << offsetOfRoutine + routineZcode.size() - 2;
 }
 
 std::bitset<8> RoutineGenerator::numberToBitset(unsigned int number) {

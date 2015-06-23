@@ -51,13 +51,11 @@ string trim(const string &str,
     return str.substr(strBegin, strRange);
 }
 
-bool AssemblyParser::checkIfRoutineNameExists(std::string routineName)
-{
+bool AssemblyParser::checkIfRoutineNameExists(std::string routineName) {
     return (std::find(routineNameList.begin(), routineNameList.end(), routineName) != routineNameList.end());
 }
 
-void AssemblyParser::performRoutineDirectiveCommand( vector<string> lineComps, vector <bitset<8>> &highMemoryZcode,size_t offset)
-{
+void AssemblyParser::performRoutineDirectiveCommand( vector<string> lineComps, vector <bitset<8>> &highMemoryZcode,size_t offset) {
     LOG_DEBUG << "found routine" ;
 
     if (lineComps.size() < 2) {
@@ -119,7 +117,7 @@ void AssemblyParser::performRoutineGlobalVarCommand(string line) {
     LOG_DEBUG << "found gvar" ;
     vector<string> lineComps;
 
-    this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND, lineComps);
+    this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND, lineComps);
     if (lineComps.size() < 2) {
         cerr << "empty gvar declaration" ;
     }
@@ -138,7 +136,7 @@ void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemory
     for(string line; getline(input, line);) {
         line = trim(line);
         vector<string> lineComps;
-        this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND, lineComps);
+        this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND, lineComps);
 
         if (lineComps.size()) {
             string firstComp = lineComps.at(0);
@@ -222,7 +220,7 @@ vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instructi
             stringEndChar = parsedCommandChars;
 
             // get index of next quotation mark
-            while (++stringEndChar != instruction.size() - 1) {
+            while (++stringEndChar != (instruction.size() - 1)) {
                 if (instruction.at(stringEndChar) == AssemblyParser::STRING_DELIMITER) {
                     break;
                 }
@@ -232,7 +230,7 @@ vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instructi
             params.push_back(unique_ptr<ZNameParam>(new ZNameParam(stringParam)));
 
             stringEndChar += 2;     // point to first char of next commandPart
-            if (stringEndChar >= instruction.size()) {  //
+            if (stringEndChar >= instruction.size()) {  // break if there is no next argument after this string parameter
                 break;
             }
             parsedCommandChars += paramString.size() + 1;
@@ -380,9 +378,7 @@ void AssemblyParser::executeRETCommand(const string &callCommand, RoutineGenerat
 }
 
 void AssemblyParser::executeCommand(const string &command, RoutineGenerator &routineGenerator) {
-
-    vector<string> commandParts = this->split(command,
-                                              AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
+    vector<string> commandParts = this->split(command, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
 
     if (!commandParts.size()) return;
 
@@ -411,7 +407,7 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         LOG_DEBUG << ":::::: new quit" ;
     } else if (commandPart.compare(AssemblyParser::READ_CHAR_COMMAND) == 0) {
         executeREADCommand(command, routineGenerator);
-        cout << ":::::: new read" << endl;
+        LOG_DEBUG << ":::::: new read" << endl;
     } else if (commandPart.compare(AssemblyParser::PRINT_CHAR_COMMAND) == 0) {
         cout << ":::::: new print_char" << endl;
         routineGenerator.printChar(parseArguments(command));
@@ -421,7 +417,8 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::PRINT_ADDR_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new print_addr";
         routineGenerator.printAddress(parseArguments(command));
-    } else if (commandPart.compare(AssemblyParser::CALL_VS_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::CALL_VS_COMMAND) == 0
+            || (commandPart.compare("call") == 0)) {                                // TODO: Generate specific call instruction
         LOG_DEBUG << ":::::: new call_vs ";
         executeCALL_VSCommand(command, routineGenerator);
     } else if (commandPart.compare(AssemblyParser::CALL_1N_COMMAND) == 0) {
