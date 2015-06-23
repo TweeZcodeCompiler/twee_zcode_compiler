@@ -139,7 +139,9 @@ void RoutineGenerator::readChar(vector<unique_ptr<ZParam>> params) {
     addOneByte(numberToBitset(READ_CHAR));
     addOneByte(numberToBitset(0xbf));
     addOneByte(numberToBitset(1));
-    addOneByte(numberToBitset((*params.at(0)).getZCodeValue()));
+
+
+    addOneByte(numberToBitset((*params.at(params.size() - 1)).getZCodeValue()));
 }
 
 // params: variable
