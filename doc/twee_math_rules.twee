@@ -27,3 +27,8 @@
 <<print not 0 * 3 >>		3
 <<print not (0 * 3) >>		true
 <<print not (0 * 3) + 4 >>	5
+
+<<print "21" * not 3 >>		0
+<<print 1 * not 3 >>		0
+<<print 0 * not 3 >>		0
+<<print (0 * 3) + not 4 >>	0

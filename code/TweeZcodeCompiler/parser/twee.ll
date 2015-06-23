@@ -93,7 +93,7 @@ LINK_TEXT               [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
 MACRO_OPEN              <{2}
 MACRO_CLOSE             >{2}
  /*MACRO_TEXT_CHAR         [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
-MACRO_TEXT              [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
+ /*MACRO_TEXT              [a-zA-Z0-9\-_="'!+\\/?.,\t ]+ */
 
     /*Macro Tokens*/
 MACRO_IF                if
@@ -136,6 +136,11 @@ EXPR_OR                 or
 EXPR_TO                 to
 EXPR_ASS                =
 
+
+    /*Expression String and Integer Token*/
+EXPR_STR_LIMITER        \"
+EXPR_STR                [a-zA-Z]+
+EXPR_INT                [0-9]+
 
 
 
@@ -808,18 +813,38 @@ EXPR_ASS                =
                                 return BisonParser::token::ASS_TOKEN;
                                 }
 
-    /* macro text */
-<BodyMacro>{MACRO_TEXT}         {
+    /* strings and ints */
+<BodyMacro>{EXPR_STR_LIMITER}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
-                                //return the TEXT Token
-                                LOG_DEBUG << "return the TEXT Token";
+                                //return the EXPR_STR_LIMITER Token
+                                LOG_DEBUG << "return the EXPR_STR_LIMITER Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
                                 SAVE_TOKEN;
-                                return BisonParser::token::TEXT_TOKEN;
+                                return BisonParser::token::EXPR_STR_LIMITER_TOKEN;
                                 }
 
+<BodyMacro>{EXPR_STR}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the EXPR_STR Token
+                                LOG_DEBUG << "return the EXPR_STR Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::EXPR_STR_TOKEN;
+                                }
+<BodyMacro>{EXPR_INT}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the INT Token
+                                LOG_DEBUG << "return the INT Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::INT_TOKEN;
+                                }
     /* leave the macro */
 <BodyMacro>{MACRO_CLOSE}        {
                                 //enter condition Body
