@@ -132,7 +132,6 @@ std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::generateHighMemory(ZCodeH
     Utils::append(highMemoryZcode, routine);
 
     AssemblyParser assemblyParser;
-
     assemblyParser.readAssembly(instructionsInput, highMemoryZcode, offset);
 
     return highMemoryZcode;
