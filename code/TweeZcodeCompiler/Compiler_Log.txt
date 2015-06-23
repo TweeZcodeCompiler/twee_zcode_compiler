@@ -1,719 +1,725 @@
-﻿2015-06-23 13:00:44.521 DEBUG [40729] [main@50] Compiler started
-2015-06-23 13:00:44.521 DEBUG [40729] [TweeZCodeCompilerPipeline::log@189] Compiler: Simple Compiler Pipeline started . . .
+﻿2015-06-23 15:32:40.795 DEBUG [42307] [main@50] Compiler started
+2015-06-23 15:32:40.795 DEBUG [42307] [TweeZCodeCompilerPipeline::log@189] Compiler: Simple Compiler Pipeline started . . .
 
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@136] enter condition HeaderTitle
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@138] return the PASSAGE_START token
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@157] stay in condition HeaderTitle, look for next token
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@159] return the TITLE Token
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@160] 	 matched:
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@161] start
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@179] enter condition Body
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@182] return the NEWLINE token
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::BisonParser::parse@171] title -> TITLE NEWLINE
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::BisonParser::parse@172] create title:type(Head) out of token:TITLE
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::BisonParser::parse@162] head -> PASSAGE_START title
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::BisonParser::parse@163] pass title:type(Head) to head:type(Head)
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@261] Welcome Adventurer!
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::BisonParser::parse@211] body -> bodypart
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::BisonParser::parse@212] create top:body:type(Body)
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::BisonParser::parse@214] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.521 DEBUG [40729] [Twee::TweeScanner::yylex@261] Welcome 
-2015-06-23 13:00:44.522 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.522 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.522 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.522 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.522 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.522 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.522 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.522 DEBUG [40729] [Twee::TweeScanner::yylex@335] return the FORMATTING Token
-2015-06-23 13:00:44.522 DEBUG [40729] [Twee::TweeScanner::yylex@336] 	 matched:
-2015-06-23 13:00:44.522 DEBUG [40729] [Twee::TweeScanner::yylex@337] ^^
-2015-06-23 13:00:44.522 ERROR [40729] [Twee::TweeScanner::yylex@375] lexer error in condition Body
-2015-06-23 13:00:44.525 ERROR [40729] [Twee::TweeScanner::yylex@376] 	 matched:
-2015-06-23 13:00:44.525 ERROR [40729] [Twee::TweeScanner::yylex@377] ^
-2015-06-23 13:00:44.525 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.525 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.525 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.525 DEBUG [40729] [Twee::TweeScanner::yylex@261] to
-2015-06-23 13:00:44.525 DEBUG [40729] [Twee::TweeScanner::yylex@335] return the FORMATTING Token
-2015-06-23 13:00:44.526 DEBUG [40729] [Twee::TweeScanner::yylex@336] 	 matched:
-2015-06-23 13:00:44.526 DEBUG [40729] [Twee::TweeScanner::yylex@337] ^^
-2015-06-23 13:00:44.526 DEBUG [40729] [Twee::BisonParser::parse@309] formatted -> FORMATTING TEXT_TOKEN FORMATTING
-2015-06-23 13:00:44.526 DEBUG [40729] [Twee::BisonParser::parse@310] pass formatted:type(--Text--) up to top:formatted:type(--Text--)
-2015-06-23 13:00:44.526 DEBUG [40729] [Twee::BisonParser::parse@242] bodypart -> formatted
-2015-06-23 13:00:44.526 DEBUG [40729] [Twee::BisonParser::parse@244] pass formatted:type(--Text--) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.526 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.526 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.526 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.526 ERROR [40729] [Twee::TweeScanner::yylex@375] lexer error in condition Body
-2015-06-23 13:00:44.532 ERROR [40729] [Twee::TweeScanner::yylex@376] 	 matched:
-2015-06-23 13:00:44.532 ERROR [40729] [Twee::TweeScanner::yylex@377] ^
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::TweeScanner::yylex@261]  the 
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::TweeScanner::yylex@279] enter condition BodyLink
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::TweeScanner::yylex@451] land of the iguanas
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::TweeScanner::yylex@468] enter condition Body
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::BisonParser::parse@262] link -> LINK_OPEN TEXT_TOKEN LINK_CLOSE
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::BisonParser::parse@263] create top:link:type(Link) with 2:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::BisonParser::parse@229] bodypart -> link
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.532 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@261]  - a place full of myths and adventure!
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@261] Let's not waste any time and get going! 
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@279] enter condition BodyLink
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@451] start
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@459] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@461] return the LINK_CLOSE token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@451] land of the iguanas
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@468] enter condition Body
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@269] link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@270] create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@229] bodypart -> link
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@269] enter condition HeaderTitle
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@272] return the PASSAGE_START token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@151] passage -> head body
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@152] create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@140] passages -> passage
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@141] create a passages:type(TweeFile)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@143] add passage:type(Passage) to passages:type(TweeFile)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@157] stay in condition HeaderTitle, look for next token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@159] return the TITLE Token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@160] 	 matched:
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@161] land of the iguanas
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@179] enter condition Body
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@182] return the NEWLINE token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@171] title -> TITLE NEWLINE
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@172] create title:type(Head) out of token:TITLE
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@162] head -> PASSAGE_START title
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@163] pass title:type(Head) to head:type(Head)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@261] The land of the iguanas ... a old and forgotten world inhabited by the mighty
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@211] body -> bodypart
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@212] create top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@214] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@261] iguanas. There are many 
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@279] enter condition BodyLink
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@451] kinds
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@468] enter condition Body
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@262] link -> LINK_OPEN TEXT_TOKEN LINK_CLOSE
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@263] create top:link:type(Link) with 2:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@229] bodypart -> link
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@261]  of iguanas - huge yet peaceful lizards.
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.533 DEBUG [40729] [Twee::TweeScanner::yylex@261] They primarily live of all kinds of fruits, vegetables and other greens.
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@261] But when they are 
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@279] enter condition BodyLink
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@451] juveniles
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@468] enter condition Body
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@262] link -> LINK_OPEN TEXT_TOKEN LINK_CLOSE
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@263] create top:link:type(Link) with 2:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@229] bodypart -> link
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::TweeScanner::yylex@261]  they also eat insects.
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.534 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::TweeScanner::yylex@269] enter condition HeaderTitle
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::TweeScanner::yylex@272] return the PASSAGE_START token
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@151] passage -> head body
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@152] create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@131] passages -> passages passage
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@132] pass passages:type(TweeFile) to top:passages:type(TweeFile)
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@134] add the passage:type(Passage) to the passages:type(TweeFile)
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::TweeScanner::yylex@157] stay in condition HeaderTitle, look for next token
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::TweeScanner::yylex@159] return the TITLE Token
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::TweeScanner::yylex@160] 	 matched:
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::TweeScanner::yylex@161] kinds
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::TweeScanner::yylex@179] enter condition Body
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::TweeScanner::yylex@182] return the NEWLINE token
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@171] title -> TITLE NEWLINE
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@172] create title:type(Head) out of token:TITLE
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@162] head -> PASSAGE_START title
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@163] pass title:type(Head) to head:type(Head)
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::TweeScanner::yylex@261] There are green iguanas, rhino iguanas and many more
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.536 DEBUG [40729] [Twee::BisonParser::parse@211] body -> bodypart
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::BisonParser::parse@212] create top:body:type(Body)
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::BisonParser::parse@214] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@279] enter condition BodyLink
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@451] land of the iguanas
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@459] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@461] return the LINK_CLOSE token
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@451] land of the iguanas
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@468] enter condition Body
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::BisonParser::parse@269] link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::BisonParser::parse@270] create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::BisonParser::parse@229] bodypart -> link
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.537 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@269] enter condition HeaderTitle
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@272] return the PASSAGE_START token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@151] passage -> head body
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@152] create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@131] passages -> passages passage
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@132] pass passages:type(TweeFile) to top:passages:type(TweeFile)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@134] add the passage:type(Passage) to the passages:type(TweeFile)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@157] stay in condition HeaderTitle, look for next token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@159] return the TITLE Token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@160] 	 matched:
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@161] favouriteFood
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@179] enter condition Body
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@182] return the NEWLINE token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@171] title -> TITLE NEWLINE
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@172] create title:type(Head) out of token:TITLE
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@162] head -> PASSAGE_START title
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@163] pass title:type(Head) to head:type(Head)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@261] Iguanas love bananas - it's like chocolate to them.
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@211] body -> bodypart
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@212] create top:body:type(Body)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@214] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@279] enter condition BodyLink
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@451] land of the iguanas
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@459] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@461] return the LINK_CLOSE token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@451] land of the iguanas
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@468] enter condition Body
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@269] link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@270] create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@229] bodypart -> link
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@269] enter condition HeaderTitle
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@272] return the PASSAGE_START token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@151] passage -> head body
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@152] create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@131] passages -> passages passage
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@132] pass passages:type(TweeFile) to top:passages:type(TweeFile)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@134] add the passage:type(Passage) to the passages:type(TweeFile)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@157] stay in condition HeaderTitle, look for next token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@159] return the TITLE Token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@160] 	 matched:
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@161] juveniles
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@179] enter condition Body
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@182] return the NEWLINE token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@171] title -> TITLE NEWLINE
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@172] create title:type(Head) out of token:TITLE
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@162] head -> PASSAGE_START title
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@163] pass title:type(Head) to head:type(Head)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@261] Juvenile iguanas will eventually hit puberty and just as human juveniles they will get moody ...
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@211] body -> bodypart
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@212] create top:body:type(Body)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@214] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@279] enter condition BodyLink
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@451] land of the iguanas
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@459] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@461] return the LINK_CLOSE token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@451] land of the iguanas
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@468] enter condition Body
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@269] link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@270] create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@229] bodypart -> link
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.538 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::TweeScanner::yylex@269] enter condition HeaderTitle
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::TweeScanner::yylex@272] return the PASSAGE_START token
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::BisonParser::parse@151] passage -> head body
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::BisonParser::parse@152] create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::BisonParser::parse@131] passages -> passages passage
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::BisonParser::parse@132] pass passages:type(TweeFile) to top:passages:type(TweeFile)
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::BisonParser::parse@134] add the passage:type(Passage) to the passages:type(TweeFile)
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::TweeScanner::yylex@157] stay in condition HeaderTitle, look for next token
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::TweeScanner::yylex@159] return the TITLE Token
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::TweeScanner::yylex@160] 	 matched:
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::TweeScanner::yylex@161] Disclaimer
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::TweeScanner::yylex@179] enter condition Body
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::TweeScanner::yylex@182] return the NEWLINE token
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::BisonParser::parse@171] title -> TITLE NEWLINE
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::BisonParser::parse@172] create title:type(Head) out of token:TITLE
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::BisonParser::parse@162] head -> PASSAGE_START title
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::BisonParser::parse@163] pass title:type(Head) to head:type(Head)
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.541 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.542 DEBUG [40729] [Twee::TweeScanner::yylex@261] The story is made up ... sort off - I really like iguanas.
-2015-06-23 13:00:44.542 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.542 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.542 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.542 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.542 DEBUG [40729] [Twee::BisonParser::parse@211] body -> bodypart
-2015-06-23 13:00:44.542 DEBUG [40729] [Twee::BisonParser::parse@212] create top:body:type(Body)
-2015-06-23 13:00:44.542 DEBUG [40729] [Twee::BisonParser::parse@214] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@261] Great reptiles.
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@261] I'll try to remain in terms of details close to reality but
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@259] return the TEXT Token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@260] 	 matched:
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@261] might add some spice.
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@253] create top:text:type(Text)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@223] bodypart -> text
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@279] enter condition BodyLink
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@451] land of the iguanas
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@459] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@461] return the LINK_CLOSE token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@449] return the TEXT Token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@450] 	 matched:
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@451] land of the iguanas
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@468] enter condition Body
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@269] link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@270] create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@229] bodypart -> link
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@202] body -> body bodypart
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@151] passage -> head body
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@152] create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@131] passages -> passages passage
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@132] pass passages:type(TweeFile) to top:passages:type(TweeFile)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@134] add the passage:type(Passage) to the passages:type(TweeFile)
-2015-06-23 13:00:44.543 DEBUG [40729] [Twee::BisonParser::parse@124] TweeDocument -> passages
-2015-06-23 13:00:44.543 DEBUG [40729] [TweeZCodeCompilerPipeline::log@189] Compiler: Parsed twee file . . .
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::TweeScanner::yylex@136] enter condition HeaderTitle
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::TweeScanner::yylex@138] return the PASSAGE_START token
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::TweeScanner::yylex@157] stay in condition HeaderTitle, look for next token
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::TweeScanner::yylex@159] return the TITLE Token
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::TweeScanner::yylex@160] 	 matched:
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::TweeScanner::yylex@161] start
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::TweeScanner::yylex@179] enter condition Body
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::TweeScanner::yylex@182] return the NEWLINE token
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::BisonParser::parse@171] title -> TITLE NEWLINE
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::BisonParser::parse@172] create title:type(Head) out of token:TITLE
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::BisonParser::parse@162] head -> PASSAGE_START title
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::BisonParser::parse@163] pass title:type(Head) to head:type(Head)
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::TweeScanner::yylex@261] Welcome Adventurer!
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::BisonParser::parse@211] body -> bodypart
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::BisonParser::parse@212] create top:body:type(Body)
+2015-06-23 15:32:40.795 DEBUG [42307] [Twee::BisonParser::parse@214] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::TweeScanner::yylex@261] Welcome 
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::TweeScanner::yylex@335] return the FORMATTING Token
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::TweeScanner::yylex@336] 	 matched:
+2015-06-23 15:32:40.796 DEBUG [42307] [Twee::TweeScanner::yylex@337] ^^
+2015-06-23 15:32:40.796 ERROR [42307] [Twee::TweeScanner::yylex@375] lexer error in condition Body
+2015-06-23 15:32:40.797 ERROR [42307] [Twee::TweeScanner::yylex@376] 	 matched:
+2015-06-23 15:32:40.797 ERROR [42307] [Twee::TweeScanner::yylex@377] ^
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::TweeScanner::yylex@261] to
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::TweeScanner::yylex@335] return the FORMATTING Token
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::TweeScanner::yylex@336] 	 matched:
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::TweeScanner::yylex@337] ^^
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::BisonParser::parse@309] formatted -> FORMATTING TEXT_TOKEN FORMATTING
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::BisonParser::parse@310] pass formatted:type(--Text--) up to top:formatted:type(--Text--)
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::BisonParser::parse@242] bodypart -> formatted
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::BisonParser::parse@244] pass formatted:type(--Text--) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.797 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.797 ERROR [42307] [Twee::TweeScanner::yylex@375] lexer error in condition Body
+2015-06-23 15:32:40.797 ERROR [42307] [Twee::TweeScanner::yylex@376] 	 matched:
+2015-06-23 15:32:40.799 ERROR [42307] [Twee::TweeScanner::yylex@377] ^
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@261]  the 
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@279] enter condition BodyLink
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@451] land of the iguanas
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@468] enter condition Body
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@262] link -> LINK_OPEN TEXT_TOKEN LINK_CLOSE
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@263] create top:link:type(Link) with 2:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@229] bodypart -> link
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@261]  - a place full of myths and adventure!
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@261] Let's not waste any time and get going! 
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@279] enter condition BodyLink
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.799 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@451] start
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@459] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@461] return the LINK_CLOSE token
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@451] land of the iguanas
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@468] enter condition Body
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@269] link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@270] create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@229] bodypart -> link
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@269] enter condition HeaderTitle
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@272] return the PASSAGE_START token
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@151] passage -> head body
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@152] create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@140] passages -> passage
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@141] create a passages:type(TweeFile)
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@143] add passage:type(Passage) to passages:type(TweeFile)
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@157] stay in condition HeaderTitle, look for next token
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@159] return the TITLE Token
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@160] 	 matched:
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@161] land of the iguanas
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@179] enter condition Body
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@182] return the NEWLINE token
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@171] title -> TITLE NEWLINE
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@172] create title:type(Head) out of token:TITLE
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@162] head -> PASSAGE_START title
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@163] pass title:type(Head) to head:type(Head)
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::TweeScanner::yylex@261] The land of the iguanas ... a old and forgotten world inhabited by the mighty
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@211] body -> bodypart
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@212] create top:body:type(Body)
+2015-06-23 15:32:40.800 DEBUG [42307] [Twee::BisonParser::parse@214] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@261] iguanas. There are many 
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@279] enter condition BodyLink
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@451] kinds
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@468] enter condition Body
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@262] link -> LINK_OPEN TEXT_TOKEN LINK_CLOSE
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@263] create top:link:type(Link) with 2:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@229] bodypart -> link
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@261]  of iguanas - huge yet peaceful lizards.
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@261] They primarily live of all kinds of fruits, vegetables and other greens.
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@261] But when they are 
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@279] enter condition BodyLink
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@451] juveniles
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@468] enter condition Body
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@262] link -> LINK_OPEN TEXT_TOKEN LINK_CLOSE
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@263] create top:link:type(Link) with 2:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@229] bodypart -> link
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@261]  they also eat insects.
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@269] enter condition HeaderTitle
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@272] return the PASSAGE_START token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@151] passage -> head body
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@152] create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@131] passages -> passages passage
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@132] pass passages:type(TweeFile) to top:passages:type(TweeFile)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@134] add the passage:type(Passage) to the passages:type(TweeFile)
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@157] stay in condition HeaderTitle, look for next token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@159] return the TITLE Token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@160] 	 matched:
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@161] kinds
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@179] enter condition Body
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::TweeScanner::yylex@182] return the NEWLINE token
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@171] title -> TITLE NEWLINE
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@172] create title:type(Head) out of token:TITLE
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@162] head -> PASSAGE_START title
+2015-06-23 15:32:40.806 DEBUG [42307] [Twee::BisonParser::parse@163] pass title:type(Head) to head:type(Head)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@261] There are green iguanas, rhino iguanas and many more
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@211] body -> bodypart
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@212] create top:body:type(Body)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@214] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@279] enter condition BodyLink
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@451] land of the iguanas
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@459] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@461] return the LINK_CLOSE token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@451] land of the iguanas
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@468] enter condition Body
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@269] link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@270] create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@229] bodypart -> link
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@269] enter condition HeaderTitle
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@272] return the PASSAGE_START token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@151] passage -> head body
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@152] create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@131] passages -> passages passage
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@132] pass passages:type(TweeFile) to top:passages:type(TweeFile)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@134] add the passage:type(Passage) to the passages:type(TweeFile)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@157] stay in condition HeaderTitle, look for next token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@159] return the TITLE Token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@160] 	 matched:
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@161] favouriteFood
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@179] enter condition Body
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@182] return the NEWLINE token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@171] title -> TITLE NEWLINE
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@172] create title:type(Head) out of token:TITLE
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@162] head -> PASSAGE_START title
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@163] pass title:type(Head) to head:type(Head)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@261] Iguanas love bananas - it's like chocolate to them.
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@211] body -> bodypart
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@212] create top:body:type(Body)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@214] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@279] enter condition BodyLink
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@451] land of the iguanas
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@459] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@461] return the LINK_CLOSE token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@451] land of the iguanas
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@468] enter condition Body
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@269] link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@270] create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@229] bodypart -> link
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.807 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::TweeScanner::yylex@269] enter condition HeaderTitle
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::TweeScanner::yylex@272] return the PASSAGE_START token
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::BisonParser::parse@151] passage -> head body
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::BisonParser::parse@152] create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::BisonParser::parse@131] passages -> passages passage
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::BisonParser::parse@132] pass passages:type(TweeFile) to top:passages:type(TweeFile)
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::BisonParser::parse@134] add the passage:type(Passage) to the passages:type(TweeFile)
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::TweeScanner::yylex@157] stay in condition HeaderTitle, look for next token
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::TweeScanner::yylex@159] return the TITLE Token
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::TweeScanner::yylex@160] 	 matched:
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::TweeScanner::yylex@161] juveniles
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::TweeScanner::yylex@179] enter condition Body
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::TweeScanner::yylex@182] return the NEWLINE token
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::BisonParser::parse@171] title -> TITLE NEWLINE
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::BisonParser::parse@172] create title:type(Head) out of token:TITLE
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::BisonParser::parse@162] head -> PASSAGE_START title
+2015-06-23 15:32:40.811 DEBUG [42307] [Twee::BisonParser::parse@163] pass title:type(Head) to head:type(Head)
+2015-06-23 15:32:40.812 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.812 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.812 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.812 DEBUG [42307] [Twee::TweeScanner::yylex@261] Juvenile iguanas will eventually hit puberty and just as human juveniles they will get moody ...
+2015-06-23 15:32:40.812 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.812 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.812 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.812 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.812 DEBUG [42307] [Twee::BisonParser::parse@211] body -> bodypart
+2015-06-23 15:32:40.812 DEBUG [42307] [Twee::BisonParser::parse@212] create top:body:type(Body)
+2015-06-23 15:32:40.812 DEBUG [42307] [Twee::BisonParser::parse@214] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@279] enter condition BodyLink
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@451] land of the iguanas
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@459] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@461] return the LINK_CLOSE token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@451] land of the iguanas
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@468] enter condition Body
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@269] link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@270] create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@229] bodypart -> link
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@269] enter condition HeaderTitle
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@272] return the PASSAGE_START token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@151] passage -> head body
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@152] create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@131] passages -> passages passage
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@132] pass passages:type(TweeFile) to top:passages:type(TweeFile)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@134] add the passage:type(Passage) to the passages:type(TweeFile)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@157] stay in condition HeaderTitle, look for next token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@159] return the TITLE Token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@160] 	 matched:
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@161] Disclaimer
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@179] enter condition Body
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@182] return the NEWLINE token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@171] title -> TITLE NEWLINE
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@172] create title:type(Head) out of token:TITLE
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@162] head -> PASSAGE_START title
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@163] pass title:type(Head) to head:type(Head)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@261] The story is made up ... sort off - I really like iguanas.
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@211] body -> bodypart
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@212] create top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@214] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@261] Great reptiles.
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@261] I'll try to remain in terms of details close to reality but
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@257] stay in condition Body, look for next token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@259] return the TEXT Token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@260] 	 matched:
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@261] might add some spice.
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@252] text -> TEXT_TOKEN
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@253] create top:text:type(Text)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@223] bodypart -> text
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@224] pass text:type(text) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@279] enter condition BodyLink
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@282] return the LINK_OPEN token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@451] land of the iguanas
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@459] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@461] return the LINK_CLOSE token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@447] stay in condition BodyLink, look for next token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@449] return the TEXT Token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@450] 	 matched:
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@451] land of the iguanas
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@468] enter condition Body
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::TweeScanner::yylex@471] return the LINK_CLOSE token
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@269] link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@270] create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@229] bodypart -> link
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@230] pass link:type(Link) to bodypart:type(BodyPart)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@202] body -> body bodypart
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@203] pass body:type(Body) to top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@205] add bodypart:type(BodyPart) to top:body:type(Body)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@151] passage -> head body
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@152] create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@131] passages -> passages passage
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@132] pass passages:type(TweeFile) to top:passages:type(TweeFile)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@134] add the passage:type(Passage) to the passages:type(TweeFile)
+2015-06-23 15:32:40.813 DEBUG [42307] [Twee::BisonParser::parse@124] TweeDocument -> passages
+2015-06-23 15:32:40.813 DEBUG [42307] [TweeZCodeCompilerPipeline::log@189] Compiler: Parsed twee file . . .
 
-2015-06-23 13:00:44.559 DEBUG [40729] [AssemblyParser::readAssembly@133] Compiler: Parse Assembly File
+2015-06-23 15:32:40.828 DEBUG [42307] [AssemblyParser::readAssembly@133] Compiler: Parse Assembly File
 
-2015-06-23 13:00:44.559 DEBUG [40729] [AssemblyParser::performRoutineGlobalVarCommand@117] found gvar
-2015-06-23 13:00:44.559 DEBUG [40729] [AssemblyParser::addGlobal@302] adding gvar PASSAGE_PTR at index 0
-2015-06-23 13:00:44.559 DEBUG [40729] [AssemblyParser::performRoutineGlobalVarCommand@117] found gvar
-2015-06-23 13:00:44.559 DEBUG [40729] [AssemblyParser::addGlobal@302] adding gvar USER_INPUT at index 1
-2015-06-23 13:00:44.559 DEBUG [40729] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
-2015-06-23 13:00:44.559 DEBUG [40729] [RoutineGenerator::RoutineGenerator@67] 0/29928
+2015-06-23 15:32:40.831 DEBUG [42307] [AssemblyParser::performRoutineGlobalVarCommand@117] found gvar
+2015-06-23 15:32:40.831 DEBUG [42307] [AssemblyParser::addGlobal@302] adding gvar PASSAGE_PTR at index 0
+2015-06-23 15:32:40.831 DEBUG [42307] [AssemblyParser::performRoutineGlobalVarCommand@117] found gvar
+2015-06-23 15:32:40.831 DEBUG [42307] [AssemblyParser::addGlobal@302] adding gvar USER_INPUT at index 1
+2015-06-23 15:32:40.831 DEBUG [42307] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
+2015-06-23 15:32:40.831 DEBUG [42307] [RoutineGenerator::RoutineGenerator@67] 0/29928
 
-2015-06-23 13:00:44.559 DEBUG [40729] [AssemblyParser::executeCommand@422] :::::: new call_vs 
-2015-06-23 13:00:44.559 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: JUMP_TABLE_START
-2015-06-23 13:00:44.559 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L_start
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@422] :::::: new call_vs 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@428] :::::: new jump 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L_land_of_the_iguanas
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@422] :::::: new call_vs 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@428] :::::: new jump 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L_kinds
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@422] :::::: new call_vs 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@428] :::::: new jump 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L_favouriteFood
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@422] :::::: new call_vs 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@428] :::::: new jump 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L_juveniles
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@422] :::::: new call_vs 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@428] :::::: new jump 
-2015-06-23 13:00:44.566 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L_Disclaimer
-2015-06-23 13:00:44.567 DEBUG [40729] [AssemblyParser::executeCommand@422] :::::: new call_vs 
-2015-06-23 13:00:44.567 DEBUG [40729] [AssemblyParser::executeCommand@428] :::::: new jump 
-2015-06-23 13:00:44.567 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: JUMP_TABLE_END
-2015-06-23 13:00:44.567 DEBUG [40729] [AssemblyParser::executeCommand@407] :::::: new quit
-2015-06-23 13:00:44.567 DEBUG [40729] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
-2015-06-23 13:00:44.567 DEBUG [40729] [AssemblyParser::finishRoutine@165] adding routine to zcode
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29965
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@422] :::::: new call_vs 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: JUMP_TABLE_START
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L_start
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@422] :::::: new call_vs 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@428] :::::: new jump 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L_land_of_the_iguanas
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@422] :::::: new call_vs 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@428] :::::: new jump 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L_kinds
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@422] :::::: new call_vs 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@428] :::::: new jump 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L_favouriteFood
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@422] :::::: new call_vs 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@428] :::::: new jump 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L_juveniles
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@422] :::::: new call_vs 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@428] :::::: new jump 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L_Disclaimer
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@422] :::::: new call_vs 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@428] :::::: new jump 
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: JUMP_TABLE_END
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::executeCommand@407] :::::: new quit
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
+2015-06-23 15:32:40.832 DEBUG [42307] [AssemblyParser::finishRoutine@165] adding routine to zcode
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29965
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29973
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29973
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29981
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29981
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29989
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29989
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29997
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29997
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 30005
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 30005
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29964
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29964
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29972
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29972
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29980
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29980
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29988
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29988
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29996
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29996
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 30004
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 30004
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29963
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29963
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29971
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29971
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29979
+2015-06-23 15:32:40.832 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29979
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29987
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29987
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29995
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29995
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 30003
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 30003
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29962
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29962
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29970
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29970
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29978
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29978
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29986
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29986
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29994
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29994
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 30002
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 30002
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29961
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29961
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29969
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29969
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29977
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29977
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29985
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29985
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29993
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29993
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 30001
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 30001
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29968
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29968
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29976
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29976
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29984
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29984
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 29992
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 29992
 
-2015-06-23 13:00:44.567 DEBUG [40729] [Jumps::calculateCallOffsets@187] 30000
+2015-06-23 15:32:40.833 DEBUG [42307] [Jumps::calculateCallOffsets@187] 30000
 
-2015-06-23 13:00:44.567 DEBUG [40729] [RoutineGenerator::RoutineGenerator@67] 1/30008
+2015-06-23 15:32:40.836 DEBUG [42307] [RoutineGenerator::RoutineGenerator@67] 1/30008
 
-2015-06-23 13:00:44.567 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@440] :::::: new set_text_style 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeSETTEXTSTYLECommand@341] r
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@440] :::::: new set_text_style 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeSETTEXTSTYLECommand@341] r
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.568 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: READ_BEGIN
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@428] :::::: new jump 
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L0
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@431] :::::: new return routine 
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L1
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@431] :::::: new return routine 
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::finishRoutine@165] adding routine to zcode
-2015-06-23 13:00:44.576 DEBUG [40729] [RoutineGenerator::RoutineGenerator@67] 4/30224
+2015-06-23 15:32:40.836 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.836 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.836 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.836 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.836 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.836 DEBUG [42307] [AssemblyParser::executeCommand@440] :::::: new set_text_style 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeSETTEXTSTYLECommand@341] r
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@440] :::::: new set_text_style 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeSETTEXTSTYLECommand@341] r
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: READ_BEGIN
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@410] :::::: new read
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@428] :::::: new jump 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L0
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@431] :::::: new return routine 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L1
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@431] :::::: new return routine 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::finishRoutine@165] adding routine to zcode
+2015-06-23 15:32:40.837 DEBUG [42307] [RoutineGenerator::RoutineGenerator@67] 4/30224
 
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.576 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.577 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.577 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.577 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.577 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.577 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.577 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.577 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.577 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.577 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: READ_BEGIN
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@428] :::::: new jump 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L0
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@431] :::::: new return routine 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L1
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@431] :::::: new return routine 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::finishRoutine@165] adding routine to zcode
-2015-06-23 13:00:44.578 DEBUG [40729] [RoutineGenerator::RoutineGenerator@67] 7/30520
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.837 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: READ_BEGIN
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@410] :::::: new read
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@428] :::::: new jump 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L0
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@431] :::::: new return routine 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L1
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@431] :::::: new return routine 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::finishRoutine@165] adding routine to zcode
+2015-06-23 15:32:40.838 DEBUG [42307] [RoutineGenerator::RoutineGenerator@67] 7/30520
 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: READ_BEGIN
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@428] :::::: new jump 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L0
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::executeCommand@431] :::::: new return routine 
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
-2015-06-23 13:00:44.578 DEBUG [40729] [AssemblyParser::finishRoutine@165] adding routine to zcode
-2015-06-23 13:00:44.579 DEBUG [40729] [RoutineGenerator::RoutineGenerator@67] 0/30640
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.838 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.839 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.839 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.839 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.839 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: READ_BEGIN
+2015-06-23 15:32:40.839 DEBUG [42307] [AssemblyParser::executeCommand@410] :::::: new read
+2015-06-23 15:32:40.839 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.839 DEBUG [42307] [AssemblyParser::executeCommand@428] :::::: new jump 
+2015-06-23 15:32:40.839 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L0
+2015-06-23 15:32:40.839 DEBUG [42307] [AssemblyParser::executeCommand@431] :::::: new return routine 
+2015-06-23 15:32:40.839 DEBUG [42307] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
+2015-06-23 15:32:40.839 DEBUG [42307] [AssemblyParser::finishRoutine@165] adding routine to zcode
+2015-06-23 15:32:40.849 DEBUG [42307] [RoutineGenerator::RoutineGenerator@67] 0/30640
 
-2015-06-23 13:00:44.579 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.579 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.579 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.579 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.579 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.579 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.579 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.579 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.579 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: READ_BEGIN
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@428] :::::: new jump 
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L0
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@431] :::::: new return routine 
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::finishRoutine@165] adding routine to zcode
-2015-06-23 13:00:44.588 DEBUG [40729] [RoutineGenerator::RoutineGenerator@67] 0/30768
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: READ_BEGIN
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@410] :::::: new read
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@428] :::::: new jump 
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L0
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@431] :::::: new return routine 
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::finishRoutine@165] adding routine to zcode
+2015-06-23 15:32:40.849 DEBUG [42307] [RoutineGenerator::RoutineGenerator@67] 0/30768
 
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.588 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: READ_BEGIN
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@428] :::::: new jump 
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L0
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@431] :::::: new return routine 
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::finishRoutine@165] adding routine to zcode
-2015-06-23 13:00:44.598 DEBUG [40729] [RoutineGenerator::RoutineGenerator@67] 4/30928
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.849 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: READ_BEGIN
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@410] :::::: new read
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@428] :::::: new jump 
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L0
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@431] :::::: new return routine 
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::performRoutineDirectiveCommand@59] found routine
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::finishRoutine@165] adding routine to zcode
+2015-06-23 15:32:40.854 DEBUG [42307] [RoutineGenerator::RoutineGenerator@67] 4/30928
 
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@391] :::::: new print 
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@389] :::::: new line
-2015-06-23 13:00:44.598 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: READ_BEGIN
-2015-06-23 13:00:44.599 DEBUG [40729] [AssemblyParser::executeCommand@394] :::::: new je 
-2015-06-23 13:00:44.599 DEBUG [40729] [AssemblyParser::executeCommand@428] :::::: new jump 
-2015-06-23 13:00:44.599 DEBUG [40729] [AssemblyParser::executeCommand@444] :::::: new label: L0
-2015-06-23 13:00:44.599 DEBUG [40729] [AssemblyParser::executeCommand@431] :::::: new return routine 
-2015-06-23 13:00:44.599 DEBUG [40729] [AssemblyParser::finishRoutine@165] adding routine to zcode
-2015-06-23 13:00:44.628 DEBUG [40729] [TweeZCodeCompilerPipeline::log@189] Compiler: ZCode File 'hello_world.z8' generated . . .
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.854 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@391] :::::: new print 
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@389] :::::: new line
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: READ_BEGIN
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@410] :::::: new read
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@394] :::::: new je 
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@428] :::::: new jump 
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@444] :::::: new label: L0
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::executeCommand@431] :::::: new return routine 
+2015-06-23 15:32:40.855 DEBUG [42307] [AssemblyParser::finishRoutine@165] adding routine to zcode
+2015-06-23 15:32:40.903 DEBUG [42307] [TweeZCodeCompilerPipeline::log@189] Compiler: ZCode File 'hello_world.z8' generated . . .
 
