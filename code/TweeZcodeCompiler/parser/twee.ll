@@ -66,7 +66,7 @@ TAGS_CLOSE              \]
 TAG                     [a-zA-Z0-9\-_="'!+\\/?.,]+
 
  /*BODY_TEXT_CHAR          [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
-BODY_TEXT               [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
+BODY_TEXT               [a-zA-Z0-9\-'!+\?.,\t ]+
     /*these chars are used by FORMATTING tokens:*/
     /* / " _ = ~ ^ { % */
 
