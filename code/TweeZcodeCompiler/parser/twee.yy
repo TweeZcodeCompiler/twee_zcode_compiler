@@ -76,6 +76,7 @@
 %token
 	<token> PASSAGE_START
 	<token> NEWLINE
+    <token> EOF_TOKEN
 
 	<token> TAGS_OPEN
 	<token> TAGS_CLOSE
@@ -197,16 +198,7 @@ tags :
   ;
 
 body :
-    body bodypart
-    {
-    LOG_DEBUG << "body -> body bodypart";
-    LOG_DEBUG << "pass body:type(Body) to top:body:type(Body)";
-    $$ = $1;
-    LOG_DEBUG << "add bodypart:type(BodyPart) to top:body:type(Body)";
-    *$$ += *$2;
-    delete $2;
-    }
-    |bodypart
+    bodypart
     {
     LOG_DEBUG << "body -> bodypart";
     LOG_DEBUG << "create top:body:type(Body)";
@@ -214,6 +206,15 @@ body :
     LOG_DEBUG << "add bodypart:type(BodyPart) to top:body:type(Body)";
     *$$ += *$1;
     delete $1;
+    }
+    |body bodypart
+    {
+    LOG_DEBUG << "body -> body bodypart";
+    LOG_DEBUG << "pass body:type(Body) to top:body:type(Body)";
+    $$ = $1;
+    LOG_DEBUG << "add bodypart:type(BodyPart) to top:body:type(Body)";
+    *$$ += *$2;
+    delete $2;
     }
   ;
 
@@ -223,6 +224,12 @@ bodypart :
     LOG_DEBUG << "bodypart -> text";
     LOG_DEBUG << "pass text:type(text) to bodypart:type(BodyPart)";
     $$ = $1;
+    }
+    |NEWLINE
+    {
+    LOG_DEBUG << "bodypart -> NEWLINE";
+    LOG_DEBUG << "create top:text:type(Text) with a \"\\n\"";
+    $$ = new Text("\n");
     }
     |link
     {

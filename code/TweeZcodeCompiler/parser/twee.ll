@@ -117,6 +117,7 @@ MACRO_TURNS             turns
 
 %%
 
+
  /*___NEW CONDITION___ Start of a passage*/
     /*From: Start of Lexing, Body*/
     /*To:   HeaderTitle    */
@@ -173,14 +174,6 @@ MACRO_TURNS             turns
                                 //return the NEWLINE token
                                 LOG_DEBUG << "return the NEWLINE token";
                                 return BisonParser::token::NEWLINE;
-                                }
-
-    /* unexpected Token(s) */
-<HeaderTitle>.                  {
-                                //TODO: lexer error in HeaderTitle
-                                LOG_ERROR << "lexer error in condition HeaderTitle";
-                                LOG_ERROR << "\t matched:";
-                                LOG_ERROR << YYText();
                                 }
 
  /* ___NEW CONDITION___ HeaderTags*/
@@ -364,7 +357,14 @@ MACRO_TURNS             turns
                                 }
 
     /* Passage text */
-<Body>[^\{\[<\|\n\/\"_=~\^@\{\}]+              {
+<Body>{NEWLINE}                 {
+                                LOG_DEBUG << "stay in condition Body, look for next token";
+                                LOG_DEBUG << "return the NEWLINE Token";
+                                return BisonParser::token::NEWLINE;
+                                }
+
+    /* Passage text */
+<Body>[^\{\[<\|\n\/\"_=~\^@\{\}:\n]+              {
                                 //[^\^\/\"_=~\{\[<\|]
                                 LOG_DEBUG << "stay in condition Body, look for next token";
                                 LOG_DEBUG << "return the TEXT Token";
@@ -441,7 +441,7 @@ MACRO_TURNS             turns
     /*To:   Body */
 
     /* link text */
-<BodyLink>{LINK_TEXT}           {
+<BodyLink>[^\|\]]+           {
                                 //stay in condition BodyLink, look for next token
                                 LOG_DEBUG << "stay in condition BodyLink, look for next token";
                                 //return the TEXT Token
@@ -457,7 +457,7 @@ MACRO_TURNS             turns
                                 //stay in condition BodyLink, look for next token
                                 LOG_DEBUG << "stay in condition BodyLink, look for next token";
                                 //return the LINK_CLOSE token
-                                LOG_DEBUG << "return the LINK_CLOSE token";
+                                LOG_DEBUG << "return the LINK_SEPARATOR token";
                                 return BisonParser::token::LINK_SEPARATOR;
                                 }
 
