@@ -51,7 +51,11 @@ int main(int argc, char *argv[]) {
 
     TweeCompiler compiler;
     TweeZCodeCompilerPipeline pipeline;
-    pipeline.compile(inputFile, outputFile, compiler);
+    try {
+        pipeline.compile(inputFile, outputFile, compiler);
+    } catch (const AssemblyException& e) {
+        std::cerr << "Invalid assembly statement at line " << e.lineNumber << ":" << std::endl << e.line;
+    }
 
     std::cout << inputFile << " compiled into --> " << outputFile << std::endl;
 

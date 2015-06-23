@@ -134,32 +134,41 @@ void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemory
 
     LOG_DEBUG << "Compiler: Parse Assembly File\n";
 
+    string line;
+    unsigned lineNumber = 0;
+    try {
+        for (; getline(input, line);) {
+            line = trim(line);
+            vector<string> lineComps;
+            this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND, lineComps);
 
-    for(string line; getline(input, line);) {
-        line = trim(line);
-        vector<string> lineComps;
-        this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND, lineComps);
+            if (lineComps.size()) {
+                string firstComp = lineComps.at(0);
 
-        if (lineComps.size()) {
-            string firstComp = lineComps.at(0);
-
-            if (line.at(0) == '.') { // routine directive
-                if (firstComp.compare(ROUTINE_DIRECTIVE) == 0) {
-                    performRoutineDirectiveCommand(lineComps,highMemoryZcode,offset);
-                } else if (firstComp.compare(GVAR_DIRECTIVE) == 0) { //global variable directive
-                    performRoutineGlobalVarCommand(line);
-                } else {
-                    cerr << "unknown directive";
-                    throw InvalidDirectiveException();
+                if (line.at(0) == '.') { // routine directive
+                    if (firstComp.compare(ROUTINE_DIRECTIVE) == 0) {
+                        performRoutineDirectiveCommand(lineComps, highMemoryZcode, offset);
+                    } else if (firstComp.compare(GVAR_DIRECTIVE) == 0) { //global variable directive
+                        performRoutineGlobalVarCommand(line);
+                    } else {
+                        cerr << "unknown directive";
+                        throw InvalidDirectiveException();
+                    }
+                } else { // normal instruction
+                    executeCommand(line, *currentGenerator);
                 }
-            } else { // normal instruction
-                executeCommand(line, *currentGenerator);
             }
-        }
-    }
 
-    if (currentGenerator) {
-        finishRoutine(highMemoryZcode);
+            ++lineNumber;
+        }
+
+        if (currentGenerator) {
+            finishRoutine(highMemoryZcode);
+        }
+    } catch(AssemblyException& assemblyException) {
+        assemblyException.lineNumber = lineNumber;
+        assemblyException.line = line;
+        throw;
     }
 }
 
