@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <bitset>
 #include <vector>
-#include <bits/unique_ptr.h>
+#include <memory>
 #include "ParamStructs.h"
 
 class OpcodeParameterGenerator {
