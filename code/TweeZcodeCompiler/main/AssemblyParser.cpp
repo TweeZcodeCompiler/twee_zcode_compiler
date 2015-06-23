@@ -407,9 +407,9 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         LOG_DEBUG << ":::::: new quit" ;
     } else if (commandPart.compare(AssemblyParser::READ_CHAR_COMMAND) == 0) {
         executeREADCommand(command, routineGenerator);
-        LOG_DEBUG << ":::::: new read" << endl;
+        LOG_DEBUG << ":::::: new read";
     } else if (commandPart.compare(AssemblyParser::PRINT_CHAR_COMMAND) == 0) {
-        cout << ":::::: new print_char" << endl;
+        LOG_DEBUG << ":::::: new print_char";
         routineGenerator.printChar(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::PRINT_NUM_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new print_num";

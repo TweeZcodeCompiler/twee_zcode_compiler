@@ -5,8 +5,6 @@
 #ifndef PROJECT_PARAMSTRUCTS_H
 #define PROJECT_PARAMSTRUCTS_H
 
-#include <bits/stringfwd.h>
-#include <bits/basic_string.h>
 #include <stdint.h>
 
 enum ZParamType {
