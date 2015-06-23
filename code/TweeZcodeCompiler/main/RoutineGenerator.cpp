@@ -4,6 +4,7 @@
 
 #include "RoutineGenerator.h"
 #include "ZCodeConverter.h"
+#include "exceptions.h"
 #include <iostream>
 #include <algorithm>
 #include <plog/Log.h>
@@ -19,8 +20,8 @@ void checkParamCount(vector<unique_ptr<ZParam>> &params, unsigned int paramCount
     if (params.size() != paramCount1 && (paramCount2 != 0 && params.size() != paramCount2)
         && (paramCount3 != 0 && params.size() != paramCount3) && (paramCount4 != 0 && params.size() != paramCount4)) {
 
-        cout << endl << endl << "Wrong parameter count" << endl << endl;
-        throw;
+        LOG_ERROR << "Wrong parameter count";
+        throw InvalidRoutineException();
     }
 }
 
@@ -41,37 +42,37 @@ void checkParamType(vector<unique_ptr<ZParam>> &params, ZParamType type1, ZParam
         switch (i) {
             case 0:
                 if (!sameType((*params.at(0)).getParamType(), type1)) {
-                    cout << endl << endl << "Wrong param type for parameter 1" << endl << endl;
-                    throw;
+                    LOG_ERROR << "Wrong param type for parameter 1";
+                    throw InvalidRoutineException();
                 }
                 break;
             case 1:
                 if (!sameType((*params.at(1)).getParamType(), type2)) {
-                    cout << endl << endl << "Wrong param type for parameter 2" << endl << endl;
-                    throw;
+                    LOG_ERROR << "Wrong param type for parameter 2";
+                    throw InvalidRoutineException();
                 }
                 break;
             case 2:
                 if (!sameType((*params.at(2)).getParamType(), type3)) {
-                    cout << endl << endl << "Wrong param type for parameter 3" << endl << endl;
-                    throw;
+                    LOG_ERROR << "Wrong param type for parameter 3";
+                    throw InvalidRoutineException();
                 }
                 break;
             case 3:
                 if (!sameType((*params.at(3)).getParamType(), type4)) {
-                    cout << endl << endl << "Wrong param type for parameter 4" << endl << endl;
-                    throw;
+                    LOG_ERROR << "Wrong param type for parameter 4";
+                    throw InvalidRoutineException();
                 }
                 break;
             case 4:
                 if (!sameType((*params.at(4)).getParamType(), type5)) {
-                    cout << endl << endl << "Wrong param type for parameter 5" << endl << endl;
-                    throw;
+                    LOG_ERROR << "Wrong param type for parameter 5";
+                    throw InvalidRoutineException();
                 }
                 break;
             default:
-                cout << endl << endl << "Too many arguments!" << endl << endl;
-                throw;
+                LOG_ERROR << "Too many arguments!";
+                throw InvalidRoutineException();
         }
     }
 
@@ -218,11 +219,11 @@ void setLabelValues(ZParam &labelParam, string &label, bool &jumpIfTrue) {
 // params: label
 void RoutineGenerator::jump(vector<unique_ptr<ZParam>> params) {
     if (params.size() != 1) {
-        cout << "Wrong param count for jump zero" << endl;
-        throw;
+        LOG_ERROR << "Wrong param count for jump zero";
+        throw InvalidRoutineException();
     } else if (!(*params.at(0)).isNameParam) {
-        cout << "No label for jump zero available" << endl;;
-        throw;
+        LOG_ERROR << "No label for jump zero available";
+        throw InvalidRoutineException();
     }
 
     string label;
@@ -371,9 +372,9 @@ void RoutineGenerator::printAddress(vector<unique_ptr<ZParam>> params) {
 
 void RoutineGenerator::setLocalVariable(string name, int16_t value) {
     if (++addedLocalVariables > maxLocalVariables) {
-        LOG_DEBUG << "Added " << addedLocalVariables << " local variables to routine but only "
+        LOG_ERROR << "Added " << addedLocalVariables << " local variables to routine but only "
             << maxLocalVariables << " specified at routine start!";
-        throw;
+        throw InvalidDirectiveException();
     }
 
     size_t size = locVariables.size() + 1;
@@ -397,8 +398,8 @@ void RoutineGenerator::printNum(vector<unique_ptr<ZParam>> params) {
 
 u_int8_t RoutineGenerator::getAddressOfVariable(string name) {
     if (locVariables.count(name) == 0) {
-        LOG_DEBUG << "Undefined local variable used: " << name;
-        throw;
+        LOG_ERROR << "Undefined local variable used: " << name;
+        throw InvalidVariableException();
     } else {
         return locVariables[name];
     }

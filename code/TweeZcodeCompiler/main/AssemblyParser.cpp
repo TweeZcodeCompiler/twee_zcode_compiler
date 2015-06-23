@@ -3,6 +3,7 @@
 //
 
 #include "AssemblyParser.h"
+#include "exceptions.h"
 #include <fstream>
 #include <sstream>
 #include <algorithm>
@@ -60,7 +61,7 @@ void AssemblyParser::performRoutineDirectiveCommand( vector<string> lineComps, v
 
     if (lineComps.size() < 2) {
         cerr << "invalid routine declaration (no name specified)" ;
-        throw;
+        throw InvalidRoutineException();
     }
     string routineName = lineComps.at(1);
 
@@ -92,15 +93,16 @@ void AssemblyParser::performRoutineDirectiveCommand( vector<string> lineComps, v
             try {
                 val = stoi(valueString);
             } catch (const invalid_argument& invaldArgument) {
-                LOG_DEBUG << "Given value for local variable is not an integer: " << valueString ;
-                throw;
+                LOG_ERROR << "Given value for local variable is not an integer: " << valueString ;
+                throw InvalidRoutineException();
             } catch (const out_of_range& outOfRange) {
-                LOG_DEBUG << "Given value for local variable too large or too small: " << valueString ;
-                throw;
+                LOG_ERROR << "Given value for local variable too large or too small: " << valueString ;
+                throw InvalidRoutineException();
             }
 
             if(val > INT16_MAX || val < INT16_MIN) {
-                throw out_of_range(string("Given value for local variable too large or too small: ") + to_string(val) );
+                LOG_ERROR << "Given value for local variable too large or too small: " << to_string(val);
+                throw InvalidRoutineException();
             }
 
             string name = var.substr(0, nameEnd);
@@ -148,7 +150,7 @@ void AssemblyParser::readAssembly(istream& input, vector <bitset<8>> &highMemory
                     performRoutineGlobalVarCommand(line);
                 } else {
                     cerr << "unknown directive";
-                    throw;
+                    throw InvalidDirectiveException();
                 }
             } else { // normal instruction
                 executeCommand(line, *currentGenerator);
@@ -175,8 +177,8 @@ vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instructi
         return params;
     } else if ((count(instruction.begin(), instruction.end(), AssemblyParser::STRING_DELIMITER) % 2) != 0) {
         // checks if there are always 2 quotation marks for hard coded string
-        cout << endl << endl << "String does not end!" << endl << endl;
-        throw;
+        LOG_ERROR << "String does not end!";
+        throw InvalidRoutineException();
     }
 
     // if this is a call instruction first argument is routine name
@@ -253,8 +255,8 @@ vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instructi
         if (address) {
             params.push_back(unique_ptr<ZStoreParam>(new ZStoreParam((uint16_t) *address)));
         } else {
-            cout << endl << endl << "Unknown store address" << storeAddress << endl << endl;
-            throw;
+            LOG_ERROR << "Unknown store address: " << storeAddress;
+            throw InvalidRoutineException();
         }
     } else if (containsLabel) {
         auto label = split(instruction, '?').at(1);
@@ -284,8 +286,8 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string& paramString) {
         ZVariableParam *variableParam = new ZVariableParam((uint16_t) *paramId);
         param.reset(variableParam);
     } else {
-        cout << endl << endl << "Could not parse parameter: " << paramString << endl << endl;
-        throw;
+        LOG_ERROR << "Could not parse parameter: " << paramString;
+        throw InvalidVariableException();
     }
 
     return param;
@@ -297,7 +299,7 @@ void AssemblyParser::addGlobal(string globalName) {
     unsigned index = (unsigned) globalVariables.size();
     if(globalVariables.find(globalName) != globalVariables.end()) {
         LOG_ERROR << "two global variable have the same name";
-        throw;
+        throw InvalidVariableException();
     }
     LOG_DEBUG << "adding gvar " << globalName << " at index " << to_string(index) ;
     this->globalVariables[globalName] = index;
@@ -448,7 +450,7 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         executeCommand(trim(afterLabel), *currentGenerator);
     } else {
         LOG_DEBUG << "unknown command: " << command ;
-        throw;
+        throw InvalidRoutineException();
     }
 }
 

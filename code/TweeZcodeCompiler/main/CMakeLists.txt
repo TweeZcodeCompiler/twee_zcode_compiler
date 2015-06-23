@@ -10,7 +10,7 @@ set(SOURCE_FILES ZCodeConverter.cpp ZCodeConverter.h
 
 add_executable(TweeZcodeCompiler ${SOURCE_FILES} main.cpp ZAssemblyGenerator.cpp ZAssemblyGenerator.h TweeCompiler.cpp
         TweeCompiler.h Utils.cpp Utils.h Jumps.cpp Jumps.h OpcodeParameterGenerator.cpp OpcodeParameterGenerator.h
-        AssemblyParser.cpp AssemblyParser.h ParamStructs.h ITweeCompiler.cpp ITweeCompiler.h)
+        AssemblyParser.cpp AssemblyParser.h ParamStructs.h ITweeCompiler.cpp ITweeCompiler.h exceptions.h)
 
 target_link_libraries (TweeZcodeCompiler TweeParser)
 

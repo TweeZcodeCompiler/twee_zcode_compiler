@@ -4,6 +4,7 @@
 
 #include "Jumps.h"
 #include "RoutineGenerator.h"
+#include "exceptions.h"
 #include <iostream>
 #include <plog/Log.h>
 
@@ -25,7 +26,7 @@ void Jumps::calculateOffsets() {
         // throw exception if jump to unknown label
         if (branches.find(entry->second) == branches.end()) {
             LOG_DEBUG << "Unknown label '" << entry->second << "' at address: " << entry->first ;
-            throw;
+            throw InvalidLabelException();
         }
 
         int indexOfJumpInstruction = entry->first;                  // address where jump offset needs to be added

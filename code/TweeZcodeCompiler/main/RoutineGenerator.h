@@ -14,6 +14,7 @@
 #include "Jumps.h"
 #include "OpcodeParameterGenerator.h"
 #include "Utils.h"
+#include "exceptions.h"
 #include <memory>
 #include <plog/Log.h>
 
@@ -73,7 +74,7 @@ public:
 
         if (locVar > 15) {
             LOG_DEBUG << "Cannot add more than 15 local variables to routine " << name << "!";
-            throw;
+            throw InvalidDirectiveException();
         }
     }
 
