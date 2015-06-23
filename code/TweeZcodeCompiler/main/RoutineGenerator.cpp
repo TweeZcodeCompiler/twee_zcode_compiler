@@ -165,9 +165,9 @@ void RoutineGenerator::callVS(vector<unique_ptr<ZParam>> params) {
     }
 
     string routineName = (*params.at(0)).name;
-    u_int8_t storeAddress = (*params.at(params.size() - 1)).getZCodeValue();
+    uint8_t storeAddress = (*params.at(params.size() - 1)).getZCodeValue();
 
-    params.erase(params.begin() + params.size());
+    params.erase(params.begin() + params.size() - 1);
     params[0] = unique_ptr<ZValueParam>(new ZValueParam(3000));     // placeholder for call offset
 
     auto instructions = opcodeGenerator.generateVarOPInstruction(CALL_VS, params);
@@ -404,7 +404,7 @@ u_int8_t RoutineGenerator::getAddressOfVariable(string name) {
 
 
 bool RoutineGenerator::containsLocalVariable(string name) {
-    return locVariables.count(name);
+    return locVariables.count(name) != 0;
 }
 
 // params: variableOrConstant
