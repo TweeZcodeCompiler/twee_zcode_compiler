@@ -115,10 +115,10 @@ EXPR_OPEN              \(
 EXPR_CLOSE             \)
 
     /*Arithmetic Tokens*/
-EXPR_ADD                +
-EXPR_MUL                *
+EXPR_ADD                \+
+EXPR_MUL                \*
 EXPR_SUB                -
-EXPR_DIV                /
+EXPR_DIV                \/
 EXPR_MOD                %
 
     /*Logical Tokens*/
@@ -514,8 +514,7 @@ EXPR_ASS                =
     /*To:   Body */
 
     /* macro if */
-<BodyMacro>{MACRO_IF}
-                                {
+<BodyMacro>{MACRO_IF}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the IF Token
@@ -525,8 +524,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::IF_TOKEN;
                                 }
-<BodyMacro>{MACRO_ELSE}
-                                {
+<BodyMacro>{MACRO_ELSE}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the ELSE Token
@@ -536,8 +534,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::ELSE_TOKEN;
                                 }
-<BodyMacro>{MACRO_ENDIF}
-                                {
+<BodyMacro>{MACRO_ENDIF}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the ENDIF Token
@@ -582,8 +579,7 @@ EXPR_ASS                =
                                 return BisonParser::token::VAR_TOKEN;
                                 }
     /* expression functions */
-<BodyMacro>{EXPR_RANDOM}
-                                {
+<BodyMacro>{EXPR_RANDOM}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the RANDOM Token
@@ -594,8 +590,7 @@ EXPR_ASS                =
                                 return BisonParser::token::RANDOM_TOKEN;
                                 }
 
-<BodyMacro>{EXPR_VISITED}
-                                {
+<BodyMacro>{EXPR_VISITED}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the VISITED Token
@@ -605,8 +600,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::VISITED_TOKEN;
                                 }
-<BodyMacro>{EXPR_PREVIOUS}
-                                {
+<BodyMacro>{EXPR_PREVIOUS}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the PREVIOUS Token
@@ -616,8 +610,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::PREVIOUS_TOKEN;
                                 }
-<BodyMacro>{EXPR_TURNS}
-                                {
+<BodyMacro>{EXPR_TURNS}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the TURNS Token
@@ -628,8 +621,7 @@ EXPR_ASS                =
                                 return BisonParser::token::TURNS_TOKEN;
                                 }
 
-<BodyMacro>{EXPR_OPEN}
-                                {
+<BodyMacro>{EXPR_OPEN}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the OPEN Token
@@ -639,8 +631,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::OPEN_TOKEN;
                                 }
-<BodyMacro>{EXPR_CLOSE}
-                                {
+<BodyMacro>{EXPR_CLOSE}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the CLOSE Token
@@ -652,8 +643,7 @@ EXPR_ASS                =
                                 }
 
     /*Arithmetic Tokens*/
-<BodyMacro>{EXPR_ADD}
-                                {
+<BodyMacro>{EXPR_ADD}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the ADD Token
@@ -663,8 +653,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::ADD_TOKEN;
                                 }
-<BodyMacro>{EXPR_MUL}
-                                {
+<BodyMacro>{EXPR_MUL}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the MUL Token
@@ -674,8 +663,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::MUL_TOKEN;
                                 }
-<BodyMacro>{EXPR_SUB}
-                                {
+<BodyMacro>{EXPR_SUB}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the SUB Token
@@ -685,8 +673,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::SUB_TOKEN;
                                 }
-<BodyMacro>{EXPR_DIV}
-                                {
+<BodyMacro>{EXPR_DIV}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the DIV Token
@@ -696,8 +683,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::DIV_TOKEN;
                                 }
-<BodyMacro>{EXPR_MOD}
-                                {
+<BodyMacro>{EXPR_MOD}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the MOD Token
@@ -709,8 +695,7 @@ EXPR_ASS                =
                                 }
 
     /*Logical Tokens*/
-<BodyMacro>{EXPR_GT}
-                                {
+<BodyMacro>{EXPR_GT}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the GT Token
@@ -720,8 +705,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::GT_TOKEN;
                                 }
-<BodyMacro>{EXPR_GTE}
-                                {
+<BodyMacro>{EXPR_GTE}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the GTE Token
@@ -731,8 +715,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::GTE_TOKEN;
                                 }
-<BodyMacro>{EXPR_LT}
-                                {
+<BodyMacro>{EXPR_LT}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the LT Token
@@ -742,8 +725,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::LT_TOKEN;
                                 }
-<BodyMacro>{EXPR_LTE}
-                                {
+<BodyMacro>{EXPR_LTE}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the LTE Token
@@ -753,8 +735,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::LTE_TOKEN;
                                 }
-<BodyMacro>{EXPR_NEQ}
-                                {
+<BodyMacro>{EXPR_NEQ}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the NEQ Token
@@ -764,8 +745,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::NEQ_TOKEN;
                                 }
-<BodyMacro>{EXPR_IS}
-                                {
+<BodyMacro>{EXPR_IS}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the IS Token
@@ -775,8 +755,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::IS_TOKEN;
                                 }
-<BodyMacro>{EXPR_EQ}
-                                {
+<BodyMacro>{EXPR_EQ}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the EQ Token
@@ -786,8 +765,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::EQ_TOKEN;
                                 }
-<BodyMacro>{EXPR_AND}
-                                {
+<BodyMacro>{EXPR_AND}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the AND Token
@@ -797,8 +775,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::AND_TOKEN;
                                 }
-<BodyMacro>{EXPR_OR}
-                                {
+<BodyMacro>{EXPR_OR}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the OR Token
@@ -810,8 +787,7 @@ EXPR_ASS                =
                                 }
 
     /*Assignment Token*/
-<BodyMacro>{EXPR_TO}
-                                {
+<BodyMacro>{EXPR_TO}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the TO Token
@@ -821,8 +797,7 @@ EXPR_ASS                =
                                 SAVE_TOKEN;
                                 return BisonParser::token::TO_TOKEN;
                                 }
-<BodyMacro>{EXPR_ASS}
-                                {
+<BodyMacro>{EXPR_ASS}		{
                                 //stay in condition BodyMacro, look for next token
                                 LOG_DEBUG << "stay in condition BodyMacro, look for next token";
                                 //return the ASS Token
