@@ -10,20 +10,15 @@
 
 
 class Passage {
-
 private:
-    Head &head;
-    Body &body;
+    Head head;
+    Body body;
 
 public:
-    Passage(Head &, Body &);
-
-    Head getHead();
-
-    Body getBody();
-
+    Passage(Head&, Body&);
+    Head& getHead();
+    Body& getBody();
     std::string to_string();
-
 };
 
 

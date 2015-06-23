@@ -10,11 +10,12 @@
 #include "RoutineGenerator.h"
 #include "BinaryFileWriter.h"
 #include "ZCodeHeader.h"
+#include "ITweeCompiler.h"
 
-class SimpleCompilerPipeline {
+class TweeZCodeCompilerPipeline {
 
 public:
-    void compile(std::string fileContent, std::string zCodeFileName);
+    void compile(std::string filename, std::string zCodeFileName, ITweeCompiler &tweeCompiler);
 
 private:
     std::vector<std::bitset<8>> generateDynamicMemory(ZCodeHeader &header, size_t offset);
@@ -27,12 +28,9 @@ private:
 
     void printHex(std::vector<std::bitset<8>> bitsetList);
 
-    std::vector<std::bitset<8>> generateHeader();
-
     std::vector<std::bitset<8>> addFileSizeToHeader(std::vector<std::bitset<8>> zCode, size_t fileSize);
 
     void log(std::string message);
-
 };
 
 

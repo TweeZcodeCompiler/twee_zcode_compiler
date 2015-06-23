@@ -72,9 +72,17 @@ private:
 
     std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction);
     std::unique_ptr<ZParam> createZParam(const std::string& paramString);
+    
+    void performRoutineDirectiveCommand( std::vector<std::string> lineComps, std::vector <std::bitset<8>> &highMemoryZcode,size_t offset);
+    void performRoutineGlobalVarCommand(std::string line);
+
+    std::unique_ptr<ZParam> createZParam(const std::string &paramString);
+
+    bool checkIfRoutineNameExists(std::string routineName);
 
 
     std::map<std::string, uint8_t> globalVariables;
+    std::vector<std::string> routineNameList;
 
     std::unique_ptr<RoutineGenerator> currentGenerator;
 

@@ -4,6 +4,7 @@
 
 #include "ZAssemblyGenerator.h"
 #include <sstream>
+#include <vector>
 
 using namespace std;
 using namespace std::experimental;
@@ -14,6 +15,8 @@ static const std::string INST_LABEL_MARKER = "?";
 static const std::string INST_JUMP_NEG_MARKER = "~";
 static const std::string INST_STORE_TARGET_MARKER = "->";
 static const std::string INST_SEPARATOR = " ";
+static const std::string ARGS_EQ = "=";
+static const std::string ARGS_SEPARATOR = ",";
 static const std::string LABEL_MARKER = ":";
 
 static const std::string DIRECTIVE_START = ".";
@@ -74,8 +77,21 @@ ZAssemblyGenerator& ZAssemblyGenerator::addDirective(std::string directiveName, 
     return *this;
 }
 
-ZAssemblyGenerator& ZAssemblyGenerator::addRoutine(std::string routineName) {
-    addDirective(directive::ROUTINE, routineName);
+ZAssemblyGenerator& ZAssemblyGenerator::addRoutine(std::string routineName,
+                                                   std::vector<ZRoutineArgument> args) {
+    stringstream ss;
+    ss << routineName << INST_SEPARATOR;
+    for(auto it = args.begin(); it != args.end(); ++it) {
+        ss << it->argName;
+        if(it->value) {
+            ss << ARGS_EQ << *(it->value);
+        }
+
+        if(it + 1 != args.end()) {
+            ss << ARGS_SEPARATOR;
+        }
+    }
+    addDirective(directive::ROUTINE, ss.str());
     return *this;
 }
 
@@ -169,7 +185,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::print(std::string str) {
     return addInstruction(instruction::PRINT, string("\"") + str + string("\""), nullopt, nullopt);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::set_text_style(bool italic, bool bold, bool underlined) {
+ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(bool italic, bool bold, bool underlined) {
     std::string result;
     if(italic) {
         result += "i";

@@ -4,6 +4,8 @@
 
 #include "Jumps.h"
 #include "RoutineGenerator.h"
+#include <iostream>
+#include <plog/Log.h>
 
 using namespace std;
 
@@ -22,7 +24,7 @@ void Jumps::calculateOffsets() {
     for (map<int, string>::iterator entry = jumpToBranch.begin(); entry != jumpToBranch.end(); ++entry) {
         // throw exception if jump to unknown label
         if (branches.find(entry->second) == branches.end()) {
-            cout << "Unknown label '" << entry->second << "' at address: " << entry->first << endl;
+            LOG_DEBUG << "Unknown label '" << entry->second << "' at address: " << entry->first ;
             throw;
         }
 
@@ -182,6 +184,6 @@ void Jumps::calculateCallOffsets(size_t position) {
     for (size_t i = 0; i < offsets.size(); i++) {
         RoutineGenerator::callTo[offsets[i] - 1] = RoutineGenerator::callTo[offsets[i]];
         RoutineGenerator::callTo.erase(offsets[i]);
-        std::cout << (offsets[i] - 1) << "\n";
+        LOG_DEBUG << (offsets[i] - 1) << "\n";
     }
 }

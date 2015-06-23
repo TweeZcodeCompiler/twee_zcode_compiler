@@ -4,6 +4,7 @@
 
 #include "ZCodeConverter.h"
 #include <iostream>
+#include <plog/Log.h>
 
 using std::bitset;
 using std::vector;
@@ -188,7 +189,7 @@ int testStringToZCharacterString() {
     vector<bitset<8>> erg = z.convertStringToZSCII("H W!");
     for (bitset<8> bs : erg) {
         for (int i = 0; i < 8; i++) {
-            std::cout << bs[i];
+            LOG_DEBUG<< bs[i];
         }
     }
     return 0;

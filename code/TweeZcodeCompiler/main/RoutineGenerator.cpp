@@ -6,6 +6,7 @@
 #include "ZCodeConverter.h"
 #include <iostream>
 #include <algorithm>
+#include <plog/Log.h>
 
 using namespace std;
 
@@ -178,8 +179,12 @@ void RoutineGenerator::call1n(vector<unique_ptr<ZParam>> params) {
 
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (u_int16_t) 3000, false);
     addBitset(instructions);
-    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = (*params.at(0)).name;
+    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = routineName;
     std::cout << "Call Routine at:::" << offsetOfRoutine + routineZcode.size() - 2 << "\n";
+
+    if (printLogs) {
+        cout << "RoutineGenerator: callRoutine " << routineName;
+    }
 }
 
 std::bitset<8> RoutineGenerator::numberToBitset(unsigned int number) {
@@ -364,7 +369,7 @@ void RoutineGenerator::printAddress(vector<unique_ptr<ZParam>> params) {
 
 void RoutineGenerator::setLocalVariable(string name, int16_t value) {
     if (++addedLocalVariables > maxLocalVariables) {
-        cout << "Added " << addedLocalVariables << " local variables to routine but only "
+        LOG_DEBUG << "Added " << addedLocalVariables << " local variables to routine but only "
             << maxLocalVariables << " specified at routine start!";
         throw;
     }
@@ -390,7 +395,7 @@ void RoutineGenerator::printNum(vector<unique_ptr<ZParam>> params) {
 
 u_int8_t RoutineGenerator::getAddressOfVariable(string name) {
     if (locVariables.count(name) == 0) {
-        cout << "Undefined local variable used: " << name << endl;
+        LOG_DEBUG << "Undefined local variable used: " << name;
         throw;
     } else {
         return locVariables[name];

@@ -92,7 +92,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // passage routines
     {
         for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
-            auto bodyParts = passage->getBody().getBodyParts();
+            const vector<unique_ptr<BodyPart>>& bodyParts = passage->getBody().getBodyParts();
 
             // declare passage routine
             assgen.addRoutine(routineNameForPassage(*passage));
@@ -100,14 +100,16 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             assgen.println(string("***** ") + passage->getHead().getName() + string(" *****"));
 
             //  print passage contents
-            for(auto bodyPart = bodyParts.begin(); bodyPart != bodyParts.end(); bodyPart++) {
-                if(Text* text = dynamic_cast<Text*>(*bodyPart)) {
+            for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
+                BodyPart* bodyPart = it->get();
+                if(Text* text = dynamic_cast<Text*>(bodyPart)) {
                     assgen.print(text->getContent());
                 }
-                if(FormattedText* formText = dynamic_cast<FormattedText*>(*bodyPart)) {
-                    assgen.set_text_style(formText->isItalic(), formText->isBold(), formText->isUnderlined());
+
+                if(FormattedText* formText = dynamic_cast<FormattedText*>(bodyPart)) {
+                    assgen.setTextStyle(formText->isItalic(), formText->isBold(), formText->isUnderlined());
                     assgen.print(formText->getContent());
-                    assgen.set_text_style(false,false,false);
+                    assgen.setTextStyle(false, false, false);
                 }
             }
 
@@ -115,10 +117,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
             vector<Link*> links;
             // get links from passage
-            for(auto bodyPart = bodyParts.begin(); bodyPart != bodyParts.end();
-                ++bodyPart)
+            for(auto it = bodyParts.begin(); it != bodyParts.end(); ++it)
             {
-                if(Link* link = dynamic_cast<Link*>(*bodyPart)) {
+                BodyPart* bodyPart = it->get();
+                if(Link* link = dynamic_cast<Link*>(bodyPart)) {
                     links.push_back(link);
                 }
             }

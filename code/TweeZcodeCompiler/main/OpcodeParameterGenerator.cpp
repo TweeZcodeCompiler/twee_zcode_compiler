@@ -4,6 +4,7 @@
 
 #include "OpcodeParameterGenerator.h"
 #include <iostream>
+#include <plog/Log.h>
 
 using namespace std;
 
@@ -147,7 +148,7 @@ vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitset
     bitset<8> paramTypes;
 
     if (params.size() > 4) {
-        cout << "More than 4 operands are not allowed!" << endl;
+        LOG_DEBUG << "More than 4 operands are not allowed!";
         throw;
     }
 

@@ -15,6 +15,7 @@
 #include "OpcodeParameterGenerator.h"
 #include "Utils.h"
 #include <memory>
+#include <plog/Log.h>
 
 class RoutineGenerator {
 
@@ -63,7 +64,7 @@ public:
 
         RoutineGenerator::routines[name] = zCode.size() + offsetOfZCode;
         this->offsetOfRoutine = zCode.size() + offsetOfZCode;
-        std::cout << padding << "/" << this->offsetOfRoutine << "\n";
+        LOG_DEBUG << padding << "/" << this->offsetOfRoutine << "\n";
         jumps.setRoutineBitsetMap(routineZcode);
         jumps.routineOffset = this->offsetOfRoutine;
 
@@ -71,7 +72,7 @@ public:
         maxLocalVariables = locVar;
 
         if (locVar > 15) {
-            std::cout << "Cannot add more than 15 local variables to routine " << name << "!";
+            LOG_DEBUG << "Cannot add more than 15 local variables to routine " << name << "!";
             throw;
         }
     }

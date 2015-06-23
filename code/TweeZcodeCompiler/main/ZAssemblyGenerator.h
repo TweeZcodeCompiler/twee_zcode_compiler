@@ -10,9 +10,17 @@
 #include <string>
 #include <utility>
 #include <initializer_list>
+#include <vector>
 #include "optional.hpp"
 
 typedef const std::string INST_TYPE;
+
+struct ZRoutineArgument {
+    ZRoutineArgument(std::string argName) : argName(argName), value(std::experimental::nullopt) {}
+    ZRoutineArgument(std::string argName, std::string value) : argName(argName), value(value) {}
+    std::string argName;
+    std::experimental::optional<std::string> value;
+};
 
 /*
  * This class will not check if generated code is sane.
@@ -30,7 +38,7 @@ public:
     ZAssemblyGenerator& addLabel(std::string labelName);
 
     ZAssemblyGenerator& markStart();
-    ZAssemblyGenerator& addRoutine(std::string routineName);
+    ZAssemblyGenerator& addRoutine(std::string routineName, std::vector<ZRoutineArgument> args = std::vector<ZRoutineArgument>());
     ZAssemblyGenerator& addGlobal(std::string globalName);
 
     ZAssemblyGenerator &jump(std::string label);
@@ -41,7 +49,7 @@ public:
     ZAssemblyGenerator &quit();
     ZAssemblyGenerator &ret(std::string arg);
     ZAssemblyGenerator &newline();
-    ZAssemblyGenerator &set_text_style(bool, bool, bool);
+    ZAssemblyGenerator &setTextStyle(bool, bool, bool);
     ZAssemblyGenerator &print(std::string str);
     ZAssemblyGenerator &read_char(std::string storeTarget);
     ZAssemblyGenerator &println(std::string str);
