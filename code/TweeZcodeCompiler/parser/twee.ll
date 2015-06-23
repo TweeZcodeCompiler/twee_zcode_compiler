@@ -45,16 +45,8 @@ some stated 'goals':
 %option outfile="GeneratedTweeLexer.cpp"
 
  /*Definitions */
- /*TODO: needed Expressions*/
-
-ASCII_LOWER_CASE        abcdefghijklmnopqrstuvwxyz
-ASCII_UPPER_CASE        ABCDEFGHIJKLMNOPQRSTUVWXYZ
-ASCII_NUMBER            0123456789
- /*TODO: still experimental*/
-ASCII_SYMBOL_NOTOKEN    -_=+\\/?.,
-ASCII_WHITESPACE        \t
-
 PASSAGE_START           ::
+BODY_PASSAGE_START      ::.*
 NEWLINE                 \n
 
  /*TITLE_CHAR              [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}] */
@@ -70,27 +62,27 @@ BODY_TEXT               [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
     /*these chars are used by FORMATTING tokens:*/
     /* / " _ = ~ ^ { % */
 
-FORMATTING_ITALICS          \/{2}
-FORMATTING_BOLDFACE         \"{2}
-FORMATTING_UNDERLINE        _{2}
-FORMATTING_STRIKETHROUGH    ={2}
-FORMATTING_SUBSCRIPT        ~{2}
-FORMATTING_SUPERSCRIPT      \^{2}
-FORMATTING_ERROR_STYLING    @{2}
+FORMATTING_ITALICS          \/{2}.*
+FORMATTING_BOLDFACE         \"{2}.*
+FORMATTING_UNDERLINE        _{2}.*
+FORMATTING_STRIKETHROUGH    ={2}.*
+FORMATTING_SUBSCRIPT        ~{2}.*
+FORMATTING_SUPERSCRIPT      \^{2}.*
+FORMATTING_ERROR_STYLING    @{2}.*
 
-FORMATTING_MONOSPACE_OPEN   \{{3}
-FORMATTING_MONOSPACE_CLOSE  \}{3}
-FORMATTING_COMMENT_OPEN     \/%
-FORMATTING_COMMENT_CLOSE    %\/
+FORMATTING_MONOSPACE_OPEN   \{{3}.*
+FORMATTING_MONOSPACE_CLOSE  \}{3}.*
+FORMATTING_COMMENT_OPEN     \/%.*
+FORMATTING_COMMENT_CLOSE    %\/.*
 
-LINK_OPEN               \[{2}
+LINK_OPEN               \[{2}.*
 LINK_CLOSE              \]{2}
 LINK_SEPARATOR          \|
 
  /*LINK_TEXT_CHAR          [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
 LINK_TEXT               [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
 
-MACRO_OPEN              <{2}
+MACRO_OPEN              <{2}.*
 MACRO_CLOSE             >{2}
  /*MACRO_TEXT_CHAR         [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
 MACRO_TEXT              [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
@@ -251,20 +243,10 @@ MACRO_TURNS             turns
     /*From: HeaderTitle, HeaderTagsClose*/
     /*To:   TODO: Body: NEWLINE PASSAGE_START    */
 
-    /* Passage text */
-<Body>{BODY_TEXT}               {
-                                //stay in condition Body, look for next token
-                                LOG_DEBUG << "stay in condition Body, look for next token";
-                                //return the TEXT Token
-                                LOG_DEBUG << "return the TEXT Token";
-                                LOG_DEBUG << "\t matched:";
-                                LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
-                                return BisonParser::token::TEXT_TOKEN;
-                                }
+
 
     /* :: */
-<Body>^{PASSAGE_START} {
+<Body>^{BODY_PASSAGE_START} {        yyless(2);
                                 //enter condition HeaderTitle
                                 LOG_DEBUG << "enter condition HeaderTitle";
                                 BEGIN(HeaderTitle);
@@ -275,6 +257,7 @@ MACRO_TURNS             turns
 
     /* Link encountered */
 <Body>{LINK_OPEN}               {
+                                yyless(2);
                                 //enter condition BodyLink
                                 LOG_DEBUG << "enter condition BodyLink";
                                 BEGIN(BodyLink);
@@ -285,13 +268,15 @@ MACRO_TURNS             turns
 
     /* Macro encountered */
 <Body>{MACRO_OPEN}              {
+                                yyless(2);
                                 LOG_DEBUG << "enter condition BodyMacro";
                                 BEGIN(BodyMacro);
                                 LOG_DEBUG << "return the MACRO_OPEN token";
                                 return BisonParser::token::MACRO_OPEN;
                                 }
 
-<Body>{FORMATTING_ITALICS}      { //TODO: enable correct matching, BODY_TEXT
+<Body>{FORMATTING_ITALICS}      {
+                                yyless(2); //TODO: enable correct matching, BODY_TEXT
                                 LOG_DEBUG << "return the FORMATTING Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
@@ -299,7 +284,8 @@ MACRO_TURNS             turns
                                 return BisonParser::token::FORMATTING;
                                 }
 
-<Body>{FORMATTING_BOLDFACE}      { //TODO: enable correct matching, BODY_TEXT
+<Body>{FORMATTING_BOLDFACE}      {
+                                yyless(2); //TODO: enable correct matching, BODY_TEXT
                                 LOG_DEBUG << "return the FORMATTING Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
@@ -307,7 +293,8 @@ MACRO_TURNS             turns
                                 return BisonParser::token::FORMATTING;
                                 }
 
-<Body>{FORMATTING_UNDERLINE}      { //TODO: enable correct matching, BODY_TEXT
+<Body>{FORMATTING_UNDERLINE}      {
+                                yyless(2); //TODO: enable correct matching, BODY_TEXT
                                 LOG_DEBUG << "return the FORMATTING Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
@@ -315,7 +302,8 @@ MACRO_TURNS             turns
                                 return BisonParser::token::FORMATTING;
                                 }
 
-<Body>{FORMATTING_STRIKETHROUGH}      { //TODO: enable correct matching, BODY_TEXT
+<Body>{FORMATTING_STRIKETHROUGH}      {
+                                yyless(2); //TODO: enable correct matching, BODY_TEXT
                                 LOG_DEBUG << "return the FORMATTING Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
@@ -324,6 +312,7 @@ MACRO_TURNS             turns
                                 }
 
 <Body>{FORMATTING_SUBSCRIPT}      {
+                                yyless(2);
                                  LOG_DEBUG << "return the FORMATTING Token";
                                  LOG_DEBUG << "\t matched:";
                                  LOG_DEBUG << YYText();
@@ -332,6 +321,7 @@ MACRO_TURNS             turns
                                  }
 
 <Body>{FORMATTING_SUPERSCRIPT}      {
+                                yyless(2);
                                 LOG_DEBUG << "return the FORMATTING Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
@@ -340,6 +330,7 @@ MACRO_TURNS             turns
                                 }
 
 <Body>{FORMATTING_MONOSPACE_OPEN}      {
+                                yyless(3);
                                 //TODO: new condition for monospace open&close lexing
                                 LOG_DEBUG << "return the FORMATTING_COMMENT_OPEN token";
                                 LOG_DEBUG << "\t matched:";
@@ -348,7 +339,8 @@ MACRO_TURNS             turns
                                 return BisonParser::token::FORMATTING_COMMENT_OPEN;
                                 }
 
-<Body>{FORMATTING_MONOSPACE_CLOSE}      { //TODO: new condition for monospace open&close lexing: delete this
+<Body>{FORMATTING_MONOSPACE_CLOSE}      {
+                                yyless(3); //TODO: new condition for monospace open&close lexing: delete this
                                 LOG_DEBUG << "return the FORMATTING_COMMENT_CLOSE token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
@@ -357,6 +349,7 @@ MACRO_TURNS             turns
                                 }
 
 <Body>{FORMATTING_COMMENT_OPEN} {
+                                yyless(2);
                                 LOG_DEBUG << "enter condition FormattingComment";
                                 BEGIN(FormattingComment);
                                 LOG_DEBUG << "return the FORMATTING_COMMENT_OPEN token";
@@ -364,18 +357,24 @@ MACRO_TURNS             turns
                                 }
 
 <Body>{FORMATTING_ERROR_STYLING} {
+                                yyless(2);
                                 LOG_DEBUG << "enter condition FormattingErrorInlineStyling";
                                 BEGIN(FormattingErrorInlineStyling);
                                 return BisonParser::token::FORMATTING_ERROR_STYLING;
                                 }
 
-    /* unexpected Token(s) */
-<Body>.                         {
-                                //TODO: lexer error in Body
-                                LOG_ERROR << "lexer error in condition Body";
-                                LOG_ERROR << "\t matched:";
-                                LOG_ERROR << YYText();
+    /* Passage text */
+<Body>[^\{\[<\|\n\/\"_=~\^@\{\}]+              {
+                                //[^\^\/\"_=~\{\[<\|]
+                                LOG_DEBUG << "stay in condition Body, look for next token";
+                                LOG_DEBUG << "return the TEXT Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::TEXT_TOKEN;
                                 }
+
+
 
  /* ___NEW CONDITION___ FormattingErrorInlineStyling*/
     /*From: Body */

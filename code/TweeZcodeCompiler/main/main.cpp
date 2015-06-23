@@ -43,6 +43,13 @@ int main(int argc, char *argv[]) {
     //static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Compiler_Log.txt");
     plog::ConsoleAppender<plog::UserSideFormatter> consoleAppender; // Console Appender for user friendly output
 
+    if( remove( "Compiler_Log.txt" ) != 0 ){
+        std::cerr << "Error deleting log file Compiler_Log.txt" << std::endl ;
+    }
+    else {
+        std::cout << "Log file Compiler_Log.txt successfully deleted"  << std::endl ;
+    }
+
     plog::init(plog::debug, "Compiler_Log.txt");
     plog::init(plog::error, &consoleAppender);
 
