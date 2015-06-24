@@ -5,6 +5,7 @@
 #include "Jumps.h"
 #include "RoutineGenerator.h"
 #include <iostream>
+#include <plog/Log.h>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ void Jumps::calculateOffsets() {
     for (map<int, string>::iterator entry = jumpToBranch.begin(); entry != jumpToBranch.end(); ++entry) {
         // throw exception if jump to unknown label
         if (branches.find(entry->second) == branches.end()) {
-            cout << "Unknown label '" << entry->second << "' at address: " << entry->first << endl;
+            LOG_DEBUG << "Unknown label '" << entry->second << "' at address: " << entry->first ;
             throw;
         }
 
@@ -32,17 +33,19 @@ void Jumps::calculateOffsets() {
 
         bitset<8> jumpInstruction = routineOpcodes->find(indexOfJumpInstruction)->second;
 
-        int offset = getOffset(indexOfJumpInstruction, indexOfLabel);
-
         if (jumpInstruction.test(RoutineGenerator::JUMP_COND_OFFSET_PLACEHOLDER)) {
+            int offset = getOffset(indexOfJumpInstruction, indexOfLabel, true);
             bool jumpIfCondTrue = jumpInstruction.test(RoutineGenerator::JUMP_COND_TRUE);
 
-            offset = addCondBranchOffset(indexOfJumpInstruction, offset, jumpIfCondTrue);
+            addCondBranchOffset(indexOfJumpInstruction, offset, jumpIfCondTrue);
+            routineOpcodes->erase(indexOfJumpInstruction + 1);
+
             if (offset > 0 && (offset - 1) < 64) {
                 calculateCallOffsets(indexOfJumpInstruction);
             }
             calculatedCondOffsets[indexOfJumpInstruction] = offset;
         } else {
+            int offset = getOffset(indexOfJumpInstruction, indexOfLabel, false);
             addLargeNumber(offset, indexOfJumpInstruction);
             calculatedUncondOffsets[indexOfJumpInstruction] = offset;
         }
@@ -55,10 +58,9 @@ void Jumps::calculateOffsets() {
             int indexOfJumpInstruction = entry->first;                               // address where jump offset needs to be added
             int indexOfLabel = branches.find(entry->second)->second;                 // destination jump address
 
-            int offset = getOffset(indexOfJumpInstruction, indexOfLabel);
-
             if (calculatedCondOffsets.find(indexOfJumpInstruction) != calculatedCondOffsets.end()) {
                 int savedOffset = calculatedCondOffsets.find(indexOfJumpInstruction)->second;
+                int offset = getOffset(indexOfJumpInstruction, indexOfLabel, true);
                 if (offset != savedOffset) {
                     bitset<8> wrongOffsetBitset = routineOpcodes->find(indexOfJumpInstruction)->second;
                     addCondBranchOffset(indexOfJumpInstruction, offset,
@@ -70,12 +72,15 @@ void Jumps::calculateOffsets() {
 
                     calculatedCondOffsets[indexOfJumpInstruction] = offset;
                     correctOffsets = false;
+                    break;
                 }
             } else {
+                int offset = getOffset(indexOfJumpInstruction, indexOfLabel, false);
                 if (offset != calculatedUncondOffsets.find(indexOfJumpInstruction)->second) {
                     addLargeNumber(offset, indexOfJumpInstruction);
                     calculatedUncondOffsets[indexOfJumpInstruction] = offset;
                     correctOffsets = false;
+                    break;
                 }
             }
         }
@@ -86,7 +91,7 @@ void Jumps::setRoutineBitsetMap(map<int, bitset<8>> &opcodes) {
     routineOpcodes = &opcodes;
 }
 
-int Jumps::getOffset(int jumpPosition, int labelPosition) {
+int Jumps::getOffset(int jumpPosition, int labelPosition, bool condJump) {
     int offset = 0;
 
     if (jumpPosition < labelPosition) {
@@ -101,14 +106,14 @@ int Jumps::getOffset(int jumpPosition, int labelPosition) {
         }
     }
 
-    if (offset >= 0 && offset <= 63) {
-        offset++;
+    if (condJump && offset >= 0 && offset <= 63) {
+       offset++;
     }
 
     return offset;
 }
 
-int Jumps::addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondTrue) {
+void Jumps::addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondTrue) {
     bitset<8> firstHalf, secondHalf;
 
     // Offset needs to be between 0 and 63 to fit into 6 bits
@@ -124,7 +129,6 @@ int Jumps::addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondT
             firstHalf.set(i, bitsetOffset[i]);
         }
 
-        routineOpcodes->erase(position + 1);
         addBitset(firstHalf, position);
     } else {
         bitset<14> bitsetOffset(offset);
@@ -140,8 +144,6 @@ int Jumps::addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondT
         addBitset(firstHalf, position);
         addBitset(secondHalf, position + 1);
     }
-
-    return offset;
 }
 
 void Jumps::addLargeNumber(int16_t number, int pos) {
@@ -179,9 +181,9 @@ void Jumps::calculateCallOffsets(size_t position) {
         }
     }
 
-    for (int i = 0; i < offsets.size(); i++) {
+    for (size_t i = 0; i < offsets.size(); i++) {
         RoutineGenerator::callTo[offsets[i] - 1] = RoutineGenerator::callTo[offsets[i]];
         RoutineGenerator::callTo.erase(offsets[i]);
-        std::cout << (offsets[i] - 1) << "\n";
+        LOG_DEBUG << (offsets[i] - 1) << "\n";
     }
 }

@@ -15,39 +15,11 @@
 #include "OpcodeParameterGenerator.h"
 #include "Utils.h"
 #include <memory>
-
-struct ZParam {
-    virtual bool isVariableArgument() const = 0;
-
-    uint16_t getZCodeValue() const {
-        return valueOrAddress;
-    }
-
-protected:
-    uint16_t valueOrAddress;
-};
-
-struct ZValueParam : public ZParam {
-    ZValueParam(uint16_t value) {
-        valueOrAddress = value;
-    }
-
-    bool isVariableArgument() const { return false; }
-};
-
-struct ZVariableParam : public ZParam {
-    ZVariableParam(uint16_t variableAddr) {
-        valueOrAddress = variableAddr;
-    }
-
-    bool isVariableArgument() const { return true; }
-};
+#include <plog/Log.h>
 
 class RoutineGenerator {
 
 private:
-    bool printLogs = true;
-
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
     std::map<std::string, u_int8_t> locVariables;   // keys = variable name, value = number in stack
     static std::map<std::string, size_t> routines;  // keys = name of routine, value = offset.
@@ -66,7 +38,7 @@ private:
 
     void addOneByte(std::bitset<8> byte, int pos = -1);  // add one byte to routineZcode
 
-    void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2);
+    void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, ZParam& param1, ZParam& param2);
 
 public:
     // constructor needed to create first jump to main call
@@ -92,7 +64,7 @@ public:
 
         RoutineGenerator::routines[name] = zCode.size() + offsetOfZCode;
         this->offsetOfRoutine = zCode.size() + offsetOfZCode;
-        std::cout << padding << "/" << this->offsetOfRoutine << "\n";
+        LOG_DEBUG << padding << "/" << this->offsetOfRoutine << "\n";
         jumps.setRoutineBitsetMap(routineZcode);
         jumps.routineOffset = this->offsetOfRoutine;
 
@@ -100,7 +72,7 @@ public:
         maxLocalVariables = locVar;
 
         if (locVar > 15) {
-            std::cout << "Cannot add more than 15 local variables to routine " << name << "!";
+            LOG_DEBUG << "Cannot add more than 15 local variables to routine " << name << "!";
             throw;
         }
     }
@@ -134,43 +106,40 @@ public:
 
     void newLabel(std::string label);
 
-    void jump(std::string toLabel);
+    void jump(std::vector<std::unique_ptr<ZParam>> params);
 
-    void jumpZero(std::string toLabel, bool jumpIfTrue, const ZParam& param);
+    void jumpZero(std::vector<std::unique_ptr<ZParam>> params);
 
-    void jumpLessThan(std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2);
+    void jumpLessThan(std::vector<std::unique_ptr<ZParam>> params);
 
-    void jumpGreaterThan(std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2);
+    void jumpGreaterThan(std::vector<std::unique_ptr<ZParam>> params);
 
-    void jumpEquals(std::string toLabel, bool jumpIfTrue, const ZParam& param1, const ZParam& param2);
+    void jumpEquals(std::vector<std::unique_ptr<ZParam>> params);
 
-    void jumpEquals(std::string toLabel, bool jumpIfTrue, const ZParam& param);
+    void readChar(std::vector<std::unique_ptr<ZParam>> params);
 
-    void readChar(uint8_t var);
-
-    void printChar(uint8_t var);
+    void printChar(std::vector<std::unique_ptr<ZParam>> params);
 
     void setTextStyle(bool roman, bool reverseVideo, bool bold, bool italic, bool fixedPitch);
 
-    void printString(std::string stringToPrint);
+    void printString(std::vector<std::unique_ptr<ZParam>> params);
 
-    void printStringAtAddress(u_int8_t address);
+    void printAddress(std::vector<std::unique_ptr<ZParam>> params);
 
-    void printNum(unsigned int address);
+    void printNum(std::vector<std::unique_ptr<ZParam>> params);
 
     //Call to a routine with spezific name
-    void callRoutine1n(std::string routineName);
+    void call1n(std::vector<std::unique_ptr<ZParam>> params);
 
-    void callRoutine(std::string routineName, const uint8_t storeTarget, const ZParam *param1,
-                                       const ZParam *param2, const ZParam *param3);
+    void callVS(std::vector<std::unique_ptr<ZParam>> params);
 
-    void store(u_int8_t address, u_int16_t value);
+    void store(std::vector<std::unique_ptr<ZParam>> params);
 
-    void load(u_int8_t address, u_int8_t resultAddress);
+    void load(std::vector<std::unique_ptr<ZParam>> params);
 
     void quitRoutine();
 
-    void returnValue(const ZParam &param);
+    void returnValue(std::vector<std::unique_ptr<ZParam>> params);
 
 
     /*
@@ -184,16 +153,15 @@ public:
                 PRINT_CHAR = 229,
         //Opcode: 1OP:143 F 5 call_1n routine
                 CALL_1N = 143,
-                CALL = 224,
                 CALL_VS = 224,
         // Print new line
                 NEW_LINE = 187,
         // Opcodes for jump instructions
                 JE = 1,
-        JL = 2,
-        JG = 3,
-        JZ = 128,
-        JUMP = 140,
+                JL = 2,
+                JG = 3,
+                JZ = 128,
+                JUMP = 140,
         // Opcode for print operation; following by Z-character String
                 PRINT = 178,
         // Opcode: quit the main; no arguments.
