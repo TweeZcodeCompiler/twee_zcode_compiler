@@ -125,6 +125,26 @@ void RoutineGenerator::printString(vector<unique_ptr<ZParam>> params) {
     }
 }
 
+// params: stringToPrint
+void RoutineGenerator::printRet(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1);
+    checkParamType(params, NAME);
+
+    ZCodeConverter converter = ZCodeConverter();
+    vector<bitset<8>> zsciiString = converter.convertStringToZSCII((*params.at(0)).name);
+
+    unsigned long len = zsciiString.size();
+    for (size_t i = 0; i < len; i++) {
+        if (i % 96 == 0) {
+            addOneByte(numberToBitset(PRINT_RET));      // TODO: Check if this opcode needs same workaround as "print" for Frotz
+        }
+        if (i % 96 == 94) {
+            zsciiString[i].set(7, true);
+        }
+        addOneByte(zsciiString[i]);
+    }
+}
+
 // params: storeAddress
 void RoutineGenerator::readChar(vector<unique_ptr<ZParam>> params) {
     // TODO: decide on whether to allow no args for read_char
@@ -201,6 +221,10 @@ void RoutineGenerator::quitRoutine() {
     addOneByte(numberToBitset(QUIT));
 }
 
+void RoutineGenerator::restart() {
+    addOneByte(numberToBitset(RESTART));
+}
+
 // adds label and next instruction address to 'branches' map
 void RoutineGenerator::newLabel(string label) {
     jumps.newLabel(label);
@@ -216,14 +240,23 @@ void setLabelValues(ZParam &labelParam, string &label, bool &jumpIfTrue) {
 }
 
 // params: label
+void RoutineGenerator::verify(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1);
+    checkParamType(params, NAME);
+
+    string label;
+    bool jumpIfTrue;
+    setLabelValues(*params.at(0), label, jumpIfTrue);
+
+    addOneByte(numberToBitset(VERIFY));
+    jumps.newJump(label);
+    addTwoBytes(1 << (JUMP_UNCOND_OFFSET_PLACEHOLDER + 7)); // placeholder, will be replaced in getRoutine()
+}
+
+// params: label
 void RoutineGenerator::jump(vector<unique_ptr<ZParam>> params) {
-    if (params.size() != 1) {
-        cout << "Wrong param count for jump zero" << endl;
-        throw;
-    } else if (!(*params.at(0)).isNameParam) {
-        cout << "No label for jump zero available" << endl;;
-        throw;
-    }
+    checkParamCount(params, 1);
+    checkParamType(params, NAME);
 
     string label;
     bool jumpIfTrue;
@@ -416,6 +449,18 @@ void RoutineGenerator::returnValue(vector<unique_ptr<ZParam>> params) {
 
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(RET_VALUE, *params.at(0));
     addBitset(instructions);
+}
+
+void RoutineGenerator::returnTrue() {
+    addOneByte(numberToBitset(RETURN_TRUE));
+}
+
+void RoutineGenerator::returnFalse() {
+    addOneByte(numberToBitset(RETURN_FALSE));
+}
+
+void RoutineGenerator::retPopped() {
+    addOneByte(numberToBitset(RET_POPPED));
 }
 
 void RoutineGenerator::resolveCallInstructions(std::vector<std::bitset<8>> &zCode) {
