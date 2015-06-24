@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
     LOG_ERROR << "test";
      TweeCompiler compiler;
      TweeZCodeCompilerPipeline pipeline;
-     pipeline.compile(inputFile, outputFile, compiler);
+     pipeline.compile(inputFile, outputFile, compiler,argsCommand.sourceFileIsTwee());
 
 
 
