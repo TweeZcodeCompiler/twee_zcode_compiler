@@ -1,0 +1,25 @@
+﻿2015-06-24 16:39:09.495 DEBUG [11640] [main@51] Compiler started
+2015-06-24 16:39:09.496 ERROR [11640] [main@52] LOG_ERROR test
+2015-06-24 16:39:09.496 DEBUG [11640] [main@53] LOG_DEBUG test
+2015-06-24 16:39:46.449 DEBUG [11745] [main@45] Compiler started
+2015-06-24 16:39:46.449 ERROR [11745] [main@46] LOG_ERROR test
+2015-06-24 16:39:46.449 DEBUG [11745] [main@47] LOG_DEBUG test
+2015-06-24 16:39:46.450 DEBUG [11745] [ArgsCommand::getSourceFileName@48] Input Source File:hello_world.tws
+2015-06-24 16:46:49.270 DEBUG [11969] [main@45] Compiler started
+2015-06-24 16:46:49.271 ERROR [11969] [main@46] LOG_ERROR test
+2015-06-24 16:46:49.271 DEBUG [11969] [main@47] LOG_DEBUG test
+2015-06-24 16:46:49.271 DEBUG [11969] [ArgsCommand::ArgsCommand@68] Input Source File:hello_world.tws
+2015-06-24 16:46:49.271 DEBUG [11969] [ArgsCommand::ArgsCommand@75] Output File:hello_world.z8
+2015-06-24 16:46:49.271 DEBUG [11969] [ArgsCommand::ArgsCommand@80] Debug in Console is activated
+2015-06-24 16:47:07.014 DEBUG [12044] [main@45] Compiler started
+2015-06-24 16:47:07.014 ERROR [12044] [main@46] LOG_ERROR test
+2015-06-24 16:47:07.014 DEBUG [12044] [main@47] LOG_DEBUG test
+2015-06-24 16:47:07.014 DEBUG [12044] [ArgsCommand::ArgsCommand@68] Input Source File:hello_world.tws
+2015-06-24 16:47:07.014 DEBUG [12044] [ArgsCommand::ArgsCommand@75] Output File:hello_world.z8
+2015-06-24 16:47:07.014 DEBUG [12044] [ArgsCommand::ArgsCommand@80] Debug in Console is activated
+2015-06-24 16:49:38.795 DEBUG [12323] [main@45] Compiler started
+2015-06-24 16:49:38.795 ERROR [12323] [main@46] LOG_ERROR test
+2015-06-24 16:49:38.795 DEBUG [12323] [main@47] LOG_DEBUG test
+2015-06-24 16:49:38.795 DEBUG [12323] [ArgsCommand::ArgsCommand@27] Input Source File:hello_world.tws
+2015-06-24 16:49:38.795 DEBUG [12323] [ArgsCommand::ArgsCommand@34] Output File:hello_world.z8
+2015-06-24 16:49:38.795 DEBUG [12323] [ArgsCommand::ArgsCommand@39] Debug in Console is activated
