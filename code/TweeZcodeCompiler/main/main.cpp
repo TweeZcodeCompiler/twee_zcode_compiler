@@ -50,6 +50,8 @@ int main(int argc, char **argv) {
     std::string logFile = "Compiler_Log.txt";
     if(argsCommand.isDebugInConsole() == true)
     {
+
+        plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
         std::cout << "Console log";
         plog::init(plog::debug,  &consoleAppender);
     }
@@ -68,12 +70,13 @@ int main(int argc, char **argv) {
     LOG_DEBUG << "Assembly File:" << argsCommand.sourceFileIsAssembly();
     LOG_DEBUG << "Output-file:" << outputFile;
 
-
+    LOG_DEBUG  << "Compiler started";
+    LOG_ERROR << "test";
      TweeCompiler compiler;
      TweeZCodeCompilerPipeline pipeline;
      pipeline.compile(inputFile, outputFile, compiler);
 
-    LOG_DEBUG  << "Compiler started";
+
 
 
     return 0;
