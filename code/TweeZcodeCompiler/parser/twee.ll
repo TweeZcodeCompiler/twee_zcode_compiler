@@ -122,10 +122,10 @@ EXPR_DIV                \/
 EXPR_MOD                %
 
     /*Logical Tokens*/
-EXPR_GT                 >
-EXPR_GTE                >=
-EXPR_LT                 <
-EXPR_LTE                <=
+EXPR_GT                 >|gt
+EXPR_GTE                >=|gte
+EXPR_LT                 <|lt
+EXPR_LTE                <=|lte
 EXPR_NEQ                neq
 EXPR_IS                 is
 EXPR_EQ                 eq
