@@ -17,7 +17,7 @@ class AssemblyParser {
 
 private:
 
-    static const char SPLITTER_BETWEEN_LEXEMES_IN_AN_COMMAND;
+    static const char SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND;
     static const std::string GVAR_DIRECTIVE;
     static const char STRING_DELIMITER;
     static const std::string ASSIGNMENT_OPERATOR;
@@ -25,15 +25,22 @@ private:
     static const std::string ROUTINE_DIRECTIVE;
     static const std::string NEW_LINE_COMMAND;
     static const std::string PRINT_COMMAND;
-    static const std::string JE_COMMAND; //jump equals
+    static const std::string JE_COMMAND;
+    static const std::string JG_COMMAND;
+    static const std::string JL_COMMAND;
+    static const std::string JZ_COMMAND;
     static const std::string QUIT_COMMAND;
     static const std::string READ_CHAR_COMMAND;
-    static const std::string CALL_COMMAND;
+    static const std::string PRINT_CHAR_COMMAND;
+    static const std::string PRINT_NUM_COMMAND;
+    static const std::string PRINT_ADDR_COMMAND;
     static const std::string CALL_VS_COMMAND;
     static const std::string CALL_1N_COMMAND;
     static const std::string JUMP_COMMAND;
     static const std::string RET_COMMAND;
     static const std::string SET_TEXT_STYLE;
+    static const std::string STORE_COMMAND;
+    static const std::string LOAD_COMMAND;
 
 
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
@@ -52,24 +59,34 @@ private:
     void executeREADCommand(const std::string &readCommand, RoutineGenerator &routineGenerator);
 
     void executeJECommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+    void executeJGCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+    void executeJLCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+    void executeJZCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
 
     void executeCALL1nCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
-    void executeCALLCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
+    void executeCALL_VSCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
     void executeJUMPCommand(const std::string &jumpCommand, RoutineGenerator &routineGenerator);
 
     void executeRETCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
-    std::unique_ptr<ZParam> createZParam(const std::string &paramString);
+    std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction);
+    std::unique_ptr<ZParam> createZParam(const std::string& paramString);
+    
+    void performRoutineDirectiveCommand( std::vector<std::string> lineComps, std::vector <std::bitset<8>> &highMemoryZcode,size_t offset);
+    void performRoutineGlobalVarCommand(std::string line);
+
+    bool checkIfRoutineNameExists(std::string routineName);
 
 
     std::map<std::string, uint8_t> globalVariables;
+    std::vector<std::string> routineNameList;
 
     std::unique_ptr<RoutineGenerator> currentGenerator;
 
     void finishRoutine(std::vector <std::bitset<8>> &highMemoryZcode);
     void addGlobal(std::string globalName);
-    uint8_t getAddressForId(const std::string& id);
+    std::unique_ptr<uint8_t> getAddressForId(const std::string& id);
 
 public:
     void readAssembly(std::istream& input, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);

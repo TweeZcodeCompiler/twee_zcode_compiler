@@ -8,6 +8,7 @@
 #include <limits>
 #include "ZCodeHeader.h"
 #include "Utils.h"
+#include <plog/Log.h>
 
 using namespace std;
 
@@ -19,13 +20,13 @@ using namespace std;
 
 vector<bitset<8>> ZCodeHeader::getHeaderBits() {
     if (!fileLengthSet) {
-        cout << "No file size specified!" << endl;
+        LOG_DEBUG << "No file size specified!";
         throw;
     } else if (!routinesOffsetSet) {
-        cout << "No routine offset specified!" << endl;
+        LOG_DEBUG << "No routine offset specified!";
         throw;
     } else if (!staticStringsOffsetSet) {
-        cout << "No static string offset specified!" << endl;
+        LOG_DEBUG << "No static string offset specified!";
         throw;
     }
 
@@ -71,7 +72,7 @@ void ZCodeHeader::setFileLength(uint64_t length, uint16_t checksum) {
     uint64_t len = length / 8;
 
     if (len > numeric_limits<uint16_t>::max()) {
-        cout << "File too large" << endl;
+        LOG_DEBUG << "File too large";
         throw;
     } else {
         fileLength = (uint16_t) len;
@@ -87,7 +88,7 @@ void ZCodeHeader::setRoutinesOffset(uint64_t offset) {
     uint64_t off = offset / 8;
 
     if (off > numeric_limits<uint16_t>::max()) {
-        cout << "Routine offset too large" << endl;
+        LOG_DEBUG << "Routine offset too large";
         throw;
     } else {
         routinesOffset = (uint16_t) off;
@@ -102,7 +103,7 @@ void ZCodeHeader::setStaticStringsOffset(uint64_t offset) {
     uint64_t off = offset / 8;
 
     if (off > numeric_limits<uint16_t>::max()) {
-        cout << "Routine offset too large" << endl;
+        LOG_DEBUG << "Routine offset too large";
         throw;
     } else {
         staticStringsOffset = (uint16_t) off;

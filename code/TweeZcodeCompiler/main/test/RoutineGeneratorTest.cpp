@@ -9,7 +9,11 @@ using std::bitset;
 
 void RoutineGeneratorTest::runTest() {
     RoutineGenerator rg = RoutineGenerator(0);
-    rg.printString("hallo");
+
+    std::vector<std::unique_ptr<ZParam>> params;
+    params.push_back(std::unique_ptr<ZParam>(new ZNameParam("hallo")));
+
+    rg.printString(move(params));
     std::vector<std::bitset<8>> res = rg.getRoutine();
 
     //createVerifier

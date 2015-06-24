@@ -73,6 +73,9 @@ int main(int argc, char **argv) {
      TweeZCodeCompilerPipeline pipeline;
      pipeline.compile(inputFile, outputFile, compiler);
 
+    LOG_DEBUG  << "Compiler started";
+
+
     return 0;
 }
 
