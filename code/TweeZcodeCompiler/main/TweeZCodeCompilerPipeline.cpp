@@ -36,12 +36,14 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
 
     stringstream buffer;
 
-    //tweeCompiler.compile(*tweeFile, buffer);
+    tweeCompiler.compile(*tweeFile, buffer);
+
 
     //direct assembly compile start
-    std::ifstream in( "add_test.zap" );
+    /*std::ifstream in( "eat_apple_simple.zap" );
     buffer << in.rdbuf();
     std::string contents(buffer.str());
+    */
     //direct assembly compile end end
 
     //create header
