@@ -10,6 +10,7 @@
 #include <bitset>
 #include <cstdint>
 
+
 using namespace std;
 
 const string AssemblyParser::ROUTINE_DIRECTIVE = ".FUNCT";
@@ -33,6 +34,7 @@ const string AssemblyParser::CALL_VS_COMMAND = "call_vs";
 const string AssemblyParser::CALL_1N_COMMAND = "call_1n";
 const string AssemblyParser::STORE_COMMAND = "store";
 const string AssemblyParser::LOAD_COMMAND = "load";
+const string AssemblyParser::IMG_COMMAND = "img";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -377,6 +379,42 @@ void AssemblyParser::executeRETCommand(const string &callCommand, RoutineGenerat
     routineGenerator.returnValue(parseArguments(callCommand));
 }
 
+
+std::string exec(const char* cmd) {
+    FILE* pipe = popen(cmd, "r");
+    if (!pipe) return "ERROR";
+    char buffer[128];
+    std::string result = "";
+    while(!feof(pipe)) {
+        if(fgets(buffer, 128, pipe) != NULL)
+            result += buffer;
+    }
+    pclose(pipe);
+    return result;
+}
+
+
+void AssemblyParser::executeIMGCommand(const std::string &imgCommand, RoutineGenerator &routineGenerator)
+{
+
+    vector <string> commandParts = this->split(imgCommand, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
+
+    std::string path = commandParts.at(1);
+    std::stringstream jp2aCommand;
+    jp2aCommand << "jp2a " << path;
+    std::string jp2a =  jp2aCommand.str();
+
+    std::string asciiImg = exec(string(jp2a).c_str());
+
+    std::stringstream msg;
+    msg << AssemblyParser::PRINT_COMMAND << " \"" << asciiImg << "\"";
+    std::string line =  msg.str();
+
+    routineGenerator.printString(parseArguments(line));
+
+
+}
+
 void AssemblyParser::executeCommand(const string &command, RoutineGenerator &routineGenerator) {
     vector<string> commandParts = this->split(command, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
 
@@ -439,6 +477,10 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if(commandPart.compare(AssemblyParser::SET_TEXT_STYLE) == 0) {
         LOG_DEBUG << ":::::: new set_text_style ";
         executeSETTEXTSTYLECommand(command, routineGenerator);
+    }else if(commandPart.compare(AssemblyParser::IMG_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new img Command ";
+        executeIMGCommand(command,routineGenerator);
+
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label ;

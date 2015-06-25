@@ -41,6 +41,7 @@ private:
     static const std::string SET_TEXT_STYLE;
     static const std::string STORE_COMMAND;
     static const std::string LOAD_COMMAND;
+    static const std::string IMG_COMMAND;
 
 
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
@@ -62,6 +63,8 @@ private:
     void executeJGCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
     void executeJLCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
     void executeJZCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+
+    void executeIMGCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
 
     void executeCALL1nCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
     void executeCALL_VSCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
