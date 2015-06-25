@@ -27,7 +27,7 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
     std::unique_ptr<TweeFile> tweeFile;
     try {
         tweeFile = parser.parse();
-    } catch (Twee::ParseException e) {
+    } catch (const Twee::ParseException& e) {
         log("Parse error");
         throw e;
     }

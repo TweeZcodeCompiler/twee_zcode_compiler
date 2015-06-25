@@ -42,7 +42,7 @@ private:
     static const std::string STORE_COMMAND;
     static const std::string LOAD_COMMAND;
 
-
+    unsigned currentLineNumber;
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
 
     std::vector<std::string> split(const std::string &s, char delim);
@@ -78,12 +78,14 @@ private:
 
     bool checkIfRoutineNameExists(std::string routineName);
 
-
+    std::vector<std::pair<std::string, unsigned>> registeredJumpsAtLines;
+    std::vector<std::string> registeredLabels;
     std::map<std::string, uint8_t> globalVariables;
     std::vector<std::string> routineNameList;
 
     std::unique_ptr<RoutineGenerator> currentGenerator;
 
+    void registerJump(const std::vector<std::unique_ptr<ZParam>> &params);
     void finishRoutine(std::vector <std::bitset<8>> &highMemoryZcode);
     void addGlobal(std::string globalName);
     std::unique_ptr<uint8_t> getAddressForId(const std::string& id);

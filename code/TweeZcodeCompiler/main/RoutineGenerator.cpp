@@ -21,7 +21,7 @@ void checkParamCount(vector<unique_ptr<ZParam>> &params, unsigned int paramCount
         && (paramCount3 != 0 && params.size() != paramCount3) && (paramCount4 != 0 && params.size() != paramCount4)) {
 
         LOG_ERROR << "Wrong parameter count";
-        throw InvalidRoutineException();
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_ROUTINE);
     }
 }
 
@@ -43,36 +43,36 @@ void checkParamType(vector<unique_ptr<ZParam>> &params, ZParamType type1, ZParam
             case 0:
                 if (!sameType((*params.at(0)).getParamType(), type1)) {
                     LOG_ERROR << "Wrong param type for parameter 1";
-                    throw InvalidRoutineException();
+                    throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
                 }
                 break;
             case 1:
                 if (!sameType((*params.at(1)).getParamType(), type2)) {
                     LOG_ERROR << "Wrong param type for parameter 2";
-                    throw InvalidRoutineException();
+                    throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
                 }
                 break;
             case 2:
                 if (!sameType((*params.at(2)).getParamType(), type3)) {
                     LOG_ERROR << "Wrong param type for parameter 3";
-                    throw InvalidRoutineException();
+                    throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
                 }
                 break;
             case 3:
                 if (!sameType((*params.at(3)).getParamType(), type4)) {
                     LOG_ERROR << "Wrong param type for parameter 4";
-                    throw InvalidRoutineException();
+                    throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
                 }
                 break;
             case 4:
                 if (!sameType((*params.at(4)).getParamType(), type5)) {
                     LOG_ERROR << "Wrong param type for parameter 5";
-                    throw InvalidRoutineException();
+                    throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
                 }
                 break;
             default:
                 LOG_ERROR << "Too many arguments!";
-                throw InvalidRoutineException();
+                throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
         }
     }
 
@@ -220,10 +220,10 @@ void setLabelValues(ZParam &labelParam, string &label, bool &jumpIfTrue) {
 void RoutineGenerator::jump(vector<unique_ptr<ZParam>> params) {
     if (params.size() != 1) {
         LOG_ERROR << "Wrong param count for jump zero";
-        throw InvalidRoutineException();
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_ROUTINE);
     } else if (!(*params.at(0)).isNameParam) {
         LOG_ERROR << "No label for jump zero available";
-        throw InvalidRoutineException();
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_ROUTINE);
     }
 
     string label;
@@ -374,7 +374,7 @@ void RoutineGenerator::setLocalVariable(string name, int16_t value) {
     if (++addedLocalVariables > maxLocalVariables) {
         LOG_ERROR << "Added " << addedLocalVariables << " local variables to routine but only "
             << maxLocalVariables << " specified at routine start!";
-        throw InvalidDirectiveException();
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
     }
 
     size_t size = locVariables.size() + 1;
@@ -399,7 +399,7 @@ void RoutineGenerator::printNum(vector<unique_ptr<ZParam>> params) {
 u_int8_t RoutineGenerator::getAddressOfVariable(string name) {
     if (locVariables.count(name) == 0) {
         LOG_ERROR << "Undefined local variable used: " << name;
-        throw InvalidVariableException();
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_LOCAL);
     } else {
         return locVariables[name];
     }

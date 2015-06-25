@@ -74,7 +74,7 @@ public:
 
         if (locVar > 15) {
             LOG_DEBUG << "Cannot add more than 15 local variables to routine " << name << "!";
-            throw InvalidDirectiveException();
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
         }
     }
 

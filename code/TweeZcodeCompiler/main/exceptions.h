@@ -17,24 +17,34 @@ class TweeCompilerException : public std::exception {
 
 class AssemblyException : public TweeCompilerException {
 public:
+    enum ErrorType {
+        INVALID_ROUTINE,
+        INVALID_DIRECTIVE,
+        INVALID_GLOBAL,
+        INVALID_LOCAL,
+        INVALID_VARIABLE,
+        INVALID_INSTRUCTION,
+        INVALID_LABEL
+    };
+
+
+    AssemblyException(ErrorType error) : errorType(error) {}
+
+    ErrorType errorType;
     unsigned lineNumber;
     std::string line;
 };
 
-class InvalidRoutineException : public AssemblyException {
-
-};
-
-class InvalidDirectiveException : public AssemblyException {
-
-};
-
-class InvalidVariableException : public AssemblyException {
-
-};
-
 class InvalidLabelException : public AssemblyException {
+public:
+    InvalidLabelException(std::string label) : AssemblyException(INVALID_LABEL), labelName(label) {}
 
+
+    const std::string& getLabelName() const {
+        return labelName;
+    }
+private:
+    std::string labelName;
 };
 
 
