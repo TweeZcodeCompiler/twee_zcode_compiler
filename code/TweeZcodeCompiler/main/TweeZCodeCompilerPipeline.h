@@ -15,7 +15,7 @@
 class TweeZCodeCompilerPipeline {
 
 public:
-    void compile(std::string filename, std::string zCodeFileName, ITweeCompiler &tweeCompiler);
+    void compile(std::string filename, std::string zCodeFileName, ITweeCompiler &tweeCompiler,bool isTwee);
 
 private:
     std::vector<std::bitset<8>> generateDynamicMemory(ZCodeHeader &header, size_t offset);
