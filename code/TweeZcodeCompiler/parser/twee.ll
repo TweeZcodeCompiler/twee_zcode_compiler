@@ -107,9 +107,9 @@ MACRO_DISPLAY           display
 EXPR_VAR               \$[_a-zA-Z][_a-zA-Z0-9]*
 EXPR_RANDOM            random
 
-EXPR_VISITED           visited
-EXPR_PREVIOUS          previous
-EXPR_TURNS             turns
+EXPR_VISITED           visited[]*\([]*\)
+EXPR_PREVIOUS          previous[]*\([]*\)
+EXPR_TURNS             turns[]*\([]*\)
 
 EXPR_OPEN              \(
 EXPR_CLOSE             \)
@@ -131,6 +131,7 @@ EXPR_IS                 is
 EXPR_EQ                 eq
 EXPR_AND                and
 EXPR_OR                 or
+EXPR_NOT                not
 
     /*Assignment Token*/
 EXPR_TO                 to
@@ -789,6 +790,16 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << YYText();
                                 SAVE_TOKEN;
                                 return BisonParser::token::OR_TOKEN;
+                                }
+<BodyMacro>{EXPR_NOT}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the NOT Token
+                                LOG_DEBUG << "return the NOT Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::NOT_TOKEN;
                                 }
 
     /*Assignment Token*/

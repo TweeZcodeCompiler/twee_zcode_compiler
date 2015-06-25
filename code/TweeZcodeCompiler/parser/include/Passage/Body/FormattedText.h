@@ -1,5 +1,5 @@
 //
-// Created by iguana on 06.06.15.
+// Created by lars on 06.06.15.
 //
 
 #ifndef FORMATTEDTEXT_H
