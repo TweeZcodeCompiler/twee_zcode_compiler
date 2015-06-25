@@ -141,6 +141,8 @@ public:
 
     void returnValue(std::vector<std::unique_ptr<ZParam>> params);
 
+    void add(std::vector<std::unique_ptr<ZParam>> params);
+
 
     /*
      *      Enumerations
@@ -177,7 +179,9 @@ public:
         // Opcode: return value
                 RET_VALUE = 139,
         // Opcode: set the text style
-                SET_TEXT_STYLE = 241
+                SET_TEXT_STYLE = 241,
+        // Opcode : 2OP:20 14 add a b -> (result)
+                ADD = 20
     };
 
     enum BranchOffset {

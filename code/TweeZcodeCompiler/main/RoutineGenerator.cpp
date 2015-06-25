@@ -345,6 +345,15 @@ void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
     addBitset(instructions);
 }
 
+void RoutineGenerator::add(std::vector<std::unique_ptr<ZParam>> params) {
+    checkParamCount(params,3);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
+
+    vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(ADD,*params.at(0),*params.at(1));
+    instructions.push_back(bitset<8>(params.at(2)->getZCodeValue()));
+    addBitset(instructions);
+}
+
 // params: address, resultAddress
 void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 2);
