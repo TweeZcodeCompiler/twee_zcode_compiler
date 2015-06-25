@@ -31,13 +31,13 @@ ArgsCommand::ArgsCommand(int argc, char  **argv){
 
                 //define standard output file
                 this->outputFile = sourceFile;
-                findPosition = outputFile.find(".tws");
+                findPosition = outputFile.find(".twee");
                 if(findPosition == -1)
                 {
-                    std::cout << "Not a .tws Twee File"; //LOG_ERROR is not working here
+                    std::cout << "Not a .twee Twee File"; //LOG_ERROR is not working here
 
                 }
-                outputFile.replace(findPosition, std::string(".tws").length(), ".z8");
+                outputFile.replace(findPosition, std::string(".twee").length(), ".z8");
 
 
                 break;
@@ -72,7 +72,7 @@ ArgsCommand::ArgsCommand(int argc, char  **argv){
                 findPosition = outputFile.find(".zap");
                 if(findPosition == -1)
                 {
-                    std::cout << "Not a .tws Twee File"; //LOG_ERROR is not working here
+                    std::cout << "Not a .zap Z-Assembly File"; //LOG_ERROR is not working here
 
                 }
                 outputFile.replace(findPosition, std::string(".zap").length(), ".z8");
