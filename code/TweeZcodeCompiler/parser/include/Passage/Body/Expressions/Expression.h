@@ -9,13 +9,25 @@
 
 #include <string>
 
-enum Operator {
-    ADD, MUL, SUB, DIV, MOD, LT, LTE, GT, GTE, IS, AND, OR, TO, NEQ, NOT
+enum ArithmeticOperation {
+    ADD, MUL, SUB, DIV, MOD, MINUS
 };
+
+enum LogicalOperation {
+    AND, OR, NOT
+};
+
+enum RelationOperation {
+    LT, LTE, GT, GTE, IS, NEQ
+};
+
+enum AssignmentOperation {
+    TO
+};
+
 enum FunctionName {
     RANDOM, PREVIOUS, TURNS, VISITED
 };
-
 
 class Expression : public BodyPart {
 

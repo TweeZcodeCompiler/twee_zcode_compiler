@@ -197,8 +197,7 @@ body :
     LOG_DEBUG << "pass body:type(Body) to top:body:type(Body)";
     $$ = $1;
     LOG_DEBUG << "add bodypart:type(BodyPart) to top:body:type(Body)";
-*$$ +=
-$2;
+    *$$ +=$2;
     }
     |bodypart
     {
@@ -206,8 +205,7 @@ $2;
     LOG_DEBUG << "create top:body:type(Body)";
     $$ = new Body();
     LOG_DEBUG << "add bodypart:type(BodyPart) to top:body:type(Body)";
-*$$ +=
-$1;
+    *$$ +=$1;
     }
   ;
 
