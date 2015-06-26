@@ -15,7 +15,7 @@ public:
 
     EndIf();
 
-    const std::string to_string() const;
+    std::string to_string() const;
 
     virtual EndIf *clone() const {
         return new EndIf(*this);

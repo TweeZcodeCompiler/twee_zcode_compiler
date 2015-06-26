@@ -15,7 +15,7 @@ public:
 
     Else();
 
-    const std::string to_string() const;
+    std::string to_string() const;
 
     virtual Else *clone() const {
         return new Else(*this);

@@ -13,14 +13,13 @@
 
 class Print : public Marco {
 
-
 public:
 
-    Print(std::unique_ptr<Expression> &);
+    Print(std::unique_ptr<Expression>);
 
-    const std::unique_ptr<Expression> &getExpression();
+    const std::unique_ptr<Expression> &getExpression() const;
 
-    std::string to_string();
+    std::string to_string() const;
 
     virtual Print *clone() const {
         return new Print(*this);

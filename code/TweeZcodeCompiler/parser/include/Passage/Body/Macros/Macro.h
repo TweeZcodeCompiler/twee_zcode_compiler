@@ -13,7 +13,7 @@
 
 class Marco : public BodyPart {
 
-private:
+protected:
     std::unique_ptr<Expression> expression;
 
 public:
@@ -22,7 +22,7 @@ public:
 
     virtual Macro *clone() const = 0;
 
-    std::string to_string();
+    std::string to_string() const;
 
 };
 

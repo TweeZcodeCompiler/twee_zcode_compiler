@@ -9,17 +9,19 @@
 
 #include <string>
 
+template<class T>
 class Variable : public Expression {
 
 private:
-
+    T value;
 
 public:
 
-    Variable(Operator, Expression &);
+    Variable(T);
 
+    T getValue() const;
 
-    std::string to_string();
+    std::string to_string() const;
 
     virtual Variable *clone() const {
         return new Variable(*this);

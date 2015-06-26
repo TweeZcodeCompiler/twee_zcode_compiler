@@ -10,25 +10,31 @@
 #include <string>
 #include <memory>
 
+template<class T>
 class Operator : public Expression {
 
 private:
 
-    int op;
+    T op;
+
     std::unique_ptr<Expression> leftSide;
     std::unique_ptr<Expression> rightSide;
 
 public:
 
-    int getOperator() = 0;
+    Operator(T, std::unique_ptr<Expression>, std::unique_ptr<Expression>);
 
-    virtual std::unique_ptr<Expression> &getLeftSide() = 0;
+    T getOperator() const;
 
-    virtual std::unique_ptr<Expression> &getRightSide() = 0;
+    const std::unique_ptr<Expression> &getLeftSide() const;
 
-    virtual Operator *clone() = 0;
+    const std::unique_ptr<Expression> &getRightSide() const;
 
-    virtual std::string to_string() = 0;
+    virtual Operator *clone() const {
+        return new Operator(*this);
+    }
+
+    std::string to_string() const;
 
 };
 

@@ -15,11 +15,11 @@ class If : public Marco {
 
 public:
 
-    If(std::unique_ptr<Expression> &);
+    If(std::unique_ptr<Expression>);
 
-    const std::unique_ptr<Expression> &getIfExpression() const;
+    const std::unique_ptr<Expression> &getExpression() const;
 
-    const std::string to_string() const;
+    std::string to_string() const;
 
     virtual If *clone() const {
         return new If(*this);

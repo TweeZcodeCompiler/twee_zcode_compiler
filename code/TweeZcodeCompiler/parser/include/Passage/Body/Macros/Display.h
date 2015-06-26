@@ -13,14 +13,13 @@
 
 class Display : public Marco {
 
-
 public:
 
-    Display(std::unique_ptr<Expression> &);
+    Display(std::unique_ptr<Expression>);
 
-    const std::unique_ptr<Expression> &getExpression();
+    const std::unique_ptr<Expression> &getExpression() const;
 
-    std::string to_string();
+    std::string to_string() const;
 
     virtual Display *clone() const {
         return new Display(*this);

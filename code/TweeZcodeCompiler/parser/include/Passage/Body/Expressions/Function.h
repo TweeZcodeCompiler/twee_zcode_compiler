@@ -15,9 +15,7 @@
 class Function : public Expression {
 
 private:
-
     FunctionName functionName;
-
     std::vector<std::unique_ptr<Variable>> arguments;
 
 public:
