@@ -83,6 +83,9 @@ LINK_OPEN               \[{2}
 LINK_CLOSE              \]{2}
 LINK_SEPARATOR          \|
 
+ /*LINK_TEXT_CHAR          [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
+LINK_TEXT               [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
+
 MACRO_OPEN              <{2}
 MACRO_CLOSE             >{2}
 
@@ -94,14 +97,17 @@ MACRO_ENDIF             endif
 MACRO_PRINT             print
 MACRO_DISPLAY           display
 
-    /*Expression Tokens*/
+    /*Expression String and Integer Token*/
+EXPR_STR_LIMITER        \"
+EXPR_STR                [a-zA-Z]+
+EXPR_INT                [0-9]+
 EXPR_VAR               \$[_a-zA-Z][_a-zA-Z0-9]*
-EXPR_INT               [1-9][0-9]*
+
 EXPR_RANDOM            random
 
-EXPR_VISITED           visited
-EXPR_PREVIOUS          previous
-EXPR_TURNS             turns
+EXPR_VISITED           visited[]*\([]*\)
+EXPR_PREVIOUS          previous[]*\([]*\)
+EXPR_TURNS             turns[]*\([]*\)
 
 EXPR_OPEN              \(
 EXPR_CLOSE             \)
@@ -114,22 +120,20 @@ EXPR_DIV                \/
 EXPR_MOD                %
 
     /*Logical Tokens*/
-EXPR_GT                 >
-EXPR_GTE                >=
-EXPR_LT                 <
-EXPR_LTE                <=
+EXPR_GT                 >|gt
+EXPR_GTE                >=|gte
+EXPR_LT                 <|lt
+EXPR_LTE                <=|lte
 EXPR_NEQ                neq
 EXPR_IS                 is
 EXPR_EQ                 eq
 EXPR_AND                and
 EXPR_OR                 or
+EXPR_NOT                not
 
     /*Assignment Token*/
 EXPR_TO                 to
 EXPR_ASSGN                =
-
-
-
 
  /*Parser Conditions */
     /*Naming convention in this file: CamelCase*/
@@ -144,7 +148,6 @@ EXPR_ASSGN                =
 %x BodyMacro
 
 %%
-
 
  /*___NEW CONDITION___ Start of a passage*/
     /*From: Start of Lexing, Body*/
@@ -543,6 +546,10 @@ EXPR_ASSGN                =
 <BodyMacro>{EXPR_OR}		    {
                                 LOG_DEBUG << "Lexer: Condition: BodyMacro matched Token "<<"EXPR_OR" << " with value " << YYText();
                                 return BisonParser::token::EXPR_OR;
+                                }
+<BodyMacro>{EXPR_NOT}		{
+                                LOG_DEBUG << "Lexer: Condition: BodyMacro matched Token "<<"EXPR_NOT" << " with value " << YYText();
+                                return BisonParser::token::EXPR_NOT;
                                 }
 
     /*Assignment Token*/

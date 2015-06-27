@@ -192,6 +192,7 @@ passages :
 
     *$$ += *$1;
     delete $1;
+    delete $1;
     }
   ;
 passage :
@@ -199,7 +200,10 @@ passage :
     {
     LOG_DEBUG << "Parser: passage -> head body: "<< "create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects";
 
+
     $$ = new Passage(*$1, *$2);
+    delete $1;
+    delete $2;
     delete $1;
     delete $2;
     }
@@ -218,6 +222,7 @@ title :
     {
     LOG_DEBUG << "Parser: title -> TITLE NEWLINE: "<< "create title:type(Head) out of token:TITLE";
         $$ = new Head(*$1);
+    delete $1;
     delete $1;
     }
     |TITLE TAGS_OPEN tags TAGS_CLOSE NEWLINE
