@@ -12,7 +12,8 @@ bool ZCodeContainer::revalidate() {
         validatedAll = false;
         size = 0;
         for(size_t i = 0; i < children.size(); i++){
-            ZCodeObject child = *children.at(i);
+            ZCodeObject child = children.at(i);
+            child.size = this->offset+size;
             if(child.revalidate()){
                 validatedAll = true;
             }
@@ -27,7 +28,7 @@ bool ZCodeContainer::revalidate() {
 std::vector<std::bitset<8>> &ZCodeContainer::print() {
     std::vector<std::bitset<8>> instructions = std::vector<std::bitset<8>>();
     for(size_t i = 0; i < children.size(); i++){
-        ZCodeObject child = *children.at(i);
+        ZCodeObject child = children.at(i);
         std::vector<std::bitset<8>> childinstructions = child.print();
         Utils::append(instructions,childinstructions);
     }
