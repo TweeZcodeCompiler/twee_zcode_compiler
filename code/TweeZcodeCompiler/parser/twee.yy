@@ -140,7 +140,7 @@
 %right UMINUS UPLUS
 %left EXPR_MUL EXPR_DIV EXPR_MOD
 %left EXPR_ADD EXPR_SUB
-%left EXPR_GTE EXPR_GT EXPR_LT EXPR_LTE
+%left EXPR_GTE EXPR_GT EXPR_LTE EXPR_LT
 %left EXPR_EQ EXPR NEQ
 %left EXPR_AND
 %left EXPR_OR
@@ -312,7 +312,7 @@ link :
   ;
 
 macro :
-    MACRO_OPEN TEXT_TOKEN expression MACRO_CLOSE
+    MACRO_OPEN TEXT_TOKEN expr MACRO_CLOSE
     {
     //TODO: data model: implement macro
     LOG_DEBUG << "macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE";
@@ -320,11 +320,44 @@ macro :
     $$ = new Text(*$2);
     }
     |MACRO_OPEN TEXT_TOKEN MACRO_CLOSE
-    |MACRO_OPEN EXPR_VAR EXPR_ASS expression MACRO_CLOSE
+    |MACRO_OPEN EXPR_VAR EXPR_ASS expr MACRO_CLOSE
   ;
 
-expression :
-    expression EXPR_ADD expression
+expr :
+    EXPR_OPEN expr EXPR_CLOSE
+    {}
+    |EXPR_SUB expr %UMINUS
+    {}
+    |EXPR_ADD expr %UPLUS
+    {}
+    |expr EXPR_MUL expr
+    {}
+    |expr EXPR_DIV expr
+    {}
+    |expr EXPR_MOD expr
+    {}
+    |epxr EXPR_ADD expr
+    {}
+    |expr EXPR_SUB expr
+    {}
+    |expr EXPR_GTE expr
+    {}
+    |expr EXPR_GT expr
+    {}
+    |expr EXPR_LTE expr
+    {}
+    |expr EXPR_LT expr
+    {}
+    |expr EXPR_EQ expr
+    {}
+    |expr EXPR_NEQ expr
+    {}
+    |expr EXPR_AND expr
+    {}
+    |expr EXPR_OR expr
+    {}
+    |expr EXPR_ASS expr
+    {}
 
 formatted:
     FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
