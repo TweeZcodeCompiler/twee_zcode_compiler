@@ -6,6 +6,7 @@
 #include "ZCodeConverter.h"
 #include "exceptions.h"
 #include "ZCodeObjects/ZCodeJump.h"
+#include "ZCodeObjects/ZCodeCallAdress.h"
 #include <iostream>
 #include <algorithm>
 #include <plog/Log.h>
@@ -191,10 +192,20 @@ void RoutineGenerator::callVS(vector<unique_ptr<ZParam>> params) {
     params.erase(params.begin() + params.size() - 1);
     params[0] = unique_ptr<ZValueParam>(new ZValueParam(3000));     // placeholder for call offset
 
-    auto instructions = opcodeGenerator.generateVarOPInstruction(CALL_VS, params);
-    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() + 2] = routineName;
-    instructions.push_back(numberToBitset(storeAddress));
-    addBitset(instructions);
+    auto generated = opcodeGenerator.generateVarOPInstruction(CALL_VS, params);
+    vector<bitset<8>> zinstructions;
+    zinstructions.push_back(generated.at(0));
+    zinstructions.push_back(generated.at(0));
+    ZCodeInstruction instructionObjects = ZCodeInstruction(zinstructions);
+    routine.add(instructionObjects);
+    ZCodeCallAdress callAdress = ZCodeCallAdress(ZCodeRoutine::getOrCreateRoutine(routineName,0));
+    routine.add(callAdress);
+    vector<bitset<8>> instructionsAfterJump;
+    for(size_t i = 4; i < generated.size();i++){
+        instructionsAfterJump.push_back(generated.at(i));
+    }
+    ZCodeInstruction instructionObjectsAfterJump = ZCodeInstruction(instructionsAfterJump);
+    routine.add(instructionObjectsAfterJump);
 }
 
 // params: variableOrConstant
@@ -202,9 +213,13 @@ void RoutineGenerator::call1n(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1);
     checkParamType(params, NAME);
 
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (u_int16_t) 3000, false);
-    addBitset(instructions);
-    RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() - 2] = (*params.at(0)).name;
+    vector<bitset<8>> generated = opcodeGenerator.generate1OPInstruction(CALL_1N, (u_int16_t) 3000, false);
+    vector<bitset<8>> zinstructions;
+    zinstructions.push_back(generated.at(0));
+    ZCodeInstruction instructionObjects = ZCodeInstruction(zinstructions);
+    routine.add(instructionObjects);
+    ZCodeCallAdress adress = ZCodeCallAdress(ZCodeRoutine::getOrCreateRoutine((*params.at(0)).name,0));
+    routine.add(adress);
     LOG_DEBUG << "Call Routine at:::" << offsetOfRoutine + routineZcode.size() - 2;
 }
 

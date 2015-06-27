@@ -95,7 +95,7 @@ private:
     std::unique_ptr<ZParam> createZParam(const std::string &paramString);
 
     void performRoutineDirectiveCommand(std::vector<std::string> lineComps,
-                                        std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
+                                        ZCodeContainer &highMemoryZcode);
 
     void performRoutineGlobalVarCommand(std::string line);
 
@@ -103,11 +103,13 @@ private:
     std::vector<std::string> registeredLabels;
     std::map<std::string, uint8_t> globalVariables;
 
+    bool firstRoutine = true;
+
     std::unique_ptr<RoutineGenerator> currentGenerator;
 
     void registerJump(const std::vector<std::unique_ptr<ZParam>> &params);
 
-    void finishRoutine(std::vector<std::bitset<8>> &highMemoryZcode);
+    void finishRoutine(ZCodeContainer &highMemoryZcode);
 
     void addGlobal(std::string globalName);
 

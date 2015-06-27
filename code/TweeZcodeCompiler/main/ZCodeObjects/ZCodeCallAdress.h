@@ -9,7 +9,7 @@
 #include "ZCodeObject.h"
 #include "ZCodeRoutine.h"
 
-class ZCodeCallAdress: ZCodeObject {
+class ZCodeCallAdress:public ZCodeObject {
 private:
     ZCodeRoutine &routine;
 public:
