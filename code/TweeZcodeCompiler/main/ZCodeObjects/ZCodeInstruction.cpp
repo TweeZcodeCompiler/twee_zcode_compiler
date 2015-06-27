@@ -3,11 +3,12 @@
 //
 
 #include "ZCodeInstruction.h"
+#include "../Utils.h"
 
 bool ZCodeInstruction::revalidate() {
     return false;
 }
 
-std::vector<std::bitset<8>>& ZCodeInstruction::print() {
-    return content;
+void ZCodeInstruction::print(std::vector<std::bitset<8>> &code) {
+    Utils::append(code,content);
 }

@@ -11,7 +11,9 @@
 class ZCodeContainer: public ZCodeObject {
 
 public:
-    std::vector<std::bitset<8>> &print();
+    ZCodeContainer() {}
+
+    void print(std::vector<std::bitset<8>> &code);
     bool revalidate();
 
 };

@@ -4,9 +4,8 @@
 
 #include "ZCodeLabel.h"
 
-std::vector<std::bitset<8>>& ZCodeLabel::print() {
-    std::vector<std::bitset<8>> none;
-    return none;
+void ZCodeLabel::print(std::vector<std::bitset<8>> &code) {
+    return ;
 }
 
 bool ZCodeLabel::revalidate() {

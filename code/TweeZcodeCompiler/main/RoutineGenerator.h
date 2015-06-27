@@ -26,9 +26,9 @@ private:
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
     std::map<std::string, u_int8_t> locVariables;   // keys = variable name, value = number in stack
     static std::map<std::string, size_t> routines;  // keys = name of routine, value = offset.
-    static std::map<std::string, ZCodeLabel&> labels;
+    static std::map<std::string, ZCodeLabel*> labels;
 
-    ZCodeRoutine routine = ZCodeRoutine(0);
+    ZCodeRoutine *routine;
 
     size_t maxLocalVariables = 0;
     size_t addedLocalVariables = 0;
@@ -45,12 +45,11 @@ private:
 public:
 
 
-    ZCodeLabel &getOrCreateLabel(std::string name);
+    ZCodeLabel *getOrCreateLabel(std::string name);
 
     // this constructor padding zCode to the next package adress and initialize this routine with the name 'name'
-    RoutineGenerator(std::string name, unsigned int locVar) {
+    RoutineGenerator(std::string name, unsigned int locVar) :routine(ZCodeRoutine::getOrCreateRoutine(name,locVar)) {
 
-        this->routine = ZCodeRoutine::getOrCreateRoutine(name, locVar);
         maxLocalVariables = locVar;
         if (locVar > 15) {
             LOG_DEBUG << "Cannot add more than 15 local variables to routine " << name << "!";
@@ -59,7 +58,7 @@ public:
     }
 
     // returns complete zcode of Routine as a bitset vector
-    ZCodeRoutine getRoutine();
+    ZCodeRoutine *getRoutine();
 
     /*
      *      methods to handle call routine offsets:

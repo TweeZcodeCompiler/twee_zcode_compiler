@@ -11,11 +11,11 @@
 
 class ZCodeCallAdress:public ZCodeObject {
 private:
-    ZCodeRoutine &routine;
+    ZCodeRoutine *routine;
 public:
     bool revalidate();
-    std::vector<std::bitset<8>> &print();
-    ZCodeCallAdress(ZCodeRoutine &routine) : routine(routine) {
+    void print(std::vector<std::bitset<8>> &code);
+    ZCodeCallAdress(ZCodeRoutine *routine) : routine(routine) {
         this->size = 2;
     }
 };

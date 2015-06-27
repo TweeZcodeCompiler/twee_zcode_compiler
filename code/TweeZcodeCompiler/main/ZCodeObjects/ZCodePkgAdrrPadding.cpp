@@ -10,9 +10,8 @@ bool ZCodePkgAdrrPadding::revalidate() {
     return false;
 }
 
-std::vector<std::bitset<8>>& ZCodePkgAdrrPadding::print() {
+void ZCodePkgAdrrPadding::print(std::vector<std::bitset<8>> &code) {
     std::vector<std::bitset<8>> padding = std::vector<std::bitset<8>>();
     size_t missing = Utils::paddingToNextPackageAddress(0,offset);
-    Utils::fillWithBytes(padding,0,missing);
-    return padding;
+    Utils::fillWithBytes(code,0,missing);
 }

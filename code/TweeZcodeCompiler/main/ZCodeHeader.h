@@ -33,7 +33,7 @@ private:
 
 
 public:
-    std::vector<std::bitset<8>> &print();
+    void print(std::vector<std::bitset<8>> &code);
     bool revalidate();
     //HEADER POSITIONS
     static const int HEADER_FILE_SIZE_POSITION = 26;
@@ -89,7 +89,7 @@ public:
     void setStaticStringsOffset(uint64_t offset);
 
     // get complete headerBits as vector<bitset>
-    std::vector<std::bitset<8>> getHeaderBits();
+    std::vector<std::bitset<8>> &getHeaderBits();
 
 };
 

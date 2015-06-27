@@ -18,11 +18,6 @@ public:
     void compile(std::string filename, std::string zCodeFileName, ITweeCompiler &tweeCompiler,bool isTwee);
 
 private:
-    std::vector<std::bitset<8>> generateDynamicMemory(ZCodeHeader &header, size_t offset);
-
-    std::vector<std::bitset<8>> generateStaticMemory(ZCodeHeader &header, size_t offset);
-
-    std::vector<std::bitset<8>> generateHighMemory(ZCodeHeader &header, size_t offset, std::istream& instructionsInput);
 
     std::vector<std::bitset<8>> printGlobalTable(int offset);
 

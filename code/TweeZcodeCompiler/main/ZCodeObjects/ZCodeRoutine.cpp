@@ -5,26 +5,23 @@
 #include "ZCodeRoutine.h"
 #include "../Utils.h"
 
-ZCodeRoutine &ZCodeRoutine::getOrCreateRoutine(std::string name, std::uint8_t locVariables) {
-    std::map<std::string, ZCodeRoutine &>::iterator p;
-    p = routines.find(name);
-    if (p == routines.end()) {
-        ZCodeRoutine routine = ZCodeRoutine(0);
-        routines.insert(pair<std::string, ZCodeRoutine>(name,routine));
+std::map<std::string,ZCodeRoutine*> ZCodeRoutine::routines = std::map<std::string,ZCodeRoutine*>();
+
+ZCodeRoutine *ZCodeRoutine::getOrCreateRoutine(std::string name, std::uint8_t locVariables) {
+    if (routines.count(name) == 0) {
+        ZCodeRoutine *routine = new ZCodeRoutine(0);
+        routines.insert(std::pair<std::string, ZCodeRoutine*>(name,routine));
         return routine;
     } else {
-        ZCodeRoutine routine = p->second;
-        if(routine.localVariables < locVariables){
-            routine.localVariables = locVariables;
+        ZCodeRoutine *routine = routines.at(name);
+        if(routine->localVariables < locVariables){
+            routine->localVariables = locVariables;
         }
         return routine;
     }
 }
 
-std::vector<std::bitset<8>>& ZCodeRoutine::print() {
-    std::vector<std::bitset<8>> instructions;
-    instructions.push_back(std::bitset<8>(localVariables));
-    std::vector<std::bitset<8>> superInstructions = ZCodeContainer::print();
-    Utils::append(instructions,superInstructions);
-    return instructions;
+void ZCodeRoutine::print(std::vector<std::bitset<8>> &code) {
+   code.push_back(std::bitset<8>(localVariables));
+    ZCodeContainer::print(code);
 }

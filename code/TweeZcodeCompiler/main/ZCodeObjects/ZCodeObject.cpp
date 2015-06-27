@@ -4,12 +4,13 @@
 
 #include "ZCodeObject.h"
 
-void ZCodeObject::add(ZCodeObject &Child) {
+void ZCodeObject::add(ZCodeObject *Child) {
     children.push_back(Child);
-    Child.parrent.reset(this);
-    Child.offset = this->offset+ this->size;
-    this->size += Child.getSize();
-    if(parrent){
+    Child->parrent = this;
+    Child->offset = this->offset+ this->size;
+    this->size += Child->getSize();
+    ZCodeObject *parrent = this->parrent;
+    if(parrent != NULL){
         parrent->revalidate();
     }
 }
@@ -19,7 +20,7 @@ void ZCodeObject::setSize(size_t size) {
         return;
     }
     this->size = size;
-    if(parrent){
+    if(parrent != NULL){
         parrent->revalidate();
     }
 }

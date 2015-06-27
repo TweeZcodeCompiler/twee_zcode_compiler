@@ -18,7 +18,7 @@ using namespace std;
 #define STANDARD_REVISION_MAIN 1 // revision number of supperted document, here
 #define STANDARD_REVISION_SUB 1  // 1.1 (STANDARD_REVISION_MAIN.STANDARD_REVISION_SUB)
 
-vector<bitset<8>> ZCodeHeader::getHeaderBits() {
+vector<bitset<8>> &ZCodeHeader::getHeaderBits() {
     if (!fileLengthSet) {
         LOG_ERROR << "No file size specified!";
         throw;
@@ -67,15 +67,15 @@ vector<bitset<8>> ZCodeHeader::getHeaderBits() {
 
 bool ZCodeHeader::revalidate() {
     if(this->size == 0){
-        this->size = 37;
+        this->size = 0x37;
         return true;
     }
     return false;
 }
 
-std::vector<std::bitset<8>>& ZCodeHeader::print() {
+void ZCodeHeader::print(std::vector<std::bitset<8>> &code) {
     vector<bitset<8>> result = getHeaderBits();
-    return result;
+    Utils::append(code,result);
 }
 
 /* helper method to calculate length and to

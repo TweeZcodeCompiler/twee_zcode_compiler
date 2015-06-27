@@ -1,0 +1,3 @@
+.ROUTINE main
+print "Hallo Welt"
+quit

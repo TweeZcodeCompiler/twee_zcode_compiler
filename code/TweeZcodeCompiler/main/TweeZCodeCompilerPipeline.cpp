@@ -50,36 +50,41 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
     ZCodeContainer zcode = ZCodeContainer();
 
     //create header
-    ZCodeHeader header = ZCodeHeader();
+    ZCodeHeader *header = new ZCodeHeader();
     zcode.add(header);
 
     //create dynamicMemory
-    ZCodeContainer dynamicMemory = ZCodeContainer();
-    ZCodeMemorySpace globalVariablesTable = ZCodeMemorySpace((0xff - 0x10)*2);// Global Var Table
-    dynamicMemory.add(globalVariablesTable);
+    ZCodeContainer *dynamicMemory = new ZCodeContainer();
+    ZCodeMemorySpace *globalVariablesTable = new ZCodeMemorySpace((0xff - 0x10)*2);// Global Var Table
+    dynamicMemory->add(globalVariablesTable);
     zcode.add(dynamicMemory);
 
     //create staticMemory
-    ZCodeContainer staticMemory = ZCodeContainer();
+    ZCodeContainer *staticMemory = new ZCodeContainer();
     zcode.add(staticMemory);
 
     //create hight Memory
-    ZCodeContainer highMemory = ZCodeContainer();
+    ZCodeContainer *highMemory =new ZCodeContainer();
     zcode.add(highMemory);
 
+    //parse
+    AssemblyParser parser = AssemblyParser();
+    parser.readAssembly(buffer,dynamicMemory,staticMemory,highMemory);
+
     //init header
-    header.setRoutinesOffset(88);
-    header.setStaticStringsOffset(99);
-    header.setFileLength(3, 52);
-    header.locOfGlobVarTable = globalVariablesTable.getOffset();
-    header.baseOfStatMem = (uint16_t) (staticMemory.getOffset());
-    header.baseOfHighMem = (uint16_t) (highMemory.getOffset());
-    header.initValOfPC = header.baseOfHighMem;
+    header->setRoutinesOffset(88);
+    header->setStaticStringsOffset(99);
+    header->setFileLength(3, 52);
+    header->locOfGlobVarTable = globalVariablesTable->getOffset();
+    header->baseOfStatMem = (uint16_t) (staticMemory->getOffset());
+    header->baseOfHighMem = (uint16_t) (highMemory->getOffset());
+    header->initValOfPC = header->baseOfHighMem;
 
     //concat memory sections
-    vector<bitset<8>> zCode = zcode.print();
 
-    RoutineGenerator::resolveCallInstructions(zCode);
+    vector<bitset<8>> zCode;
+    zcode.print(zCode);
+
 
     //calculate fileSize
     size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
@@ -92,54 +97,6 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
     BinaryFileWriter binaryFileWriter;
     binaryFileWriter.write(zCodeFileName, zCode);
     log("ZCode File '" + zCodeFileName + "' generated");
-}
-
-std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::generateDynamicMemory(ZCodeHeader &header, size_t offset) {
-    vector<bitset<8>> akk = vector<bitset<8>>();
-    //abbervation strings
-    Utils::fillWithBytes(akk, 0, 2);
-    //abbervation table
-    header.locOfAbbrTable = (uint16_t) (offset + akk.size());
-    Utils::fillWithBytes(akk, 0, 0xc0);
-    //property defaults
-    Utils::fillWithBytes(akk, 0, 0x3e);
-    //objects
-    header.locOfObjTable = (uint16_t) (offset + akk.size());
-    Utils::fillWithBytes(akk, 0, 0x5a3);
-    //globalVariables
-    header.locOfGlobVarTable = (uint16_t) (offset + akk.size());
-    vector<bitset<8>> vars = printGlobalTable((int) (offset + akk.size()));
-    akk.insert(akk.end(), vars.begin(), vars.end());
-    return akk;
-}
-
-std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::generateStaticMemory(ZCodeHeader &header, size_t offset) {
-    vector<bitset<8>> akk = vector<bitset<8>>();
-    //grammar table
-    Utils::fillWithBytes(akk, 0, 0x55f);
-    //actions table
-    Utils::fillWithBytes(akk, 0, 0xac);
-    //preactions table
-    Utils::fillWithBytes(akk, 0, 0xae);
-    //adjectives table
-    Utils::fillWithBytes(akk, 0, 0x4c);
-    //dictionary
-    Utils::fillWithBytes(akk, 0, 0x7bd);
-    return akk;
-}
-
-std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::generateHighMemory(ZCodeHeader &header, size_t offset, std::istream& instructionsInput) {
-    vector<bitset<8>> highMemoryZcode = vector<bitset<8>>();
-
-    // this part creates call to first routine
-    RoutineGenerator callToMainroutineGenerator = RoutineGenerator(offset);
-    vector<bitset<8>> routine = callToMainroutineGenerator.getRoutine();
-    Utils::append(highMemoryZcode, routine);
-
-    AssemblyParser assemblyParser;
-    assemblyParser.readAssembly(instructionsInput, highMemoryZcode, offset);
-
-    return highMemoryZcode;
 }
 
 std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::addFileSizeToHeader(std::vector<std::bitset<8>> zCode,

@@ -9,9 +9,7 @@ bool ZCodeCallAdress::revalidate() {
     return false;
 }
 
-std::vector<std::bitset<8>>& ZCodeCallAdress::print() {
-    uint16_t  pkgAddr = routine.offset/8;
-    std::vector<std::bitset<8>> instructions;
-    Utils::addTwoBytes(pkgAddr, instructions);
-    return instructions;
+void ZCodeCallAdress::print(std::vector<std::bitset<8>> &code) {
+    uint16_t  pkgAddr = routine->offset/8;
+    Utils::addTwoBytes(pkgAddr,code);
 }

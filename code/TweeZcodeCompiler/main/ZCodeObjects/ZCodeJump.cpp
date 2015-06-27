@@ -8,8 +8,8 @@
 using std::vector;
 using std::bitset;
 
-std::vector<std::bitset<8>>& ZCodeJump::print() {
-    return this->adress;
+void ZCodeJump::print(std::vector<std::bitset<8>> &code) {
+    Utils::append(code,this->adress);
 }
 
 bool ZCodeJump::revalidate() {

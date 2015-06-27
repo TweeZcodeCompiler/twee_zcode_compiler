@@ -91,13 +91,11 @@ private:
     void executeRETCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
     std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction);
-
-    std::unique_ptr<ZParam> createZParam(const std::string &paramString);
-
-    void performRoutineDirectiveCommand(std::vector<std::string> lineComps,
-                                        ZCodeContainer &highMemoryZcode);
-
+    std::unique_ptr<ZParam> createZParam(const std::string& paramString);
+    
+    void performRoutineDirectiveCommand( std::vector<std::string> lineComps, ZCodeContainer *highMemory);
     void performRoutineGlobalVarCommand(std::string line);
+
 
     std::vector<std::pair<std::string, unsigned>> registeredJumpsAtLines;
     std::vector<std::string> registeredLabels;
@@ -108,14 +106,12 @@ private:
     std::unique_ptr<RoutineGenerator> currentGenerator;
 
     void registerJump(const std::vector<std::unique_ptr<ZParam>> &params);
-
-    void finishRoutine(ZCodeContainer &highMemoryZcode);
-
+    void finishRoutine(ZCodeContainer *highMemoryZcode);
     void addGlobal(std::string globalName);
 
     std::unique_ptr<uint8_t> getAddressForId(const std::string &id);
-
-    void readAssembly(std::istream& input, ZCodeContainer &dynamicMemory, ZCodeContainer &staticMemory, ZCodeContainer &highMemory);
+public:
+    void readAssembly(std::istream& input, ZCodeContainer *dynamicMemory, ZCodeContainer *staticMemory, ZCodeContainer *highMemory);
 
 };
 

@@ -10,13 +10,10 @@
 #include "../Utils.h"
 
 class ZCodeMemorySpace : public ZCodeObject{
-private:
-    std::vector<std::bitset<8>> space;
 public:
-    std::vector<std::bitset<8>> &print();
+    void print(std::vector<std::bitset<8>> &code);
     bool revalidate();
     ZCodeMemorySpace(int space){
-        Utils::fillWithBytes(this->space,0,space);
         this->size = space;
     }
 

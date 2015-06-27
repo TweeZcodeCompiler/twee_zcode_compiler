@@ -13,21 +13,27 @@
 
 class ZCodeObject {
 protected:
-    std::unique_ptr<ZCodeObject> parrent;
-    std::vector<ZCodeObject> children = std::vector<ZCodeObject>();
-    size_t  offset = 0;
-    size_t  size = 0;
+    ZCodeObject *parrent = NULL;
+    std::vector<ZCodeObject*> children;
+
 
 public:
-    virtual std::vector<std::bitset<8>> &print();
+    size_t  offset;
+    size_t  size;
+    virtual void print(std::vector<std::bitset<8>> &code) {};
     //returns true if needs to be revalidate again
-    virtual bool revalidate();
+    virtual bool revalidate(){};
 
-    void add(ZCodeObject &Child);
+    void add(ZCodeObject *Child);
     void setSize(size_t size);
     size_t getSize();
     void setOffset(size_t offset);
     size_t getOffset();
+    ZCodeObject() : offset(size_t(0)), size(size_t(0)) {
+    }
+    ~ZCodeObject(){
+
+    }
 };
 
 

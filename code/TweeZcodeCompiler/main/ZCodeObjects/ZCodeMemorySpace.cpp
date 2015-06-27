@@ -4,10 +4,10 @@
 
 #include "ZCodeMemorySpace.h"
 
-std::vector<std::bitset<8>>& ZCodeMemorySpace::print() {
-    return this->space;
+void ZCodeMemorySpace::print(std::vector<std::bitset<8>> &code) {
+    Utils::fillWithBytes(code,0,this->getSize());
 }
 
 bool ZCodeMemorySpace::revalidate() {
-    false;
+    return false;
 }
