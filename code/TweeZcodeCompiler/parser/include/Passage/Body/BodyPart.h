@@ -8,10 +8,14 @@
 #include <string>
 
 class BodyPart {
+
 public:
-    virtual ~BodyPart() {};
+
+    virtual ~BodyPart() { };
+
     virtual std::string to_string() = 0;
-    virtual BodyPart* clone() const = 0;
+
+    virtual BodyPart *clone() const = 0;
 };
 
 #endif //BODYPART_H

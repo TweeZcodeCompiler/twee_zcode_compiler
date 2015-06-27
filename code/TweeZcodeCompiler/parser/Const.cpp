@@ -5,13 +5,14 @@
 #include "include/Passage/Body/Expressions/Const.h"
 
 template<class T>
-Const::Const(const T value) : value(value) { }
+Const<T>::Const(const T value) : value(value) { }
 
 template<class T>
-const T Const::getValue() const {
+const T Const<T>::getValue() const {
     return this->value;
 }
 
-std::string Const::to_string() const {
+template<class T>
+std::string Const<T>::to_string() const {
     return "Const: " + this->getValue();
 }

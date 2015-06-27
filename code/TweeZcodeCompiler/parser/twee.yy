@@ -88,6 +88,44 @@
 
 	<token> MACRO_OPEN
 	<token> MACRO_CLOSE
+	<token> MACRO_IF
+	<token> MACRO_ELSE
+	<token> MACRO_ENDIF
+	<token> MACRO_PRINT
+	<token> MACRO_DISPLAY
+
+	<token> FUNC_PREVIOUS
+	<token> FUNC_TURNS
+	<token> FUNC_VISITED
+	<token> FUNC_RANDOM
+
+	<token> EXPR_OPEN
+	<token> EXPR_CLOSE
+	<token> EXPR_STR_LIMITER
+
+	<token> EXPR_ASS
+
+	<token> EXPR_ADD
+	<token> EXPR_MUL
+	<token> EXPR_SUB
+	<token> EXPR_DIV
+	<token> EXPR_MOD
+
+	<token> EXPR_GT
+	<token> EXPR_GTE
+	<token> EXPR_LT
+	<token> EXPR_LTE
+	<token> EXPR_NEQ
+	<token> EXPR_EQ
+	<token> EXPR_AND
+	<token> EXPR_OR
+	<token> EXPR_NOT
+
+	<string> EXPR_VAR
+    <string> EXPR_STR
+    <string> EXPR_INT
+
+
 
 	<string> FORMATTING_OPEN
 	<string> FORMATTING_CLOSE
@@ -263,14 +301,24 @@ link :
   ;
 
 macro :
-    MACRO_OPEN TEXT_TOKEN MACRO_CLOSE
+    MACRO_OPEN TEXT_TOKEN expression MACRO_CLOSE
     {
     //TODO: data model: implement macro
     LOG_DEBUG << "macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE";
     LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
     $$ = new Text(*$2);
     }
+    |MACRO_OPEN TEXT_TOKEN MACRO_CLOSE
+ [16:35:29] Georg: ich merge mal ein paar sachen von dir in meinen branch und aender die etwas und tue das ins If&ExpressionBranch, dass man daran arbeiten kann
+[16:37:49] Georg: eine sache die unnoetig ist:
+ein IF-token braucht kein string token zu sein
+[19:24:36] Georg: sagmal, hast du schon regeln im parser?
+[19:24:50] Georg: fuer die expressions, ich brauch die, wenn du die schon hast
+   |MACRO_OPEN EXPR_VAR EXPR_ASS expression MACRO_CLOSE
   ;
+
+expression :
+    expression EXPR_ADD expression
 
 formatted:
     FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE

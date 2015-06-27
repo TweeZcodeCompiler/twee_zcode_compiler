@@ -11,18 +11,15 @@
 #include <string>
 #include <memory>
 
-class Marco : public BodyPart {
-
-protected:
-    std::unique_ptr<Expression> expression;
+class Macro : public BodyPart {
 
 public:
 
     virtual const std::unique_ptr<Expression> &getExpression() const = 0;
 
-    virtual Macro *clone() const = 0;
+    virtual std::string to_string() const = 0;
 
-    std::string to_string() const;
+    virtual Macro *clone() const = 0;
 
 };
 
