@@ -47,7 +47,12 @@ private:
     static const std::string DIV_COMMAND;
     static const std::string AND_COMMAND;
     static const std::string OR_COMMAND;
-
+    static const std::string RET_TRUE_COMMAND;
+    static const std::string RET_FALSE_COMMAND;
+    static const std::string PRINT_RET_COMMAND;
+    static const std::string RESTART_COMMAND;
+    static const std::string RET_POPPED_COMMAND;
+    static const std::string VERIFY_COMMAND;
 
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
 

@@ -158,6 +158,18 @@ public:
 
     void doOR(std::vector<std::unique_ptr<ZParam>> params);
 
+    void returnTrue();
+
+    void returnFalse();
+
+    void retPopped();
+
+    void printRet(std::vector<std::unique_ptr<ZParam>> params);
+
+    void restart();
+
+    void verify(std::vector<std::unique_ptr<ZParam>> params);
+
 
     /*
      *      Enumerations
@@ -206,7 +218,30 @@ public:
         // Opcode : 2OP:9 9 and a b -> (result)
                 AND = 9,
         // Opcode : 2OP:8 8 or a b -> (result)
-                OR = 8
+                OR = 8,
+        // Opcode: return true
+                RETURN_TRUE = 176,
+        // Opcode: return false
+                RETURN_FALSE = 177,
+        // Opcode: Print the quoted (literal) Z-encoded string, then print a new-line and then return true (i.e., 1).
+                PRINT_RET = 179,
+        // Opcode: Restart game
+                RESTART = 183,
+        // Opcode: Pops top of stack and returns that. (This is equivalent to ret sp, but is one byte cheaper.)
+                RET_POPPED = 184,
+        // Opcode: Verification
+                VERIFY = 189
+
+
+
+
+        /*
+         * Not implemented:
+         *
+         * Zero operand Opcodes:
+         * nop, save ?(label), save -> (result), restore ?(label), restore -> (result), pop,
+         * catch -> (result), show_status, piracy ?(label)
+         */
     };
 
     enum BranchOffset {
