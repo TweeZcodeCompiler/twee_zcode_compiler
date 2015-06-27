@@ -18,6 +18,7 @@
     #include "include/Passage/Passage.h"
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Link.h"
+    #include "include/Passage/Body/Variable.h"
     #include "include/Passage/Body/FormattedText.h"
     #include <plog/Log.h>
     #include <plog/Appenders/ConsoleAppender.h>
@@ -67,6 +68,7 @@
 	BodyPart *bodypart;
 	Text *text;
 	Link *link;
+	Variable *variable;
 	FormattedText *formattedtext;
 
 
@@ -96,6 +98,7 @@
     <token> FORMATTING_COMMENT_CLOSE
     <token> FORMATTING_ERROR_STYLING
     <string> TEXT_TOKEN
+    <string> VARIABLE_TOKEN
 
 %type <tweefile> TweeDocument
 
@@ -111,6 +114,7 @@
 %type <bodypart> bodypart
 %type <text> text
 %type <link> link
+%type <variable> variable
 %type <formattedtext> formatted
 %type <text> macro
 
@@ -224,6 +228,12 @@ bodypart :
     LOG_DEBUG << "pass text:type(text) to bodypart:type(BodyPart)";
     $$ = $1;
     }
+    |text
+    {
+    LOG_DEBUG << "bodypart -> variable";
+    LOG_DEBUG << "pass variable:type(variable) to bodypart:type(BodyPart)";
+    $$ = $1;
+    }
     |link
     {
     LOG_DEBUG << "bodypart -> link";
@@ -252,6 +262,16 @@ text :
     LOG_DEBUG << "text -> TEXT_TOKEN";
     LOG_DEBUG << "create top:text:type(Text)";
     $$ = new Text(*$1);
+    delete $1;
+    }
+  ;
+
+variable:
+    VARIABLE_TOKEN
+    {
+    LOG_DEBUG << "variable -> VARIABLE_TOKEN";
+    LOG_DEBUG << "create top:variable:type(Variable)";
+    $$ = new Variable(*$1);
     delete $1;
     }
   ;
