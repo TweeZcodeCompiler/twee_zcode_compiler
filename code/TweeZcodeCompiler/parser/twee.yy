@@ -117,6 +117,7 @@
 	<token> EXPR_LTE
 	<token> EXPR_NEQ
 	<token> EXPR_EQ
+
 	<token> EXPR_AND
 	<token> EXPR_OR
 	<token> EXPR_NOT
@@ -137,14 +138,15 @@
 
 // association definitions, grouped by decreasing precedence in java script
 
-%right UMINUS UPLUS
-%left EXPR_MUL EXPR_DIV EXPR_MOD
-%left EXPR_ADD EXPR_SUB
+%right EXPR_ASS
 %left EXPR_GTE EXPR_GT EXPR_LTE EXPR_LT
 %left EXPR_EQ EXPR NEQ
 %left EXPR_AND
 %left EXPR_OR
-%right EXPR_ASS
+%left EXPR_ADD EXPR_SUB
+%left EXPR_MUL EXPR_DIV EXPR_MOD
+%right UMINUS UPLUS EXPR_NOT
+
 
 %type <tweefile> TweeDocument
 
@@ -320,44 +322,147 @@ macro :
     $$ = new Text(*$2);
     }
     |MACRO_OPEN TEXT_TOKEN MACRO_CLOSE
-    |MACRO_OPEN EXPR_VAR EXPR_ASS expr MACRO_CLOSE
+    {
+    LOG_DEBUG << "macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Display(*$2);
+    }
+    |MACRO_OPEN expr MACRO_CLOSE
+    {
+    LOG_DEBUG << "macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Print(*$2);
+    }
   ;
 
 expr :
     EXPR_OPEN expr EXPR_CLOSE
-    {}
-    |EXPR_SUB expr %UMINUS
-    {}
-    |EXPR_ADD expr %UPLUS
-    {}
+    {
+    LOG_DEBUG << "expr -> EXPR_OPEN expr EXPR_CLOSE";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = $2;
+    }
+    |EXPR_NOT expr
+    {
+    LOG_DEBUG << "expr -> EXPR_NOT expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(LogicalOperation.NOT,null,*$2);
+    }
+    |EXPR_SUB expr %prec UMINUS
+    {
+    LOG_DEBUG << "expr -> EXPR_SUB expr %prec UMINUS";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(ArithmeticOperation.SUB,null,*$2);
+    }
+    |EXPR_ADD expr %prec UPLUS
+    {
+    LOG_DEBUG << "expr -> EXPR_ADD expr %prec UPLUS";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(ArithmeticOperation.ADD,null,*$2);
+    }
     |expr EXPR_MUL expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_MUL expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(ArithmeticOperation.MUL,*$1,*$3);
+    }
     |expr EXPR_DIV expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_DIV expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(ArithmeticOperation.DIV,*$1,*$3);
+    }
     |expr EXPR_MOD expr
-    {}
-    |epxr EXPR_ADD expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_MOD expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(ArithmeticOperation.MOD,*$1,*$3);
+    }
+    |expr EXPR_ADD expr
+    {
+    LOG_DEBUG << "expr -> expr EXPR_ADD expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(ArithmeticOperation.ADD,*$1,*$3);
+    }
     |expr EXPR_SUB expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_SUB expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(ArithmeticOperation.SUB,*$1,*$3);
+    }
     |expr EXPR_GTE expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_GTE expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(RelationOperation.GTE,*$1,*$3);
+    }
     |expr EXPR_GT expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_GT expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(RelationOperation.GT,*$1,*$3);
+    }
     |expr EXPR_LTE expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_LTE expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(RelationOperation.LTE,*$1,*$3);
+    }
     |expr EXPR_LT expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_LT expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(RelationOperation.LT,*$1,*$3);
+    }
     |expr EXPR_EQ expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_EQ expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(RelationOperation.IS,*$1,*$3);
+    }
     |expr EXPR_NEQ expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_NEQ expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(RelationOperation.NEQ,*$1,*$3);
+    }
     |expr EXPR_AND expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_AND expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(LogicalOperation.AND,*$1,*$3);
+    }
     |expr EXPR_OR expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_OR expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(LogicalOperation.OR,*$1,*$3);
+    }
     |expr EXPR_ASS expr
-    {}
+    {
+    LOG_DEBUG << "expr -> expr EXPR_ASS expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(AssignmentOperation.TO,*$1,*$3);
+    }
+    |EXPR_VAR
+    {
+    LOG_DEBUG << "expr -> EXPR_VAR";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Print(*$2);
+    }
+    |EXPR_INT
+    {
+    LOG_DEBUG << "expr -> EXPR_INT";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Const<int>(*$1);
+    }
+    |EXPR_STR
+    {
+    LOG_DEBUG << "expr -> EXPR_STR";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Const<std::string>(*$1);
+    }
+  ;
 
 formatted:
     FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
