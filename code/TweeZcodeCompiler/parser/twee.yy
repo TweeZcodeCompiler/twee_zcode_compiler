@@ -19,15 +19,6 @@
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Link.h"
     #include "include/Passage/Body/FormattedText.h"
-    #include "include/Passage/Body/Expressions/Const.h"
-    #include "include/Passage/Body/Expressions/Function.h"
-    #include "include/Passage/Body/Expressions/Operator"
-    #include "include/Passage/Body/Expressions/Variable.h"
-    #include "include/Passage/Body/Macros/Display.h"
-    #include "include/Passage/Body/Macros/If.h"
-    #include "include/Passage/Body/Macros/Else.h"
-    #include "include/Passage/Body/Macros/EndIf.h"
-    #include "include/Passage/Body/Macros/Print.h"
 
     #include <plog/Log.h>
     #include <plog/Appenders/ConsoleAppender.h>
@@ -122,7 +113,7 @@
 	<token> EXPR_CLOSE
 	<token> EXPR_STR_LIMITER
 
-	<token> EXPR_ASS
+	<token> EXPR_ASSGN
 
 	<token> EXPR_ADD
 	<token> EXPR_MUL
@@ -136,6 +127,7 @@
 	<token> EXPR_LTE
 	<token> EXPR_NEQ
 	<token> EXPR_EQ
+	<token> EXPR_IS
 
 	<token> EXPR_AND
 	<token> EXPR_OR
@@ -144,44 +136,6 @@
 	<string> EXPR_VAR
     <string> EXPR_STR
     <string> EXPR_INT
-
-
-
-	<token> MACRO_IF
-	<token> MACRO_ELSE
-	<token> MACRO_ENDIF
-
-	<token> MACRO_PRINT
-	<token> MACRO_DISPLAY
-	<token> EXPR_RANDOM
-	<token> EXPR_VISITED
-	<token> EXPR_PREVIOUS
-	<token> EXPR_TURNS
-
-	<token> EXPR_OPEN
-	<token> EXPR_CLOSE
-
-	<token> EXPR_ADD
-	<token> EXPR_SUB
-	<token> EXPR_MUL
-	<token> EXPR_DIV
-	<token> EXPR_MOD
-
-	<token> EXPR_GT
-	<token> EXPR_GTE
-	<token> EXPR_LT
-	<token> EXPR_LTE
-
-	<token> EXPR_IS
-	<token> EXPR_EQ
-	<token> EXPR_NEQ
-
-	<token> EXPR_NOT
-	<token> EXPR_AND
-	<token> EXPR_OR
-
-	<token> EXPR_TO
-	<token> EXPR_ASSGN
 
 	<string> INT
 
@@ -381,7 +335,7 @@ link :
   ;
 
 macro :
-    MACRO_OPEN TEXT_TOKEN expr MACRO_CLOSE
+    MACRO_OPEN TEXT_TOKEN MACRO_CLOSE
     {
     //TODO: data model: implement macro
     LOG_DEBUG << "Parser: macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE: "<< "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
@@ -397,149 +351,117 @@ macro :
     }
     |MACRO_OPEN expression MACRO_CLOSE
     {
-    $$ = $2;
-    delete $2;
-    }
-    |MACRO_OPEN TEXT_TOKEN MACRO_CLOSE
-    {
     LOG_DEBUG << "macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE";
     LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Display(*$2);
-    }
-    |MACRO_OPEN expr MACRO_CLOSE
-    {
-    LOG_DEBUG << "macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Print(*$2);
+
     }
   ;
 
-expr :
-    EXPR_OPEN expr EXPR_CLOSE
+expression :
+    EXPR_OPEN expression EXPR_CLOSE
     {
-    LOG_DEBUG << "expr -> EXPR_OPEN expr EXPR_CLOSE";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = $2;
+    LOG_DEBUG << "expression -> EXPR_OPEN expression EXPR_CLOSE: ";
+
     }
-    |EXPR_NOT expr
+    |EXPR_NOT expression
     {
-    LOG_DEBUG << "expr -> EXPR_NOT expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(LogicalOperation.NOT,null,*$2);
+    LOG_DEBUG << "expression -> EXPR_NOT expression: ";
+
     }
-    |EXPR_SUB expr %prec UMINUS
+    |EXPR_SUB expression %prec UMINUS
     {
-    LOG_DEBUG << "expr -> EXPR_SUB expr %prec UMINUS";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(ArithmeticOperation.SUB,null,*$2);
+    LOG_DEBUG << "expression -> EXPR_SUB expression %prec UMINUS: ";
+
     }
-    |EXPR_ADD expr %prec UPLUS
+    |EXPR_ADD expression %prec UPLUS
     {
-    LOG_DEBUG << "expr -> EXPR_ADD expr %prec UPLUS";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(ArithmeticOperation.ADD,null,*$2);
+    LOG_DEBUG << "expression -> EXPR_ADD expression %prec UPLUS: ";
+
     }
-    |expr EXPR_MUL expr
+    |expression EXPR_MUL expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_MUL expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(ArithmeticOperation.MUL,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_MUL expression: ";
+
     }
-    |expr EXPR_DIV expr
+    |expression EXPR_DIV expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_DIV expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(ArithmeticOperation.DIV,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_DIV expression: ";
+
     }
-    |expr EXPR_MOD expr
+    |expression EXPR_MOD expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_MOD expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(ArithmeticOperation.MOD,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_MOD expression: ";
+
     }
-    |expr EXPR_ADD expr
+    |expression EXPR_ADD expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_ADD expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(ArithmeticOperation.ADD,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_ADD expression: ";
+
     }
-    |expr EXPR_SUB expr
+    |expression EXPR_SUB expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_SUB expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(ArithmeticOperation.SUB,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_SUB expression: ";
+
     }
-    |expr EXPR_GTE expr
+    |expression EXPR_GTE expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_GTE expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(RelationOperation.GTE,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_GTE expression: ";
+
     }
-    |expr EXPR_GT expr
+    |expression EXPR_GT expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_GT expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(RelationOperation.GT,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_GT expression: ";
+
     }
-    |expr EXPR_LTE expr
+    |expression EXPR_LTE expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_LTE expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(RelationOperation.LTE,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_LTE expression: ";
+
     }
-    |expr EXPR_LT expr
+    |expression EXPR_LT expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_LT expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(RelationOperation.LT,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_LT expression: ";
+
     }
-    |expr EXPR_EQ expr
+    |expression EXPR_EQ expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_EQ expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(RelationOperation.IS,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_EQ expression: ";
+
     }
-    |expr EXPR_NEQ expr
+    |expression EXPR_NEQ expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_NEQ expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(RelationOperation.NEQ,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_NEQ expression: ";
+
     }
-    |expr EXPR_AND expr
+    |expression EXPR_AND expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_AND expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(LogicalOperation.AND,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_AND expression: ";
+
     }
-    |expr EXPR_OR expr
+    |expression EXPR_OR expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_OR expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(LogicalOperation.OR,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_OR expression: ";
+
     }
-    |expr EXPR_ASS expr
+    |expression EXPR_ASS expression
     {
-    LOG_DEBUG << "expr -> expr EXPR_ASS expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Operator(AssignmentOperation.TO,*$1,*$3);
+    LOG_DEBUG << "expression -> expression EXPR_ASS expression: ";
+
     }
     |EXPR_VAR
     {
-    LOG_DEBUG << "expr -> EXPR_VAR";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Print(*$2);
+    LOG_DEBUG << "expression -> EXPR_VAR: ";
+
     }
     |EXPR_INT
     {
-    LOG_DEBUG << "expr -> EXPR_INT";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Const<int>(*$1);
+    LOG_DEBUG << "expression -> EXPR_INT: ";
+
     }
     |EXPR_STR
     {
-    LOG_DEBUG << "expr -> EXPR_STR";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Const<std::string>(*$1);
+    LOG_DEBUG << "expression -> EXPR_STR: ";
+
     }
   ;
 
