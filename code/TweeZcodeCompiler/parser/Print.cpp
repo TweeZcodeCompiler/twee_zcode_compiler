@@ -1,10 +1,12 @@
 //
-// Created by iguana on 26.06.15.
+// Created by lars on 26.06.15.
 //
 
 #include "include/Passage/Body/Macros/Print.h"
 
-Print::Print(std::unique_ptr<::Print::Expression> expression) : expression(expression) { }
+Print::Print(std::unique_ptr<Expression> expression) {
+    this->expression = expression;
+}
 
 const std::unique_ptr<Expression> &Print::getExpression() const {
     return this->expression;

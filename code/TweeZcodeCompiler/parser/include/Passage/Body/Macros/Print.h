@@ -11,7 +11,10 @@
 #include <string>
 #include <memory>
 
-class Print : public Marco {
+class Print : public Macro {
+
+private:
+    std::unique_ptr<Expression> expression;
 
 public:
 
@@ -26,5 +29,6 @@ public:
     }
 
 };
+
 
 #endif //PRINT_H

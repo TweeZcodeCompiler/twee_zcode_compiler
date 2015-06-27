@@ -4,12 +4,14 @@
 
 #include "include/Passage/Body/Macros/Display.h"
 
-Display::Display(std::unique_ptr<::Display::Expression> expression) : expression(expression) { }
+Display::Display(std::unique_ptr<Expression> expression) {
+    this->expression = expression;
+}
 
 const std::unique_ptr<Expression> &Display::getExpression() const {
     return this->expression;
 }
 
 std::string Display::to_string() const {
-    return "Display: " + this->getExpression();
+    return "Display: " + this->getExpression()->to_string();
 }
