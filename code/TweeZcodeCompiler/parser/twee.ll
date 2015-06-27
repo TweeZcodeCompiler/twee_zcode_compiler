@@ -58,7 +58,7 @@ TAGS_CLOSE              \]
 TAG                     [a-zA-Z0-9\-_="'!+\\/?.,]+
 
  /*BODY_TEXT_CHAR          [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
-BODY_TEXT               [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
+BODY_TEXT               [a-zA-Z0-9\-'!+\?.,\t ]+
     /*these chars are used by FORMATTING tokens:*/
     /* / " _ = ~ ^ { % */
 
@@ -94,11 +94,39 @@ MACRO_ENDIF             endif
 
 MACRO_PRINT             print
 MACRO_DISPLAY           display
-MACRO_RANDOM            random
 
-MACRO_VISITED           visited
-MACRO_PREVIOUS          previous
-MACRO_TURNS             turns
+    /*Expression Tokens*/
+EXPR_VAR               \$[_a-zA-Z][_a-zA-Z0-9]*
+EXPR_RANDOM            random
+
+EXPR_VISITED           visited
+EXPR_PREVIOUS          previous
+EXPR_TURNS             turns
+
+EXPR_OPEN              \(
+EXPR_CLOSE             \)
+
+    /*Arithmetic Tokens*/
+EXPR_ADD                \+
+EXPR_MUL                \*
+EXPR_SUB                -
+EXPR_DIV                \/
+EXPR_MOD                %
+
+    /*Logical Tokens*/
+EXPR_GT                 >
+EXPR_GTE                >=
+EXPR_LT                 <
+EXPR_LTE                <=
+EXPR_NEQ                neq
+EXPR_IS                 is
+EXPR_EQ                 eq
+EXPR_AND                and
+EXPR_OR                 or
+
+    /*Assignment Token*/
+EXPR_TO                 to
+EXPR_ASS                =
 
 
 
@@ -484,6 +512,301 @@ MACRO_TURNS             turns
     /*From: Body */
     /*To:   Body */
 
+    /* macro if */
+<BodyMacro>{MACRO_IF}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the IF Token
+                                LOG_DEBUG << "return the IF Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::IF_TOKEN;
+                                }
+<BodyMacro>{MACRO_ELSE}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the ELSE Token
+                                LOG_DEBUG << "return the ELSE Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::ELSE_TOKEN;
+                                }
+<BodyMacro>{MACRO_ENDIF}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the ENDIF Token
+                                LOG_DEBUG << "return the ENDIF Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::ENDIF_TOKEN;
+                                }
+
+    /* macro print */
+<BodyMacro>{MACRO_PRINT}        {
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the PRINT Token
+                                LOG_DEBUG << "return the PRINT Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::PRINT_TOKEN;
+                                }
+    /* macro display */
+<BodyMacro>{MACRO_DISPLAY}         {
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the TEXT Token
+                                LOG_DEBUG << "return the DISPLAY Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::DISPLAY_TOKEN;
+                                }
+    /* expression variable */
+<BodyMacro>{EXPR_VAR}         {
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the VAR Token
+                                LOG_DEBUG << "return the VAR Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::VAR_TOKEN;
+                                }
+    /* expression functions */
+<BodyMacro>{EXPR_RANDOM}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the RANDOM Token
+                                LOG_DEBUG << "return the RANDOM Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::RANDOM_TOKEN;
+                                }
+
+<BodyMacro>{EXPR_VISITED}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the VISITED Token
+                                LOG_DEBUG << "return the VISITED Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::VISITED_TOKEN;
+                                }
+<BodyMacro>{EXPR_PREVIOUS}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the PREVIOUS Token
+                                LOG_DEBUG << "return the PREVIOUS Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::PREVIOUS_TOKEN;
+                                }
+<BodyMacro>{EXPR_TURNS}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the TURNS Token
+                                LOG_DEBUG << "return the TURNS Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::TURNS_TOKEN;
+                                }
+
+<BodyMacro>{EXPR_OPEN}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the OPEN Token
+                                LOG_DEBUG << "return the OPEN Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::OPEN_TOKEN;
+                                }
+<BodyMacro>{EXPR_CLOSE}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the CLOSE Token
+                                LOG_DEBUG << "return the CLOSE Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::CLOSE_TOKEN;
+                                }
+
+    /*Arithmetic Tokens*/
+<BodyMacro>{EXPR_ADD}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the ADD Token
+                                LOG_DEBUG << "return the ADD Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::ADD_TOKEN;
+                                }
+<BodyMacro>{EXPR_MUL}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the MUL Token
+                                LOG_DEBUG << "return the MUL Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::MUL_TOKEN;
+                                }
+<BodyMacro>{EXPR_SUB}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the SUB Token
+                                LOG_DEBUG << "return the SUB Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::SUB_TOKEN;
+                                }
+<BodyMacro>{EXPR_DIV}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the DIV Token
+                                LOG_DEBUG << "return the DIV Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::DIV_TOKEN;
+                                }
+<BodyMacro>{EXPR_MOD}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the MOD Token
+                                LOG_DEBUG << "return the MOD Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::MOD_TOKEN;
+                                }
+
+    /*Logical Tokens*/
+<BodyMacro>{EXPR_GT}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the GT Token
+                                LOG_DEBUG << "return the GT Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::GT_TOKEN;
+                                }
+<BodyMacro>{EXPR_GTE}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the GTE Token
+                                LOG_DEBUG << "return the GTE Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::GTE_TOKEN;
+                                }
+<BodyMacro>{EXPR_LT}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the LT Token
+                                LOG_DEBUG << "return the LT Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::LT_TOKEN;
+                                }
+<BodyMacro>{EXPR_LTE}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the LTE Token
+                                LOG_DEBUG << "return the LTE Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::LTE_TOKEN;
+                                }
+<BodyMacro>{EXPR_NEQ}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the NEQ Token
+                                LOG_DEBUG << "return the NEQ Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::NEQ_TOKEN;
+                                }
+<BodyMacro>{EXPR_IS}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the IS Token
+                                LOG_DEBUG << "return the IS Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::IS_TOKEN;
+                                }
+<BodyMacro>{EXPR_EQ}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the EQ Token
+                                LOG_DEBUG << "return the EQ Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::EQ_TOKEN;
+                                }
+<BodyMacro>{EXPR_AND}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the AND Token
+                                LOG_DEBUG << "return the AND Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::AND_TOKEN;
+                                }
+<BodyMacro>{EXPR_OR}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the OR Token
+                                LOG_DEBUG << "return the OR Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::OR_TOKEN;
+                                }
+
+    /*Assignment Token*/
+<BodyMacro>{EXPR_TO}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the TO Token
+                                LOG_DEBUG << "return the TO Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::TO_TOKEN;
+                                }
+<BodyMacro>{EXPR_ASS}		{
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the ASS Token
+                                LOG_DEBUG << "return the ASS Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::ASS_TOKEN;
+                                }
+
     /* macro text */
 <BodyMacro>{MACRO_TEXT}         {
                                 //stay in condition BodyMacro, look for next token
@@ -497,7 +820,7 @@ MACRO_TURNS             turns
                                 }
 
     /* leave the macro */
-<BodyMacro>{MACRO_CLOSE}         {
+<BodyMacro>{MACRO_CLOSE}        {
                                 //enter condition Body
                                 LOG_DEBUG << "enter condition Body";
                                 BEGIN(Body);
@@ -507,7 +830,7 @@ MACRO_TURNS             turns
                                 }
 
     /* unexpected Token(s) */
-<BodyMacro>.                         {
+<BodyMacro>.                    {
                                 //TODO: lexer error in BodyMacro
                                 LOG_ERROR << "lexer error in condition BodyMacro";
                                 LOG_ERROR << "\t matched:";
