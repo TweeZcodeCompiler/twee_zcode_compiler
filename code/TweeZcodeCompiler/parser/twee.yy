@@ -135,6 +135,17 @@
     <token> FORMATTING_ERROR_STYLING
     <string> TEXT_TOKEN
 
+// association definitions, grouped by decreasing precedence in java script
+
+%right UMINUS UPLUS
+%left EXPR_MUL EXPR_DIV EXPR_MOD
+%left EXPR_ADD EXPR_SUB
+%left EXPR_GTE EXPR_GT EXPR_LT EXPR_LTE
+%left EXPR_EQ EXPR NEQ
+%left EXPR_AND
+%left EXPR_OR
+%right EXPR_ASS
+
 %type <tweefile> TweeDocument
 
 %type <passage> passage
@@ -309,12 +320,7 @@ macro :
     $$ = new Text(*$2);
     }
     |MACRO_OPEN TEXT_TOKEN MACRO_CLOSE
- [16:35:29] Georg: ich merge mal ein paar sachen von dir in meinen branch und aender die etwas und tue das ins If&ExpressionBranch, dass man daran arbeiten kann
-[16:37:49] Georg: eine sache die unnoetig ist:
-ein IF-token braucht kein string token zu sein
-[19:24:36] Georg: sagmal, hast du schon regeln im parser?
-[19:24:50] Georg: fuer die expressions, ich brauch die, wenn du die schon hast
-   |MACRO_OPEN EXPR_VAR EXPR_ASS expression MACRO_CLOSE
+    |MACRO_OPEN EXPR_VAR EXPR_ASS expression MACRO_CLOSE
   ;
 
 expression :
