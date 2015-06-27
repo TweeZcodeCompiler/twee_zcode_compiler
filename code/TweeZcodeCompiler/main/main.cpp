@@ -6,6 +6,7 @@
 #include "TweeZCodeCompilerPipeline.h"
 #include "UserSideFormatter.h"
 #include "TweeCompiler.h"
+#include "ArgsCommand.h"
 
 /*
  * How to use Logger:
@@ -32,28 +33,51 @@ void handler()
     print_stacktrace();
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
     // install exception handler
-    std::set_terminate(handler);
+   std::set_terminate(handler);
 
+
+    //get cmdargs
+    ArgsCommand argsCommand(argc,argv);
     // TODO: parse args properly (GNU getopt?)
-    if (argc < 2) return 1;
-    std::string inputFile = argv[argc - 1];
-    std::string outputFile = "hello_world.z8";
+    std::string inputFile = argsCommand.getSourceFileName();
+    std::string outputFile = argsCommand.getOutputFileName();
 
-    //static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Compiler_Log.txt");
+
+   static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Compiler_Log.txt");
     plog::ConsoleAppender<plog::UserSideFormatter> consoleAppender; // Console Appender for user friendly output
 
-    remove("Compiler_Log.txt"); //reset Compiler Log file
-    plog::init(plog::debug, "Compiler_Log.txt");
+    std::string logFile = "Compiler_Log.txt";
+    if(argsCommand.isDebugInConsole() == true)
+    {
+
+        plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
+        std::cout << "Console log";
+        plog::init(plog::debug,  &consoleAppender);
+    }
+    else
+    {
+        remove(logFile.c_str());
+        plog::init(plog::debug, logFile.c_str());
+    }
     plog::init(plog::error, &consoleAppender);
 
-    LOG_DEBUG  << "Compiler started";
 
+    LOG_DEBUG << "CMD-Args Summary";
+    LOG_DEBUG << "Console-DEBUG-Output: " << argsCommand.isDebugInConsole();
+    LOG_DEBUG << "Input-File:" << inputFile;
+    LOG_DEBUG << "Twee File:" << argsCommand.sourceFileIsTwee();
+    LOG_DEBUG << "Assembly File:" << argsCommand.sourceFileIsAssembly();
+    LOG_DEBUG << "Output-file:" << outputFile;
+
+    LOG_DEBUG  << "Compiler started";
+    LOG_ERROR << "test";
     TweeCompiler compiler;
     TweeZCodeCompilerPipeline pipeline;
+
     try {
-        pipeline.compile(inputFile, outputFile, compiler);
+        pipeline.compile(inputFile, outputFile, compiler, argsCommand.sourceFileIsTwee());
     } catch (const AssemblyException& assemblyException) {
         std::cerr << "Invalid assembly statement at line " <<
                 (assemblyException.lineNumber != 0 ? std::to_string(assemblyException.lineNumber) : "<unknown>") << ":" <<
@@ -96,7 +120,6 @@ int main(int argc, char *argv[]) {
         std::cerr << "Failed parsing Twee File";
     }
 
-    std::cout << inputFile << " compiled into --> " << outputFile << std::endl;
 
     return 0;
 }
