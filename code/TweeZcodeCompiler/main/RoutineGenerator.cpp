@@ -11,7 +11,7 @@
 using namespace std;
 
 map<string, size_t> RoutineGenerator::routines = map<string, size_t>();
-std::map<size_t, std::string> RoutineGenerator::callTo = std::map<size_t, std::string>();
+map<size_t, string> RoutineGenerator::callTo = map<size_t, string>();
 
 void checkParamCount(vector<unique_ptr<ZParam>> &params, unsigned int paramCount1, unsigned int paramCount2 = 0,
                      unsigned int paramCount3 = 0, unsigned int paramCount4 = 0) {
@@ -212,7 +212,7 @@ void RoutineGenerator::call1n(vector<unique_ptr<ZParam>> params) {
     LOG_DEBUG << "Call Routine at:::" << offsetOfRoutine + routineZcode.size() - 2;
 }
 
-std::bitset<8> RoutineGenerator::numberToBitset(unsigned int number) {
+bitset<8> RoutineGenerator::numberToBitset(unsigned int number) {
     return bitset<8>(number);
 }
 
@@ -353,7 +353,7 @@ void RoutineGenerator::jumpGreaterThan(vector<unique_ptr<ZParam>> params) {
     conditionalJump(JG, label, jumpIfTrue, *params.at(0), *params.at(1));
 }
 
-void RoutineGenerator::conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, ZParam &param1,
+void RoutineGenerator::conditionalJump(unsigned int opcode, string toLabel, bool jumpIfTrue, ZParam &param1,
                                        ZParam &param2) {
     vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(opcode, param1, param2);
     addBitset(instructions);
@@ -382,7 +382,7 @@ void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
     addBitset(instructions);
 }
 
-void RoutineGenerator::base2OpOperation(unsigned int opcode, std::vector<std::unique_ptr<ZParam>> &params) {
+void RoutineGenerator::base2OpOperation(unsigned int opcode, vector<unique_ptr<ZParam>> &params) {
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
 
@@ -391,27 +391,27 @@ void RoutineGenerator::base2OpOperation(unsigned int opcode, std::vector<std::un
     addBitset(instructions);
 }
 
-void RoutineGenerator::add(std::vector<std::unique_ptr<ZParam>> params) {
+void RoutineGenerator::add(vector<unique_ptr<ZParam>> params) {
     base2OpOperation(ADD, params);
 }
 
-void RoutineGenerator::sub(std::vector<std::unique_ptr<ZParam>> params) {
+void RoutineGenerator::sub(vector<unique_ptr<ZParam>> params) {
     base2OpOperation(SUB, params);
 }
 
-void RoutineGenerator::mul(std::vector<std::unique_ptr<ZParam>> params) {
+void RoutineGenerator::mul(vector<unique_ptr<ZParam>> params) {
     base2OpOperation(MUL, params);
 }
 
-void RoutineGenerator::div(std::vector<std::unique_ptr<ZParam>> params) {
+void RoutineGenerator::div(vector<unique_ptr<ZParam>> params) {
     base2OpOperation(DIV, params);
 }
 
-void RoutineGenerator::doAND(std::vector<std::unique_ptr<ZParam>> params) {
+void RoutineGenerator::doAND(vector<unique_ptr<ZParam>> params) {
     base2OpOperation(AND, params);
 }
 
-void RoutineGenerator::doOR(std::vector<std::unique_ptr<ZParam>> params) {
+void RoutineGenerator::doOR(vector<unique_ptr<ZParam>> params) {
     base2OpOperation(OR, params);
 }
 
@@ -500,7 +500,7 @@ void RoutineGenerator::retPopped() {
     addOneByte(numberToBitset(RET_POPPED));
 }
 
-void RoutineGenerator::resolveCallInstructions(std::vector<std::bitset<8>> &zCode) {
+void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
     typedef map<size_t, string>::iterator it_type;
     for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {
         size_t calledRoutineOffset = RoutineGenerator::routines[it->second];
@@ -533,6 +533,6 @@ void RoutineGenerator::addTwoBytes(int16_t number, int pos) {
     }
 }
 
-void RoutineGenerator::addOneByte(std::bitset<8> byte, int pos) {
+void RoutineGenerator::addOneByte(bitset<8> byte, int pos) {
     routineZcode[pos < 0 ? routineZcode.size() : (unsigned long) pos] = byte;
 }
