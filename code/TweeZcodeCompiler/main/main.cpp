@@ -45,13 +45,11 @@ int main(int argc, char **argv) {
 
 
    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Compiler_Log.txt");
-    plog::ConsoleAppender<plog::UserSideFormatter> consoleAppender; // Console Appender for user friendly output
+    plog::ConsoleAppender<plog::TxtFormatter> consoleAppender; // Console Appender for user friendly output
 
     std::string logFile = "Compiler_Log.txt";
     if(argsCommand.isDebugInConsole() == true)
     {
-
-        plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
         std::cout << "Console log";
         plog::init(plog::debug,  &consoleAppender);
     }
@@ -59,8 +57,8 @@ int main(int argc, char **argv) {
     {
         remove(logFile.c_str());
         plog::init(plog::debug, logFile.c_str());
+        plog::init(plog::error,  &consoleAppender);
     }
-    plog::init(plog::error, &consoleAppender);
 
 
     LOG_DEBUG << "CMD-Args Summary";
@@ -71,7 +69,7 @@ int main(int argc, char **argv) {
     LOG_DEBUG << "Output-file:" << outputFile;
 
     LOG_DEBUG  << "Compiler started";
-    LOG_ERROR << "test";
+
      TweeCompiler compiler;
      TweeZCodeCompilerPipeline pipeline;
      pipeline.compile(inputFile, outputFile, compiler,argsCommand.sourceFileIsTwee());

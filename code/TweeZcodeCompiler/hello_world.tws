@@ -1,44 +1,13 @@
-::start
-Welcome Adventurer!
+:: Start
+going to set var to 1
+<<$var = 1>>
+have set var to 1
+positive test: going to see if var is 1 (var is 1)  <<if $var is 1>> 
+inside var is 1 <<endif>> 
+did var is 1
 
-Welcome //to// the [[land of the iguanas]] - a place full of myths and adventure!
-
-Let's not waste any time and get going! [[start|land of the iguanas]]
-
-::land of the iguanas
-The land of the iguanas ... a old and forgotten world inhabited by the mighty
-iguanas. There are many [[kinds]] of iguanas - huge yet peaceful lizards.
-
-They primarily live of all kinds of fruits, vegetables and other greens.
-
-But when they are [[juveniles]] they also eat insects.
-
-::kinds
-
-There are green iguanas, rhino iguanas and many more
-
-[[land of the iguanas|land of the iguanas]]
-
-::favouriteFood
-
-Iguanas love bananas - it's like chocolate to them.
-
-[[land of the iguanas|land of the iguanas]]
+negative test: going to see if var is 2 (var is 1) <<if $var is 2>> 
+ithis should not be displayed<<endif>>
+afterIf12
 
 
-::juveniles
-
-Juvenile iguanas will eventually hit puberty and just as human juveniles they will get moody ...
-
-[[land of the iguanas|land of the iguanas]]
-
-::Disclaimer
-
-The story is made up ... sort off - I really like iguanas.
-
-Great reptiles.
-
-I'll try to remain in terms of details close to reality but
-might add some spice.
-
-[[land of the iguanas|land of the iguanas]]
