@@ -6,6 +6,7 @@
 #define PROJECT_ARGSCOMMAND_H
 
 #include<iostream>
+
 /*
  *
  * Following calls are supported
@@ -28,12 +29,7 @@
  */
 
 class ArgsCommand {
-
-
-
-
-private :
-
+private:
     std::string sourceFile;
     std::string outputFile;
     bool isAssembly;
@@ -43,16 +39,12 @@ private :
     char **argv;
 
 public:
-
-
-    ArgsCommand(int argc, char  **argv);
-
-    std::string getSourceFileName();
-    std::string getOutputFileName();
-    bool sourceFileIsTwee();
-    bool sourceFileIsAssembly();
-    bool isDebugInConsole();
-
+    ArgsCommand(int argc, char **argv);
+    std::string getSourceFileName() const;
+    std::string getOutputFileName() const;
+    bool sourceFileIsTwee() const;
+    bool sourceFileIsAssembly() const;
+    bool isDebugInConsole() const;
 };
 
 

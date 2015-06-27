@@ -34,8 +34,7 @@ void handler()
 
 int main(int argc, char **argv) {
     // install exception handler
-   std::set_terminate(handler);
-
+    std::set_terminate(handler);
 
     //get cmdargs
     ArgsCommand argsCommand(argc,argv);
@@ -43,25 +42,18 @@ int main(int argc, char **argv) {
     std::string inputFile = argsCommand.getSourceFileName();
     std::string outputFile = argsCommand.getOutputFileName();
 
-
-   static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Compiler_Log.txt");
-    plog::ConsoleAppender<plog::UserSideFormatter> consoleAppender; // Console Appender for user friendly output
+    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Compiler_Log.txt");
+    plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
 
     std::string logFile = "Compiler_Log.txt";
-    if(argsCommand.isDebugInConsole() == true)
-    {
-
-        plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
+    if(argsCommand.isDebugInConsole()) {
         std::cout << "Console log";
         plog::init(plog::debug,  &consoleAppender);
-    }
-    else
-    {
+    } else {
         remove(logFile.c_str());
         plog::init(plog::debug, logFile.c_str());
     }
     plog::init(plog::error, &consoleAppender);
-
 
     LOG_DEBUG << "CMD-Args Summary";
     LOG_DEBUG << "Console-DEBUG-Output: " << argsCommand.isDebugInConsole();
@@ -72,12 +64,9 @@ int main(int argc, char **argv) {
 
     LOG_DEBUG  << "Compiler started";
     LOG_ERROR << "test";
-     TweeCompiler compiler;
-     TweeZCodeCompilerPipeline pipeline;
-     pipeline.compile(inputFile, outputFile, compiler,argsCommand.sourceFileIsTwee());
-
-
-
+    TweeCompiler compiler;
+    TweeZCodeCompilerPipeline pipeline;
+    pipeline.compile(inputFile, outputFile, compiler,argsCommand.sourceFileIsTwee());
 
     return 0;
 }
