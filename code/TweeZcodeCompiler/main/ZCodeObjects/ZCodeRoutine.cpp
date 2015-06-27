@@ -5,11 +5,13 @@
 #include "ZCodeRoutine.h"
 #include "../Utils.h"
 
-ZCodeRoutine &ZCodeRoutine::GetOrCreateRoutine(std::string name, std::uint8_t locVariables) {
-    std::map<std::string, ZCodeRoutine>::iterator p;
+ZCodeRoutine &ZCodeRoutine::getOrCreateRoutine(std::string name, std::uint8_t locVariables) {
+    std::map<std::string, ZCodeRoutine &>::iterator p;
     p = routines.find(name);
     if (p == routines.end()) {
-        routines.insert(pair<std::string, ZCodeRoutine>(name, ZCodeRoutine(0)));
+        ZCodeRoutine routine = ZCodeRoutine(0);
+        routines.insert(pair<std::string, ZCodeRoutine>(name,routine));
+        return routine;
     } else {
         ZCodeRoutine routine = p->second;
         if(routine.localVariables < locVariables){

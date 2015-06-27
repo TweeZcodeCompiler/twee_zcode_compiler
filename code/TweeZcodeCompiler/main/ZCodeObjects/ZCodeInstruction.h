@@ -22,6 +22,12 @@ public:
         content = instructions;
         this->size = instructions.size();
     }
+
+    ZCodeInstruction(uint8_t code){
+        content = std::vector<std::bitset<8>>();
+        content.push_back(std::bitset<8>(code));
+        size = 1;
+    }
 };
 
 

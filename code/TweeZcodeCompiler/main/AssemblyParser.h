@@ -11,6 +11,7 @@
 #include <memory>
 #include "RoutineGenerator.h"
 #include "Utils.h"
+#include "ZCodeObjects/ZCodeContainer.h"
 
 
 class AssemblyParser {
@@ -112,8 +113,7 @@ private:
 
     std::unique_ptr<uint8_t> getAddressForId(const std::string &id);
 
-public:
-    void readAssembly(std::istream &input, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
+    void readAssembly(std::istream& input, ZCodeContainer &dynamicMemory, ZCodeContainer &staticMemory, ZCodeContainer &highMemory);
 
 };
 

@@ -12,15 +12,15 @@
 class ZCodeJump : public ZCodeObject {
 private:
     size_t lastOffset = 0;
-    ZCodeLabel label;
+    ZCodeLabel &label;
     std::vector<std::bitset<8>> adress;
     void addCondBranchOffset();
 public:
     bool jumpIfCondTrue = true;
     std::vector<std::bitset<8>> &print();
     bool revalidate();
-    ZCodeJump(ZCodeLabel &label){
-        this->label = label;
+
+    ZCodeJump(ZCodeLabel &label): label(label){
     }
 };
 

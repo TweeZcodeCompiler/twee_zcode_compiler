@@ -12,7 +12,7 @@
 
 class ZCodeRoutine: public ZCodeContainer {
 private:
-    static std::map<std::string, &ZCodeRoutine> routines;
+    static std::map<std::string, ZCodeRoutine&> routines;
     uint8_t localVariables;
 public:
     std::vector<std::bitset<8>> &print();
@@ -20,7 +20,7 @@ public:
        this->localVariables = locVariables;
     }
 
-    static ZCodeRoutine &GetOrCreateRoutine(std::string name, uint8_t locVariables);
+    static ZCodeRoutine &getOrCreateRoutine(std::string name, uint8_t locVariables);
 
 };
 

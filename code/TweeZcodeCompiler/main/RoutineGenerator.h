@@ -15,6 +15,8 @@
 #include "OpcodeParameterGenerator.h"
 #include "Utils.h"
 #include "exceptions.h"
+#include "ZCodeObjects/ZCodeRoutine.h"
+#include "ZCodeObjects/ZCodeLabel.h"
 #include <memory>
 #include <plog/Log.h>
 
@@ -24,6 +26,9 @@ private:
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
     std::map<std::string, u_int8_t> locVariables;   // keys = variable name, value = number in stack
     static std::map<std::string, size_t> routines;  // keys = name of routine, value = offset.
+    static std::map<std::string, ZCodeLabel&> labels;
+
+    ZCodeRoutine routine = ZCodeRoutine(0);
 
     size_t maxLocalVariables = 0;
     size_t addedLocalVariables = 0;
@@ -35,46 +40,18 @@ private:
 
     void addBitset(std::vector<std::bitset<8>> bitsets);
 
-    void addTwoBytes(int16_t number,
-                     int pos = -1);     // splits 16 bit value up to 2 bytes and adds them to routineZcode
-
-    void addOneByte(std::bitset<8> byte, int pos = -1);  // add one byte to routineZcode
-
     void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, ZParam &param1, ZParam &param2);
 
 public:
-    // constructor needed to create first jump to main call
-    RoutineGenerator(size_t routineOffset) {
-        jumps.setRoutineBitsetMap(routineZcode);
 
-        size_t pkgAdrr = Utils::calculateNextPackageAddress((size_t) (routineOffset + 3));
 
-        std::vector<std::bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N,
-                                                                                          (u_int16_t) (pkgAdrr / 8),
-                                                                                          false);
-        addBitset(instructions);
-
-        size_t padding = Utils::paddingToNextPackageAddress(routineZcode.size(), routineOffset);
-
-        for (size_t i = 0; i < padding; i++) {
-            addOneByte(numberToBitset(0));
-        }
-    }
+    ZCodeLabel &getOrCreateLabel(std::string name);
 
     // this constructor padding zCode to the next package adress and initialize this routine with the name 'name'
-    RoutineGenerator(std::string name, unsigned int locVar, std::vector<std::bitset<8>> &zCode, size_t offsetOfZCode) {
-        size_t padding = Utils::paddingToNextPackageAddress(zCode.size(), offsetOfZCode);
-        Utils::fillWithBytes(zCode, 0, padding);
+    RoutineGenerator(std::string name, unsigned int locVar) {
 
-        RoutineGenerator::routines[name] = zCode.size() + offsetOfZCode;
-        this->offsetOfRoutine = zCode.size() + offsetOfZCode;
-        LOG_DEBUG << padding << "/" << this->offsetOfRoutine << "\n";
-        jumps.setRoutineBitsetMap(routineZcode);
-        jumps.routineOffset = this->offsetOfRoutine;
-
-        addOneByte(numberToBitset(locVar));
+        this->routine = ZCodeRoutine::getOrCreateRoutine(name, locVar);
         maxLocalVariables = locVar;
-
         if (locVar > 15) {
             LOG_DEBUG << "Cannot add more than 15 local variables to routine " << name << "!";
             throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
@@ -82,7 +59,7 @@ public:
     }
 
     // returns complete zcode of Routine as a bitset vector
-    std::vector<std::bitset<8>> getRoutine();
+    ZCodeRoutine getRoutine();
 
     /*
      *      methods to handle call routine offsets:

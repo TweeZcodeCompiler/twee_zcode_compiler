@@ -142,8 +142,8 @@ void AssemblyParser::performRoutineGlobalVarCommand(string line) {
     addGlobal(gvar);
 }
 
-void AssemblyParser::readAssembly(istream &input, vector<bitset<8>> &highMemoryZcode,
-                                  size_t offset) {
+
+void AssemblyParser::readAssembly(istream& input, ZCodeContainer &dynamicMemory, ZCodeContainer &staticMemory, ZCodeContainer &highMemory) {
 
     LOG_DEBUG << "Compiler: Parse Assembly File\n";
 

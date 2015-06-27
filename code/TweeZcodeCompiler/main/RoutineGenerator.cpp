@@ -5,6 +5,7 @@
 #include "RoutineGenerator.h"
 #include "ZCodeConverter.h"
 #include "exceptions.h"
+#include "ZCodeObjects/ZCodeJump.h"
 #include <iostream>
 #include <algorithm>
 #include <plog/Log.h>
@@ -16,7 +17,6 @@ map<size_t, string> RoutineGenerator::callTo = map<size_t, string>();
 
 void checkParamCount(vector<unique_ptr<ZParam>> &params, unsigned int paramCount1, unsigned int paramCount2 = 0,
                      unsigned int paramCount3 = 0, unsigned int paramCount4 = 0) {
-
     if (params.size() != paramCount1 && (paramCount2 != 0 && params.size() != paramCount2)
         && (paramCount3 != 0 && params.size() != paramCount3) && (paramCount4 != 0 && params.size() != paramCount4)) {
 
@@ -38,7 +38,6 @@ bool sameType(ZParamType paramType, ZParamType neededType) {
 void checkParamType(vector<unique_ptr<ZParam>> &params, ZParamType type1, ZParamType type2 = EMPTY,
                     ZParamType type3 = EMPTY,
                     ZParamType type4 = EMPTY, ZParamType type5 = EMPTY) {
-
     for (size_t i = 0; i < params.size(); i++) {
         switch (i) {
             case 0:
@@ -79,21 +78,13 @@ void checkParamType(vector<unique_ptr<ZParam>> &params, ZParamType type1, ZParam
 
 }
 
-vector<bitset<8>> RoutineGenerator::getRoutine() {
-    jumps.calculateOffsets();
-
-    vector<bitset<8>> zcode;
-    for (map<int, bitset<8>>::iterator entry = routineZcode.begin(); entry != routineZcode.end(); ++entry) {
-        zcode.push_back(entry->second);
-    }
-
-    return zcode;
+ZCodeRoutine RoutineGenerator::getRoutine() {
+   return this->routine;
 }
 
 void RoutineGenerator::addBitset(vector<bitset<8>> bitsets) {
-    for (bitset<8> bitset : bitsets) {
-        routineZcode[routineZcode.size()] = bitset;
-    }
+    ZCodeInstruction instruction = ZCodeInstruction(bitsets);
+    routine.add(instruction);
 }
 
 void RoutineGenerator::setTextStyle(bool roman, bool reverseVideo, bool bold, bool italic, bool fixedPitch) {
@@ -114,17 +105,19 @@ void RoutineGenerator::printString(vector<unique_ptr<ZParam>> params) {
 
     ZCodeConverter converter = ZCodeConverter();
     vector<bitset<8>> zsciiString = converter.convertStringToZSCII((*params.at(0)).name);
-
+    vector<bitset<8>> instruction = vector<bitset<8>>();
     unsigned long len = zsciiString.size();
     for (size_t i = 0; i < len; i++) {
         if (i % 96 == 0) {
-            addOneByte(numberToBitset(PRINT));
+            instruction.push_back(numberToBitset(PRINT));
         }
         if (i % 96 == 94) {
             zsciiString[i].set(7, true);
         }
-        addOneByte(zsciiString[i]);
+        instruction.push_back(zsciiString[i]);
     }
+    ZCodeInstruction zinstruction = ZCodeInstruction(instruction);
+    routine.add(zinstruction);
 }
 
 // params: stringToPrint
@@ -134,17 +127,18 @@ void RoutineGenerator::printRet(vector<unique_ptr<ZParam>> params) {
 
     ZCodeConverter converter = ZCodeConverter();
     vector<bitset<8>> zsciiString = converter.convertStringToZSCII((*params.at(0)).name);
-
+    auto instructions = vector<bitset<8>>();
     unsigned long len = zsciiString.size();
     for (size_t i = 0; i < len; i++) {
         if (i % 96 == 0) {
-            addOneByte(numberToBitset(PRINT_RET));      // TODO: Check if this opcode needs same workaround as "print" for Frotz
+            instructions.push_back(numberToBitset(PRINT_RET));      // TODO: Check if this opcode needs same workaround as "print" for Frotz
         }
         if (i % 96 == 94) {
             zsciiString[i].set(7, true);
         }
-        addOneByte(zsciiString[i]);
+        instructions.push_back(zsciiString[i]);
     }
+    this->addBitset(instructions);
 }
 
 // params: storeAddress
@@ -158,12 +152,13 @@ void RoutineGenerator::readChar(vector<unique_ptr<ZParam>> params) {
     }
 
     // Read char needs '1' as first parameter (cannot be handled by OpcodeParameterGenerator)
-    addOneByte(numberToBitset(READ_CHAR));
-    addOneByte(numberToBitset(0xbf));
-    addOneByte(numberToBitset(1));
-
-
-    addOneByte(numberToBitset((*params.at(params.size() - 1)).getZCodeValue()));
+    vector<bitset<8>> instructions = vector<bitset<8>>();
+    instructions.push_back(numberToBitset(READ_CHAR));
+    instructions.push_back(numberToBitset(0xbf));
+    instructions.push_back(numberToBitset(1));
+    instructions.push_back(numberToBitset((*params.at(params.size() - 1)).getZCodeValue()));
+    ZCodeInstruction zinstruction = ZCodeInstruction(instructions);
+    routine.add(zinstruction);
 }
 
 // params: variable
@@ -198,8 +193,8 @@ void RoutineGenerator::callVS(vector<unique_ptr<ZParam>> params) {
 
     auto instructions = opcodeGenerator.generateVarOPInstruction(CALL_VS, params);
     RoutineGenerator::callTo[offsetOfRoutine + routineZcode.size() + 2] = routineName;
+    instructions.push_back(numberToBitset(storeAddress));
     addBitset(instructions);
-    addOneByte(numberToBitset(storeAddress));
 }
 
 // params: variableOrConstant
@@ -218,20 +213,23 @@ bitset<8> RoutineGenerator::numberToBitset(unsigned int number) {
 }
 
 void RoutineGenerator::newLine() {
-    addOneByte(numberToBitset(NEW_LINE));
+    ZCodeInstruction instruction = ZCodeInstruction(NEW_LINE);
+    routine.add(instruction);
 }
 
 void RoutineGenerator::quitRoutine() {
-    addOneByte(numberToBitset(QUIT));
+    ZCodeInstruction instruction = ZCodeInstruction(QUIT);
+    routine.add(instruction);
 }
 
 void RoutineGenerator::restart() {
-    addOneByte(numberToBitset(RESTART));
+    ZCodeInstruction instruction = ZCodeInstruction(RESTART);
+    routine.add(instruction);
 }
 
 // adds label and next instruction address to 'branches' map
 void RoutineGenerator::newLabel(string label) {
-    jumps.newLabel(label);
+    routine.add(getOrCreateLabel(label));
 }
 
 void setLabelValues(ZParam &labelParam, string &label, bool &jumpIfTrue) {
@@ -251,10 +249,10 @@ void RoutineGenerator::verify(vector<unique_ptr<ZParam>> params) {
     string label;
     bool jumpIfTrue;
     setLabelValues(*params.at(0), label, jumpIfTrue);
-
-    addOneByte(numberToBitset(VERIFY));
-    jumps.newJump(label);
-    addTwoBytes(1 << (JUMP_UNCOND_OFFSET_PLACEHOLDER + 7)); // placeholder, will be replaced in getRoutine()
+    ZCodeInstruction instruction = ZCodeInstruction(VERIFY);
+    ZCodeJump jump = ZCodeJump(getOrCreateLabel(label));
+    routine.add(instruction);
+    routine.add(jump);
 }
 
 // params: label
@@ -265,10 +263,12 @@ void RoutineGenerator::jump(vector<unique_ptr<ZParam>> params) {
     string label;
     bool jumpIfTrue;
     setLabelValues(*params.at(0), label, jumpIfTrue);
-
-    addOneByte(numberToBitset(JUMP));
-    jumps.newJump(label);
-    addTwoBytes(1 << (JUMP_UNCOND_OFFSET_PLACEHOLDER + 7)); // placeholder, will be replaced in getRoutine()
+    vector<bitset<8>> instructions = vector<bitset<8>>();
+    instructions.push_back(numberToBitset(JUMP));
+    ZCodeInstruction instruction = ZCodeInstruction(instructions);
+    routine.add(instruction);
+    ZCodeJump jump = ZCodeJump(getOrCreateLabel(label));
+    routine.add(jump);
 }
 
 // params: param1, label
@@ -283,16 +283,9 @@ void RoutineGenerator::jumpZero(vector<unique_ptr<ZParam>> params) {
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(JZ, *params.at(0));
     addBitset(instructions);
 
-    jumps.newJump(label);
-
-    bitset<8> offsetFirstBits;
-    offsetFirstBits.set(JUMP_COND_TRUE, jumpIfTrue);
-    offsetFirstBits.set(JUMP_COND_OFFSET_PLACEHOLDER, true);
-    offsetFirstBits.set(JUMP_UNCOND_OFFSET_PLACEHOLDER, false);
-
-    // placeholder, will be replaced in getRoutine()
-    addOneByte(offsetFirstBits);
-    addOneByte(numberToBitset(0));
+    ZCodeJump jump = ZCodeJump(getOrCreateLabel(label));
+    jump.jumpIfCondTrue = jumpIfTrue;
+    routine.add(jump);
 }
 
 // params: param1, param2, (param3, (param4,)) label
@@ -317,16 +310,9 @@ void RoutineGenerator::jumpEquals(vector<unique_ptr<ZParam>> params) {
         auto instructions = opcodeGenerator.generateVarOPInstruction(JE, params);
         addBitset(instructions);
 
-        jumps.newJump(label);
-
-        bitset<8> offsetFirstBits;
-        offsetFirstBits.set(JUMP_COND_TRUE, jumpIfTrue);
-        offsetFirstBits.set(JUMP_COND_OFFSET_PLACEHOLDER, true);
-        offsetFirstBits.set(JUMP_UNCOND_OFFSET_PLACEHOLDER, false);
-
-        // placeholder, will be replaced in getRoutine()
-        addOneByte(offsetFirstBits);
-        addOneByte(numberToBitset(0));
+        ZCodeJump jump = ZCodeJump(getOrCreateLabel(label));
+        jump.jumpIfCondTrue = jumpIfTrue;
+        routine.add(jump);
     }
 }
 
@@ -359,16 +345,9 @@ void RoutineGenerator::conditionalJump(unsigned int opcode, string toLabel, bool
     vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(opcode, param1, param2);
     addBitset(instructions);
 
-    jumps.newJump(toLabel);
-
-    bitset<8> offsetFirstBits;
-    offsetFirstBits.set(JUMP_COND_TRUE, jumpIfTrue);
-    offsetFirstBits.set(JUMP_COND_OFFSET_PLACEHOLDER, true);
-    offsetFirstBits.set(JUMP_UNCOND_OFFSET_PLACEHOLDER, false);
-
-    // placeholder, will be replaced in getRoutine()
-    addOneByte(offsetFirstBits);
-    addOneByte(numberToBitset(0));
+    ZCodeJump jump = ZCodeJump(getOrCreateLabel(toLabel));
+    jump.jumpIfCondTrue = jumpIfTrue;
+    routine.add(jump);
 }
 
 // params: address, value
@@ -424,9 +403,8 @@ void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {
     // TODO: Test again
 
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, *params.at(0));
+    instructions.push_back(numberToBitset((*params.at(1)).getZCodeValue()));
     addBitset(instructions);
-
-    addOneByte(numberToBitset((*params.at(1)).getZCodeValue()));
 }
 
 // params: address
@@ -490,15 +468,17 @@ void RoutineGenerator::returnValue(vector<unique_ptr<ZParam>> params) {
 }
 
 void RoutineGenerator::returnTrue() {
-    addOneByte(numberToBitset(RETURN_TRUE));
+    ZCodeInstruction instruction = ZCodeInstruction(RETURN_TRUE);
+    routine.add(instruction);
 }
 
 void RoutineGenerator::returnFalse() {
-    addOneByte(numberToBitset(RETURN_FALSE));
+    ZCodeInstruction instruction = ZCodeInstruction(RETURN_FALSE);
+    routine.add(instruction);
 }
 
 void RoutineGenerator::retPopped() {
-    addOneByte(numberToBitset(RET_POPPED));
+    ZCodeInstruction instruction = ZCodeInstruction(RET_POPPED);
 }
 
 void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
@@ -513,27 +493,15 @@ void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
     }
 }
 
-void RoutineGenerator::addTwoBytes(int16_t number, int pos) {
-    bitset<16> shortVal((unsigned long long int) number);
-    bitset<8> firstHalf, secondHalf;
-
-    for (size_t i = 0; i < 8; i++) {
-        secondHalf.set(i, shortVal[i]);
-    }
-
-    for (size_t i = 8; i < 16; i++) {
-        firstHalf.set(i - 8, shortVal[i]);
-    }
-
-    if (pos >= 0) {
-        addOneByte(firstHalf, pos);
-        addOneByte(secondHalf, pos + 1);
+ZCodeLabel &RoutineGenerator::getOrCreateLabel(std::string name) {
+    std::map<std::string, ZCodeLabel&>::iterator p;
+    p = labels.find(name);
+    if (p == labels.end()) {
+        ZCodeLabel label = ZCodeLabel();
+        labels.insert(pair<std::string, ZCodeLabel&>(name, label));
+        return label;
     } else {
-        addOneByte(firstHalf);
-        addOneByte(secondHalf);
+        ZCodeLabel label = p->second;
+        return label;
     }
-}
-
-void RoutineGenerator::addOneByte(bitset<8> byte, int pos) {
-    routineZcode[pos < 0 ? routineZcode.size() : (unsigned long) pos] = byte;
 }
