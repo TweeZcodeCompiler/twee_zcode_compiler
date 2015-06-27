@@ -33,6 +33,12 @@ const string AssemblyParser::CALL_VS_COMMAND = "call_vs";
 const string AssemblyParser::CALL_1N_COMMAND = "call_1n";
 const string AssemblyParser::STORE_COMMAND = "store";
 const string AssemblyParser::LOAD_COMMAND = "load";
+const string AssemblyParser::RET_TRUE_COMMAND = "rtrue";
+const string AssemblyParser::RET_FALSE_COMMAND = "rfalse";
+const string AssemblyParser::PRINT_RET_COMMAND = "print_ret";
+const string AssemblyParser::RESTART_COMMAND = "restart";
+const string AssemblyParser::RET_POPPED_COMMAND = "ret_popped";
+const string AssemblyParser::VERIFY_COMMAND = "verify";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -439,6 +445,24 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if(commandPart.compare(AssemblyParser::SET_TEXT_STYLE) == 0) {
         LOG_DEBUG << ":::::: new set_text_style ";
         executeSETTEXTSTYLECommand(command, routineGenerator);
+    } else if(commandPart.compare(AssemblyParser::RET_TRUE_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new rtrue";
+        routineGenerator.returnTrue();
+    } else if(commandPart.compare(AssemblyParser::RET_FALSE_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new rfalse";
+        routineGenerator.returnFalse();
+    } else if(commandPart.compare(AssemblyParser::PRINT_RET_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new print_ret";
+        routineGenerator.printRet(parseArguments(command));
+    } else if(commandPart.compare(AssemblyParser::RESTART_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new restart";
+        routineGenerator.restart();
+    } else if(commandPart.compare(AssemblyParser::RET_POPPED_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new ret_popped";
+        routineGenerator.retPopped();
+    } else if(commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new verify";
+        routineGenerator.verify(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label ;
@@ -451,7 +475,6 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         throw;
     }
 }
-
 
 bool AssemblyParser::checkIfCommandRoutineStart(const string &command) {
     vector<string> commandParts = this->split(command, ' ');
