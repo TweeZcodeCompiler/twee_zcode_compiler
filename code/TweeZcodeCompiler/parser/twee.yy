@@ -91,53 +91,49 @@
 	<string> TAG
 
 	<string> VARIABLE
+    <string> INT
 
-	<token> LINK_OPEN
-	<token> LINK_CLOSE
+    <token> LINK_OPEN
+    <token> LINK_CLOSE
     <token> LINK_SEPARATOR
 
-	<token> MACRO_OPEN
-	<token> MACRO_CLOSE
-	<token> MACRO_IF
-	<token> MACRO_ELSE
-	<token> MACRO_ENDIF
-	<token> MACRO_PRINT
-	<token> MACRO_DISPLAY
+    <token> MACRO_OPEN
+    <token> MACRO_CLOSE
 
-	<token> FUNC_PREVIOUS
-	<token> FUNC_TURNS
-	<token> FUNC_VISITED
-	<token> FUNC_RANDOM
+    <token> MACRO_IF
+    <token> MACRO_ELSE
+    <token> MACRO_ENDIF
 
-	<token> EXPR_OPEN
-	<token> EXPR_CLOSE
-	<token> EXPR_STR_LIMITER
+    <token> MACRO_PRINT
+    <token> MACRO_DISPLAY
+    <token> EXPR_RANDOM
+    <token> EXPR_VISITED
+    <token> EXPR_PREVIOUS
+    <token> EXPR_TURNS
 
-	<token> EXPR_ASSGN
+    <token> EXPR_OPEN
+    <token> EXPR_CLOSE
 
-	<token> EXPR_ADD
-	<token> EXPR_MUL
-	<token> EXPR_SUB
-	<token> EXPR_DIV
-	<token> EXPR_MOD
+    <token> EXPR_ADD
+    <token> EXPR_SUB
+    <token> EXPR_MUL
+    <token> EXPR_DIV
+    <token> EXPR_MOD
 
-	<token> EXPR_GT
-	<token> EXPR_GTE
-	<token> EXPR_LT
-	<token> EXPR_LTE
-	<token> EXPR_NEQ
-	<token> EXPR_EQ
-	<token> EXPR_IS
+    <token> EXPR_GT
+    <token> EXPR_GTE
+    <token> EXPR_LT
+    <token> EXPR_LTE
 
-	<token> EXPR_AND
-	<token> EXPR_OR
-	<token> EXPR_NOT
+    <token> EXPR_IS
+    <token> EXPR_EQ
+    <token> EXPR_NEQ
 
-	<string> EXPR_VAR
-    <string> EXPR_STR
-    <string> EXPR_INT
+    <token> EXPR_AND
+    <token> EXPR_OR
 
-	<string> INT
+    <token> EXPR_TO
+    <token> EXPR_ASSGN
 
 	<string> FORMATTING_OPEN
 	<string> FORMATTING_CLOSE
@@ -448,17 +444,17 @@ expression :
     LOG_DEBUG << "expression -> expression EXPR_ASS expression: ";
 
     }
-    |EXPR_VAR
+    |VARIABLE
     {
     LOG_DEBUG << "expression -> EXPR_VAR: ";
 
     }
-    |EXPR_INT
+    |INT
     {
     LOG_DEBUG << "expression -> EXPR_INT: ";
 
     }
-    |EXPR_STR
+    |TEXT_TOKEN
     {
     LOG_DEBUG << "expression -> EXPR_STR: ";
 
