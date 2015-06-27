@@ -41,11 +41,23 @@ private:
     static const std::string SET_TEXT_STYLE;
     static const std::string STORE_COMMAND;
     static const std::string LOAD_COMMAND;
-
+    static const std::string ADD_COMMAND;
+    static const std::string SUB_COMMAND;
+    static const std::string MUL_COMMAND;
+    static const std::string DIV_COMMAND;
+    static const std::string AND_COMMAND;
+    static const std::string OR_COMMAND;
+    static const std::string RET_TRUE_COMMAND;
+    static const std::string RET_FALSE_COMMAND;
+    static const std::string PRINT_RET_COMMAND;
+    static const std::string RESTART_COMMAND;
+    static const std::string RET_POPPED_COMMAND;
+    static const std::string VERIFY_COMMAND;
 
     std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
 
     std::vector<std::string> split(const std::string &s, char delim);
+
     std::vector<std::string> split(const std::string &s, const std::string &delim);
 
     bool checkIfCommandRoutineStart(const std::string &command);
@@ -53,17 +65,21 @@ private:
     void executeCommand(const std::string &command, RoutineGenerator &routineGenerator);
 
     void executePRINTCommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
-    
+
     void executeSETTEXTSTYLECommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
 
     void executeREADCommand(const std::string &readCommand, RoutineGenerator &routineGenerator);
 
     void executeJECommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+
     void executeJGCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+
     void executeJLCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+
     void executeJZCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
 
     void executeCALL1nCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
+
     void executeCALL_VSCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
     void executeJUMPCommand(const std::string &jumpCommand, RoutineGenerator &routineGenerator);
@@ -71,9 +87,12 @@ private:
     void executeRETCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
     std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction);
-    std::unique_ptr<ZParam> createZParam(const std::string& paramString);
-    
-    void performRoutineDirectiveCommand( std::vector<std::string> lineComps, std::vector <std::bitset<8>> &highMemoryZcode,size_t offset);
+
+    std::unique_ptr<ZParam> createZParam(const std::string &paramString);
+
+    void performRoutineDirectiveCommand(std::vector<std::string> lineComps,
+                                        std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
+
     void performRoutineGlobalVarCommand(std::string line);
 
     bool checkIfRoutineNameExists(std::string routineName);
@@ -84,12 +103,14 @@ private:
 
     std::unique_ptr<RoutineGenerator> currentGenerator;
 
-    void finishRoutine(std::vector <std::bitset<8>> &highMemoryZcode);
+    void finishRoutine(std::vector<std::bitset<8>> &highMemoryZcode);
+
     void addGlobal(std::string globalName);
-    std::unique_ptr<uint8_t> getAddressForId(const std::string& id);
+
+    std::unique_ptr<uint8_t> getAddressForId(const std::string &id);
 
 public:
-    void readAssembly(std::istream& input, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
+    void readAssembly(std::istream &input, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
 
 };
 
