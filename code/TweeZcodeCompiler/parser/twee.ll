@@ -527,7 +527,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the IF Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::IF_TOKEN;
                                 }
 <BodyMacro>{MACRO_ELSE}		{
@@ -537,7 +536,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the ELSE Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::ELSE_TOKEN;
                                 }
 <BodyMacro>{MACRO_ENDIF}		{
@@ -547,7 +545,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the ENDIF Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::ENDIF_TOKEN;
                                 }
 
@@ -559,7 +556,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the PRINT Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::PRINT_TOKEN;
                                 }
     /* macro display */
@@ -570,7 +566,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the DISPLAY Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::DISPLAY_TOKEN;
                                 }
     /* expression variable */
@@ -592,7 +587,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the RANDOM Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::RANDOM_TOKEN;
                                 }
 
@@ -603,7 +597,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the VISITED Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::VISITED_TOKEN;
                                 }
 <BodyMacro>{EXPR_PREVIOUS}		{
@@ -613,7 +606,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the PREVIOUS Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::PREVIOUS_TOKEN;
                                 }
 <BodyMacro>{EXPR_TURNS}		{
@@ -623,7 +615,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the TURNS Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::TURNS_TOKEN;
                                 }
 
@@ -634,7 +625,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the OPEN Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::OPEN_TOKEN;
                                 }
 <BodyMacro>{EXPR_CLOSE}		{
@@ -644,7 +634,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the CLOSE Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::CLOSE_TOKEN;
                                 }
 
@@ -656,7 +645,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the ADD Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::ADD_TOKEN;
                                 }
 <BodyMacro>{EXPR_MUL}		{
@@ -666,7 +654,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the MUL Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::MUL_TOKEN;
                                 }
 <BodyMacro>{EXPR_SUB}		{
@@ -676,7 +663,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the SUB Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::SUB_TOKEN;
                                 }
 <BodyMacro>{EXPR_DIV}		{
@@ -686,7 +672,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the DIV Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::DIV_TOKEN;
                                 }
 <BodyMacro>{EXPR_MOD}		{
@@ -696,7 +681,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the MOD Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::MOD_TOKEN;
                                 }
 
@@ -708,7 +692,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the GT Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::GT_TOKEN;
                                 }
 <BodyMacro>{EXPR_GTE}		{
@@ -718,7 +701,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the GTE Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::GTE_TOKEN;
                                 }
 <BodyMacro>{EXPR_LT}		{
@@ -728,7 +710,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the LT Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::LT_TOKEN;
                                 }
 <BodyMacro>{EXPR_LTE}		{
@@ -738,7 +719,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the LTE Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::LTE_TOKEN;
                                 }
 <BodyMacro>{EXPR_NEQ}		{
@@ -748,7 +728,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the NEQ Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::NEQ_TOKEN;
                                 }
 <BodyMacro>{EXPR_IS}		{
@@ -758,7 +737,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the IS Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::IS_TOKEN;
                                 }
 <BodyMacro>{EXPR_EQ}		{
@@ -768,7 +746,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the EQ Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::EQ_TOKEN;
                                 }
 <BodyMacro>{EXPR_AND}		{
@@ -778,7 +755,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the AND Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::AND_TOKEN;
                                 }
 <BodyMacro>{EXPR_OR}		{
@@ -788,7 +764,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the OR Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::OR_TOKEN;
                                 }
 <BodyMacro>{EXPR_NOT}		{
@@ -798,7 +773,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the NOT Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::NOT_TOKEN;
                                 }
 
@@ -810,7 +784,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the TO Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::TO_TOKEN;
                                 }
 <BodyMacro>{EXPR_ASS}		{
@@ -820,7 +793,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the ASS Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::ASS_TOKEN;
                                 }
 
@@ -832,7 +804,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "return the EXPR_STR_LIMITER Token";
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
                                 return BisonParser::token::EXPR_STR_LIMITER_TOKEN;
                                 }
 
