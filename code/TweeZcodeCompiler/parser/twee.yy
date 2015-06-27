@@ -19,6 +19,16 @@
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Link.h"
     #include "include/Passage/Body/FormattedText.h"
+    #include "include/Passage/Body/Expressions/Const.h"
+    #include "include/Passage/Body/Expressions/Function.h"
+    #include "include/Passage/Body/Expressions/Operator"
+    #include "include/Passage/Body/Expressions/Variable.h"
+    #include "include/Passage/Body/Macros/Display.h"
+    #include "include/Passage/Body/Macros/If.h"
+    #include "include/Passage/Body/Macros/Else.h"
+    #include "include/Passage/Body/Macros/EndIf.h"
+    #include "include/Passage/Body/Macros/Print.h"
+
     #include <plog/Log.h>
     #include <plog/Appenders/ConsoleAppender.h>
 	extern TweeFile *tweeStructure; /* the result data model */
