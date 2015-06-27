@@ -9,6 +9,8 @@
 #include "ZCodeObject.h"
 
 class ZCodeLabel: public ZCodeObject {
+private:
+    size_t lastOffset;
 public:
     virtual std::vector<std::bitset<8>> &print();
     //returns true if needs to be revalidate again

@@ -3,9 +3,31 @@
 //
 
 #include "ZCodeJump.h"
+#include "../RoutineGenerator.h"
 
-void ZCodeJump::addCondBranchOffset(size_t position, int16_t offset, bool jumpIfCondTrue) {
+using std::vector;
+using std::bitset;
+
+std::vector<std::bitset<8>>& ZCodeJump::print() {
+    return this->adress;
+}
+
+bool ZCodeJump::revalidate() {
+    int size = this->adress.size();
+    addCondBranchOffset();
+    if(size != this->adress.size()){
+        return true;
+    }
+    if(lastOffset != offset){
+        lastOffset = offset;
+        return true;
+    }
+    return false;
+}
+
+void ZCodeJump::addCondBranchOffset() {
     bitset<8> firstHalf, secondHalf;
+    this->adress = vector<bitset<8>>();
 
     // Offset needs to be between 0 and 63 to fit into 6 bits
     bool useOneByte = offset > 0 && (offset - 1) < 64;
@@ -19,8 +41,7 @@ void ZCodeJump::addCondBranchOffset(size_t position, int16_t offset, bool jumpIf
         for (size_t i = 0; i < 6; i++) {
             firstHalf.set(i, bitsetOffset[i]);
         }
-
-        addBitset(firstHalf, position);
+    this->adress.push_back(firstHalf);
     } else {
         bitset<14> bitsetOffset(offset);
 
@@ -31,8 +52,7 @@ void ZCodeJump::addCondBranchOffset(size_t position, int16_t offset, bool jumpIf
         for (size_t i = 8; i < 14; i++) {
             firstHalf.set(i - 8, bitsetOffset[i]);
         }
-
-        addBitset(firstHalf, position);
-        addBitset(secondHalf, position + 1);
+        this->adress.push_back(firstHalf);
+        this->adress.push_back(secondHalf);
     }
 }

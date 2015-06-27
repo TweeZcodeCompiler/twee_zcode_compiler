@@ -10,5 +10,9 @@ std::vector<std::bitset<8>>& ZCodeLabel::print() {
 }
 
 bool ZCodeLabel::revalidate() {
+    if(lastOffset != offset){
+        lastOffset = offset;
+        return true;
+    }
     return false;
 }
