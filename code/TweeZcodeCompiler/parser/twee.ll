@@ -133,7 +133,7 @@ EXPR_NOT                not
 
     /*Assignment Token*/
 EXPR_TO                 to
-EXPR_ASSGN                =
+EXPR_ASSGN              =
 
  /*Parser Conditions */
     /*Naming convention in this file: CamelCase*/
@@ -564,9 +564,16 @@ EXPR_ASSGN                =
 
     /* leave the macro */
 <BodyMacro>{EXPR_VAR}        {
-                                BEGIN(Body);
-                                LOG_DEBUG << "Lexer: Condition: " << "BodyMacro" << "matched Token " << "MACRO_CLOSE" << " with value " << YYText();
-                                return BisonParser::token::MACRO_CLOSE;
+                                LOG_DEBUG << "Lexer: Condition: " << "BodyMacro" << "matched Token " << "EXPR_VAR" << " with value " << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::VARIABLE;
+                                }
+
+    /* leave the macro */
+<BodyMacro>{EXPR_INT}        {
+                                LOG_DEBUG << "Lexer: Condition: " << "BodyMacro" << "matched Token " << "INT" << " with value " << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::INT;
                                 }
 
 

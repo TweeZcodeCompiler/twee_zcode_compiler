@@ -127,6 +127,7 @@
 	<token> EXPR_EQ
 	<token> EXPR_NEQ
 
+	<token> EXPR_NOT
 	<token> EXPR_AND
 	<token> EXPR_OR
 
@@ -221,8 +222,7 @@ title :
     TITLE NEWLINE
     {
     LOG_DEBUG << "Parser: title -> TITLE NEWLINE: "<< "create title:type(Head) out of token:TITLE";
-        $$ = new Head(*$1);
-    delete $1;
+    $$ = new Head(*$1);
     delete $1;
     }
     |TITLE TAGS_OPEN tags TAGS_CLOSE NEWLINE
@@ -284,8 +284,7 @@ bodypart :
     {
     LOG_DEBUG << "Parser: bodypart -> macro: "<< "pass macro:type(--Text--) to bodypart:type(BodyPart)";
     //TODO: implement Macro:BodyType
-    $$ = new Text(*$1);
-    delete $1;
+    $$ = new Text("macro placeholder");
     }
     |formatted
     {
@@ -329,8 +328,11 @@ macro :
     }
     |MACRO_OPEN ifmacro MACRO_CLOSE
     {
-    $$ = $2;
-    delete $2;
+
+    }
+    |MACRO_OPEN MACRO_ENDIF MACRO_CLOSE
+    {
+
     }
     |MACRO_OPEN expression MACRO_CLOSE
     {
@@ -342,9 +344,9 @@ macro :
 ifmacro :
     MACRO_IF expression
     {
-    LOG_DEBUG << "Parser: macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE: "<< "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    LOG_DEBUG << "Parser: MACRO_IF expression: "<< "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
     //TODO: implement ifmacro
-    *$$ = std::string("ifmacro");
+
     }
   ;
 
