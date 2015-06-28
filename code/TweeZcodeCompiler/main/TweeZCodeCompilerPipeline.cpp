@@ -38,6 +38,12 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
 
     tweeCompiler.compile(*tweeFile, buffer);
 
+    LOG_DEBUG << "Generated Z-Assembly file: " << "zas.zas";
+
+
+    ofstream testFile("test.zas");
+    testFile << buffer.str();
+
 
     //direct assembly compile start
     /*std::ifstream in( "eat_apple_simple.zap" );
