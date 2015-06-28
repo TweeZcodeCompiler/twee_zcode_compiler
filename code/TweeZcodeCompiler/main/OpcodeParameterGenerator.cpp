@@ -148,8 +148,9 @@ vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitset
     bitset<8> paramTypes;
 
     if (params.size() > 4) {
-        LOG_DEBUG << "More than 4 operands are not allowed!";
-        throw;
+        LOG_ERROR << "More than 4 operands are not allowed!";
+        // this is a programming error, so we don't throw a specific exception
+        throw exception();
     }
 
     size_t param = 0;
