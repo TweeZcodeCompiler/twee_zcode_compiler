@@ -18,7 +18,9 @@ private:
 
 public:
 
-    Print(std::unique_ptr<Expression>);
+    Print(const Expression *);
+
+    Print(const Expression &);
 
     const std::unique_ptr<Expression> &getExpression() const;
 

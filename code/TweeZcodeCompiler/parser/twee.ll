@@ -96,15 +96,11 @@ MACRO_CLOSE             >{2}
  /*MACRO_TEXT              [a-zA-Z0-9\-_="'!+\\/?.,\t ]+ */
 
     /*Macro Tokens*/
-MACRO_IF                if
-MACRO_ELSE              else
-MACRO_ENDIF             endif
 
 MACRO_PRINT             print
 MACRO_DISPLAY           display
 
     /*Expression Tokens*/
-EXPR_VAR               \$[_a-zA-Z][_a-zA-Z0-9]*
 EXPR_OPEN              \(
 EXPR_CLOSE             \)
 
@@ -519,35 +515,6 @@ EXPR_INT                [0-9]+
     /*From: Body */
     /*To:   Body */
 
-    /* macro if */
-<BodyMacro>{MACRO_IF}		{
-                                //stay in condition BodyMacro, look for next token
-                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
-                                //return the IF Token
-                                LOG_DEBUG << "return the IF Token";
-                                LOG_DEBUG << "\t matched:";
-                                LOG_DEBUG << YYText();
-                                return BisonParser::token::MACRO_IF;
-                                }
-<BodyMacro>{MACRO_ELSE}		{
-                                //stay in condition BodyMacro, look for next token
-                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
-                                //return the ELSE Token
-                                LOG_DEBUG << "return the ELSE Token";
-                                LOG_DEBUG << "\t matched:";
-                                LOG_DEBUG << YYText();
-                                return BisonParser::token::MACRO_ELSE;
-                                }
-<BodyMacro>{MACRO_ENDIF}		{
-                                //stay in condition BodyMacro, look for next token
-                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
-                                //return the ENDIF Token
-                                LOG_DEBUG << "return the ENDIF Token";
-                                LOG_DEBUG << "\t matched:";
-                                LOG_DEBUG << YYText();
-                                return BisonParser::token::MACRO_ENDIF;
-                                }
-
     /* macro print */
 <BodyMacro>{MACRO_PRINT}        {
                                 //stay in condition BodyMacro, look for next token
@@ -567,17 +534,6 @@ EXPR_INT                [0-9]+
                                 LOG_DEBUG << "\t matched:";
                                 LOG_DEBUG << YYText();
                                 return BisonParser::token::MACRO_DISPLAY;
-                                }
-    /* expression variable */
-<BodyMacro>{EXPR_VAR}         {
-                                //stay in condition BodyMacro, look for next token
-                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
-                                //return the VAR Token
-                                LOG_DEBUG << "return the VAR Token";
-                                LOG_DEBUG << "\t matched:";
-                                LOG_DEBUG << YYText();
-                                SAVE_TOKEN;
-                                return BisonParser::token::EXPR_VAR;
                                 }
     /* expression functions */
 <BodyMacro>{EXPR_RANDOM}		{

@@ -6,7 +6,6 @@
 #define FUNCTION_H
 
 #include "Expression.h"
-#include "Variable.h"
 
 #include <string>
 #include <memory>
@@ -16,17 +15,17 @@ class Function : public Expression {
 
 private:
     FunctionName functionName;
-    std::vector<std::unique_ptr<Variable>> arguments;
+    std::vector<std::unique_ptr<Expression>> arguments;
 
 public:
 
-    Function(FunctionName, std::vector<std::unique_ptr<Variable>>);
+    Function(FunctionName, std::vector<std::unique_ptr<Expression>>);
 
     FunctionName getFunctionName() const;
 
-    const std::vector<std::unique_ptr<Variable>> &getArguments() const;
+    const std::vector<std::unique_ptr<Expression>> &getArguments() const;
 
-    std::string to_string();
+    std::string to_string() const;
 
     virtual Function *clone() const {
         return new Function(*this);

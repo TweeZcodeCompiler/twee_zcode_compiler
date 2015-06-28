@@ -18,15 +18,10 @@
     #include "include/Passage/Passage.h"
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Link.h"
-    #include "include/Passage/Body/FormattedText.h"
     #include "include/Passage/Body/Expressions/Const.h"
     #include "include/Passage/Body/Expressions/Function.h"
-    #include "include/Passage/Body/Expressions/Operator"
-    #include "include/Passage/Body/Expressions/Variable.h"
+    #include "include/Passage/Body/Expressions/Operator.h"
     #include "include/Passage/Body/Macros/Display.h"
-    #include "include/Passage/Body/Macros/If.h"
-    #include "include/Passage/Body/Macros/Else.h"
-    #include "include/Passage/Body/Macros/EndIf.h"
     #include "include/Passage/Body/Macros/Print.h"
 
     #include <plog/Log.h>
@@ -77,8 +72,7 @@
 	BodyPart *bodypart;
 	Text *text;
 	Link *link;
-	FormattedText *formattedtext;
-
+    Expression *expr;
 
 	//TODO: add Syntax Tree classes
 }
@@ -98,9 +92,6 @@
 
 	<token> MACRO_OPEN
 	<token> MACRO_CLOSE
-	<token> MACRO_IF
-	<token> MACRO_ELSE
-	<token> MACRO_ENDIF
 	<token> MACRO_PRINT
 	<token> MACRO_DISPLAY
 
@@ -132,7 +123,6 @@
 	<token> EXPR_OR
 	<token> EXPR_NOT
 
-	<string> EXPR_VAR
     <string> EXPR_STR
     <string> EXPR_INT
 
@@ -174,6 +164,7 @@
 %type <link> link
 %type <formattedtext> formatted
 %type <text> macro
+%type <expr> expr
 
 %start TweeDocument
 
@@ -453,12 +444,6 @@ expr :
     LOG_DEBUG << "expr -> expr EXPR_ASS expr";
     LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
     $$ = new Operator(AssignmentOperation.TO,*$1,*$3);
-    }
-    |EXPR_VAR
-    {
-    LOG_DEBUG << "expr -> EXPR_VAR";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Print(*$2);
     }
     |EXPR_INT
     {

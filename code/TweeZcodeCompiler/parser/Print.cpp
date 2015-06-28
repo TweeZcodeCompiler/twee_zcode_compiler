@@ -4,8 +4,12 @@
 
 #include "include/Passage/Body/Macros/Print.h"
 
-Print::Print(std::unique_ptr<Expression> expression) {
-    this->expression = expression;
+Print::Print(const Expression *expression) {
+    this->expression = std::unique_ptr<Expression>(expression->clone());
+}
+
+Print::Print(const Expression &expression) {
+    this->expression = std::unique_ptr<Expression>(expression.clone());
 }
 
 const std::unique_ptr<Expression> &Print::getExpression() const {

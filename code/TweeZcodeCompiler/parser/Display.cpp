@@ -4,8 +4,12 @@
 
 #include "include/Passage/Body/Macros/Display.h"
 
-Display::Display(std::unique_ptr<Expression> expression) {
-    this->expression = expression;
+Display::Display(const Expression &expression) {
+    this->expression = std::unique_ptr(expression.clone());
+}
+
+Display::Display(const Expression *expression) {
+    this->expression = std::unique_ptr(expression->clone());
 }
 
 const std::unique_ptr<Expression> &Display::getExpression() const {

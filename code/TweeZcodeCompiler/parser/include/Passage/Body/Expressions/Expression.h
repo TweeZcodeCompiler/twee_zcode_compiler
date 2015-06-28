@@ -33,7 +33,7 @@ class Expression : public BodyPart {
 
 public:
 
-    virtual std::string to_string() = 0;
+    virtual std::string to_string() const = 0;
 
     virtual Expression *clone() const = 0;
 

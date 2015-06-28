@@ -13,7 +13,7 @@ public:
 
     virtual ~BodyPart() { };
 
-    virtual std::string to_string() = 0;
+    virtual std::string to_string() const = 0;
 
     virtual BodyPart *clone() const = 0;
 };

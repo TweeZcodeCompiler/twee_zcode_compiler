@@ -18,7 +18,9 @@ private:
 
 public:
 
-    Display(std::unique_ptr<Expression>);
+    Display(const Expression *);
+
+    Display(const Expression &);
 
     const std::unique_ptr<Expression> &getExpression() const;
 
