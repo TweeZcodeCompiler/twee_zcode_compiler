@@ -228,7 +228,7 @@ bodypart :
     LOG_DEBUG << "pass text:type(text) to bodypart:type(BodyPart)";
     $$ = $1;
     }
-    |text
+    |variable
     {
     LOG_DEBUG << "bodypart -> variable";
     LOG_DEBUG << "pass variable:type(variable) to bodypart:type(BodyPart)";
