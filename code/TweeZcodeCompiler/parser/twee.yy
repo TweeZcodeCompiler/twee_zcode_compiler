@@ -17,6 +17,7 @@
     #include "include/TweeFile.h"
     #include "include/Passage/Passage.h"
     #include "include/Passage/Body/Text.h"
+    #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
     #include "include/Passage/Body/FormattedText.h"
 
@@ -74,6 +75,7 @@
 
 	BodyPart *bodypart;
 	Text *text;
+	Newline *newline;
 	Link *link;
 	FormattedText *formattedtext;
 
@@ -170,6 +172,7 @@
 
 %type <bodypart> bodypart
 %type <text> text
+%type <newline> newline
 %type <link> link
 %type <formattedtext> formatted
 
@@ -275,6 +278,11 @@ bodypart :
     LOG_DEBUG << "Parser: bodypart -> text: "<< "pass text:type(text) to bodypart:type(BodyPart)";
     $$ = $1;
     }
+    |newline
+    {
+    LOG_DEBUG << "Parser: bodypart -> newline: "<< "pass newline:type(Newline) to bodypart:type(BodyPart)";
+    $$ = $1;
+    }
     |link
     {
     LOG_DEBUG << "Parser: bodypart -> link: "<< "pass link:type(Link) to bodypart:type(BodyPart)";
@@ -294,17 +302,21 @@ bodypart :
     }
   ;
 
+newline :
+    NEWLINE
+    {
+    LOG_DEBUG << "Parser: bodypart -> NEWLINE: "<< "create top:text:type(Text) with a \"\\n\"";
+    $$ = new Newline();
+    }
+  ;
+
+
 text :
     TEXT_TOKEN
     {
     LOG_DEBUG << "Parser: text -> TEXT_TOKEN: "<< "create top:text:type(Text)";
     $$ = new Text(*$1);
     delete $1;
-    }
-    |NEWLINE
-    {
-    LOG_DEBUG << "Parser: bodypart -> NEWLINE: "<< "create top:text:type(Text) with a \"\\n\"";
-    $$ = new Text("\n");
     }
   ;
 
