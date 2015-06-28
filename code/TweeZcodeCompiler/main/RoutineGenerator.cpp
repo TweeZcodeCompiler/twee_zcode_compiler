@@ -207,9 +207,7 @@ void RoutineGenerator::callVS(vector<unique_ptr<ZParam>> params) {
     ZCodeCallAdress *callAdress = new ZCodeCallAdress(ZCodeRoutine::getOrCreateRoutine(routineName,0));
     routine->add(callAdress);
     vector<bitset<8>> instructionsAfterJump;
-    for(size_t i = 4; i < generated.size();i++){
-        instructionsAfterJump.push_back(generated.at(i));
-    }
+    instructionsAfterJump.push_back(numberToBitset(storeAddress));
     ZCodeInstruction *instructionObjectsAfterJump = new ZCodeInstruction(instructionsAfterJump);
     routine->add(instructionObjectsAfterJump);
 }
@@ -293,6 +291,7 @@ void RoutineGenerator::jump(vector<unique_ptr<ZParam>> params) {
     ZCodeInstruction  *instruction = new ZCodeInstruction(instructions);
     routine->add(instruction);
     ZCodeJump *jump = new ZCodeJump(getOrCreateLabel(label));
+    jump->isCondJump = false;
     routine->add(jump);
 }
 
@@ -540,11 +539,14 @@ ZCodeLabel *RoutineGenerator::getOrCreateLabel(std::string name) {
 }
 
 void RoutineGenerator::debug(std::string message) {
+    if(!debugmode){
+        return;
+    }
     ZCodeConverter converter = ZCodeConverter();
     vector<bitset<8>> zsciiString = converter.convertStringToZSCII("["+message+"]");
     vector<bitset<8>> instruction = vector<bitset<8>>();
     unsigned long len = zsciiString.size();
-    for (size_t i = 0; i < len; i++) {
+     for (size_t i = 0; i < len; i++) {
         if (i % 96 == 0) {
             instruction.push_back(numberToBitset(PRINT));
         }

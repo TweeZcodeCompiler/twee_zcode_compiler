@@ -16,6 +16,7 @@ private:
     std::vector<std::bitset<8>> adress;
     void addCondBranchOffset();
 public:
+    bool isCondJump = true;
     bool jumpIfCondTrue = true;
      void print(std::vector<std::bitset<8>> &code);
     virtual bool revalidate();
