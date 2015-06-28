@@ -4,6 +4,7 @@
 
 #include "Jumps.h"
 #include "RoutineGenerator.h"
+#include "exceptions.h"
 #include <iostream>
 #include <plog/Log.h>
 

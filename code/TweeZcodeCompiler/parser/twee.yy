@@ -18,7 +18,6 @@
     #include "include/Passage/Passage.h"
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Link.h"
-    #include "include/Passage/Body/Expressions/Const.h"
     #include "include/Passage/Body/Expressions/Function.h"
     #include "include/Passage/Body/Expressions/Operator"
     #include "include/Passage/Body/Expressions/Variable.h"
@@ -84,7 +83,8 @@
 	BodyPart *bodypart;
 	Text *text;
 	Link *link;
-
+	Variable *variable;
+	
 	//TODO: add Syntax Tree classes
 }
 
@@ -152,6 +152,7 @@
     <token> FORMATTING_COMMENT_CLOSE
     <token> FORMATTING_ERROR_STYLING
     <string> TEXT_TOKEN
+    <string> VARIABLE_TOKEN
 
 // association definitions, grouped by decreasing precedence in java script
 
@@ -179,6 +180,9 @@
 %type <bodypart> bodypart
 %type <text> text
 %type <link> link
+%type <variable> variable
+%type <formattedtext> formatted
+%type <text> macro
 
 %type <macro> macro
 %type <expression> expression
@@ -282,6 +286,12 @@ bodypart :
     LOG_DEBUG << "Parser: bodypart -> text: "<< "pass text:type(text) to bodypart:type(BodyPart)";
     $$ = $1;
     }
+    |variable
+    {
+    LOG_DEBUG << "bodypart -> variable";
+    LOG_DEBUG << "pass variable:type(variable) to bodypart:type(BodyPart)";
+    $$ = $1;
+    }
     |link
     {
     LOG_DEBUG << "Parser: bodypart -> link: "<< "pass link:type(Link) to bodypart:type(BodyPart)";
@@ -300,6 +310,16 @@ text :
     {
     LOG_DEBUG << "Parser: text -> TEXT_TOKEN: "<< "create top:text:type(Text)";
     $$ = new Text(*$1);
+    delete $1;
+    }
+  ;
+
+variable:
+    VARIABLE_TOKEN
+    {
+    LOG_DEBUG << "variable -> VARIABLE_TOKEN";
+    LOG_DEBUG << "create top:variable:type(Variable)";
+    $$ = new Variable(*$1);
     delete $1;
     }
     |NEWLINE

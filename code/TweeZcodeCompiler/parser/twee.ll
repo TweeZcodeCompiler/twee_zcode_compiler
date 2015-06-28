@@ -86,6 +86,9 @@ LINK_OPEN               \[{2}
 LINK_CLOSE              \]{2}
 LINK_SEPARATOR          \|
 
+/* initial $ sign -> letter (uppercase or lowercase) or an underscore -> any combination of letters, numbers, or underscores */
+VARIABLE                $[a-zA-z_][a-zA-Z0-9_]*
+
  /*LINK_TEXT_CHAR          [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
 LINK_TEXT               [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
 
@@ -432,6 +435,26 @@ EXPR_ASS                to|=
     /*From: Body */
     /*To:   Body */
 
+    /* macro text */
+<BodyMacro>{MACRO_TEXT}         {
+                                //stay in condition BodyMacro, look for next token
+                                LOG_DEBUG << "stay in condition BodyMacro, look for next token";
+                                //return the TEXT Token
+                                LOG_DEBUG << "return the TEXT Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::TEXT_TOKEN;
+                                }
+
+<BodyMacro>{VARIABLE}           {
+                                //return the VARIABLE Token
+                                LOG_DEBUG << "return the VARIABLE Token";
+                                LOG_DEBUG << "\t matched:";
+                                LOG_DEBUG << YYText();
+                                SAVE_TOKEN;
+                                return BisonParser::token::VARIABLE_TOKEN;
+                                }
     /* macro if */
 <BodyMacro>{MACRO_IF}		    {
                                 LOG_DEBUG << "Lexer: Condition: BodyMacro matched Token MACRO_IF" << " with value " << YYText();

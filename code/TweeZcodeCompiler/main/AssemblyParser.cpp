@@ -3,6 +3,7 @@
 //
 
 #include "AssemblyParser.h"
+#include "exceptions.h"
 #include <fstream>
 #include <sstream>
 #include <algorithm>
@@ -63,17 +64,13 @@ string trim(const string &str,
     return str.substr(strBegin, strRange);
 }
 
-bool AssemblyParser::checkIfRoutineNameExists(std::string routineName) {
-    return (std::find(routineNameList.begin(), routineNameList.end(), routineName) != routineNameList.end());
-}
-
 void AssemblyParser::performRoutineDirectiveCommand(vector<string> lineComps, vector<bitset<8>> &highMemoryZcode,
                                                     size_t offset) {
     LOG_DEBUG << "found routine";
 
     if (lineComps.size() < 2) {
         cerr << "invalid routine declaration (no name specified)";
-        throw;
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_ROUTINE);
     }
     string routineName = lineComps.at(1);
 
@@ -81,6 +78,10 @@ void AssemblyParser::performRoutineDirectiveCommand(vector<string> lineComps, ve
     if (currentGenerator) {
         finishRoutine(highMemoryZcode);
     }
+
+    // have to be cleared after each routine
+    registeredJumpsAtLines = vector<pair<string, unsigned>>();
+    registeredLabels = vector<string>();
 
     unsigned locVariablesCount = (unsigned) (lineComps.size() - 2);
     currentGenerator.reset(new RoutineGenerator(routineName, locVariablesCount, highMemoryZcode, offset));
@@ -105,15 +106,16 @@ void AssemblyParser::performRoutineDirectiveCommand(vector<string> lineComps, ve
             try {
                 val = stoi(valueString);
             } catch (const invalid_argument &invaldArgument) {
-                LOG_DEBUG << "Given value for local variable is not an integer: " << valueString;
-                throw;
+                LOG_ERROR << "Given value for local variable is not an integer: " << valueString;
+                throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
             } catch (const out_of_range &outOfRange) {
-                LOG_DEBUG << "Given value for local variable too large or too small: " << valueString;
-                throw;
+                LOG_ERROR << "Given value for local variable too large or too small: " << valueString;
+                throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
             }
 
             if (val > INT16_MAX || val < INT16_MIN) {
-                throw out_of_range(string("Given value for local variable too large or too small: ") + to_string(val));
+                LOG_ERROR << "Given value for local variable too large or too small: " << to_string(val);
+                throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
             }
 
             string name = var.substr(0, nameEnd);
@@ -145,37 +147,69 @@ void AssemblyParser::readAssembly(istream &input, vector<bitset<8>> &highMemoryZ
 
     LOG_DEBUG << "Compiler: Parse Assembly File\n";
 
+    string line;
+    currentLineNumber = 1;
 
-    for (string line; getline(input, line);) {
-        line = trim(line);
-        vector<string> lineComps;
-        this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND, lineComps);
+    try {
+        for (; getline(input, line);) {
+            line = trim(line);
+            vector<string> lineComps;
+            this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND, lineComps);
 
-        if (lineComps.size()) {
-            string firstComp = lineComps.at(0);
+            if (lineComps.size()) {
+                string firstComp = lineComps.at(0);
 
-            if (line.at(0) == '.') { // routine directive
-                if (firstComp.compare(ROUTINE_DIRECTIVE) == 0) {
-                    performRoutineDirectiveCommand(lineComps, highMemoryZcode, offset);
-                } else if (firstComp.compare(GVAR_DIRECTIVE) == 0) { //global variable directive
-                    performRoutineGlobalVarCommand(line);
-                } else {
-                    cerr << "unknown directive";
-                    throw;
+                if (line.at(0) == '.') { // routine directive
+                    if (firstComp.compare(ROUTINE_DIRECTIVE) == 0) {
+                        performRoutineDirectiveCommand(lineComps, highMemoryZcode, offset);
+                    } else if (firstComp.compare(GVAR_DIRECTIVE) == 0) { //global variable directive
+                        performRoutineGlobalVarCommand(line);
+                    } else {
+                        cerr << "unknown directive";
+                        throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
+                    }
+                } else { // normal instruction
+                    executeCommand(line, *currentGenerator);
                 }
-            } else { // normal instruction
-                executeCommand(line, *currentGenerator);
             }
-        }
-    }
 
-    if (currentGenerator) {
-        finishRoutine(highMemoryZcode);
+            ++currentLineNumber;
+        }
+
+        if (currentGenerator) {
+            finishRoutine(highMemoryZcode);
+        }
+    } catch (AssemblyException &assemblyException) {
+        // only set if not known already
+        if (assemblyException.lineNumber == 0) {
+            assemblyException.lineNumber = currentLineNumber;
+            assemblyException.line = line;
+        }
+        throw;
     }
 }
 
 void AssemblyParser::finishRoutine(vector<bitset<8>> &highMemoryZcode) {
     LOG_DEBUG << "adding routine to zcode";
+
+    // check if all labels were valid
+    bool labelFound;
+    for (auto jump = registeredJumpsAtLines.begin(); jump != registeredJumpsAtLines.end(); ++jump) {
+        labelFound = false;
+        for (auto label = registeredLabels.begin(); label != registeredLabels.end(); ++label) {
+            if (label->compare(jump->first) == 0) {
+                labelFound = true;
+                break;
+            }
+        }
+
+        if (!labelFound) {
+            InvalidLabelException e(jump->first);
+            e.lineNumber = jump->second;
+            throw e;
+        }
+    }
+
     auto routineCode = currentGenerator->getRoutine();
     Utils::append(highMemoryZcode, routineCode);
 }
@@ -188,8 +222,8 @@ vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instructi
         return params;
     } else if ((count(instruction.begin(), instruction.end(), AssemblyParser::STRING_DELIMITER) % 2) != 0) {
         // checks if there are always 2 quotation marks for hard coded string
-        cout << endl << endl << "String does not end!" << endl << endl;
-        throw;
+        LOG_ERROR << "String does not end!";
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
     }
 
     // if this is a call instruction first argument is routine name
@@ -268,8 +302,8 @@ vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instructi
         if (address) {
             params.push_back(unique_ptr<ZStoreParam>(new ZStoreParam((uint16_t) *address)));
         } else {
-            cout << endl << endl << "Unknown store address" << storeAddress << endl << endl;
-            throw;
+            LOG_ERROR << "Unknown store address: " << storeAddress;
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
         }
     } else if (containsLabel) {
         auto label = split(instruction, '?').at(1);
@@ -299,8 +333,8 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string &paramString) {
         ZVariableParam *variableParam = new ZVariableParam((uint16_t) *paramId);
         param.reset(variableParam);
     } else {
-        cout << endl << endl << "Could not parse parameter: " << paramString << endl << endl;
-        throw;
+        LOG_ERROR << "Could not parse parameter: " << paramString;
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_VARIABLE);
     }
 
     return param;
@@ -312,10 +346,21 @@ void AssemblyParser::addGlobal(string globalName) {
     unsigned index = (unsigned) globalVariables.size();
     if (globalVariables.find(globalName) != globalVariables.end()) {
         LOG_ERROR << "two global variable have the same name";
-        throw;
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_GLOBAL);
     }
     LOG_DEBUG << "adding gvar " << globalName << " at index " << to_string(index);
     this->globalVariables[globalName] = index;
+}
+
+void AssemblyParser::registerJump(const vector<unique_ptr<ZParam>> &params) {
+    for (auto it = params.rbegin(); it != params.rend(); it++) {
+        ZParam *param = it->get();
+        if (param->getParamType() == NAME) {
+            ZNameParam *nameParam = dynamic_cast<ZNameParam *>(param);
+            registeredJumpsAtLines.push_back(make_pair(nameParam->name, currentLineNumber));
+            return;
+        }
+    }
 }
 
 void AssemblyParser::executePRINTCommand(const string &printCommand, RoutineGenerator &routineGenerator) {
@@ -361,23 +406,33 @@ void AssemblyParser::executeREADCommand(const string &readCommand, RoutineGenera
 }
 
 void AssemblyParser::executeJECommand(const string &jeCommand, RoutineGenerator &routineGenerator) {
-    routineGenerator.jumpEquals(parseArguments(jeCommand));
+    auto args = parseArguments(jeCommand);
+    registerJump(args);
+    routineGenerator.jumpEquals(move(args));
 }
 
 void AssemblyParser::executeJGCommand(const string &jeCommand, RoutineGenerator &routineGenerator) {
-    routineGenerator.jumpGreaterThan(parseArguments(jeCommand));
+    auto args = parseArguments(jeCommand);
+    registerJump(args);
+    routineGenerator.jumpGreaterThan(move(args));
 }
 
 void AssemblyParser::executeJLCommand(const string &jeCommand, RoutineGenerator &routineGenerator) {
-    routineGenerator.jumpLessThan(parseArguments(jeCommand));
+    auto args = parseArguments(jeCommand);
+    registerJump(args);
+    routineGenerator.jumpLessThan(move(args));
 }
 
 void AssemblyParser::executeJUMPCommand(const string &jumpCommand, RoutineGenerator &routineGenerator) {
-    routineGenerator.jump(parseArguments(jumpCommand));
+    auto args = parseArguments(jumpCommand);
+    registerJump(args);
+    routineGenerator.jump(move(args));
 }
 
 void AssemblyParser::executeJZCommand(const string &jumpCommand, RoutineGenerator &routineGenerator) {
-    routineGenerator.jumpZero(parseArguments(jumpCommand));
+    auto args = parseArguments(jumpCommand);
+    registerJump(args);
+    routineGenerator.jumpZero(move(args));
 }
 
 void AssemblyParser::executeCALL_VSCommand(const string &callCommand, RoutineGenerator &routineGenerator) {
@@ -473,34 +528,35 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::OR_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new add ";
         routineGenerator.doOR(parseArguments(command));
-    } else if(commandPart.compare(AssemblyParser::RET_TRUE_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::RET_TRUE_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new rtrue";
         routineGenerator.returnTrue();
-    } else if(commandPart.compare(AssemblyParser::RET_FALSE_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::RET_FALSE_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new rfalse";
         routineGenerator.returnFalse();
-    } else if(commandPart.compare(AssemblyParser::PRINT_RET_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::PRINT_RET_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new print_ret";
         routineGenerator.printRet(parseArguments(command));
-    } else if(commandPart.compare(AssemblyParser::RESTART_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::RESTART_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new restart";
         routineGenerator.restart();
-    } else if(commandPart.compare(AssemblyParser::RET_POPPED_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::RET_POPPED_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new ret_popped";
         routineGenerator.retPopped();
-    } else if(commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new verify";
         routineGenerator.verify(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label;
         routineGenerator.newLabel(label);
+        registeredLabels.push_back(label);
 
         string afterLabel = command.substr(commandPart.size());
         executeCommand(trim(afterLabel), *currentGenerator);
     } else {
         LOG_DEBUG << "unknown command: " << command;
-        throw;
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
     }
 }
 
