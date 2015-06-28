@@ -52,7 +52,6 @@ const char AssemblyParser::STRING_DELIMITER = '\"';
 const string AssemblyParser::ASSIGNMENT_OPERATOR = "->";
 
 
-
 string trim(const string &str,
             const string &whitespace = " \t") {
     const auto strBegin = str.find_first_not_of(whitespace);
@@ -63,10 +62,6 @@ string trim(const string &str,
     const auto strRange = strEnd - strBegin + 1;
 
     return str.substr(strBegin, strRange);
-}
-
-bool AssemblyParser::checkIfRoutineNameExists(std::string routineName) {
-    return (std::find(routineNameList.begin(), routineNameList.end(), routineName) != routineNameList.end());
 }
 
 void AssemblyParser::performRoutineDirectiveCommand(vector<string> lineComps, vector<bitset<8>> &highMemoryZcode,
@@ -85,7 +80,7 @@ void AssemblyParser::performRoutineDirectiveCommand(vector<string> lineComps, ve
     }
 
     // have to be cleared after each routine
-    registeredJumpsAtLines = vector<pair<string,unsigned>>();
+    registeredJumpsAtLines = vector<pair<string, unsigned>>();
     registeredLabels = vector<string>();
 
     unsigned locVariablesCount = (unsigned) (lineComps.size() - 2);
@@ -110,15 +105,15 @@ void AssemblyParser::performRoutineDirectiveCommand(vector<string> lineComps, ve
 
             try {
                 val = stoi(valueString);
-            } catch (const invalid_argument& invaldArgument) {
+            } catch (const invalid_argument &invaldArgument) {
                 LOG_ERROR << "Given value for local variable is not an integer: " << valueString;
                 throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
-            } catch (const out_of_range& outOfRange) {
+            } catch (const out_of_range &outOfRange) {
                 LOG_ERROR << "Given value for local variable too large or too small: " << valueString;
                 throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
             }
 
-            if(val > INT16_MAX || val < INT16_MIN) {
+            if (val > INT16_MAX || val < INT16_MIN) {
                 LOG_ERROR << "Given value for local variable too large or too small: " << to_string(val);
                 throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
             }
@@ -184,9 +179,9 @@ void AssemblyParser::readAssembly(istream &input, vector<bitset<8>> &highMemoryZ
         if (currentGenerator) {
             finishRoutine(highMemoryZcode);
         }
-    } catch(AssemblyException& assemblyException) {
+    } catch (AssemblyException &assemblyException) {
         // only set if not known already
-        if(assemblyException.lineNumber == 0) {
+        if (assemblyException.lineNumber == 0) {
             assemblyException.lineNumber = currentLineNumber;
             assemblyException.line = line;
         }
@@ -199,16 +194,16 @@ void AssemblyParser::finishRoutine(vector<bitset<8>> &highMemoryZcode) {
 
     // check if all labels were valid
     bool labelFound;
-    for(auto jump = registeredJumpsAtLines.begin(); jump != registeredJumpsAtLines.end(); ++jump) {
+    for (auto jump = registeredJumpsAtLines.begin(); jump != registeredJumpsAtLines.end(); ++jump) {
         labelFound = false;
-        for(auto label = registeredLabels.begin(); label != registeredLabels.end(); ++label) {
-            if(label->compare(jump->first) == 0) {
+        for (auto label = registeredLabels.begin(); label != registeredLabels.end(); ++label) {
+            if (label->compare(jump->first) == 0) {
                 labelFound = true;
                 break;
             }
         }
 
-        if(!labelFound) {
+        if (!labelFound) {
             InvalidLabelException e(jump->first);
             e.lineNumber = jump->second;
             throw e;
@@ -358,10 +353,10 @@ void AssemblyParser::addGlobal(string globalName) {
 }
 
 void AssemblyParser::registerJump(const vector<unique_ptr<ZParam>> &params) {
-    for(auto it = params.rbegin(); it != params.rend(); it++) {
-        ZParam* param = it->get();
-        if(param->getParamType() == NAME) {
-            ZNameParam* nameParam = dynamic_cast<ZNameParam*>(param);
+    for (auto it = params.rbegin(); it != params.rend(); it++) {
+        ZParam *param = it->get();
+        if (param->getParamType() == NAME) {
+            ZNameParam *nameParam = dynamic_cast<ZNameParam *>(param);
             registeredJumpsAtLines.push_back(make_pair(nameParam->name, currentLineNumber));
             return;
         }
@@ -533,22 +528,22 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::OR_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new add ";
         routineGenerator.doOR(parseArguments(command));
-    } else if(commandPart.compare(AssemblyParser::RET_TRUE_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::RET_TRUE_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new rtrue";
         routineGenerator.returnTrue();
-    } else if(commandPart.compare(AssemblyParser::RET_FALSE_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::RET_FALSE_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new rfalse";
         routineGenerator.returnFalse();
-    } else if(commandPart.compare(AssemblyParser::PRINT_RET_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::PRINT_RET_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new print_ret";
         routineGenerator.printRet(parseArguments(command));
-    } else if(commandPart.compare(AssemblyParser::RESTART_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::RESTART_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new restart";
         routineGenerator.restart();
-    } else if(commandPart.compare(AssemblyParser::RET_POPPED_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::RET_POPPED_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new ret_popped";
         routineGenerator.retPopped();
-    } else if(commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new verify";
         routineGenerator.verify(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
