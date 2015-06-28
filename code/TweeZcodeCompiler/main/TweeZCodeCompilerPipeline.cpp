@@ -42,6 +42,10 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
         buffer << in.rdbuf();
     }
 
+    ofstream testFile("test.zas");
+    testFile << buffer.str();
+
+
     //create header
     ZCodeHeader header = ZCodeHeader();
 
