@@ -380,7 +380,7 @@ void AssemblyParser::executeRETCommand(const string &callCommand, RoutineGenerat
 }
 
 
-std::string exec(const char* cmd) {
+std::string AssemblyParser::executeSystemCommand(const char* cmd) {
     FILE* pipe = popen(cmd, "r");
     if (!pipe) return "ERROR";
     char buffer[128];
@@ -400,11 +400,24 @@ void AssemblyParser::executeIMGCommand(const std::string &imgCommand, RoutineGen
     vector <string> commandParts = this->split(imgCommand, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
 
     std::string path = commandParts.at(1);
+
+    //remove \" characters
+    path = path.erase(0,1);
+    path = path.erase(path.length()-1,1);
+
+
+    std::ifstream fileExists(path);
+    if(!fileExists)
+    {
+        LOG_ERROR << "image " << path << " doesn't exists";
+       throw new std::string("could not load image");
+
+    }
     std::stringstream jp2aCommand;
     jp2aCommand << "jp2a " << path;
     std::string jp2a =  jp2aCommand.str();
 
-    std::string asciiImg = exec(string(jp2a).c_str());
+    std::string asciiImg = executeSystemCommand(string(jp2a).c_str());
 
     std::stringstream msg;
     msg << AssemblyParser::PRINT_COMMAND << " \"" << asciiImg << "\"";
