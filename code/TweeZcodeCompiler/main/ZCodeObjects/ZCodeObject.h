@@ -18,8 +18,8 @@ protected:
 
 
 public:
-    size_t  offset;
-    size_t  size;
+    size_t  offset = 0;
+    size_t  size = 0;
     virtual void print(std::vector<std::bitset<8>> &code) {};
     //returns true if needs to be revalidate again
     virtual bool revalidate(){};
@@ -29,7 +29,7 @@ public:
     size_t getSize();
     void setOffset(size_t offset);
     size_t getOffset();
-    ZCodeObject() : offset(size_t(0)), size(size_t(0)) {
+    ZCodeObject(){
     }
     ~ZCodeObject(){
 

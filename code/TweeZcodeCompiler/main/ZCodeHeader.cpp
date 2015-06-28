@@ -67,7 +67,7 @@ vector<bitset<8>> &ZCodeHeader::getHeaderBits() {
 
 bool ZCodeHeader::revalidate() {
     if(this->size == 0){
-        this->size = 0x37;
+        setSize(0x37);
         return true;
     }
     return false;

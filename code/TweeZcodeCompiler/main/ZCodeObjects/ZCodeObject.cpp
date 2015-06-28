@@ -2,13 +2,15 @@
 // Created by philip on 27.06.15.
 //
 
+#include <ostream>
+#include <iostream>
 #include "ZCodeObject.h"
 
 void ZCodeObject::add(ZCodeObject *Child) {
     children.push_back(Child);
     Child->parrent = this;
     Child->offset = this->offset+ this->size;
-    this->size += Child->getSize();
+   setSize(this->size+ Child->getSize());
     ZCodeObject *parrent = this->parrent;
     if(parrent != NULL){
         parrent->revalidate();
@@ -19,10 +21,8 @@ void ZCodeObject::setSize(size_t size) {
     if(size == this->size){
         return;
     }
+
     this->size = size;
-    if(parrent != NULL){
-        parrent->revalidate();
-    }
 }
 
 size_t ZCodeObject::getSize() {

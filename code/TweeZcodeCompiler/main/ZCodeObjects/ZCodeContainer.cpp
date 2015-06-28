@@ -14,16 +14,15 @@ bool ZCodeContainer::revalidate() {
         calculatedSize = 0;
         for(size_t i = 0; i < children.size(); i++){
             ZCodeObject *child = children.at(i);
-            child->size = this->offset+ calculatedSize;
-            if(child->revalidate()){
-                validatedAll = true;
-            }
-            calculatedSize += child->getSize();
+            size_t offset = this->offset;
+            child->setSize(offset+ calculatedSize);
+            calculatedSize = calculatedSize + child->size;
         }
     }
     size_t currentSize = this->size;
     if(this->size != calculatedSize){
-        this->size = calculatedSize;
+        setSize(calculatedSize);
+        std::cout << this << "::" << &currentSize<< " = "<< currentSize << " / " << this->size<<std::endl;
         size_t after = this->size;
         return true;
     }

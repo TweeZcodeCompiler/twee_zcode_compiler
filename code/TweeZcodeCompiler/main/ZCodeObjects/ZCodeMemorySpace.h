@@ -14,7 +14,7 @@ public:
     void print(std::vector<std::bitset<8>> &code);
     bool revalidate();
     ZCodeMemorySpace(int space){
-        this->size = space;
+        setSize(space);
     }
 
 };

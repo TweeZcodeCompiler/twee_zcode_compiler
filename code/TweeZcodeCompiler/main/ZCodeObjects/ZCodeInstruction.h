@@ -20,7 +20,7 @@ public:
 
     ZCodeInstruction(std::vector<std::bitset<8>> instructions) {
         content = instructions;
-        this->size = instructions.size();
+        setSize(instructions.size());
     }
 
     ZCodeInstruction(uint8_t code) {

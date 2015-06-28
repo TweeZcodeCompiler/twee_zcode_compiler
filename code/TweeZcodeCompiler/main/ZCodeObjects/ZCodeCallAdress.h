@@ -16,7 +16,7 @@ public:
     bool revalidate();
     void print(std::vector<std::bitset<8>> &code);
     ZCodeCallAdress(ZCodeRoutine *routine) : routine(routine) {
-        this->size = 2;
+        setSize(2);
     }
 };
 
