@@ -16,7 +16,10 @@ public:
     ZCodeMemorySpace(int space){
         setSize(space);
     }
-
+    ZCodeMemorySpace(int space, std::string name){
+        displayName = name;
+        setSize(space);
+    }
 };
 
 

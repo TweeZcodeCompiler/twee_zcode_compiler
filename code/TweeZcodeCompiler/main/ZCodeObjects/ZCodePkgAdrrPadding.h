@@ -11,7 +11,7 @@
 class ZCodePkgAdrrPadding : public ZCodeObject{
 
 public:
-    ZCodePkgAdrrPadding() {}
+    ZCodePkgAdrrPadding(): ZCodeObject("padding") {}
 
     void print(std::vector<std::bitset<8>> &code);
     bool revalidate();

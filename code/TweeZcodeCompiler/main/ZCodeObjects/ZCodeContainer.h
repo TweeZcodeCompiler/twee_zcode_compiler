@@ -11,7 +11,11 @@
 class ZCodeContainer: public ZCodeObject {
 
 public:
+    size_t containerOffset = 0;
     ZCodeContainer() {}
+    ZCodeContainer(std::string name): ZCodeObject(name){
+
+    }
 
     void print(std::vector<std::bitset<8>> &code);
     bool revalidate();

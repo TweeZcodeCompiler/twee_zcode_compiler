@@ -211,7 +211,7 @@ void AssemblyParser::finishRoutine(ZCodeContainer *highMemoryZcode) {
     auto *routine = currentGenerator->getRoutine();
     if(firstRoutine){
         //Call to first Routine
-        ZCodeInstruction *call = new ZCodeInstruction(RoutineGenerator::CALL_1N);
+        ZCodeInstruction *call = new ZCodeInstruction(RoutineGenerator::CALL_1N, "call to first routine");
         highMemoryZcode->add(call);
         ZCodeCallAdress *adress = new ZCodeCallAdress(routine);
         highMemoryZcode->add(adress);

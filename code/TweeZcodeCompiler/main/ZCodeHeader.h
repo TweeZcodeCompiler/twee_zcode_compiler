@@ -91,6 +91,10 @@ public:
     // get complete headerBits as vector<bitset>
     std::vector<std::bitset<8>> &getHeaderBits();
 
+    ZCodeHeader(): ZCodeObject("header"){
+
+    }
+
 };
 
 #endif //TWEEZCODECOMPILER_HEADER_H

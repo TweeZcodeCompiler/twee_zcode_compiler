@@ -10,6 +10,7 @@ std::map<std::string,ZCodeRoutine*> ZCodeRoutine::routines = std::map<std::strin
 ZCodeRoutine *ZCodeRoutine::getOrCreateRoutine(std::string name, std::uint8_t locVariables) {
     if (routines.count(name) == 0) {
         ZCodeRoutine *routine = new ZCodeRoutine(0);
+        routine ->displayName = name;
         routines.insert(std::pair<std::string, ZCodeRoutine*>(name,routine));
         return routine;
     } else {

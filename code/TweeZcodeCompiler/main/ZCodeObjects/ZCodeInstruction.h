@@ -18,12 +18,12 @@ public:
     bool revalidate();
     void print(std::vector<std::bitset<8>> &code);
 
-    ZCodeInstruction(std::vector<std::bitset<8>> instructions) {
+    ZCodeInstruction(std::vector<std::bitset<8>> instructions,std::string name = "UNKNOWN") : ZCodeObject(name) {
         content = instructions;
         setSize(instructions.size());
     }
 
-    ZCodeInstruction(uint8_t code) {
+    ZCodeInstruction(uint8_t code, std::string name = "UNKNOWN") : ZCodeObject(name) {
         content = std::vector<std::bitset<8>>();
         content.push_back(std::bitset<8>(code));
         size = 1;

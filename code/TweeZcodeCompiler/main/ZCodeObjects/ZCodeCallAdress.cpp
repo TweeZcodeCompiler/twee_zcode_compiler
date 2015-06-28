@@ -11,5 +11,6 @@ bool ZCodeCallAdress::revalidate() {
 
 void ZCodeCallAdress::print(std::vector<std::bitset<8>> &code) {
     uint16_t  pkgAddr = routine->offset/8;
+    displayName = "call adress "+ std::to_string(routine->offset);
     Utils::addTwoBytes(pkgAddr,code);
 }

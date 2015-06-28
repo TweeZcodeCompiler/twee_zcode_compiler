@@ -38,13 +38,13 @@ private:
 
     std::bitset<8> numberToBitset(unsigned int number);
 
-    void addBitset(std::vector<std::bitset<8>> bitsets);
+    void addBitset(std::vector<std::bitset<8>> bitsets,std::string name);
 
     void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, ZParam &param1, ZParam &param2);
-
+    void debug(std::string);
 public:
 
-
+    bool debugmode= true;
     ZCodeLabel *getOrCreateLabel(std::string name);
 
     // this constructor padding zCode to the next package adress and initialize this routine with the name 'name'

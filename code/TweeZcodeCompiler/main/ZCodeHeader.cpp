@@ -67,7 +67,7 @@ vector<bitset<8>> &ZCodeHeader::getHeaderBits() {
 
 bool ZCodeHeader::revalidate() {
     if(this->size == 0){
-        setSize(0x37);
+        setSize(0x3f);
         return true;
     }
     return false;
@@ -76,6 +76,9 @@ bool ZCodeHeader::revalidate() {
 void ZCodeHeader::print(std::vector<std::bitset<8>> &code) {
     vector<bitset<8>> result = getHeaderBits();
     Utils::append(code,result);
+    size_t codeSize = code.size();
+    size_t offset = this->offset;
+    size_t size = this->size;
 }
 
 /* helper method to calculate length and to

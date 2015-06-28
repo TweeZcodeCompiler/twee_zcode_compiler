@@ -13,6 +13,7 @@ void ZCodeJump::print(std::vector<std::bitset<8>> &code) {
 }
 
 bool ZCodeJump::revalidate() {
+    this->displayName = "jump adress "+std::to_string((int)this->label->offset);
     int size = this->adress.size();
     addCondBranchOffset();
     if(size != this->adress.size()){
@@ -29,6 +30,7 @@ void ZCodeJump::addCondBranchOffset() {
     bitset<8> firstHalf, secondHalf;
     this->adress = vector<bitset<8>>();
 
+    size_t offset = this->offset - label->offset;
     // Offset needs to be between 0 and 63 to fit into 6 bits
     bool useOneByte = offset > 0 && (offset - 1) < 64;
 
@@ -42,6 +44,7 @@ void ZCodeJump::addCondBranchOffset() {
             firstHalf.set(i, bitsetOffset[i]);
         }
     this->adress.push_back(firstHalf);
+        this->size = 1;
     } else {
         bitset<14> bitsetOffset(offset);
 
@@ -54,5 +57,6 @@ void ZCodeJump::addCondBranchOffset() {
         }
         this->adress.push_back(firstHalf);
         this->adress.push_back(secondHalf);
+        this->size = 2;
     }
 }

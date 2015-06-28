@@ -17,6 +17,7 @@ private:
 public:
     void print(std::vector<std::bitset<8>> & code);
     ZCodeRoutine(uint8_t locVariables){
+        containerOffset = 1;
        this->localVariables = locVariables;
     }
 

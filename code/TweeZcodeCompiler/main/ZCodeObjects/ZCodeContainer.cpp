@@ -3,26 +3,30 @@
 //
 
 #include <iostream>
+#include <plog/Log.h>
 #include "ZCodeContainer.h"
 #include "../Utils.h"
 
 bool ZCodeContainer::revalidate() {
-    size_t calculatedSize = 0;
+    size_t calculatedSize = containerOffset;
     bool validatedAll = true;
     while(validatedAll){
         validatedAll = false;
-        calculatedSize = 0;
+        calculatedSize = containerOffset;
         for(size_t i = 0; i < children.size(); i++){
             ZCodeObject *child = children.at(i);
             size_t offset = this->offset;
-            child->setSize(offset+ calculatedSize);
+            child->setOffset(offset+ calculatedSize);
+            std::cout <<" revalidate '"<< child->displayName<<"' in '"<< (displayName) << "'"<< std::endl;
+            if(child->revalidate()){
+                validatedAll = true;
+            }
             calculatedSize = calculatedSize + child->size;
         }
     }
     size_t currentSize = this->size;
     if(this->size != calculatedSize){
         setSize(calculatedSize);
-        std::cout << this << "::" << &currentSize<< " = "<< currentSize << " / " << this->size<<std::endl;
         size_t after = this->size;
         return true;
     }

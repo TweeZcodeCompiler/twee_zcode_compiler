@@ -13,6 +13,7 @@
 #include "AssemblyParser.h"
 #include "ZCodeObjects/ZCodeContainer.h"
 #include "ZCodeObjects/ZCodeMemorySpace.h"
+#include "ZCodeObjects/ZCodePkgAdrrPadding.h"
 #include <sstream>
 #include <plog/Log.h>
 #include <stdint-gcc.h>
@@ -47,24 +48,30 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
 
 
 
-    ZCodeContainer zcode = ZCodeContainer();
+    ZCodeContainer zcode = ZCodeContainer("ZCode Container");
 
     //create header
     ZCodeHeader *header = new ZCodeHeader();
     zcode.add(header);
 
     //create dynamicMemory
-    ZCodeContainer *dynamicMemory = new ZCodeContainer();
-    ZCodeMemorySpace *globalVariablesTable = new ZCodeMemorySpace((0xff - 0x10)*2);// Global Var Table
+    ZCodeContainer *dynamicMemory = new ZCodeContainer("dynamic memory");
+    ZCodeMemorySpace *globalVariablesTable = new ZCodeMemorySpace((0xff - 0x0f)*2+1000,"global variables table");// Global Var Table
+    dynamicMemory->add(new ZCodePkgAdrrPadding());
     dynamicMemory->add(globalVariablesTable);
+    ZCodeMemorySpace *globalObjectsTable = new ZCodeMemorySpace((0x2f0-0x140), "global objects");
+    dynamicMemory->add(new ZCodePkgAdrrPadding());
+    dynamicMemory->add(globalObjectsTable);
     zcode.add(dynamicMemory);
 
     //create staticMemory
-    ZCodeContainer *staticMemory = new ZCodeContainer();
+    ZCodeContainer *staticMemory = new ZCodeContainer("static memory");
+    ZCodePkgAdrrPadding *padding = new ZCodePkgAdrrPadding();
+    staticMemory->add(padding);
     zcode.add(staticMemory);
 
     //create hight Memory
-    ZCodeContainer *highMemory =new ZCodeContainer();
+    ZCodeContainer *highMemory =new ZCodeContainer("high memory");
     zcode.add(highMemory);
 
     //parse
@@ -79,12 +86,14 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
     header->baseOfStatMem = (uint16_t) (staticMemory->getOffset());
     header->baseOfHighMem = (uint16_t) (highMemory->getOffset());
     header->initValOfPC = header->baseOfHighMem;
+    header->locOfObjTable = globalObjectsTable->offset;
 
     //concat memory sections
 
     vector<bitset<8>> zCode;
     zcode.print(zCode);
 
+    zcode.printMemory();
 
     //calculate fileSize
     size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
