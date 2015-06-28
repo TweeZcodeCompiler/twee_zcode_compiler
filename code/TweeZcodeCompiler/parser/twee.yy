@@ -5,7 +5,7 @@
 %parse-param { Twee::TweeScanner &scanner }
 %lex-param   { Twee::TweeScanner &scanner }
 %define parse.error verbose
-%debug
+%define parse.trace
 
 %skeleton "lalr1.cc"
 
@@ -28,6 +28,8 @@
 	namespace Twee {
 		class TweeScanner;
 	}
+
+	#define YYDEBUG 1
 }
 
 %code {
@@ -41,13 +43,13 @@
 
     //TODO: implement plog for logging
 	void logDebug(std::string message) {
-        std::cout << "Parser: " << message << "\n";
+    std::cout << "Parser: " << message << "\n";
     }
 
     //TODO: make a formattedText function
     /*to get the bold, italic etc. values of the FORMATTING_OPEN
-     * and FORMATTING_CLOSE tokens
-     */
+    * and FORMATTING_CLOSE tokens
+    */
 
 }
 
@@ -192,18 +194,14 @@ passages :
     {
     LOG_DEBUG << "Parser: passages -> passages passage: " << "pass passages:type(TweeFile) to top:passages:type(TweeFile)" <<"\n"<< "add the passage:type(Passage) to the passages:type(TweeFile)";
     $$ = $1;
-
     *$$ += *$2;
     delete $2;
     }
 	|passage
 	{
 	LOG_DEBUG << "Parser: passages -> passage: "<< "create a passages:type(TweeFile)"<< "add passage:type(Passage) to passages:type(TweeFile)";
-
     $$ = new TweeFile();
-
     *$$ += *$1;
-    delete $1;
     delete $1;
     }
   ;
@@ -211,11 +209,7 @@ passage :
     head body
     {
     LOG_DEBUG << "Parser: passage -> head body: "<< "create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects";
-
-
     $$ = new Passage(*$1, *$2);
-    delete $1;
-    delete $2;
     delete $1;
     delete $2;
     }
@@ -225,7 +219,7 @@ head :
     PASSAGE_START title
     {
     LOG_DEBUG << "Parser: head -> PASSAGE_START title: "<< "pass title:type(Head) to head:type(Head)";
-        $$ = $2;
+    $$ = $2;
     }
   ;
 
@@ -239,7 +233,7 @@ title :
     |TITLE TAGS_OPEN tags TAGS_CLOSE NEWLINE
     {
     LOG_DEBUG << "Parser: title -> TITLE TAGS_OPEN tags TAGS_CLOSE NEWLINE: "<< "create title:type(Head) out of token:TITLE";
-        //TODO: incorporate tags
+    //TODO: incorporate tags
     $$ = new Head(*$1);
     delete $1;
     }
@@ -262,15 +256,15 @@ body :
     bodypart
     {
     LOG_DEBUG << "Parser: body -> bodypart: "<< "create top:body:type(Body)"<< "add bodypart:type(BodyPart) to top:body:type(Body)";
-        $$ = new Body();
-        *$$ += *$1;
+    $$ = new Body();
+    *$$ += *$1;
     delete $1;
     }
     |body bodypart
     {
     LOG_DEBUG << "Parser: body -> body bodypart: "<< "pass body:type(Body) to top:body:type(Body)"<< "add bodypart:type(BodyPart) to top:body:type(Body)";
-        $$ = $1;
-        *$$ += *$2;
+    $$ = $1;
+    *$$ += *$2;
     delete $2;
     }
   ;
@@ -279,17 +273,12 @@ bodypart :
     text
     {
     LOG_DEBUG << "Parser: bodypart -> text: "<< "pass text:type(text) to bodypart:type(BodyPart)";
-        $$ = $1;
-    }
-    |NEWLINE
-    {
-    LOG_DEBUG << "Parser: bodypart -> NEWLINE: "<< "create top:text:type(Text) with a \"\\n\"";
-        $$ = new Text("\n");
+    $$ = $1;
     }
     |link
     {
     LOG_DEBUG << "Parser: bodypart -> link: "<< "pass link:type(Link) to bodypart:type(BodyPart)";
-        $$ = $1;
+    $$ = $1;
     }
     |macro
     {
@@ -301,7 +290,7 @@ bodypart :
     {
     LOG_DEBUG << "Parser: bodypart -> formatted: "<< "pass formatted:type(--Text--) to bodypart:type(BodyPart)";
     //TODO: implement FormattedText parsing
-        $$ = $1;
+    $$ = $1;
     }
   ;
 
@@ -309,8 +298,13 @@ text :
     TEXT_TOKEN
     {
     LOG_DEBUG << "Parser: text -> TEXT_TOKEN: "<< "create top:text:type(Text)";
-        $$ = new Text(*$1);
+    $$ = new Text(*$1);
     delete $1;
+    }
+    |NEWLINE
+    {
+    LOG_DEBUG << "Parser: bodypart -> NEWLINE: "<< "create top:text:type(Text) with a \"\\n\"";
+    $$ = new Text("\n");
     }
   ;
 
@@ -318,13 +312,13 @@ link :
     LINK_OPEN TEXT_TOKEN LINK_CLOSE
     {
     LOG_DEBUG << "Parser: link -> LINK_OPEN TEXT_TOKEN LINK_CLOSE: "<< "create top:link:type(Link) with 2:token:TEXT_TOKEN & 2:token:TEXT_TOKEN";
-        $$ = new Link(*$2);
+    $$ = new Link(*$2);
     delete $2;
     }
     |LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE
     {
     LOG_DEBUG << "Parser: link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE: "<< "create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN";
-        $$ = new Link(*$4, *$2);
+    $$ = new Link(*$4, *$2);
     delete $4;
     delete $2;
     }
@@ -349,7 +343,6 @@ macro :
     {
     LOG_DEBUG << "macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE";
     LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-
     }
   ;
 
@@ -486,7 +479,7 @@ formatted:
     //TODO:check if F_OPEN and F_CLOSE are the same
     //TODO:check if anything needs to be deleted here
     LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE: "<< "create top:formatted:type(--Text--) with 2:token:TEXT_TOKEN";
-        $$ = new FormattedText(*$2, true, false, false);
+    $$ = new FormattedText(*$2, true, false, false);
     delete $2;
     }
     |FORMATTING_OPEN formatted FORMATTING_CLOSE
@@ -494,7 +487,7 @@ formatted:
     //TODO:check if F_OPEN and F_CLOSE are the same
     //TODO:check if anything needs to be deleted here
     LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN formatted FORMATTING_CLOSE: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-        $$ = $2;
+    $$ = $2;
     }
     |FORMATTING TEXT_TOKEN FORMATTING
     {
@@ -511,7 +504,7 @@ formatted:
     //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
     //TODO:check if anything needs to be deleted here
     LOG_DEBUG << "Parser: formatted -> FORMATTING formatted FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-        $$ = $2;
+    $$ = $2;
     }
   ;
 
