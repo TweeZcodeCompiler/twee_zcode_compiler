@@ -21,7 +21,7 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
     log("Simple Compiler Pipeline started");
 
     stringstream buffer;
-    if(isTwee == true) { //source file is twee file
+    if(isTwee) { //source file is twee file
         ifstream inputFile(filename);
 
         Twee::TweeParser parser(&inputFile);
@@ -29,26 +29,18 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
         std::unique_ptr<TweeFile> tweeFile;
         try {
             tweeFile = parser.parse();
-        } catch (Twee::ParseException e) {
+        } catch (const Twee::ParseException &e) {
             log("Parse error");
             throw e;
         }
 
         log("Parsed twee file");
         tweeCompiler.compile(*tweeFile, buffer);
-    }
-    else
-    {
+    } else {
         //source file is assembly file
         std::ifstream in(filename);
         buffer << in.rdbuf();
-
-
-
     }
-
-
-
 
     //create header
     ZCodeHeader header = ZCodeHeader();
