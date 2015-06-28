@@ -11,17 +11,12 @@
 
 class Newline : public BodyPart {
 
-private:
-    std::string content;
-
 public:
     virtual Newline* clone() const {
         return new Newline(*this);
     }
 
     Newline();
-
-    std::string getContent();
 
     std::string to_string();
 };

@@ -7,11 +7,6 @@
 #include <string>
 
 Newline::Newline() {
-    this->content = "\n";
-}
-
-std::string Newline::getContent() {
-    return this->content;
 }
 
 std::string Newline::to_string() {

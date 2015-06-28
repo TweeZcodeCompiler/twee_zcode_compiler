@@ -8,7 +8,6 @@
 #include <iostream>
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
-#include <Passage/Body/Newline.h>
 #include <algorithm>
 
 using namespace std;
@@ -106,9 +105,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     assgen.print(text->getContent());
                 }
 
-                if(Newline* newline = dynamic_cast<Newline*>(bodyPart)) {
-                    assgen.newline();
-                }
             }
 
             assgen.newline();

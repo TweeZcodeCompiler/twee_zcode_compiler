@@ -17,7 +17,6 @@
     #include "include/TweeFile.h"
     #include "include/Passage/Passage.h"
     #include "include/Passage/Body/Text.h"
-    #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
     #include "include/Passage/Body/FormattedText.h"
 
@@ -58,6 +57,7 @@
 %union{
 	std::string *string;
 	int token;
+	int integer;
 
 	TweeFile *tweefile;
 
@@ -75,7 +75,6 @@
 
 	BodyPart *bodypart;
 	Text *text;
-	Newline *newline;
 	Link *link;
 	FormattedText *formattedtext;
 
@@ -95,7 +94,7 @@
 	<string> TAG
 
 	<string> VARIABLE
-    <string> INT
+    <integer> INTEGER
 
     <token> LINK_OPEN
     <token> LINK_CLOSE
@@ -172,7 +171,6 @@
 
 %type <bodypart> bodypart
 %type <text> text
-%type <newline> newline
 %type <link> link
 %type <formattedtext> formatted
 
@@ -278,11 +276,6 @@ bodypart :
     LOG_DEBUG << "Parser: bodypart -> text: "<< "pass text:type(text) to bodypart:type(BodyPart)";
     $$ = $1;
     }
-    |newline
-    {
-    LOG_DEBUG << "Parser: bodypart -> newline: "<< "pass newline:type(Newline) to bodypart:type(BodyPart)";
-    $$ = $1;
-    }
     |link
     {
     LOG_DEBUG << "Parser: bodypart -> link: "<< "pass link:type(Link) to bodypart:type(BodyPart)";
@@ -302,21 +295,17 @@ bodypart :
     }
   ;
 
-newline :
-    NEWLINE
-    {
-    LOG_DEBUG << "Parser: bodypart -> NEWLINE: "<< "create top:text:type(Text) with a \"\\n\"";
-    $$ = new Newline();
-    }
-  ;
-
-
 text :
     TEXT_TOKEN
     {
     LOG_DEBUG << "Parser: text -> TEXT_TOKEN: "<< "create top:text:type(Text)";
     $$ = new Text(*$1);
     delete $1;
+    }
+    |NEWLINE
+    {
+    LOG_DEBUG << "Parser: bodypart -> NEWLINE: "<< "create top:text:type(Text) with a \"\\n\"";
+    $$ = new Text(" ");
     }
   ;
 
@@ -454,9 +443,9 @@ expression :
     LOG_DEBUG << "expression -> EXPR_VAR: ";
 
     }
-    |INT
+    |INTEGER
     {
-    LOG_DEBUG << "expression -> EXPR_INT: ";
+    LOG_DEBUG << "expression -> INTEGER: ";
 
     }
     |TEXT_TOKEN
@@ -476,13 +465,17 @@ ifmacro :
   ;
 
 expression :
-    VARIABLE EXPR_ASSGN INT
+    VARIABLE EXPR_ASSGN INTEGER
     {
-    *$$ = std::string("matched an expression assignment");
+    *$$ = std::string("matched an expression assignment with an int");
+    LOG_DEBUG << "matched an expression assignment with an int";
+    LOG_DEBUG << $3;
     }
-    |VARIABLE EXPR_IS INT
+    |VARIABLE EXPR_IS INTEGER
     {
-    *$$ = std::string("matched an expression assignment");
+    *$$ = std::string("matched an expression is");
+    LOG_DEBUG << "matched an expression is with an int";
+    LOG_DEBUG << $3;
     }
   ;
 formatted:
