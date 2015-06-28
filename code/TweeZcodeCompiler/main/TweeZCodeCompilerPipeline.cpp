@@ -47,7 +47,8 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
 
     }
 
-
+    ofstream testFile("test.zas");
+    testFile << buffer.str();
 
 
     //create header
