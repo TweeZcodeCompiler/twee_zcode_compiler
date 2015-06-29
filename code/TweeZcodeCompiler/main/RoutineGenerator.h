@@ -14,6 +14,7 @@
 #include "Jumps.h"
 #include "OpcodeParameterGenerator.h"
 #include "Utils.h"
+#include "exceptions.h"
 #include <memory>
 #include <plog/Log.h>
 
@@ -34,11 +35,12 @@ private:
 
     void addBitset(std::vector<std::bitset<8>> bitsets);
 
-    void addTwoBytes(int16_t number, int pos = -1);     // splits 16 bit value up to 2 bytes and adds them to routineZcode
+    void addTwoBytes(int16_t number,
+                     int pos = -1);     // splits 16 bit value up to 2 bytes and adds them to routineZcode
 
     void addOneByte(std::bitset<8> byte, int pos = -1);  // add one byte to routineZcode
 
-    void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, ZParam& param1, ZParam& param2);
+    void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, ZParam &param1, ZParam &param2);
 
 public:
     // constructor needed to create first jump to main call
@@ -47,7 +49,9 @@ public:
 
         size_t pkgAdrr = Utils::calculateNextPackageAddress((size_t) (routineOffset + 3));
 
-        std::vector<std::bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N, (u_int16_t) (pkgAdrr / 8), false);
+        std::vector<std::bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(CALL_1N,
+                                                                                          (u_int16_t) (pkgAdrr / 8),
+                                                                                          false);
         addBitset(instructions);
 
         size_t padding = Utils::paddingToNextPackageAddress(routineZcode.size(), routineOffset);
@@ -58,7 +62,7 @@ public:
     }
 
     // this constructor padding zCode to the next package adress and initialize this routine with the name 'name'
-    RoutineGenerator(std::string name,unsigned int locVar, std::vector<std::bitset<8>> &zCode, size_t offsetOfZCode){
+    RoutineGenerator(std::string name, unsigned int locVar, std::vector<std::bitset<8>> &zCode, size_t offsetOfZCode) {
         size_t padding = Utils::paddingToNextPackageAddress(zCode.size(), offsetOfZCode);
         Utils::fillWithBytes(zCode, 0, padding);
 
@@ -73,7 +77,7 @@ public:
 
         if (locVar > 15) {
             LOG_DEBUG << "Cannot add more than 15 local variables to routine " << name << "!";
-            throw;
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
         }
     }
 
@@ -141,6 +145,32 @@ public:
 
     void returnValue(std::vector<std::unique_ptr<ZParam>> params);
 
+    void base2OpOperation(unsigned int opcode, std::vector<std::unique_ptr<ZParam>> &params);
+
+    void add(std::vector<std::unique_ptr<ZParam>> params);
+
+    void sub(std::vector<std::unique_ptr<ZParam>> params);
+
+    void mul(std::vector<std::unique_ptr<ZParam>> params);
+
+    void div(std::vector<std::unique_ptr<ZParam>> params);
+
+    void doAND(std::vector<std::unique_ptr<ZParam>> params);
+
+    void doOR(std::vector<std::unique_ptr<ZParam>> params);
+
+    void returnTrue();
+
+    void returnFalse();
+
+    void retPopped();
+
+    void printRet(std::vector<std::unique_ptr<ZParam>> params);
+
+    void restart();
+
+    void verify(std::vector<std::unique_ptr<ZParam>> params);
+
 
     /*
      *      Enumerations
@@ -153,15 +183,15 @@ public:
                 PRINT_CHAR = 229,
         //Opcode: 1OP:143 F 5 call_1n routine
                 CALL_1N = 143,
-                CALL_VS = 224,
+        CALL_VS = 224,
         // Print new line
                 NEW_LINE = 187,
         // Opcodes for jump instructions
                 JE = 1,
-                JL = 2,
-                JG = 3,
-                JZ = 128,
-                JUMP = 140,
+        JL = 2,
+        JG = 3,
+        JZ = 128,
+        JUMP = 140,
         // Opcode for print operation; following by Z-character String
                 PRINT = 178,
         // Opcode: quit the main; no arguments.
@@ -177,7 +207,42 @@ public:
         // Opcode: return value
                 RET_VALUE = 139,
         // Opcode: set the text style
-                SET_TEXT_STYLE = 241
+                SET_TEXT_STYLE = 241,
+        // Opcode : 2OP:20 14 add a b -> (result)
+                ADD = 20,
+        // Opcode : 2OP:21 15 sub a b -> (result)
+                SUB = 21,
+        // Opcode : 2OP:22 16 mul a b -> (result)
+                MUL = 22,
+        // Opcode : 2OP:23 17 div a b -> (result)
+                DIV = 23,
+        // Opcode : 2OP:9 9 and a b -> (result)
+                AND = 9,
+        // Opcode : 2OP:8 8 or a b -> (result)
+                OR = 8,
+        // Opcode: return true
+                RETURN_TRUE = 176,
+        // Opcode: return false
+                RETURN_FALSE = 177,
+        // Opcode: Print the quoted (literal) Z-encoded string, then print a new-line and then return true (i.e., 1).
+                PRINT_RET = 179,
+        // Opcode: Restart game
+                RESTART = 183,
+        // Opcode: Pops top of stack and returns that. (This is equivalent to ret sp, but is one byte cheaper.)
+                RET_POPPED = 184,
+        // Opcode: Verification
+                VERIFY = 189
+
+
+
+
+        /*
+         * Not implemented:
+         *
+         * Zero operand Opcodes:
+         * nop, save ?(label), save -> (result), restore ?(label), restore -> (result), pop,
+         * catch -> (result), show_status, piracy ?(label)
+         */
     };
 
     enum BranchOffset {

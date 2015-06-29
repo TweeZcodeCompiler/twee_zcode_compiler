@@ -9,7 +9,6 @@ set(SOURCE_FILES ZCodeConverter.cpp ZCodeConverter.h
 add_executable(TweeZcodeCompiler ${SOURCE_FILES} main.cpp ZAssemblyGenerator.cpp ZAssemblyGenerator.h TweeCompiler.cpp TweeCompiler.h
 Utils.cpp Utils.h Jumps.cpp Jumps.h OpcodeParameterGenerator.cpp OpcodeParameterGenerator.h AssemblyParser.cpp AssemblyParser.h ITweeCompiler.cpp ITweeCompiler.h ArgsCommand.cpp ArgsCommand.h)
 
-
 target_link_libraries (TweeZcodeCompiler TweeParser)
 
 add_executable(TestCompiler ${SOURCE_FILES} test/MainTest.cpp test/BinaryFileWriterTest.h test/BinaryFileWriterTest.cpp
