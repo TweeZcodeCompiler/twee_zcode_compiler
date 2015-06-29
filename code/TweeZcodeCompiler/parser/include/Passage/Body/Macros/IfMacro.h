@@ -1,6 +1,6 @@
 
-#ifndef DISPLAY_H
-#define DISPLAY_H
+#ifndef IFMACRO_H
+#define IFMACRO_H
 
 #include "Macro.h"
 #include "../Expressions/Expression.h"
@@ -35,4 +35,4 @@ public:
 
 };
 
-#endif //DISPLAY_H
+#endif //IFMACRO_H

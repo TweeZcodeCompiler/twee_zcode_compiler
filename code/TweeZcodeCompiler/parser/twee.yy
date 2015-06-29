@@ -76,7 +76,7 @@
 	Body *body;
 
 	std::string *macro;
-    IfMacro ifmacro;
+    IfMacro *ifmacro;
 	std::string *expression;
 
 	BodyPart *bodypart;
