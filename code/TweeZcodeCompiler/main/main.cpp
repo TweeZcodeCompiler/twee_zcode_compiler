@@ -59,7 +59,6 @@ int main(int argc, char **argv) {
         remove(logFile.c_str());
         plog::init(plog::debug, logFile.c_str());
     }
-    plog::init(plog::error, &consoleAppender);
 
     LOG_DEBUG << "CMD-Args Summary";
     LOG_DEBUG << "Console-DEBUG-Output: " << argsCommand.isDebugInConsole();
