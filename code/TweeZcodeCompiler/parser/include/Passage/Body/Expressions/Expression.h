@@ -5,6 +5,8 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 
+#include "../BodyPart.h"
+
 #include <string>
 
 enum ArithmeticOperation {
@@ -27,7 +29,7 @@ enum FunctionName {
     RANDOM, PREVIOUS, TURNS, VISITED
 };
 
-class Expression {
+class Expression : public BodyPart {
 
 public:
 

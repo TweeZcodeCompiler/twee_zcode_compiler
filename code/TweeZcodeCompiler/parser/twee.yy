@@ -98,6 +98,7 @@
 	<string> TAG
 
     <integer> EXPR_INT
+    <string> EXPR_VAR
 
     <token> LINK_OPEN
     <token> LINK_CLOSE

@@ -22,10 +22,6 @@ public:
 
     Print(const Expression &);
 
-    Print(const Print &print) {
-        this->expression.reset(print.getExpression()->clone());
-    }
-
     const std::unique_ptr<Expression> &getExpression() const;
 
     std::string to_string() const;
