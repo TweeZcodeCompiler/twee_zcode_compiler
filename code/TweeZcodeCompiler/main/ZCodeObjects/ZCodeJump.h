@@ -12,7 +12,7 @@
 class ZCodeJump : public ZCodeObject {
 private:
     size_t lastOffset = 0;
-    ZCodeLabel *label;
+    std::shared_ptr<ZCodeLabel> label;
     std::vector<std::bitset<8>> adress;
     void addCondBranchOffset();
 public:
@@ -21,7 +21,7 @@ public:
      void print(std::vector<std::bitset<8>> &code);
     virtual bool revalidate();
 
-    ZCodeJump(ZCodeLabel *label): label(label){
+    ZCodeJump(std::shared_ptr<ZCodeLabel>label): label(label){
     }
 };
 

@@ -51,27 +51,27 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
     ZCodeContainer zcode = ZCodeContainer("ZCode Container");
 
     //create header
-    ZCodeHeader *header = new ZCodeHeader();
+    shared_ptr<ZCodeHeader> header = shared_ptr<ZCodeHeader>(new ZCodeHeader());
     zcode.add(header);
 
     //create dynamicMemory
-    ZCodeContainer *dynamicMemory = new ZCodeContainer("dynamic memory");
-    ZCodeMemorySpace *globalVariablesTable = new ZCodeMemorySpace((0xff - 0x0f)*2+1000,"global variables table");// Global Var Table
-    dynamicMemory->add(new ZCodePkgAdrrPadding());
+    shared_ptr<ZCodeContainer> dynamicMemory = shared_ptr<ZCodeContainer>(new ZCodeContainer("dynamic memory"));
+    shared_ptr<ZCodeObject> globalVariablesTable = shared_ptr<ZCodeObject>(new ZCodeMemorySpace((0xff - 0x0f)*2+1000,"global variables table"));// Global Var Table
+    dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodePkgAdrrPadding()));
     dynamicMemory->add(globalVariablesTable);
-    ZCodeMemorySpace *globalObjectsTable = new ZCodeMemorySpace((0x2f0-0x140), "global objects");
-    dynamicMemory->add(new ZCodePkgAdrrPadding());
+    shared_ptr<ZCodeObject> globalObjectsTable = shared_ptr<ZCodeObject>(new ZCodeMemorySpace((0x2f0-0x140), "global objects"));
+    dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodePkgAdrrPadding()));
     dynamicMemory->add(globalObjectsTable);
     zcode.add(dynamicMemory);
 
     //create staticMemory
-    ZCodeContainer *staticMemory = new ZCodeContainer("static memory");
-    ZCodePkgAdrrPadding *padding = new ZCodePkgAdrrPadding();
+    shared_ptr<ZCodeContainer> staticMemory = shared_ptr<ZCodeContainer>(new ZCodeContainer("static memory"));
+    shared_ptr<ZCodeObject> padding = shared_ptr<ZCodeObject>(new ZCodePkgAdrrPadding());
     staticMemory->add(padding);
     zcode.add(staticMemory);
 
     //create hight Memory
-    ZCodeContainer *highMemory =new ZCodeContainer("high memory");
+    shared_ptr<ZCodeContainer> highMemory = shared_ptr<ZCodeContainer>(new ZCodeContainer("high memory"));
     zcode.add(highMemory);
 
     //parse

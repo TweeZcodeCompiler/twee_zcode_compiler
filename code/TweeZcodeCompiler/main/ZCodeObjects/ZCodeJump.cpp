@@ -31,6 +31,9 @@ void ZCodeJump::addCondBranchOffset() {
     bitset<8> firstHalf, secondHalf;
     this->adress = vector<bitset<8>>();
     int offset = label->offset - this->offset;
+    if(offset > 0){
+        offset += 1;
+    }
     bool useOneByte = false;
     if(!isCondJump){
         bitset<16> bitsetOffset(offset);

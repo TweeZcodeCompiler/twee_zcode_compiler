@@ -7,13 +7,13 @@
 #include <plog/Log.h>
 #include "ZCodeObject.h"
 
-void ZCodeObject::add(ZCodeObject *Child) {
+void ZCodeObject::add(std::shared_ptr<ZCodeObject> Child) {
     std::cout << "add '"<<Child->displayName<<"' to '"<< displayName <<"'"<< std::endl;
     children.push_back(Child);
-    Child->parrent = this;
+    Child->parrent = std::shared_ptr<ZCodeObject>(this);
     Child->offset = this->offset+ this->size;
    setSize(this->size+ Child->getSize());
-    ZCodeObject *parrent = this->parrent;
+    std::shared_ptr<ZCodeObject> parrent = this->parrent;
     if(parrent != NULL){
         parrent->revalidate();
     }
@@ -42,7 +42,7 @@ void ZCodeObject::setOffset(size_t offset) {
 void ZCodeObject::printMemory() {
     std::cout << offset << "\t\t|" << displayName<<std::endl;
     for(size_t i = 0; i < children.size(); i++){
-        ZCodeObject *child = children.at(i);
+        std::shared_ptr<ZCodeObject> child = children.at(i);
         child->printMemory();
     }
 }

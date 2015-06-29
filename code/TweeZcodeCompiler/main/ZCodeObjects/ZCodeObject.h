@@ -9,12 +9,13 @@
 #include <glob.h>
 #include <vector>
 #include <bitset>
+#include <memory>
 #include <bits/unique_ptr.h>
 
 class ZCodeObject {
 protected:
-    ZCodeObject *parrent = NULL;
-    std::vector<ZCodeObject*> children;
+    std::shared_ptr<ZCodeObject> parrent = NULL;
+    std::vector<std::shared_ptr<ZCodeObject>> children;
 
 public:
     size_t  offset = 0;
@@ -25,7 +26,7 @@ public:
     virtual bool revalidate(){};
 
     void printMemory();
-    void add(ZCodeObject *Child);
+    void add(std::shared_ptr<ZCodeObject> Child);
     void setSize(size_t size);
     size_t getSize();
     void setOffset(size_t offset);
@@ -36,7 +37,8 @@ public:
         this->displayName = displayName;
     }
     ~ZCodeObject(){
-
+        parrent = NULL;
+        children.clear();
     }
 };
 

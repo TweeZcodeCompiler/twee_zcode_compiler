@@ -5,16 +5,16 @@
 #include "ZCodeRoutine.h"
 #include "../Utils.h"
 
-std::map<std::string,ZCodeRoutine*> ZCodeRoutine::routines = std::map<std::string,ZCodeRoutine*>();
+std::map<std::string,std::shared_ptr<ZCodeRoutine>> ZCodeRoutine::routines = std::map<std::string,std::shared_ptr<ZCodeRoutine>>();
 
-ZCodeRoutine *ZCodeRoutine::getOrCreateRoutine(std::string name, std::uint8_t locVariables) {
+std::shared_ptr<ZCodeRoutine> ZCodeRoutine::getOrCreateRoutine(std::string name, std::uint8_t locVariables) {
     if (routines.count(name) == 0) {
-        ZCodeRoutine *routine = new ZCodeRoutine(0);
+        auto routine = std::shared_ptr<ZCodeRoutine>(new ZCodeRoutine(locVariables));
         routine ->displayName = name;
-        routines.insert(std::pair<std::string, ZCodeRoutine*>(name,routine));
+        routines.insert(std::pair<std::string, std::shared_ptr<ZCodeRoutine>>(name,routine));
         return routine;
     } else {
-        ZCodeRoutine *routine = routines.at(name);
+        auto routine = routines.at(name);
         if(routine->localVariables < locVariables){
             routine->localVariables = locVariables;
         }

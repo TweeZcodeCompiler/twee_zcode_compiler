@@ -26,9 +26,9 @@ private:
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
     std::map<std::string, u_int8_t> locVariables;   // keys = variable name, value = number in stack
     static std::map<std::string, size_t> routines;  // keys = name of routine, value = offset.
-    static std::map<std::string, ZCodeLabel*> labels;
+    static std::map<std::string, std::shared_ptr<ZCodeLabel>> labels;
 
-    ZCodeRoutine *routine;
+    std::shared_ptr<ZCodeRoutine> routine;
 
     size_t maxLocalVariables = 0;
     size_t addedLocalVariables = 0;
@@ -45,7 +45,7 @@ private:
 public:
 
     bool debugmode= false;
-    ZCodeLabel *getOrCreateLabel(std::string name);
+    std::shared_ptr<ZCodeLabel> getOrCreateLabel(std::string name);
 
     // this constructor padding zCode to the next package adress and initialize this routine with the name 'name'
     RoutineGenerator(std::string name, unsigned int locVar) :routine(ZCodeRoutine::getOrCreateRoutine(name,locVar)) {
@@ -57,8 +57,12 @@ public:
         }
     }
 
+    ~RoutineGenerator(){
+        labels.clear();
+    }
+
     // returns complete zcode of Routine as a bitset vector
-    ZCodeRoutine *getRoutine();
+    std::shared_ptr<ZCodeRoutine> getRoutine();
 
     /*
      *      methods to handle call routine offsets:

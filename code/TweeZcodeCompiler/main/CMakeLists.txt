@@ -5,10 +5,11 @@ include_directories(${TweeParser_SOURCE_DIR}/include)
 
 set(SOURCE_FILES ZCodeConverter.cpp ZCodeConverter.h
                                              ZCodeHeader.cpp ZCodeHeader.h BinaryFileWriter.cpp BinaryFileWriter.h
-                                             RoutineGenerator.cpp RoutineGenerator.h TweeZCodeCompilerPipeline.cpp TweeZCodeCompilerPipeline.h)
+                                             RoutineGenerator.cpp RoutineGenerator.h TweeZCodeCompilerPipeline.cpp TweeZCodeCompilerPipeline.h
+                                             ZCodeObjects/ZCodeObject.cpp ZCodeObjects/ZCodeObject.h ZCodeObjects/ZCodeContainer.cpp ZCodeObjects/ZCodeContainer.h ZCodeObjects/ZCodeInstruction.cpp ZCodeObjects/ZCodeInstruction.h ZCodeObjects/ZCodeRoutine.cpp ZCodeObjects/ZCodeRoutine.h ZCodeObjects/ZCodeJump.cpp ZCodeObjects/ZCodeJump.h ZCodeObjects/ZCodeMemorySpace.cpp ZCodeObjects/ZCodeMemorySpace.h ZCodeObjects/ZCodePkgAdrrPadding.cpp ZCodeObjects/ZCodePkgAdrrPadding.h
+                                             ZCodeObjects/ZCodeCallAdress.cpp ZCodeObjects/ZCodeCallAdress.h ZCodeObjects/ZCodeLabel.cpp ZCodeObjects/ZCodeLabel.h)
 add_executable(TweeZcodeCompiler ${SOURCE_FILES} main.cpp ZAssemblyGenerator.cpp ZAssemblyGenerator.h TweeCompiler.cpp TweeCompiler.h
-Utils.cpp Utils.h Jumps.cpp Jumps.h OpcodeParameterGenerator.cpp OpcodeParameterGenerator.h AssemblyParser.cpp AssemblyParser.h ITweeCompiler.cpp ITweeCompiler.h ArgsCommand.cpp ArgsCommand.h ZCodeObjects/ZCodeLabel.cpp ZCodeObjects/ZCodeLabel.h
-ZCodeObjects/ZCodeObject.cpp ZCodeObjects/ZCodeObject.h ZCodeObjects/ZCodeContainer.cpp ZCodeObjects/ZCodeContainer.h ZCodeObjects/ZCodeInstruction.cpp ZCodeObjects/ZCodeInstruction.h ZCodeObjects/ZCodeRoutine.cpp ZCodeObjects/ZCodeRoutine.h ZCodeObjects/ZCodeJump.cpp ZCodeObjects/ZCodeJump.h ZCodeObjects/ZCodeMemorySpace.cpp ZCodeObjects/ZCodeMemorySpace.h ZCodeObjects/ZCodePkgAdrrPadding.cpp ZCodeObjects/ZCodePkgAdrrPadding.h ZCodeObjects/ZCodeCallAdress.cpp ZCodeObjects/ZCodeCallAdress.h)
+Utils.cpp Utils.h Jumps.cpp Jumps.h OpcodeParameterGenerator.cpp OpcodeParameterGenerator.h AssemblyParser.cpp AssemblyParser.h ITweeCompiler.cpp ITweeCompiler.h ArgsCommand.cpp ArgsCommand.h )
 
 target_link_libraries (TweeZcodeCompiler TweeParser)
 

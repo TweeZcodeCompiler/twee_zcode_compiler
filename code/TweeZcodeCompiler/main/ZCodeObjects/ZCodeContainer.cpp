@@ -14,7 +14,7 @@ bool ZCodeContainer::revalidate() {
         validatedAll = false;
         calculatedSize = containerOffset;
         for(size_t i = 0; i < children.size(); i++){
-            ZCodeObject *child = children.at(i);
+            std::shared_ptr<ZCodeObject> child = children.at(i);
             size_t offset = this->offset;
             child->setOffset(offset+ calculatedSize);
             std::cout <<" revalidate '"<< child->displayName<<"' in '"<< (displayName) << "'"<< std::endl;
@@ -36,7 +36,7 @@ bool ZCodeContainer::revalidate() {
 void ZCodeContainer::print(std::vector<std::bitset<8>> &code) {
     std::vector<std::bitset<8>> instructions = std::vector<std::bitset<8>>();
     for(size_t i = 0; i < children.size(); i++){
-        ZCodeObject *child = children.at(i);
+        std::shared_ptr<ZCodeObject> child = children.at(i);
         child->print(code);
     }
 }

@@ -93,7 +93,7 @@ private:
     std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction);
     std::unique_ptr<ZParam> createZParam(const std::string& paramString);
     
-    void performRoutineDirectiveCommand( std::vector<std::string> lineComps, ZCodeContainer *highMemory);
+    void performRoutineDirectiveCommand( std::vector<std::string> lineComps, std::shared_ptr<ZCodeContainer> highMemory);
     void performRoutineGlobalVarCommand(std::string line);
 
 
@@ -106,12 +106,12 @@ private:
     std::unique_ptr<RoutineGenerator> currentGenerator;
 
     void registerJump(const std::vector<std::unique_ptr<ZParam>> &params);
-    void finishRoutine(ZCodeContainer *highMemoryZcode);
+    void finishRoutine(std::shared_ptr<ZCodeContainer> highMemoryZcode);
     void addGlobal(std::string globalName);
 
     std::unique_ptr<uint8_t> getAddressForId(const std::string &id);
 public:
-    void readAssembly(std::istream& input, ZCodeContainer *dynamicMemory, ZCodeContainer *staticMemory, ZCodeContainer *highMemory);
+    void readAssembly(std::istream& input, std::shared_ptr<ZCodeContainer> dynamicMemory, std::shared_ptr<ZCodeContainer> staticMemory, std::shared_ptr<ZCodeContainer> highMemory);
 
 };
 

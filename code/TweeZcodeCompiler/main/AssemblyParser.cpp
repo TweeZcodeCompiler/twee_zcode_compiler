@@ -66,7 +66,11 @@ string trim(const string &str,
     return str.substr(strBegin, strRange);
 }
 
-void AssemblyParser::performRoutineDirectiveCommand( vector<string> lineComps, ZCodeContainer *highMemory) {
+bool AssemblyParser::checkIfRoutineNameExists(std::string routineName) {
+    return (std::find(routineNameList.begin(), routineNameList.end(), routineName) != routineNameList.end());
+}
+
+void AssemblyParser::performRoutineDirectiveCommand( vector<string> lineComps, shared_ptr<ZCodeContainer> highMemory) {
     LOG_DEBUG << "found routine" ;
 
     if (lineComps.size() < 2) {
@@ -144,7 +148,7 @@ void AssemblyParser::performRoutineGlobalVarCommand(string line) {
 }
 
 
-void AssemblyParser::readAssembly(istream& input, ZCodeContainer *dynamicMemory, ZCodeContainer *staticMemory, ZCodeContainer *highMemory) {
+void AssemblyParser::readAssembly(istream& input, shared_ptr<ZCodeContainer> dynamicMemory, shared_ptr<ZCodeContainer> staticMemory, shared_ptr<ZCodeContainer> highMemory) {
 
     LOG_DEBUG << "Compiler: Parse Assembly File\n";
 
@@ -188,8 +192,9 @@ void AssemblyParser::readAssembly(istream& input, ZCodeContainer *dynamicMemory,
     }
 }
 
-void AssemblyParser::finishRoutine(ZCodeContainer *highMemoryZcode) {
-
+void AssemblyParser::finishRoutine(shared_ptr<ZCodeContainer> highMemoryZcode) {
+    LOG_DEBUG << "adding routine to zcode" ;
+    auto routine = currentGenerator->getRoutine();
         // check if all labels were valid
         bool labelFound;
         for (auto jump = registeredJumpsAtLines.begin(); jump != registeredJumpsAtLines.end(); ++jump) {
@@ -208,16 +213,15 @@ void AssemblyParser::finishRoutine(ZCodeContainer *highMemoryZcode) {
             }
         }
 
-    auto *routine = currentGenerator->getRoutine();
     if(firstRoutine){
         //Call to first Routine
-        ZCodeInstruction *call = new ZCodeInstruction(RoutineGenerator::CALL_1N, "call to first routine");
+        auto call = shared_ptr<ZCodeObject>(new ZCodeInstruction(RoutineGenerator::CALL_1N, "call to first routine"));
         highMemoryZcode->add(call);
-        ZCodeCallAdress *adress = new ZCodeCallAdress(routine);
+        auto adress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(routine));
         highMemoryZcode->add(adress);
         firstRoutine = false;
     }
-    ZCodePkgAdrrPadding *padding = new ZCodePkgAdrrPadding();
+    auto padding = shared_ptr<ZCodeObject>(new ZCodePkgAdrrPadding());
     highMemoryZcode->add(padding);
     highMemoryZcode->add(routine);
     }
