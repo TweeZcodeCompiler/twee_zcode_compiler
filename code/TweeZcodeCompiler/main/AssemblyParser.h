@@ -112,11 +112,10 @@ private:
     void finishRoutine(std::vector<std::bitset<8>> &highMemoryZcode);
 
     void addGlobal(std::string globalName);
-    std::unique_ptr<uint8_t> getAddressForId(const std::string& id);
-
-    std::string executeSystemCommand(const char* cmd);
 
     std::unique_ptr<uint8_t> getAddressForId(const std::string &id);
+
+    std::string executeSystemCommand(const char *cmd);
 
 public:
     void readAssembly(std::istream &input, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
