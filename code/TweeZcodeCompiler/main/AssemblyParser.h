@@ -53,6 +53,7 @@ private:
     static const std::string RESTART_COMMAND;
     static const std::string RET_POPPED_COMMAND;
     static const std::string VERIFY_COMMAND;
+    static const std::string IMG_COMMAND;
 
 
     unsigned currentLineNumber;
@@ -80,6 +81,8 @@ private:
     void executeJLCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
 
     void executeJZCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
+
+    void executeIMGCommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
 
     void executeCALL1nCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
@@ -111,6 +114,8 @@ private:
     void addGlobal(std::string globalName);
 
     std::unique_ptr<uint8_t> getAddressForId(const std::string &id);
+
+    std::string executeSystemCommand(const char *cmd);
 
 public:
     void readAssembly(std::istream &input, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
