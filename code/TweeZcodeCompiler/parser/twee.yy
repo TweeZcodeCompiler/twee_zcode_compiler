@@ -22,6 +22,9 @@
     #include "include/Passage/Body/Macros/Display.h"
     #include "include/Passage/Body/Macros/Print.h"
     #include "include/Passage/Body/Macros/IfMacro.h"
+    #include "include/Passage/Body/Macros/ElseIfMacro.h"
+    #include "include/Passage/Body/Macros/ElseMacro.h"
+    #include "include/Passage/Body/Macros/EndIf.h"
     #include "include/Passage/Body/Expressions/Const.h"
     #include "include/Passage/Body/Expressions/Operator.h"
     #include "include/Passage/Body/Expressions/Variable.h"
@@ -75,9 +78,12 @@
 
 	Body *body;
 
-	std::string *macro;
+	Macro *macro;
     IfMacro *ifmacro;
-	std::string *expression;
+    ElseIfMacro *elseifmacro;
+    ElseMacro *elsemacro;
+    EndIf *endif;
+	Expression *expression;
 
 	BodyPart *bodypart;
 	Text *text;
@@ -109,6 +115,7 @@
 	
 	<token> MACRO_IF
 	<token> MACRO_ELSE
+	<token> MACRO_ELSE_IF
 	<token> MACRO_ENDIF
 	
 	<token> MACRO_PRINT
@@ -177,6 +184,11 @@
 %type <text> text
 %type <link> link
 %type <newline> newline
+
+%type <ifmacro> ifmacro
+%type <elseifmacro> elseifmacro
+%type <elsemacro> elsemacro
+%type <endif> endif
 %type <macro> macro
 %type <expression> expression
 
@@ -380,26 +392,66 @@ link :
   ;
 
 macro :
-    MACRO_OPEN MACRO_IF expression MACRO_CLOSE
-    {
-    LOG_DEBUG << "Parser: MACRO_IF -> MACRO_OPEN MACRO_IF expression MACRO_CLOSE: "<< "matched, did nothing, to be implemented";
-    //TODO: implement ifmacro
-    }
-    |MACRO_OPEN MACRO_ENDIF MACRO_CLOSE
-    {
-    LOG_DEBUG << "Parser: MACRO_IF -> MACRO_OPEN MACRO_ENDIF MACRO_CLOSE: "<< "matched, did nothing, to be implemented";
-    //TODO: implement endifmacro
-    }
-    |MACRO_OPEN MACRO_ELSE MACRO_CLOSE
-    {
-    LOG_DEBUG << "Parser: MACRO_IF -> MACRO_OPEN MACRO_ELSE MACRO_CLOSE: "<< "matched, did nothing, to be implemented";
-    //TODO: implement elsemacro
-    }
-    |MACRO_OPEN expression MACRO_CLOSE
+    MACRO_OPEN expression MACRO_CLOSE
     {
     LOG_DEBUG << "macro -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
     }
+    |ifmacro
+    {
+    LOG_DEBUG << "macro -> ifmacro: pass ifmacro:type(IfMacro) to macro:type(Macro)";
+    $$ = $1;
+    }
+    |elseifmacro
+    {
+    LOG_DEBUG << "macro -> elseifmacro: pass elseifmacro:type(ElseIfMacro) to macro:type(Macro)";
+    $$ = $1;
+    }
+    |elsemacro
+    {
+    LOG_DEBUG << "macro -> else: pass else:type(ElseMacro) to macro:type(Macro)";
+    $$ = $1;
+    }
+    |endif
+    {
+    LOG_DEBUG << "macro -> endif: pass endif:type(EndIf) to macro:type(Macro)";
+    $$ = $1;
+    }
+
   ;
+
+ifmacro:
+    MACRO_OPEN MACRO_IF expression MACRO_CLOSE
+    {
+    LOG_DEBUG << "Parser: ifmacro -> MACRO_OPEN MACRO_IF expression MACRO_CLOSE: "<< "matched, make a dummy if";
+    $$ = new IfMacro(new Variable("VAR"));
+    }
+  ;
+
+elseifmacro:
+    MACRO_OPEN MACRO_ELSE_IF expression MACRO_CLOSE
+    {
+    LOG_DEBUG << "Parser: elseifmacro -> MACRO_OPEN MACRO_ELSE_IF expression MACRO_CLOSE: "<< "matched, make a dummy elseif";
+    $$ = new ElseIfMacro(new Variable("VAR"));
+    }
+  ;
+
+elsemacro:
+    MACRO_OPEN MACRO_ELSE MACRO_CLOSE
+    {
+    LOG_DEBUG << "Parser: elsemacro -> MACRO_OPEN MACRO_ELSE MACRO_CLOSE: "<< "matched, make a dummy else";
+    $$ = new ElseMacro();
+    }
+  ;
+
+endif:
+    MACRO_OPEN MACRO_ENDIF MACRO_CLOSE
+    {
+    LOG_DEBUG << "Parser: endif -> MACRO_OPEN MACRO_ENDIF MACRO_CLOSE: "<< "matched, make a dummy endif";
+    $$ = new EndIf();
+    }
+  ;
+
+
 
 
 expression :
@@ -487,13 +539,11 @@ expression :
     }
     |EXPR_VAR EXPR_ASSGN expression
     {
-    *$$ = std::string("matched an expression assignment with an int");
     LOG_DEBUG << "matched an expression assignment with an int";
     LOG_DEBUG << $3;
     }
     |EXPR_VAR EXPR_IS expression
     {
-    *$$ = std::string("matched an expression is");
     LOG_DEBUG << "matched an expression is with an int";
     LOG_DEBUG << $3;
     }
