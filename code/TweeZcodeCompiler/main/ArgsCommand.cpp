@@ -12,12 +12,12 @@
 
 using namespace std;
 
-static const std::string ZMACHINE_EXT_V8 = ".z8";
-static const std::string ZAP_EXT = ".zap";
-static const std::string DEFAULT_PROGRAM_NAME = "twzcc";
+static const string ZMACHINE_EXT_V8 = ".z8";
+static const string ZAP_EXT = ".zap";
+static const string DEFAULT_PROGRAM_NAME = "twzcc";
 
 
-string GetProperFileName(std::string fullPath) {
+string GetProperFileName(string fullPath) {
     string fileName;
 
     char *base;
