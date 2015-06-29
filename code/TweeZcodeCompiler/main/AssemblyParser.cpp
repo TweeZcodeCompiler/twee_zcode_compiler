@@ -46,7 +46,6 @@ const string AssemblyParser::PRINT_RET_COMMAND = "print_ret";
 const string AssemblyParser::RESTART_COMMAND = "restart";
 const string AssemblyParser::RET_POPPED_COMMAND = "ret_popped";
 const string AssemblyParser::VERIFY_COMMAND = "verify";
-const string AssemblyParser::IMG_COMMAND = "img";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -448,55 +447,6 @@ void AssemblyParser::executeRETCommand(const string &callCommand, RoutineGenerat
     routineGenerator.returnValue(parseArguments(callCommand));
 }
 
-
-std::string AssemblyParser::executeSystemCommand(const char* cmd) {
-    FILE* pipe = popen(cmd, "r");
-    if (!pipe) return "ERROR";
-    char buffer[128];
-    std::string result = "";
-    while(!feof(pipe)) {
-        if(fgets(buffer, 128, pipe) != NULL)
-            result += buffer;
-    }
-    pclose(pipe);
-    return result;
-}
-
-
-void AssemblyParser::executeIMGCommand(const std::string &imgCommand, RoutineGenerator &routineGenerator)
-{
-
-    vector <string> commandParts = this->split(imgCommand, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
-
-    std::string path = commandParts.at(1);
-
-    //remove \" characters
-    path = path.erase(0,1);
-    path = path.erase(path.length()-1,1);
-
-
-    std::ifstream fileExists(path);
-    if(!fileExists)
-    {
-        LOG_ERROR << "image " << path << " doesn't exists";
-       throw new std::string("could not load image");
-
-    }
-    std::stringstream jp2aCommand;
-    jp2aCommand << "jp2a " << path;
-    std::string jp2a =  jp2aCommand.str();
-
-    std::string asciiImg = executeSystemCommand(string(jp2a).c_str());
-
-    std::stringstream msg;
-    msg << AssemblyParser::PRINT_COMMAND << " \"" << asciiImg << "\"";
-    std::string line =  msg.str();
-
-    routineGenerator.printString(parseArguments(line));
-
-
-}
-
 void AssemblyParser::executeCommand(const string &command, RoutineGenerator &routineGenerator) {
     vector<string> commandParts = this->split(command, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
 
@@ -596,10 +546,6 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new verify";
         routineGenerator.verify(parseArguments(command));
-    }else if(commandPart.compare(AssemblyParser::IMG_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new img Command ";
-        executeIMGCommand(command,routineGenerator);
-
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label;
