@@ -68,6 +68,8 @@ TAGS_CLOSE              \]
 TAG                     [a-zA-Z0-9\-_="'!+\\/?.,]+
 
 MATCH_REST                  .*
+BODY_SYMBOL                 [\{\[<\|\/_=~\^@\{\}:]
+QUOTATION_MARK              \"
 
 FORMATTING_ITALICS          \/{2}
 FORMATTING_BOLDFACE         \"{2}
@@ -354,9 +356,21 @@ EXPR_ASSGN              =
                                 return BisonParser::token::NEWLINE;
                                 }
 
+    /* separate Symbols */
+<Body>{BODY_SYMBOL}             {
+                                SAVE_STRING;
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << "matched Token " << "TEXT_TOKEN" << " with value " << YYText();
+                                return BisonParser::token::TEXT_TOKEN;
+                                }
+    /* escaped quotation marks*/
+ /*<Body>{QUOTATION_MARK}          {
+                                SAVE_STRING;
+                                LOG_DEBUG << "Lexers: line: "<< lineno() <<" Condition: " << "Body" << "matched Token " << "TEXT_TOKEN" << " with value " << YYText();
+                                return BisonParser::token::TEXT_TOKEN;
+                                }*/
+
     /* Passage text */
-<Body>[^\{\[<\|\n\/\"_=~\^@\{\}:\n]+              {
-                                //[^\^\/\"_=~\{\[<\|]
+<Body>[^\{\[<\|\n\/\"_=~\^@\{\}:\n]+        {
                                 SAVE_STRING;
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << "matched Token " << "TEXT_TOKEN" << " with value " << YYText();
                                 return BisonParser::token::TEXT_TOKEN;
