@@ -46,6 +46,7 @@ const string AssemblyParser::PRINT_RET_COMMAND = "print_ret";
 const string AssemblyParser::RESTART_COMMAND = "restart";
 const string AssemblyParser::RET_POPPED_COMMAND = "ret_popped";
 const string AssemblyParser::VERIFY_COMMAND = "verify";
+const string AssemblyParser::PUSH_COMMAND = "push";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -546,6 +547,9 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new verify";
         routineGenerator.verify(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::PUSH_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new push";
+        routineGenerator.push(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label;

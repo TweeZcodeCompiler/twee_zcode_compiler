@@ -53,6 +53,7 @@ private:
     static const std::string RESTART_COMMAND;
     static const std::string RET_POPPED_COMMAND;
     static const std::string VERIFY_COMMAND;
+    static const std::string PUSH_COMMAND;
 
 
     unsigned currentLineNumber;
