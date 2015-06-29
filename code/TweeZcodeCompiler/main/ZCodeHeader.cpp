@@ -9,7 +9,7 @@
 #include "ZCodeHeader.h"
 #include "Utils.h"
 #include <plog/Log.h>
-
+#include <stdint-gcc.h>
 using namespace std;
 
 #define VERSION 8               // Z-code version
@@ -63,6 +63,19 @@ vector<bitset<8>> ZCodeHeader::getHeaderBits() {
     }
 
     return headerBits;
+}
+
+bool ZCodeHeader::revalidate() {
+    if(this->size == 0){
+        this->size = 37;
+        return true;
+    }
+    return false;
+}
+
+std::vector<std::bitset<8>>& ZCodeHeader::print() {
+    vector<bitset<8>> result = getHeaderBits();
+    return result;
 }
 
 /* helper method to calculate length and to

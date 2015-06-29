@@ -11,8 +11,11 @@
 #include <map>
 #include <TweeFile.h>
 #include "AssemblyParser.h"
+#include "ZCodeObjects/ZCodeContainer.h"
+#include "ZCodeObjects/ZCodeMemorySpace.h"
 #include <sstream>
 #include <plog/Log.h>
+#include <stdint-gcc.h>
 
 using namespace std;
 
@@ -42,37 +45,39 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
         buffer << in.rdbuf();
     }
 
-    ofstream testFile("test.zas");
-    testFile << buffer.str();
 
+
+    ZCodeContainer zcode = ZCodeContainer();
 
     //create header
     ZCodeHeader header = ZCodeHeader();
+    zcode.add(header);
 
-    //create memory sections
-    vector<bitset<8>> dynamicMemory = generateDynamicMemory(header, 0x3f);
-    vector<bitset<8>> staticMemory = generateStaticMemory(header, (int) (0x3f + dynamicMemory.size()));
-    vector<bitset<8>> highMemory = generateHighMemory(header,
-                                                      (int) (0x3f + staticMemory.size() + dynamicMemory.size()),
-                                                      buffer);
+    //create dynamicMemory
+    ZCodeContainer dynamicMemory = ZCodeContainer();
+    ZCodeMemorySpace globalVariablesTable = ZCodeMemorySpace((0xff - 0x10)*2);// Global Var Table
+    dynamicMemory.add(globalVariablesTable);
+    zcode.add(dynamicMemory);
+
+    //create staticMemory
+    ZCodeContainer staticMemory = ZCodeContainer();
+    zcode.add(staticMemory);
+
+    //create hight Memory
+    ZCodeContainer highMemory = ZCodeContainer();
+    zcode.add(highMemory);
 
     //init header
     header.setRoutinesOffset(88);
     header.setStaticStringsOffset(99);
     header.setFileLength(3, 52);
-    header.baseOfStatMem = (uint16_t) (0x3f + dynamicMemory.size());
-    header.baseOfHighMem = (uint16_t) (0x3f + dynamicMemory.size() + staticMemory.size());
+    header.locOfGlobVarTable = globalVariablesTable.getOffset();
+    header.baseOfStatMem = (uint16_t) (staticMemory.getOffset());
+    header.baseOfHighMem = (uint16_t) (highMemory.getOffset());
     header.initValOfPC = header.baseOfHighMem;
-    vector<bitset<8>> headerMemory = header.getHeaderBits();
 
     //concat memory sections
-    vector<bitset<8>> zCode = vector<bitset<8>>();
-    Utils::append(zCode, headerMemory);
-    Utils::append(zCode, dynamicMemory);
-    Utils::append(zCode, staticMemory);
-    Utils::append(zCode, highMemory);
-
-
+    vector<bitset<8>> zCode = zcode.print();
 
     RoutineGenerator::resolveCallInstructions(zCode);
 
