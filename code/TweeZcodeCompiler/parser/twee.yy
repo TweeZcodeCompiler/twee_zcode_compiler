@@ -17,6 +17,7 @@
     #include "include/TweeFile.h"
     #include "include/Passage/Passage.h"
     #include "include/Passage/Body/Text.h"
+    #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
 
     #include <plog/Log.h>
@@ -64,6 +65,7 @@
 
 	Head *head;
 	Text *tag;
+    Newline *newline;
 
 	Body *body;
 
@@ -95,6 +97,8 @@
     <token> LINK_OPEN
     <token> LINK_CLOSE
     <token> LINK_SEPARATOR
+    <token> LINK_SMALL_CLOSE
+    <token> LINK_EXPRESSION_OPEN
 
 	<token> MACRO_OPEN
 	<token> MACRO_CLOSE
@@ -168,10 +172,9 @@
 %type <bodypart> bodypart
 %type <text> text
 %type <link> link
-
+%type <newline> newline
 %type <macro> macro
 %type <expression> expression
-%type <ifmacro> ifmacro
 
 %start TweeDocument
 
@@ -271,6 +274,11 @@ bodypart :
     LOG_DEBUG << "Parser: bodypart -> text: "<< "pass text:type(text) to bodypart:type(BodyPart)";
     $$ = $1;
     }
+    |newline
+    {
+    LOG_DEBUG << "Parser: bodypart -> newline: "<< "pass newline:type(Newline) to bodypart:type(BodyPart)";
+    $$ = $1;
+    }
     |link
     {
     LOG_DEBUG << "Parser: bodypart -> link: "<< "pass link:type(Link) to bodypart:type(BodyPart)";
@@ -290,11 +298,6 @@ text :
     LOG_DEBUG << "Parser: text -> TEXT_TOKEN: "<< "create top:text:type(Text)";
     $$ = new Text(*$1);
     delete $1;
-    }
-    |NEWLINE
-    {
-    LOG_DEBUG << "Parser: bodypart -> NEWLINE: "<< "create top:text:type(Text) with a \"\\n\"";
-    $$ = new Text(" ");
     }
     |FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
     {
@@ -333,6 +336,14 @@ text :
     delete $3;
     }
   ;
+
+newline:
+    NEWLINE {
+    LOG_DEBUG << "Parser: newline -> NEWLINE: "<< "create top:newline:type(Newline)";
+    $$ = new Newline();
+    }
+  ;
+
 link :
     LINK_OPEN TEXT_TOKEN LINK_CLOSE
     {
@@ -347,28 +358,45 @@ link :
     delete $4;
     delete $2;
     }
+    |LINK_OPEN TEXT_TOKEN LINK_SMALL_CLOSE LINK_EXPRESSION_OPEN expression LINK_CLOSE
+    {
+    LOG_DEBUG << "Parser: link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE: "<< "create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN";
+    //TODO: expressions in links
+    $$ = new Link(*$2);
+    delete $2;
+    }
+    |LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_SMALL_CLOSE LINK_EXPRESSION_OPEN expression LINK_CLOSE
+    {
+    LOG_DEBUG << "Parser: link -> LINK_OPEN TEXT_TOKEN LINK_SEPARATOR TEXT_TOKEN LINK_CLOSE: "<< "create top:link:type(Link) with 4:token:TEXT_TOKEN & 2:token:TEXT_TOKEN";
+    //TODO: expressions in links
+    $$ = new Link(*$4, *$2);
+    delete $4;
+    delete $2;
+    }
   ;
 
 macro :
-    MACRO_OPEN TEXT_TOKEN MACRO_CLOSE
+    MACRO_OPEN MACRO_IF expression MACRO_CLOSE
     {
-    //TODO: data model: implement macro
-    LOG_DEBUG << "Parser: macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE: "<< "create top:macro:type(--Display--) with 2:token:TEXT_TOKEN";
-    }
-    |MACRO_OPEN ifmacro MACRO_CLOSE
-    {
-
+    LOG_DEBUG << "Parser: MACRO_IF -> MACRO_OPEN MACRO_IF expression MACRO_CLOSE: "<< "matched, did nothing, to be implemented";
+    //TODO: implement ifmacro
     }
     |MACRO_OPEN MACRO_ENDIF MACRO_CLOSE
     {
-    
+    LOG_DEBUG << "Parser: MACRO_IF -> MACRO_OPEN MACRO_ENDIF MACRO_CLOSE: "<< "matched, did nothing, to be implemented";
+    //TODO: implement endifmacro
+    }
+    |MACRO_OPEN MACRO_ELSE MACRO_CLOSE
+    {
+    LOG_DEBUG << "Parser: MACRO_IF -> MACRO_OPEN MACRO_ELSE MACRO_CLOSE: "<< "matched, did nothing, to be implemented";
+    //TODO: implement elsemacro
     }
     |MACRO_OPEN expression MACRO_CLOSE
     {
     LOG_DEBUG << "macro -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
-
     }
   ;
+
 
 expression :
     EXPR_OPEN expression EXPR_CLOSE
@@ -453,30 +481,19 @@ expression :
     {
     LOG_DEBUG << "expression -> EXPR_INT: ";
     }
-  ;
-
-ifmacro :
-    MACRO_IF expression
-    {
-    LOG_DEBUG << "Parser: MACRO_IF expression: "<< "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    //TODO: implement ifmacro
-
-    }
-  ;
-
-expression :
-    EXPR_VAR EXPR_ASSGN EXPR_INT
+    |EXPR_VAR EXPR_ASSGN expression
     {
     *$$ = std::string("matched an expression assignment with an int");
     LOG_DEBUG << "matched an expression assignment with an int";
     LOG_DEBUG << $3;
     }
-    |EXPR_VAR EXPR_IS EXPR_INT
+    |EXPR_VAR EXPR_IS expression
     {
     *$$ = std::string("matched an expression is");
     LOG_DEBUG << "matched an expression is with an int";
     LOG_DEBUG << $3;
     }
+   ;
   ;
 
 %%

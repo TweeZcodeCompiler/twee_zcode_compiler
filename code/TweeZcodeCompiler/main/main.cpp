@@ -1,6 +1,7 @@
 #include <iostream>
 #include <plog/Log.h>
 #include <plog/Appenders/ConsoleAppender.h>
+#include <ParseException.h>
 #include "stacktrace.h"
 #include "TweeZCodeCompilerPipeline.h"
 #include "UserSideFormatter.h"
@@ -44,23 +45,20 @@ int main(int argc, char **argv) {
     std::string outputFile = argsCommand.getOutputFileName();
 
 
-   static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Compiler_Log.txt");
-    plog::ConsoleAppender<plog::UserSideFormatter> consoleAppender; // Console Appender for user friendly output
-
+    //declare logging, depending on the -d flag
     std::string logFile = "Compiler_Log.txt";
-    if(argsCommand.isDebugInConsole() == true)
-    {
+    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(logFile.c_str());
+    plog::ConsoleAppender<plog::UserSideFormatter> consoleAppender; // Console Appender for user friendly output
+    plog::ConsoleAppender<plog::TxtFormatter> textConsoleAppender; // Console Appender for user UNfriendly output
 
-        plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
+    if(argsCommand.isDebugInConsole()) {
         std::cout << "Console log";
-        plog::init(plog::debug,  &consoleAppender);
-    }
-    else
-    {
+        plog::init(plog::debug,  &textConsoleAppender);
+    } else {
         remove(logFile.c_str());
-        plog::init(plog::debug, logFile.c_str());
+        plog::init(plog::debug, &fileAppender);
+        plog::init(plog::error,  &consoleAppender);
     }
-    plog::init(plog::error, &consoleAppender);
 
 
     LOG_DEBUG << "CMD-Args Summary";

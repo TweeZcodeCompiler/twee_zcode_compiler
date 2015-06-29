@@ -9,8 +9,8 @@
 #include <iostream>
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
+#include <Passage/Body/Newline.h>
 #include <algorithm>
-#include <Passage/Body/Expressions/Variable.h>
 
 using namespace std;
 
@@ -105,6 +105,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 BodyPart* bodyPart = it->get();
                 if(Text* text = dynamic_cast<Text*>(bodyPart)) {
                     assgen.print(text->getContent());
+                }
+                if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
+                    assgen.newline();
                 }
             }
 
