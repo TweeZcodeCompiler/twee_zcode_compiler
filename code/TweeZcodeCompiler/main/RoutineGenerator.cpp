@@ -245,7 +245,8 @@ void RoutineGenerator::quitRoutine() {
 }
 
 void RoutineGenerator::restart() {
-    ZCodeInstruction *instruction = new ZCodeInstruction(RESTART);
+    debug("restart");
+    auto instruction = shared_ptr<ZCodeObject>(new ZCodeInstruction(RESTART));
     routine->add(instruction);
 }
 
@@ -271,8 +272,8 @@ void RoutineGenerator::verify(vector<unique_ptr<ZParam>> params) {
     string label;
     bool jumpIfTrue;
     setLabelValues(*params.at(0), label, jumpIfTrue);
-    auto *instruction = new ZCodeInstruction(VERIFY);
-    auto *jump = new ZCodeJump(getOrCreateLabel(label));
+    auto instruction = shared_ptr<ZCodeObject>(new ZCodeInstruction(VERIFY));
+    auto jump = shared_ptr<ZCodeObject>(new ZCodeJump(getOrCreateLabel(label)));
     routine->add(instruction);
     routine->add(jump);
 }

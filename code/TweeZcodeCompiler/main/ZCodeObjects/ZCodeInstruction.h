@@ -28,9 +28,6 @@ public:
         content.push_back(std::bitset<8>(code));
         size = 1;
     }
-    ~ZCodeInstruction(){
-
-    }
 };
 
 

@@ -19,7 +19,9 @@ public:
 
     void print(std::vector<std::bitset<8>> &code);
     bool revalidate();
-
+    ~ZCodeContainer(){
+        std::cout <<"del";
+    }
 };
 
 

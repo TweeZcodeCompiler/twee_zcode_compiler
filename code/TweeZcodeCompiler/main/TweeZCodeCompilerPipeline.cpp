@@ -48,11 +48,11 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
 
 
 
-    ZCodeContainer zcode = ZCodeContainer("ZCode Container");
+    shared_ptr<ZCodeContainer> zcode = shared_ptr<ZCodeContainer>(new ZCodeContainer("ZCode Container"));
 
     //create header
     shared_ptr<ZCodeHeader> header = shared_ptr<ZCodeHeader>(new ZCodeHeader());
-    zcode.add(header);
+    zcode->add(header);
 
     //create dynamicMemory
     shared_ptr<ZCodeContainer> dynamicMemory = shared_ptr<ZCodeContainer>(new ZCodeContainer("dynamic memory"));
@@ -62,17 +62,17 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
     shared_ptr<ZCodeObject> globalObjectsTable = shared_ptr<ZCodeObject>(new ZCodeMemorySpace((0x2f0-0x140), "global objects"));
     dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodePkgAdrrPadding()));
     dynamicMemory->add(globalObjectsTable);
-    zcode.add(dynamicMemory);
+    zcode->add(dynamicMemory);
 
     //create staticMemory
     shared_ptr<ZCodeContainer> staticMemory = shared_ptr<ZCodeContainer>(new ZCodeContainer("static memory"));
     shared_ptr<ZCodeObject> padding = shared_ptr<ZCodeObject>(new ZCodePkgAdrrPadding());
     staticMemory->add(padding);
-    zcode.add(staticMemory);
+    zcode->add(staticMemory);
 
     //create hight Memory
     shared_ptr<ZCodeContainer> highMemory = shared_ptr<ZCodeContainer>(new ZCodeContainer("high memory"));
-    zcode.add(highMemory);
+    zcode->add(highMemory);
 
     //parse
     AssemblyParser parser = AssemblyParser();
@@ -91,9 +91,9 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
     //concat memory sections
 
     vector<bitset<8>> zCode;
-    zcode.print(zCode);
+    zcode->print(zCode);
 
-    zcode.printMemory();
+    zcode->printMemory();
 
     //calculate fileSize
     size_t fileSize = Utils::calculateNextPackageAddress(zCode.size());
@@ -106,6 +106,7 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
     BinaryFileWriter binaryFileWriter;
     binaryFileWriter.write(zCodeFileName, zCode);
     log("ZCode File '" + zCodeFileName + "' generated");
+    zcode->cleanup();
 }
 
 std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::addFileSizeToHeader(std::vector<std::bitset<8>> zCode,

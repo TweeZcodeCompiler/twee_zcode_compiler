@@ -66,10 +66,6 @@ string trim(const string &str,
     return str.substr(strBegin, strRange);
 }
 
-bool AssemblyParser::checkIfRoutineNameExists(std::string routineName) {
-    return (std::find(routineNameList.begin(), routineNameList.end(), routineName) != routineNameList.end());
-}
-
 void AssemblyParser::performRoutineDirectiveCommand( vector<string> lineComps, shared_ptr<ZCodeContainer> highMemory) {
     LOG_DEBUG << "found routine" ;
 
@@ -154,9 +150,9 @@ void AssemblyParser::readAssembly(istream& input, shared_ptr<ZCodeContainer> dyn
 
     string line;
     currentLineNumber = 1;
-
+    try {
     for (string line; getline(input, line);) {
-        try {
+
         line = trim(line);
         vector<string> lineComps;
         this->split(line, SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND, lineComps);
@@ -173,11 +169,13 @@ void AssemblyParser::readAssembly(istream& input, shared_ptr<ZCodeContainer> dyn
                     cerr << "unknown directive";
                     throw;
                 }
+            }else{
+                executeCommand(line,*currentGenerator);
             }
 
             ++currentLineNumber;
         }
-
+        }
             if (currentGenerator) {
                 finishRoutine(highMemory);
             }
@@ -189,7 +187,7 @@ void AssemblyParser::readAssembly(istream& input, shared_ptr<ZCodeContainer> dyn
             }
             throw;
         }
-    }
+
 }
 
 void AssemblyParser::finishRoutine(shared_ptr<ZCodeContainer> highMemoryZcode) {

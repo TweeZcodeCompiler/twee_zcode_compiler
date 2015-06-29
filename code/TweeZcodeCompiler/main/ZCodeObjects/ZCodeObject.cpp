@@ -10,10 +10,9 @@
 void ZCodeObject::add(std::shared_ptr<ZCodeObject> Child) {
     std::cout << "add '"<<Child->displayName<<"' to '"<< displayName <<"'"<< std::endl;
     children.push_back(Child);
-    Child->parrent = std::shared_ptr<ZCodeObject>(this);
+    Child->parrent = share();
     Child->offset = this->offset+ this->size;
    setSize(this->size+ Child->getSize());
-    std::shared_ptr<ZCodeObject> parrent = this->parrent;
     if(parrent != NULL){
         parrent->revalidate();
     }

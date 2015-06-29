@@ -10,14 +10,18 @@
 #include <vector>
 #include <bitset>
 #include <memory>
+#include <iostream>
 #include <bits/unique_ptr.h>
 
-class ZCodeObject {
+class ZCodeObject : public std::enable_shared_from_this<ZCodeObject>{
 protected:
-    std::shared_ptr<ZCodeObject> parrent = NULL;
+    std::shared_ptr<ZCodeObject>parrent;
     std::vector<std::shared_ptr<ZCodeObject>> children;
 
 public:
+    std::shared_ptr<ZCodeObject> share(){
+        return shared_from_this();
+    }
     size_t  offset = 0;
     size_t  size = 0;
     std::string displayName = "UNKNOWN";
@@ -36,9 +40,13 @@ public:
     ZCodeObject(std::string displayName){
         this->displayName = displayName;
     }
-    ~ZCodeObject(){
-        parrent = NULL;
+   void cleanup(){
+        std::cout <<"del";
+        for(size_t i = 0; i < children.size(); i++){
+            children.at(i)->cleanup();
+        }
         children.clear();
+        parrent = NULL;
     }
 };
 
