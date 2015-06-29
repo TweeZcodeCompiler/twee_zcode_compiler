@@ -35,7 +35,7 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
         std::unique_ptr<TweeFile> tweeFile;
         try {
             tweeFile = parser.parse();
-        } catch (Twee::ParseException e) {
+        } catch (const Twee::ParseException &e) {
             log("Parse error");
             throw e;
         }
