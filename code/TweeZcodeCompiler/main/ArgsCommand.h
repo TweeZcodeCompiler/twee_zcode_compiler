@@ -7,26 +7,6 @@
 
 #include<iostream>
 
-/*
- *
- * Following calls are supported
- *
- *
- *
- * TweeZCodeCompiler [-i] source.twee [-o zcode.z8] [-a assembly.zap] [-d]
- *
- *
- *  -i is always interpreted as twee file
- *
- *
- * it is not possible two use -a and -i at the same time
- *
- *
- * sample calls
- * TweeZCodeCompiler source.twee
- * TweeZCodeCompiler -a source.zap
- * TweeZCodeCompiler -
- */
 
 class ArgsCommand {
 private:
