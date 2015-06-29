@@ -32,18 +32,32 @@ class ArgsCommand {
 private:
     std::string sourceFile;
     std::string outputFile;
-    bool isAssembly;
+    bool inputIsAssembly;
+    bool outputIsAssembly;
     bool debugInConsole;
-
-    int argc;
-    char **argv;
+    bool valid;
 
 public:
     ArgsCommand(int argc, char **argv);
+
+    static void printHelpMessage(std::string invocation = "");
+
+    explicit operator bool() const {
+        return valid;
+    }
+
     std::string getSourceFileName() const;
+
     std::string getOutputFileName() const;
+
+    bool isValid() const;
+
     bool sourceFileIsTwee() const;
+
     bool sourceFileIsAssembly() const;
+
+    bool outputToAssembly() const;
+
     bool isDebugInConsole() const;
 };
 

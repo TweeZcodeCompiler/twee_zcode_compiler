@@ -36,9 +36,14 @@ int main(int argc, char **argv) {
     // install exception handler
     std::set_terminate(handler);
 
+    std::string invocation = argv[0];
     //get cmdargs
     ArgsCommand argsCommand(argc,argv);
-    // TODO: parse args properly (GNU getopt?)
+    if(!argsCommand) {
+        ArgsCommand::printHelpMessage(invocation);
+        return 2;
+    }
+
     std::string inputFile = argsCommand.getSourceFileName();
     std::string outputFile = argsCommand.getOutputFileName();
 
@@ -66,7 +71,8 @@ int main(int argc, char **argv) {
     LOG_ERROR << "test";
     TweeCompiler compiler;
     TweeZCodeCompilerPipeline pipeline;
-    pipeline.compile(inputFile, outputFile, compiler,argsCommand.sourceFileIsTwee());
+    pipeline.compile(inputFile,
+                     outputFile, compiler, argsCommand.sourceFileIsTwee(), argsCommand.outputToAssembly());
 
     return 0;
 }
