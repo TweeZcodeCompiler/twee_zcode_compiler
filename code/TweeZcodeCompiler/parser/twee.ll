@@ -90,10 +90,6 @@ LINK_SMALL_CLOSE        \]
 LINK_EXPRESSION_OPEN    \[
 LINK_SEPARATOR          \|
 
-
- /*LINK_TEXT_CHAR          [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
-LINK_TEXT               [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
-
 MACRO_OPEN              <{2}
 MACRO_CLOSE             >{2}
 
