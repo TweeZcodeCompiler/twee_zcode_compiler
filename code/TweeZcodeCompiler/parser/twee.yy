@@ -19,12 +19,6 @@
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Link.h"
 
-    #include "include/Passage/Body/Expressions/Operator.h"
-    #include "include/Passage/Body/Expressions/Variable.h"
-
-    #include "include/Passage/Body/Macros/Display.h"
-    #include "include/Passage/Body/Macros/Print.h"
-
     #include <plog/Log.h>
     #include <plog/Appenders/ConsoleAppender.h>
 	extern TweeFile *tweeStructure; /* the result data model */
@@ -77,11 +71,9 @@
     std::string *ifmacro;
 	std::string *expression;
 
-
 	BodyPart *bodypart;
 	Text *text;
 	Link *link;
-	Variable *variable;
 	
 	//TODO: add Syntax Tree classes
 }
@@ -374,7 +366,7 @@ macro :
     |MACRO_OPEN expression MACRO_CLOSE
     {
     LOG_DEBUG << "macro -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
-    $$ = new Print(*$2);
+
     }
   ;
 
