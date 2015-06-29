@@ -51,9 +51,9 @@ void ArgsCommand::printHelpMessage(string invocation) {
 
     cout << "Usage: " <<
     (properInvocationName.empty() ? DEFAULT_PROGRAM_NAME : properInvocationName) << " " <<
-    "[-d] [-o outputfile] [-a]" << endl << endl <<
+    "[-d] [-o outputfile] [-a] <inputfile>" << endl << endl <<
     "  -d"                  << "\t\t\t\t" << "print debug logs to console" << endl <<
-    "  -o <outputfile>"     << "\t"       << "use specified output instead of default (name of input file without file extensions)" << endl <<
+    "  -o <outputfile>"     << "\t"       << "use specified output instead of default (name of input file with .z8 extension)" << endl <<
     "  -a"                  << "\t\t\t\t" << "treat input file as Z-machine assembly instead of Twee source (cannot be used in conjunction with -s)" << endl <<
     "  -s"                  << "\t\t\t\t" << "generate Z-machine assembly instead of Twee source (cannot be used in conjunction with -a)" << endl;
 }
