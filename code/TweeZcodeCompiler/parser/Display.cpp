@@ -5,11 +5,11 @@
 #include "include/Passage/Body/Macros/Display.h"
 
 Display::Display(const Expression &expression) {
-    this->expression = std::unique_ptr(expression.clone());
+    this->expression = std::unique_ptr<Expression>(expression.clone());
 }
 
 Display::Display(const Expression *expression) {
-    this->expression = std::unique_ptr(expression->clone());
+    this->expression = std::unique_ptr<Expression>(expression->clone());
 }
 
 const std::unique_ptr<Expression> &Display::getExpression() const {

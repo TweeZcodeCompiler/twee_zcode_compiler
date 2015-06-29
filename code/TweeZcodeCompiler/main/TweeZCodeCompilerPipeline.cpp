@@ -16,41 +16,32 @@
 
 using namespace std;
 
-void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, ITweeCompiler& tweeCompiler, bool isTwee) {
+void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, ITweeCompiler& tweeCompiler,bool isTwee) {
 
     log("Simple Compiler Pipeline started");
 
-    ifstream inputFile(filename);
+    stringstream buffer;
+    if(isTwee) { //source file is twee file
+        ifstream inputFile(filename);
 
-    Twee::TweeParser parser(&inputFile);
+        Twee::TweeParser parser(&inputFile);
 
-    std::unique_ptr<TweeFile> tweeFile;
-    try {
-        tweeFile = parser.parse();
-    } catch (Twee::ParseException e) {
-        log("Parse error");
-        throw e;
+        std::unique_ptr<TweeFile> tweeFile;
+        try {
+            tweeFile = parser.parse();
+        } catch (const Twee::ParseException &e) {
+            log("Parse error");
+            throw e;
+        }
+
+        log("Parsed twee file");
+        tweeCompiler.compile(*tweeFile, buffer);
+    } else {
+        //source file is assembly file
+        std::ifstream in(filename);
+        buffer << in.rdbuf();
     }
 
-    log("Parsed twee file");
-
-    stringstream buffer;
-
-    tweeCompiler.compile(*tweeFile, buffer);
-
-    LOG_DEBUG << "Generated Z-Assembly file: " << "zas.zas";
-
-
-    ofstream testFile("test.zas");
-    testFile << buffer.str();
-
-
-    //direct assembly compile start
-    /*std::ifstream in( "eat_apple_simple.zap" );
-    buffer << in.rdbuf();
-    std::string contents(buffer.str());
-    */
-    //direct assembly compile end end
 
     //create header
     ZCodeHeader header = ZCodeHeader();

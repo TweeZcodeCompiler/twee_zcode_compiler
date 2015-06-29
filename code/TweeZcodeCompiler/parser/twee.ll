@@ -88,6 +88,7 @@ LINK_OPEN               \[{2}
 LINK_CLOSE              \]{2}
 LINK_SEPARATOR          \|
 
+
  /*LINK_TEXT_CHAR          [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}]*/
 LINK_TEXT               [a-zA-Z0-9\-_="'!+\\/?.,\t ]+
 
@@ -106,7 +107,9 @@ MACRO_DISPLAY           display
 EXPR_STR_LIMITER        \"
 EXPR_STR                [a-zA-Z]+
 EXPR_INT                [0-9]+
-EXPR_VAR               \$[_a-zA-Z][_a-zA-Z0-9]*
+
+    /* initial $ sign -> letter (uppercase or lowercase) or an underscore -> any combination of letters, numbers, or underscores */
+EXPR_VAR                $[a-zA-z_][a-zA-Z0-9_]*
 
 EXPR_RANDOM            random
 
@@ -308,7 +311,7 @@ EXPR_ASS                to|=
 
 <Body>{FORMATTING_SUBSCRIPT}{MATCH_REST}      {
                                 yyless(2);
-                                    SAVE_STRING;
+                                SAVE_STRING;
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << "matched Token " << "FORMATTING" << " with value " << YYText();
                                  return BisonParser::token::FORMATTING;
                                  }
@@ -483,6 +486,14 @@ EXPR_ASS                to|=
                                 return BisonParser::token::MACRO_DISPLAY;
                                 }
 
+    /* expression variable */
+<BodyMacro>{EXPR_VAR}           {
+                                LOG_DEBUG << "Lexer: Condition: BodyMacro matched Token EXPR_VAR" << " with value " << YYText();
+                                SAVE_STRING;
+                                return BisonParser::token::EXPR_VAR;
+                                }
+
+
     /* expression functions */
 <BodyMacro>{EXPR_RANDOM}		{
                                 LOG_DEBUG << "Lexer: Condition: BodyMacro matched Token "<<"EXPR_RANDOM" << " with value " << YYText();
@@ -583,18 +594,11 @@ EXPR_ASS                to|=
                                 return BisonParser::token::EXPR_ASS;
                                 }
 
-    /* leave the macro */
-<BodyMacro>{EXPR_VAR}        {
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "BodyMacro" << "matched Token " << "EXPR_VAR" << " with value " << YYText();
-                                SAVE_STRING;
-                                return BisonParser::token::VARIABLE;
-                                }
-
-    /* leave the macro */
+    /* parse constant integer */
 <BodyMacro>{EXPR_INT}        {
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "BodyMacro" << "matched Token " << "INT" << " with value " << YYText();
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "BodyMacro" << "matched Token " << "EXPR_INT" << " with value " << YYText();
                                 SAVE_INT;
-                                return BisonParser::token::INTEGER;
+                                return BisonParser::token::EXPR_INT;
                                 }
 
 

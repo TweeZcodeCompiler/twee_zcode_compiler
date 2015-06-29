@@ -4,11 +4,13 @@
 
 #include "TweeCompiler.h"
 #include "ZAssemblyGenerator.h"
+#include "exceptions.h"
 #include <sstream>
 #include <iostream>
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
 #include <algorithm>
+#include <Passage/Body/Expressions/Variable.h>
 
 using namespace std;
 
@@ -104,7 +106,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 if(Text* text = dynamic_cast<Text*>(bodyPart)) {
                     assgen.print(text->getContent());
                 }
-
             }
 
             assgen.newline();
@@ -154,9 +155,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     assgen.print(string("selected ") + to_string(targetPassageId) );
                     #endif
                     assgen.ret(to_string(targetPassageId));
-                } catch (out_of_range &err) {
+                } catch (const out_of_range &err) {
                     cerr << "could not find passage for link target \"" << (*link)->getTarget() << "\"" << endl;
-                    throw;
+                    throw TweeDocumentException();
                 }
                 i++;
             }

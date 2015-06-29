@@ -53,6 +53,7 @@ public:
     ZAssemblyGenerator &print(std::string str);
     ZAssemblyGenerator &read_char(std::string storeTarget);
     ZAssemblyGenerator &println(std::string str);
+    ZAssemblyGenerator &variable(std::string variable);
 
 private:
     std::ostream& out;
