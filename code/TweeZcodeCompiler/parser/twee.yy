@@ -19,6 +19,11 @@
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
+    #include "include/Passage/Body/Macros/Display.h"
+    #include "include/Passage/Body/Macros/Print.h"
+    #include "include/Passage/Body/Expressions/Const.h"
+    #include "include/Passage/Body/Expressions/Operator.h"
+    #include "include/Passage/Body/Expressions/Variable.h"
 
     #include <plog/Log.h>
     #include <plog/Appenders/ConsoleAppender.h>
