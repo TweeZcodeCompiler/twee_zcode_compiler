@@ -22,6 +22,10 @@ public:
 
     Display(const Expression &);
 
+    Display(const Display &display) {
+        this->expression.reset(display.getExpression()->clone());
+    }
+
     const std::unique_ptr<Expression> &getExpression() const;
 
     std::string to_string() const;
