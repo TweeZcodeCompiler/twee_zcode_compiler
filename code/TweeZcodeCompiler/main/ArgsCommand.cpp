@@ -55,7 +55,7 @@ void ArgsCommand::printHelpMessage(string invocation) {
     "  -d"                  << "\t\t\t\t" << "print debug logs to console" << endl <<
     "  -o <outputfile>"     << "\t"       << "use specified output instead of default (name of input file with .z8 extension)" << endl <<
     "  -a"                  << "\t\t\t\t" << "treat input file as Z-machine assembly instead of Twee source (cannot be used in conjunction with -s)" << endl <<
-    "  -s"                  << "\t\t\t\t" << "generate Z-machine assembly instead of Twee source (cannot be used in conjunction with -a)" << endl;
+    "  -s"                  << "\t\t\t\t" << "generate readable Z-machine assembly instead of Z-program (cannot be used in conjunction with -a)" << endl;
 }
 
 ArgsCommand::ArgsCommand(int argc, char **argv) {
