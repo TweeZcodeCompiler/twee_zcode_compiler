@@ -7,20 +7,12 @@
 
 #include <string>
 
-enum ArithmeticOperation {
-    ADD, MUL, SUB, DIV, MOD, MINUS
+enum UnOps {
+    MINUS, PlUS, LNOT
 };
 
-enum LogicalOperation {
-    AND, OR, NOT
-};
-
-enum RelationOperation {
-    LT, LTE, GT, GTE, IS, NEQ
-};
-
-enum AssignmentOperation {
-    TO
+enum BinOps {
+    ADD, MUL, SUB, DIV, MOD, LAND, LOR, LT, LTE, GT, GTE, IS, NEQ, TO
 };
 
 enum FunctionName {

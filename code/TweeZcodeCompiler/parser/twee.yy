@@ -26,7 +26,7 @@
     #include "include/Passage/Body/Macros/ElseMacro.h"
     #include "include/Passage/Body/Macros/EndIf.h"
     #include "include/Passage/Body/Expressions/Const.h"
-    #include "include/Passage/Body/Expressions/Operator.h"
+    #include "include/Passage/Body/Expressions/BinaryOperation.h"
     #include "include/Passage/Body/Expressions/Variable.h"
 
     #include <plog/Log.h>
@@ -88,6 +88,9 @@
 	BodyPart *bodypart;
 	Text *text;
 	Link *link;
+    BinaryOperation *binaryOperation;
+    
+	//TODO: add Syntax Tree classes
 }
 
 %token
@@ -452,12 +455,12 @@ endif:
   ;
 
 
-
-
 expression :
     EXPR_OPEN expression EXPR_CLOSE
     {
     LOG_DEBUG << "expression -> EXPR_OPEN expression EXPR_CLOSE: ";
+    $$ = $2;
+    delete $2;
     }
     |EXPR_NOT expression
     {
@@ -474,6 +477,9 @@ expression :
     |expression EXPR_MUL expression
     {
     LOG_DEBUG << "expression -> expression EXPR_MUL expression: ";    
+    $$ = new BinaryOperation(MUL, *$1, *$3);
+    delete $1;
+    delete $3;
     }
     |expression EXPR_DIV expression
     {
