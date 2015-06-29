@@ -197,15 +197,25 @@ void AssemblyParser::finishRoutine(vector<bitset<8>> &highMemoryZcode) {
     bool labelFound;
     for (auto jump = registeredJumpsAtLines.begin(); jump != registeredJumpsAtLines.end(); ++jump) {
         labelFound = false;
+        string jumpFirst = jump->first;
+
         for (auto label = registeredLabels.begin(); label != registeredLabels.end(); ++label) {
-            if (label->compare(jump->first) == 0) {
+            if (label->compare(jumpFirst) == 0) {
+                labelFound = true;
+                break;
+            }
+            //set labelFound true when label is x but jump->first is ~x for jump not equals
+            string jumpSubString = jumpFirst.substr(1, jumpFirst.size()-1);
+            bool beginsWithTilde = (jumpFirst.at(0) == '~' );
+            bool restIsSame = (label->compare( jumpSubString) == 0 ) ;
+            if ( beginsWithTilde && restIsSame ) {
                 labelFound = true;
                 break;
             }
         }
 
         if (!labelFound) {
-            InvalidLabelException e(jump->first);
+            InvalidLabelException e(jumpFirst);
             e.lineNumber = jump->second;
             throw e;
         }
@@ -515,19 +525,19 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         LOG_DEBUG << ":::::: new add ";
         routineGenerator.add(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::SUB_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new sub ";
         routineGenerator.sub(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::MUL_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new mul ";
         routineGenerator.mul(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::DIV_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new div ";
         routineGenerator.div(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::AND_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new and ";
         routineGenerator.doAND(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::OR_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new or ";
         routineGenerator.doOR(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::RET_TRUE_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new rtrue";
