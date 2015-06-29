@@ -21,6 +21,7 @@
     #include "include/Passage/Body/Link.h"
     #include "include/Passage/Body/Macros/Display.h"
     #include "include/Passage/Body/Macros/Print.h"
+    #include "include/Passage/Body/Macros/IfMacro.h"
     #include "include/Passage/Body/Expressions/Const.h"
     #include "include/Passage/Body/Expressions/Operator.h"
     #include "include/Passage/Body/Expressions/Variable.h"
@@ -75,14 +76,12 @@
 	Body *body;
 
 	std::string *macro;
-    std::string *ifmacro;
+    IfMacro ifmacro;
 	std::string *expression;
 
 	BodyPart *bodypart;
 	Text *text;
 	Link *link;
-	
-	//TODO: add Syntax Tree classes
 }
 
 %token
