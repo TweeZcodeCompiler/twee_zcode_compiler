@@ -137,8 +137,7 @@ EXPR_OR                 or
 EXPR_NOT                not
 
     /*Assignment Token*/
-EXPR_TO                 to
-EXPR_ASSGN              =
+EXPR_ASS                to|=
 
  /*Parser Conditions */
     /*Naming convention in this file: CamelCase*/
@@ -378,6 +377,16 @@ EXPR_ASSGN              =
 
 
 
+    /* Passage text */
+<Body>[^\{\[<\|\n\/\"_=~\^@\{\}:\n]+              {
+                                //[^\^\/\"_=~\{\[<\|]
+                                SAVE_STRING;
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << "matched Token " << "TEXT_TOKEN" << " with value " << YYText();
+                                return BisonParser::token::TEXT_TOKEN;
+                                }
+
+
+
  /* ___NEW CONDITION___ FormattingErrorInlineStyling*/
     /*From: Body */
     /*To:   Body */
@@ -569,14 +578,9 @@ EXPR_ASSGN              =
                                 return BisonParser::token::EXPR_NOT;
                                 }
 
-    /*Assignment Token*/
-<BodyMacro>{EXPR_TO}		    {
-                                LOG_DEBUG << "Lexer: Condition: BodyMacro matched Token "<<"EXPR_TO" << " with value " << YYText();
-                                return BisonParser::token::EXPR_TO;
-                                }
-<BodyMacro>{EXPR_ASSGN}		    {
-                                LOG_DEBUG << "Lexer: Condition: BodyMacro matched Token "<<"EXPR_ASSGN" << " with value " << YYText();
-                                return BisonParser::token::EXPR_ASSGN;
+<BodyMacro>{EXPR_ASS}		    {
+                                LOG_DEBUG << "Lexer: Condition: BodyMacro matched Token "<<"EXPR_ASS" << " with value " << YYText();
+                                return BisonParser::token::EXPR_ASS;
                                 }
 
     /* leave the macro */

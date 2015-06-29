@@ -18,7 +18,15 @@
     #include "include/Passage/Passage.h"
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Link.h"
-    #include "include/Passage/Body/FormattedText.h"
+    #include "include/Passage/Body/Expressions/Const.h"
+    #include "include/Passage/Body/Expressions/Function.h"
+    #include "include/Passage/Body/Expressions/Operator"
+    #include "include/Passage/Body/Expressions/Variable.h"
+    #include "include/Passage/Body/Macros/Display.h"
+    #include "include/Passage/Body/Macros/If.h"
+    #include "include/Passage/Body/Macros/Else.h"
+    #include "include/Passage/Body/Macros/EndIf.h"
+    #include "include/Passage/Body/Macros/Print.h"
 
     #include <plog/Log.h>
     #include <plog/Appenders/ConsoleAppender.h>
@@ -76,8 +84,6 @@
 	BodyPart *bodypart;
 	Text *text;
 	Link *link;
-	FormattedText *formattedtext;
-
 
 	//TODO: add Syntax Tree classes
 }
@@ -93,22 +99,23 @@
 	<string> TITLE
 	<string> TAG
 
-	<string> VARIABLE
-    <integer> INTEGER
+	<string> EXPR_VAR
+    <string> EXPR_STR
+    <integer> EXPR_INT
 
     <token> LINK_OPEN
     <token> LINK_CLOSE
     <token> LINK_SEPARATOR
 
-    <token> MACRO_OPEN
-    <token> MACRO_CLOSE
-
-    <token> MACRO_IF
-    <token> MACRO_ELSE
-    <token> MACRO_ENDIF
-
-    <token> MACRO_PRINT
-    <token> MACRO_DISPLAY
+	<token> MACRO_OPEN
+	<token> MACRO_CLOSE
+	
+	<token> MACRO_IF
+	<token> MACRO_ELSE
+	<token> MACRO_ENDIF
+	
+	<token> MACRO_PRINT
+	<token> MACRO_DISPLAY
     <token> EXPR_RANDOM
     <token> EXPR_VISITED
     <token> EXPR_PREVIOUS
@@ -132,11 +139,11 @@
     <token> EXPR_EQ
     <token> EXPR_NEQ
 
-    <token> EXPR_AND
-    <token> EXPR_OR
-
-    <token> EXPR_TO
-    <token> EXPR_ASSGN
+	<token> EXPR_AND
+	<token> EXPR_OR
+	<token> EXPR_NOT
+	
+	<token> EXPR_ASSGN
 
 	<string> FORMATTING_OPEN
 	<string> FORMATTING_CLOSE
@@ -287,12 +294,6 @@ bodypart :
     //TODO: implement Macro:BodyType
     $$ = new Text("macro placeholder");
     }
-    |formatted
-    {
-    LOG_DEBUG << "Parser: bodypart -> formatted: "<< "pass formatted:type(--Text--) to bodypart:type(BodyPart)";
-    //TODO: implement FormattedText parsing
-    $$ = $1;
-    }
   ;
 
 text :
@@ -307,8 +308,43 @@ text :
     LOG_DEBUG << "Parser: bodypart -> NEWLINE: "<< "create top:text:type(Text) with a \"\\n\"";
     $$ = new Text(" ");
     }
+    |FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
+    {
+    //TODO:check if F_OPEN and F_CLOSE are the same
+    //TODO:check if anything needs to be deleted here
+    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE: "<< "create top:formatted:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Text(*$2);
+    delete $1;
+    delete $2;
+    delete $3;
+    }
+    |FORMATTING_OPEN text FORMATTING_CLOSE
+    {
+    //TODO:check if F_OPEN and F_CLOSE are the same
+    //TODO:check if anything needs to be deleted here
+    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN formatted FORMATTING_CLOSE: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
+    delete $1;
+    delete $3;
+    }
+    |FORMATTING TEXT_TOKEN FORMATTING
+    {
+    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
+    LOG_DEBUG << "Parser: formatted -> FORMATTING TEXT_TOKEN FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
+    $$ = new Text(*$2);
+    delete $1;
+    delete $2;
+    delete $3;
+    }
+    |FORMATTING text FORMATTING
+    {
+    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
+    //TODO:check if anything needs to be deleted here
+    LOG_DEBUG << "Parser: formatted -> FORMATTING formatted FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
+    $$ = $2;
+    delete $1;
+    delete $3;
+    }
   ;
-
 link :
     LINK_OPEN TEXT_TOKEN LINK_CLOSE
     {
@@ -329,6 +365,8 @@ macro :
     MACRO_OPEN TEXT_TOKEN MACRO_CLOSE
     {
     //TODO: data model: implement macro
+    LOG_DEBUG << "Parser: macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE: "<< "create top:macro:type(--Display--) with 2:token:TEXT_TOKEN";
+    $$ = new Display(*$2);
     LOG_DEBUG << "Parser: macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE: "<< "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
     *$$ = std::string("just some text inside a macro");
     }
@@ -338,12 +376,12 @@ macro :
     }
     |MACRO_OPEN MACRO_ENDIF MACRO_CLOSE
     {
-
+    
     }
     |MACRO_OPEN expression MACRO_CLOSE
     {
-    LOG_DEBUG << "macro -> MACRO_OPEN TEXT_TOKEN MACRO_CLOSE";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    LOG_DEBUG << "macro -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
+    $$ = new Print(*$2);
     }
   ;
 
@@ -351,107 +389,108 @@ expression :
     EXPR_OPEN expression EXPR_CLOSE
     {
     LOG_DEBUG << "expression -> EXPR_OPEN expression EXPR_CLOSE: ";
-
+    $$ = $2;
     }
     |EXPR_NOT expression
     {
     LOG_DEBUG << "expression -> EXPR_NOT expression: ";
-
+    $$ = new Operator(LogicalOperation.NOT,null,*$2);
     }
     |EXPR_SUB expression %prec UMINUS
     {
     LOG_DEBUG << "expression -> EXPR_SUB expression %prec UMINUS: ";
-
+    $$ = new Operator(ArithmeticOperation.SUB,null,*$2);
     }
     |EXPR_ADD expression %prec UPLUS
     {
     LOG_DEBUG << "expression -> EXPR_ADD expression %prec UPLUS: ";
-
+    $$ = new Operator(ArithmeticOperation.ADD,null,*$2);
     }
     |expression EXPR_MUL expression
     {
     LOG_DEBUG << "expression -> expression EXPR_MUL expression: ";
-
+    $$ = new Operator(ArithmeticOperation.MUL,*$1,*$3);
     }
     |expression EXPR_DIV expression
     {
     LOG_DEBUG << "expression -> expression EXPR_DIV expression: ";
-
+    $$ = new Operator(ArithmeticOperation.DIV,*$1,*$3);
     }
     |expression EXPR_MOD expression
     {
     LOG_DEBUG << "expression -> expression EXPR_MOD expression: ";
-
+    $$ = new Operator(ArithmeticOperation.MOD,*$1,*$3);
     }
     |expression EXPR_ADD expression
     {
     LOG_DEBUG << "expression -> expression EXPR_ADD expression: ";
-
+    $$ = new Operator(ArithmeticOperation.ADD,*$1,*$3);
     }
     |expression EXPR_SUB expression
     {
     LOG_DEBUG << "expression -> expression EXPR_SUB expression: ";
-
+    $$ = new Operator(ArithmeticOperation.SUB,*$1,*$3);
     }
     |expression EXPR_GTE expression
     {
     LOG_DEBUG << "expression -> expression EXPR_GTE expression: ";
-
+    $$ = new Operator(RelationOperation.GTE,*$1,*$3);
     }
     |expression EXPR_GT expression
     {
     LOG_DEBUG << "expression -> expression EXPR_GT expression: ";
-
+    $$ = new Operator(RelationOperation.GT,*$1,*$3);
     }
     |expression EXPR_LTE expression
     {
     LOG_DEBUG << "expression -> expression EXPR_LTE expression: ";
-
+    $$ = new Operator(RelationOperation.LTE,*$1,*$3);
     }
     |expression EXPR_LT expression
     {
     LOG_DEBUG << "expression -> expression EXPR_LT expression: ";
-
+    $$ = new Operator(RelationOperation.LT,*$1,*$3);
     }
     |expression EXPR_EQ expression
     {
     LOG_DEBUG << "expression -> expression EXPR_EQ expression: ";
-
+    $$ = new Operator(RelationOperation.IS,*$1,*$3);
     }
     |expression EXPR_NEQ expression
     {
     LOG_DEBUG << "expression -> expression EXPR_NEQ expression: ";
-
+    $$ = new Operator(RelationOperation.NEQ,*$1,*$3);
     }
     |expression EXPR_AND expression
     {
     LOG_DEBUG << "expression -> expression EXPR_AND expression: ";
-
+    $$ = new Operator(LogicalOperation.AND,*$1,*$3);
     }
     |expression EXPR_OR expression
     {
     LOG_DEBUG << "expression -> expression EXPR_OR expression: ";
-
+    $$ = new Operator(LogicalOperation.OR,*$1,*$3);
     }
     |expression EXPR_ASS expression
     {
-    LOG_DEBUG << "expression -> expression EXPR_ASS expression: ";
-
+    LOG_DEBUG << "expression-> expressionEXPR_ASS expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Operator(AssignmentOperation.TO,*$1,*$3);
     }
-    |VARIABLE
+    |EXPR_VAR
     {
     LOG_DEBUG << "expression -> EXPR_VAR: ";
-
+    //TODO: implement variables
     }
-    |INTEGER
+    |EXPR_INT
     {
-    LOG_DEBUG << "expression -> INTEGER: ";
-
+    LOG_DEBUG << "expression -> EXPR_INT: ";
+    $$ = $1;
     }
-    |TEXT_TOKEN
+    |EXPR_STR
     {
     LOG_DEBUG << "expression -> EXPR_STR: ";
-
+    $$ = $1;
     }
   ;
 
@@ -465,51 +504,17 @@ ifmacro :
   ;
 
 expression :
-    VARIABLE EXPR_ASSGN INTEGER
+    EXPR_VAR EXPR_ASSGN EXPR_INT
     {
     *$$ = std::string("matched an expression assignment with an int");
     LOG_DEBUG << "matched an expression assignment with an int";
     LOG_DEBUG << $3;
     }
-    |VARIABLE EXPR_IS INTEGER
+    |EXPR_VAR EXPR_IS EXPR_INT
     {
     *$$ = std::string("matched an expression is");
     LOG_DEBUG << "matched an expression is with an int";
     LOG_DEBUG << $3;
-    }
-  ;
-formatted:
-    FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
-    {
-    //TODO:check if F_OPEN and F_CLOSE are the same
-    //TODO:check if anything needs to be deleted here
-    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE: "<< "create top:formatted:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new FormattedText(*$2, true, false, false);
-    delete $2;
-    }
-    |FORMATTING_OPEN formatted FORMATTING_CLOSE
-    {
-    //TODO:check if F_OPEN and F_CLOSE are the same
-    //TODO:check if anything needs to be deleted here
-    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN formatted FORMATTING_CLOSE: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-    $$ = $2;
-    }
-    |FORMATTING TEXT_TOKEN FORMATTING
-    {
-    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
-    LOG_DEBUG << "Parser: formatted -> FORMATTING TEXT_TOKEN FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-
-    $$ = new FormattedText(*$2, true, false, false);
-    delete $1;
-    delete $2;
-    delete $3;
-    }
-    |FORMATTING formatted FORMATTING
-    {
-    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
-    //TODO:check if anything needs to be deleted here
-    LOG_DEBUG << "Parser: formatted -> FORMATTING formatted FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-    $$ = $2;
     }
   ;
 
