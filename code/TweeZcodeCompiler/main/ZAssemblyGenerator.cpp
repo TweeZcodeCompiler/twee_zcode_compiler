@@ -5,6 +5,7 @@
 #include "ZAssemblyGenerator.h"
 #include <sstream>
 #include <vector>
+#include <plog/Log.h>
 
 using namespace std;
 using namespace experimental;
@@ -186,19 +187,24 @@ ZAssemblyGenerator &ZAssemblyGenerator::print(string str) {
     return addInstruction(instruction::PRINT, string("\"") + str + string("\""), nullopt, nullopt);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(bool italic, bool bold, bool underlined) {
+ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(FormattedText::Format format) {
     string result;
-    if(italic) {
-        result += "i";
-    }
-    if ( bold ) {
-        result += "b";
-    }
-    if (underlined) {
-        result += "u";
-    }
-    if (!(italic && bold && underlined)) {
-        result = "r";
+    switch (format) {
+        case FormattedText::Format::BOLD:
+            result = "b";
+            break;
+        case FormattedText::Format::ITALIC:
+            result = "i";
+            break;
+        case FormattedText::Format::UNDERLINED:
+            result = "v";
+            break;
+        case FormattedText::Format::MONOSPACE:
+            result = "f";
+            break;
+        default:
+            LOG_DEBUG << "Unknown text formatting";
+            throw;
     }
     return addInstruction(instruction::SET_TEXT_STYLE, result, nullopt, nullopt);
 }

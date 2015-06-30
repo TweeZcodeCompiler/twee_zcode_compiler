@@ -11,6 +11,7 @@
 #include <utility>
 #include <initializer_list>
 #include <vector>
+#include <Passage/Body/FormattedText.h>
 #include "optional.hpp"
 
 typedef const std::string INST_TYPE;
@@ -49,7 +50,7 @@ public:
     ZAssemblyGenerator &quit();
     ZAssemblyGenerator &ret(std::string arg);
     ZAssemblyGenerator &newline();
-    ZAssemblyGenerator &setTextStyle(bool, bool, bool);
+    ZAssemblyGenerator &setTextStyle(FormattedText::Format format);
     ZAssemblyGenerator &print(std::string str);
     ZAssemblyGenerator &read_char(std::string storeTarget);
     ZAssemblyGenerator &println(std::string str);

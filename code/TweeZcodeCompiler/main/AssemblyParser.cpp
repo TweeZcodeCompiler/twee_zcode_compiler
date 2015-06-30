@@ -381,18 +381,21 @@ void AssemblyParser::executePRINTCommand(const string &printCommand, RoutineGene
 void AssemblyParser::executeSETTEXTSTYLECommand(const string &printCommand, RoutineGenerator &routineGenerator) {
 
     vector<string> commandParts = this->split(printCommand, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
-    bool bold = false, italic = false, underlined = false, roman = false;
+    bool reverseVideo = false, bold = false, italic = false, fixedPitch = false, roman = false;
 
     for (size_t i = 0; i < commandParts[1].size(); i++) {
         switch (commandParts[1][i]) {
+            case 'v':
+                reverseVideo = true;
+                break;
             case 'b':
                 bold = true;
                 break;
             case 'i':
                 italic = true;
                 break;
-            case 'u':
-                underlined = true;
+            case 'f':
+                fixedPitch = true;
                 break;
             case 'r':
                 roman = true;
@@ -401,14 +404,15 @@ void AssemblyParser::executeSETTEXTSTYLECommand(const string &printCommand, Rout
                 cerr << "problem with set_text_style parameter parsing: " << printCommand;
         }
         if (roman) {
+            reverseVideo = false;
             bold = false;
             italic = false;
-            underlined = false;
+            fixedPitch = false;
             break;
         }
     }
 
-    routineGenerator.setTextStyle(roman, false, bold, italic, underlined);
+    routineGenerator.setTextStyle(roman, reverseVideo, bold, italic, fixedPitch);
     LOG_DEBUG << commandParts.at(1);
 }
 

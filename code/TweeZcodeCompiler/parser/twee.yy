@@ -324,6 +324,11 @@ bodypart :
     //TODO: implement Macro:BodyType
     $$ = new Text($1->to_string());
     }
+    |textFormat
+    {
+    LOG_DEBUG << "Parser: bodypart -> textFormat: "<< "pass textFormat:type(textFormat) to bodypart:type(BodyPart)";
+    $$ = $1;
+    }
   ;
 
 text :
@@ -333,41 +338,13 @@ text :
     $$ = new Text(*$1);
     delete $1;
     }
-    |FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
+  ;
+
+textFormat:
+    FORMATTING
     {
-    //TODO:check if F_OPEN and F_CLOSE are the same
-    //TODO:check if anything needs to be deleted here
-    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE: "<< "create top:formatted:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Text(*$2);
-    delete $1;
-    delete $2;
-    delete $3;
-    }
-    |FORMATTING_OPEN text FORMATTING_CLOSE
-    {
-    //TODO:check if F_OPEN and F_CLOSE are the same
-    //TODO:check if anything needs to be deleted here
-    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN formatted FORMATTING_CLOSE: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-    delete $1;
-    delete $3;
-    }
-    |FORMATTING TEXT_TOKEN FORMATTING
-    {
-    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
-    LOG_DEBUG << "Parser: formatted -> FORMATTING TEXT_TOKEN FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-    $$ = new Text(*$2);
-    delete $1;
-    delete $2;
-    delete $3;
-    }
-    |FORMATTING text FORMATTING
-    {
-    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
-    //TODO:check if anything needs to be deleted here
-    LOG_DEBUG << "Parser: formatted -> FORMATTING formatted FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-    $$ = $2;
-    delete $1;
-    delete $3;
+    LOG_DEBUG << "Parser: formatted -> FORMATTING TEXT_TOKEN FORMATTING: ";
+    $$ = new Text(*$1);
     }
   ;
 

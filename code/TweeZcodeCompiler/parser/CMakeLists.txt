@@ -12,6 +12,6 @@ ADD_FLEX_BISON_DEPENDENCY(TweeScanner TweeParser)
 
 file(GLOB CPP_FILES *.cpp)
 
-add_library(${PROJECT_NAME} STATIC ${CPP_FILES} ${BISON_TweeParser_OUTPUTS} ${FLEX_TweeScanner_OUTPUTS} TweeParser.cpp)
+add_library(${PROJECT_NAME} STATIC ${CPP_FILES} ${BISON_TweeParser_OUTPUTS} ${FLEX_TweeScanner_OUTPUTS} TweeParser.cpp FormattedText.h FormattedText.cpp)
 
 include_directories("../main/logger")
