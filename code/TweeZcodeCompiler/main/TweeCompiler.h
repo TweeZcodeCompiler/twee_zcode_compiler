@@ -13,7 +13,6 @@ class TweeCompiler : public ITweeCompiler {
 public:
     void compile(TweeFile& tweeDoc, std::ostream& out);
 
-    std::string handleExpressions(Expression *);
 private:
     std::map<std::string, int> passageName2id;
 };

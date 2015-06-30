@@ -322,7 +322,7 @@ bodypart :
     {
     LOG_DEBUG << "Parser: bodypart -> macro: "<< "pass macro:type(--Text--) to bodypart:type(BodyPart)";
     //TODO: implement Macro:BodyType
-    $$ = new Text($1->to_string());
+    $$ = $1;
     }
   ;
 
@@ -445,7 +445,7 @@ macro :
 print:
     MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE
     {
-    LOG_DEBUG << "print -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
+    LOG_DEBUG << "print -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--Print--) with 3:expression";
     $$ = new Print($3);
     }
     |MACRO_OPEN expression MACRO_CLOSE
