@@ -7,20 +7,23 @@
 
 
 #include "ZCodeObject.h"
+#include "ZCodeLabel.h"
+#include <map>
 
 class ZCodeContainer: public ZCodeObject {
-
+private:
+    std::map<std::string, std::shared_ptr<ZCodeLabel>> labels;
 public:
     size_t containerOffset = 0;
     ZCodeContainer() {}
     ZCodeContainer(std::string name): ZCodeObject(name){
 
     }
-
+    std::shared_ptr<ZCodeLabel> getOrCreateLabel(std::string name);
     void print(std::vector<std::bitset<8>> &code);
     bool revalidate();
     ~ZCodeContainer(){
-        std::cout <<"del";
+        labels.clear();
     }
 };
 

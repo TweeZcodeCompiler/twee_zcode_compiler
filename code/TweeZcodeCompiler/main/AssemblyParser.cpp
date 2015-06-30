@@ -6,6 +6,7 @@
 #include "exceptions.h"
 #include "ZCodeObjects/ZCodePkgAdrrPadding.h"
 #include "ZCodeObjects/ZCodeCallAdress.h"
+#include "ZCodeObjects/ZCodeMemorySpace.h"
 #include <fstream>
 #include <sstream>
 #include <algorithm>
@@ -17,6 +18,8 @@ using namespace std;
 
 const string AssemblyParser::ROUTINE_DIRECTIVE = ".FUNCT";
 const string AssemblyParser::GVAR_DIRECTIVE = ".GVAR";
+const string AssemblyParser::BYTEARRAY =".BYTEARRAY";
+const string AssemblyParser::WORDARRAY = ".WORDARRAY";
 
 const string AssemblyParser::NEW_LINE_COMMAND = "new_line";
 const string AssemblyParser::PRINT_COMMAND = "print";
@@ -48,6 +51,11 @@ const string AssemblyParser::PRINT_RET_COMMAND = "print_ret";
 const string AssemblyParser::RESTART_COMMAND = "restart";
 const string AssemblyParser::RET_POPPED_COMMAND = "ret_popped";
 const string AssemblyParser::VERIFY_COMMAND = "verify";
+const string AssemblyParser::STOREB_COMMAND = "storeb";
+const string AssemblyParser::STOREW_COMMAND = "storew";
+const string AssemblyParser::LOADB_COMMAND = "loadb";
+const string AssemblyParser::LOADW_COMMAND = "loadw";
+
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -165,12 +173,16 @@ void AssemblyParser::readAssembly(istream& input, shared_ptr<ZCodeContainer> dyn
                     performRoutineDirectiveCommand(lineComps, highMemory);
                 } else if (firstComp.compare(GVAR_DIRECTIVE) == 0) { //global variable directive
                     performRoutineGlobalVarCommand(line);
+                } else if(firstComp.compare(BYTEARRAY) == 0){ //Bytearray
+                    performByteArrayDirective(line,dynamicMemory);
+                }else if(firstComp.compare(WORDARRAY) == 0){ //wordarray
+                    performWordArrayDirective(line,dynamicMemory);
                 } else {
                     cerr << "unknown directive";
                     throw;
                 }
             }else{
-                executeCommand(line,*currentGenerator);
+                executeCommand(line,*currentGenerator,dynamicMemory);
             }
 
             ++currentLineNumber;
@@ -344,8 +356,10 @@ void AssemblyParser::finishRoutine(shared_ptr<ZCodeContainer> highMemoryZcode) {
             param.reset(variableParam);
         } else {
             LOG_ERROR << "Could not parse parameter: " << paramString;
-            throw AssemblyException(AssemblyException::ErrorType::INVALID_VARIABLE);
+            //throw AssemblyException(AssemblyException::ErrorType::INVALID_VARIABLE);
         }
+
+
 
         return param;
     }
@@ -457,7 +471,7 @@ void AssemblyParser::finishRoutine(shared_ptr<ZCodeContainer> highMemoryZcode) {
         routineGenerator.returnValue(parseArguments(callCommand));
     }
 
-    void AssemblyParser::executeCommand(const string &command, RoutineGenerator &routineGenerator) {
+    void AssemblyParser::executeCommand(const string &command, RoutineGenerator &routineGenerator,std::shared_ptr<ZCodeContainer> dynamicMemory) {
         vector<string> commandParts = this->split(command, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
 
         if (!commandParts.size()) return;
@@ -517,6 +531,18 @@ void AssemblyParser::finishRoutine(shared_ptr<ZCodeContainer> highMemoryZcode) {
         } else if (commandPart.compare(AssemblyParser::LOAD_COMMAND) == 0) {
             LOG_DEBUG << ":::::: new load";
             routineGenerator.load(parseArguments(command));
+        } else if (commandPart.compare(AssemblyParser::STOREB_COMMAND) == 0) {
+            LOG_DEBUG << ":::::: new storeb";
+            executeSTOREBCOMMAND(command,dynamicMemory,routineGenerator);
+        } else if (commandPart.compare(AssemblyParser::STOREW_COMMAND) == 0) {
+            LOG_DEBUG << ":::::: new storew";
+            executeSTOREWCOMMAND(command,dynamicMemory,routineGenerator);
+        } else if (commandPart.compare(AssemblyParser::LOADB_COMMAND) == 0) {
+            LOG_DEBUG << ":::::: new loadb";
+            executeLOADBCOMMAND(command,dynamicMemory,routineGenerator);
+        } else if (commandPart.compare(AssemblyParser::LOADW_COMMAND) == 0) {
+            LOG_DEBUG << ":::::: new loadw";
+            executeLOADWCOMMAND(command,dynamicMemory,routineGenerator);
         } else if (commandPart.compare(AssemblyParser::SET_TEXT_STYLE) == 0) {
             LOG_DEBUG << ":::::: new set_text_style ";
             executeSETTEXTSTYLECommand(command, routineGenerator);
@@ -563,7 +589,7 @@ void AssemblyParser::finishRoutine(shared_ptr<ZCodeContainer> highMemoryZcode) {
             registeredLabels.push_back(label);
 
             string afterLabel = command.substr(commandPart.size());
-            executeCommand(trim(afterLabel), *currentGenerator);
+            executeCommand(trim(afterLabel), *currentGenerator,dynamicMemory);
         } else {
             LOG_DEBUG << "unknown command: " << command;
             throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
@@ -628,5 +654,71 @@ void AssemblyParser::finishRoutine(shared_ptr<ZCodeContainer> highMemoryZcode) {
 
         return tokens;
     }
+
+
+void AssemblyParser::performByteArrayDirective(std:: string command, std::shared_ptr<ZCodeContainer> dynamicMemory) {
+    vector<string> param = this->split(command,' ');
+    string name = param.at(1);
+    string sSize = param.at(2).substr(1,sSize.size()-2);
+    int size = atoi(sSize.c_str());
+    auto initialSize = shared_ptr<ZCodeObject>(new ZCodeInstruction(size));
+    auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size,"ARRAY : "+name));
+    auto label = dynamicMemory->getOrCreateLabel(name);
+
+    dynamicMemory->add(label);
+    dynamicMemory->add(initialSize);
+    dynamicMemory->add(table);
+}
+
+void AssemblyParser::performWordArrayDirective(std::string command, std::shared_ptr<ZCodeContainer> dynamicMemory) {
+    vector<string> param = this->split(command,' ');
+    string name = param.at(1);
+    string sSize = param.at(2).substr(1,sSize.size()-2);
+    int size = atoi(sSize.c_str());
+    auto label = dynamicMemory->getOrCreateLabel(name);
+    dynamicMemory->add(label);
+    auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size*2,"ARRAY : "+name));
+    dynamicMemory->add(table);
+}
+
+void AssemblyParser::executeSTOREBCOMMAND(const std::string &command, std::shared_ptr<ZCodeContainer> dynamicMemory, RoutineGenerator &currentGenerator) {
+    vector<string> sparam = split(command,SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
+    vector<unique_ptr<ZParam>> params;
+    params.push_back(unique_ptr<ZParam>(new ZNameParam(sparam.at(1))));
+    params.push_back((createZParam(sparam.at(2))));
+    params.push_back(createZParam(sparam.at(3)));
+    currentGenerator.storeb(params,dynamicMemory);
+}
+
+void AssemblyParser::executeSTOREWCOMMAND(const std::string &command, std::shared_ptr<ZCodeContainer> dynamicMemory, RoutineGenerator &currentGenerator) {
+    vector<string> sparam = split(command,SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
+    vector<unique_ptr<ZParam>> params;
+    params.push_back(unique_ptr<ZParam>(new ZNameParam(sparam.at(1))));
+    params.push_back(createZParam(sparam.at(2)));
+    params.push_back(createZParam(sparam.at(3)));
+    currentGenerator.storew(params,dynamicMemory);
+}
+
+void AssemblyParser::executeLOADBCOMMAND(const std::string &command, std::shared_ptr<ZCodeContainer> dynamicMemory, RoutineGenerator &currentGenerator) {
+    vector<string> parts = split(command,ASSIGNMENT_OPERATOR);
+    vector<string> sparam = split(parts.at(0),SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
+    vector<unique_ptr<ZParam>> params;
+    params.push_back(unique_ptr<ZParam>(new ZNameParam(sparam.at(1))));
+    params.push_back(createZParam(trim(sparam.at(2)," ")));
+    std::string s = parts.at(1);
+    params.push_back(createZParam(trim(s, " ")));
+    currentGenerator.loadb(params,dynamicMemory);
+}
+
+void AssemblyParser::executeLOADWCOMMAND(const std::string &command, std::shared_ptr<ZCodeContainer> dynamicMemory, RoutineGenerator &currentGenerator) {
+    vector<string> parts = split(command,ASSIGNMENT_OPERATOR);
+    vector<string> sparam = split(parts.at(0),SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
+    vector<unique_ptr<ZParam>> params;
+    params.push_back(unique_ptr<ZParam>(new ZNameParam(sparam.at(1))));
+    params.push_back(createZParam(trim(sparam.at(2)," ")));
+    std::string s = parts.at(1);
+    params.push_back(createZParam(trim(s, " ")));
+    currentGenerator.loadw(params,dynamicMemory);
+}
 
 

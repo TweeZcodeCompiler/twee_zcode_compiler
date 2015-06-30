@@ -41,7 +41,6 @@ public:
         this->displayName = displayName;
     }
    void cleanup(){
-        std::cout <<"del";
         for(size_t i = 0; i < children.size(); i++){
             children.at(i)->cleanup();
         }

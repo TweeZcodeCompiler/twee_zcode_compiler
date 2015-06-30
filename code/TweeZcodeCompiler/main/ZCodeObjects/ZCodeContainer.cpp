@@ -6,6 +6,7 @@
 #include <plog/Log.h>
 #include "ZCodeContainer.h"
 #include "../Utils.h"
+using std::shared_ptr;
 
 bool ZCodeContainer::revalidate() {
     size_t calculatedSize = containerOffset;
@@ -38,5 +39,17 @@ void ZCodeContainer::print(std::vector<std::bitset<8>> &code) {
     for(size_t i = 0; i < children.size(); i++){
         std::shared_ptr<ZCodeObject> child = children.at(i);
         child->print(code);
+    }
+}
+
+std::shared_ptr<ZCodeLabel> ZCodeContainer::getOrCreateLabel(std::string name) {
+    if (labels.count(name) == 0) {
+        shared_ptr<ZCodeLabel> label = std::shared_ptr<ZCodeLabel>(new ZCodeLabel());
+        label ->displayName = "["+name+"]";
+        labels.insert(std::pair<std::string, shared_ptr<ZCodeLabel>>(name,label));
+        return label;
+    } else {
+        shared_ptr<ZCodeLabel> label = labels.at(name);
+        return label;
     }
 }

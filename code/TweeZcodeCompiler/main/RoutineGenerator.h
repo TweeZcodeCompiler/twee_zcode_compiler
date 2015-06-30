@@ -26,7 +26,6 @@ private:
     std::map<int, std::bitset<8>> routineZcode;     // keys = offset in routine, bitset = Opcodes etc
     std::map<std::string, u_int8_t> locVariables;   // keys = variable name, value = number in stack
     static std::map<std::string, size_t> routines;  // keys = name of routine, value = offset.
-    static std::map<std::string, std::shared_ptr<ZCodeLabel>> labels;
 
     std::shared_ptr<ZCodeRoutine> routine;
 
@@ -44,7 +43,7 @@ private:
     void debug(std::string);
 public:
 
-    bool debugmode= false;
+    bool debugmode= true;
     std::shared_ptr<ZCodeLabel> getOrCreateLabel(std::string name);
 
     // this constructor padding zCode to the next package adress and initialize this routine with the name 'name'
@@ -58,7 +57,6 @@ public:
     }
 
     ~RoutineGenerator(){
-        labels.clear();
     }
 
     // returns complete zcode of Routine as a bitset vector
@@ -151,6 +149,11 @@ public:
 
     void verify(std::vector<std::unique_ptr<ZParam>> params);
 
+    void loadb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void loadw(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void storeb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void storew(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+
 
     /*
      *      Enumerations
@@ -211,7 +214,15 @@ public:
         // Opcode: Pops top of stack and returns that. (This is equivalent to ret sp, but is one byte cheaper.)
                 RET_POPPED = 184,
         // Opcode: Verification
-                VERIFY = 189
+                VERIFY = 189,
+        // Opcode: VAR:226 2 storeb array byte-index value
+                STOREB = 226,
+        //OPCODE: VAR:225 1 storew array word-index value
+                STOREW = 225,
+        // Opcode: 2OP:16 10 loadb array byte-index -> (result)
+                LOADB = 16,
+        // Opcode: 2OP:15 F loadw array word-index -> (result)
+                LOADW = 15
 
 
 

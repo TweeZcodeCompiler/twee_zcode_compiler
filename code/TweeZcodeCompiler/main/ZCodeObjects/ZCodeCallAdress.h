@@ -11,12 +11,16 @@
 
 class ZCodeCallAdress:public ZCodeObject {
 private:
-    std::shared_ptr<ZCodeRoutine> routine;
+    std::shared_ptr<ZCodeObject> routine;
+    bool isPackaged = true;
 public:
     bool revalidate();
     void print(std::vector<std::bitset<8>> &code);
-    ZCodeCallAdress(std::shared_ptr<ZCodeRoutine> routine) : routine(routine) {
+    ZCodeCallAdress(std::shared_ptr<ZCodeObject> routine) : routine(routine) {
         setSize(2);
+    }
+    ZCodeCallAdress(std::shared_ptr<ZCodeObject> routine, bool isPackaged) : routine(routine){
+        this->isPackaged = isPackaged;
     }
 };
 
