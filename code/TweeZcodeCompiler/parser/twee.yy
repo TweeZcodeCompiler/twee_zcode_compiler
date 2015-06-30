@@ -206,6 +206,7 @@
 %type <setmacro> setmacro
 %type <expression> assignment
 %type <expression> expression
+%type <expression> expression_two_operands
 %type <variable> variable
 %type <intconst> intconst
 
@@ -500,7 +501,39 @@ endifmacro:
     }
   ;
 
-expression_mult:
+expression_two_operands:
+    expression two_operand_operator expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_MUL expression: created $$ = new BinaryOperation(BinOps::MUL, $1, $3)";
+    $$ = new BinaryOperation(BinOps::MUL, *$1, *$3);
+    delete $1;
+    delete $3;
+    }
+    |
+    variable two_operand_operator expression
+    {
+    LOG_DEBUG << "expression -> variable EXPR_MUL expression: created $$ = new BinaryOperation(BinOps::MUL, $1, $3)";
+    $$ = new BinaryOperation(BinOps::MUL, *$1, *$3);
+    delete $1;
+    delete $3;
+    }
+    |
+    expression two_operand_operator variable
+    {
+    LOG_DEBUG << "expression -> expression EXPR_MUL variable: created $$ = new BinaryOperation(BinOps::MUL, $1, $3)";
+    $$ = new BinaryOperation(BinOps::MUL, *$1, *$3);
+    delete $1;
+    delete $3;
+    }
+    |
+    variable two_operand_operator variable
+    {
+    LOG_DEBUG << "expression -> variable EXPR_MUL variable: created $$ = new BinaryOperation(BinOps::MUL, $1, $3)";
+    $$ = new BinaryOperation(BinOps::MUL, *$1, *$3);
+    delete $1;
+    delete $3;
+    }
+  ;
 
 
 expression :
@@ -527,12 +560,6 @@ expression :
     $$ = new UnaryOperation(UnOps::PLUS, $2);
     delete $2;
     }
-    |expression EXPR_MUL expression
-    {
-    LOG_DEBUG << "expression -> expression EXPR_MUL expression: created $$ = new BinaryOperation(BinOps::MUL, $1, $3)";
-    $$ = new BinaryOperation(BinOps::MUL, *$1, *$3);
-    delete $1;
-    delete $3;
     }
     |expression EXPR_DIV expression
     {
