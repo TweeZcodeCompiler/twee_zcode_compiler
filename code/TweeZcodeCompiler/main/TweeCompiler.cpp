@@ -120,17 +120,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     assgen.newline();
                 }
                 if (Print *print = dynamic_cast<Print *>(bodyPart)) {
-                    Expression *expression = print->getExpression().get();
-                    if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
-                        assgen.print(std::to_string(constant->getValue()));
-                    }
-                    if (Variable *variable = dynamic_cast<Variable *>(expression)) {
-                        if (Utils::includes(globalVariables, variable->getName()) == 0) {
-                            assgen.
-                        } else {
-                            assgen.print("0");
-                        }
-                    }
                 }
             }
 
@@ -187,6 +176,19 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 }
                 i++;
             }
+        }
+    }
+}
+
+void TweeCompiler::handleExpressions(ZAssemblyGenerator assgen, Expression *expression,
+                                     vector<std::string> globalVariables) {
+    if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
+        assgen.print(std::to_string(constant->getValue()));
+    } else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
+        if (Utils::includes(globalVariables, variable->getName())) {
+            
+        } else {
+
         }
     }
 }

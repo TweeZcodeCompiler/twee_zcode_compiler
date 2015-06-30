@@ -45,8 +45,10 @@ private:
     static const std::string SUB_COMMAND;
     static const std::string MUL_COMMAND;
     static const std::string DIV_COMMAND;
+    static const std::string MOD_COMMAND;
     static const std::string AND_COMMAND;
     static const std::string OR_COMMAND;
+    static const std::string NOT_COMMAND;
     static const std::string RET_TRUE_COMMAND;
     static const std::string RET_FALSE_COMMAND;
     static const std::string PRINT_RET_COMMAND;
