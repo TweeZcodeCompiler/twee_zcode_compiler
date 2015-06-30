@@ -27,7 +27,7 @@ public:
         return "Const: " + std::to_string(this->getValue());
     }
 
-    virtual Const *clone() const {
+    virtual Const* clone() const {
         return new Const(*this);
     }
 };

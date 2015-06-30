@@ -31,6 +31,9 @@ some stated 'goals':
 // TODO: check memory stuff for SAVE_TOKEN, does the parser clear that?
 #define SAVE_STRING yylval->string = new std::string(YYText(), YYLeng())
 #define SAVE_INT yylval->integer = std::stoi(std::string(YYText(), YYLeng()))
+#define SAVE_TRUE yylval->boolean = true
+#define SAVE_FALSE yylval->boolean = false
+
 
 // TODO: decide if this is needed, look at that tutorial again: #define TOKEN(t) (yylval.token = t)
 
@@ -109,6 +112,8 @@ MACRO_SET               set
 EXPR_STR_LIMITER        \"
 EXPR_STR                [a-zA-Z]+
 EXPR_INT                [0-9]+
+EXPR_TRUE               true
+EXPR_FALSE              false
 
     /* initial $ sign -> letter (uppercase or lowercase) or an underscore -> any combination of letters, numbers, or underscores */
 EXPR_VAR                $[a-zA-z_][a-zA-Z0-9_]*
@@ -568,13 +573,24 @@ EXPR_TO                to|=
                                 return BisonParser::token::EXPR_TO;
                                 }
 
-    /* parse constant integer */
-<LinkExpression>{EXPR_INT}        {
+    /* parse constants */
+<LinkExpression>{EXPR_INT}      {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "LinkExpression" << " matched Token " << "EXPR_INT" << " with value " << YYText();
                                 SAVE_INT;
                                 return BisonParser::token::EXPR_INT;
                                 }
 
+<LinkExpression>{EXPR_TRUE}     {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "LinkExpression" << " matched Token " << "EXPR_TRUE" << " with value " << YYText();
+                                SAVE_TRUE;
+                                return BisonParser::token::EXPR_TRUE;
+                                }
+
+<LinkExpression>{EXPR_FALSE}    {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "LinkExpression" << " matched Token " << "EXPR_FALSE" << " with value " << YYText();
+                                SAVE_FALSE;
+                                return BisonParser::token::EXPR_FALSE;
+                                }
 
     /* leave the link expression */
 <LinkExpression>{LINK_CLOSE}    {
@@ -735,12 +751,23 @@ EXPR_TO                to|=
                                 }
 
     /* parse constant integer */
-<BodyMacro>{EXPR_INT}        {
+<BodyMacro>{EXPR_INT}           {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "BodyMacro" << " matched Token " << "EXPR_INT" << " with value " << YYText();
                                 SAVE_INT;
                                 return BisonParser::token::EXPR_INT;
                                 }
 
+<BodyMacro>{EXPR_TRUE}          {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "BodyMacro" << " matched Token " << "EXPR_TRUE" << " with value " << YYText();
+                                SAVE_TRUE;
+                                return BisonParser::token::EXPR_TRUE;
+                                }
+
+<BodyMacro>{EXPR_FALSE}         {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "BodyMacro" << " matched Token " << "EXPR_FALSE" << " with value " << YYText();
+                                SAVE_FALSE;
+                                return BisonParser::token::EXPR_FALSE;
+                                }
 
     /* leave the macro */
 <BodyMacro>{MACRO_CLOSE}        {
