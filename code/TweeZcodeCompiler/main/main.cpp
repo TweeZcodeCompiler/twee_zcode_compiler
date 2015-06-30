@@ -35,31 +35,30 @@ void handler()
 
 int main(int argc, char **argv) {
     // install exception handler
-   std::set_terminate(handler);
+    std::set_terminate(handler);
 
-
+    std::string invocation = argv[0];
     //get cmdargs
     ArgsCommand argsCommand(argc,argv);
-    // TODO: parse args properly (GNU getopt?)
+    if(!argsCommand) {
+        ArgsCommand::printHelpMessage(invocation);
+        return 2;
+    }
+
     std::string inputFile = argsCommand.getSourceFileName();
     std::string outputFile = argsCommand.getOutputFileName();
 
+    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Compiler_Log.txt");
+    plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
 
-    //declare logging, depending on the -d flag
     std::string logFile = "Compiler_Log.txt";
-    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(logFile.c_str());
-    plog::ConsoleAppender<plog::UserSideFormatter> consoleAppender; // Console Appender for user friendly output
-    plog::ConsoleAppender<plog::TxtFormatter> textConsoleAppender; // Console Appender for user UNfriendly output
-
     if(argsCommand.isDebugInConsole()) {
         std::cout << "Console log";
-        plog::init(plog::debug,  &textConsoleAppender);
+        plog::init(plog::debug,  &consoleAppender);
     } else {
         remove(logFile.c_str());
-        plog::init(plog::debug, &fileAppender);
-        plog::init(plog::error,  &consoleAppender);
+        plog::init(plog::debug, logFile.c_str());
     }
-
 
     LOG_DEBUG << "CMD-Args Summary";
     LOG_DEBUG << "Console-DEBUG-Output: " << argsCommand.isDebugInConsole();
@@ -70,12 +69,12 @@ int main(int argc, char **argv) {
 
     LOG_DEBUG  << "Compiler started";
     LOG_ERROR << "test";
-     TweeCompiler compiler;
-     TweeZCodeCompilerPipeline pipeline;
-     pipeline.compile(inputFile, outputFile, compiler,argsCommand.sourceFileIsTwee());
+    TweeCompiler compiler;
+    TweeZCodeCompilerPipeline pipeline;
 
     try {
-        pipeline.compile(inputFile, outputFile, compiler, argsCommand.sourceFileIsTwee());
+        pipeline.compile(inputFile,
+                         outputFile, compiler, argsCommand.sourceFileIsTwee(), argsCommand.outputToAssembly());
     } catch (const AssemblyException& assemblyException) {
         std::cerr << "Invalid assembly statement at line " <<
                 (assemblyException.lineNumber != 0 ? std::to_string(assemblyException.lineNumber) : "<unknown>") << ":" <<
@@ -117,7 +116,6 @@ int main(int argc, char **argv) {
         // TODO: display more info if possible
         std::cerr << "Failed parsing Twee File";
     }
-
 
     return 0;
 }

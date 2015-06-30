@@ -1,0 +1,3714 @@
+﻿:: StoryTitle
+Hallowmoor
+
+
+:: Initialize
+<<silently>>
+
+Inventory Items:
+<<set $dungeonKey = "Void">>
+<<set $redPotion = "Void">>
+<<set $bluePotion = "Void">>
+<<set $greenPotion = "Void">>
+<<set $blackPotion = "Void">>
+<<set $jokeBook = "Void">>
+<<set $broom = "Void">>
+<<set $magicWand = "Void">>
+<<set $torchWitch = "Void">>
+<<set $torchSkeleton = "Void">>
+<<set $mapWitch = "Void">>
+<<set $mapSkeleton = "Void">>
+<<set $perfume = "Void">>
+
+State Flags:
+<<set $hasFoundVine = false>>
+<<set $goblin = "Void">>
+<<set $blackCat = "Void">>
+<<set $knowsBookNumber = false>>
+<<set $catFollows = false>>
+<<set $boatDown = false>>
+<<set $invisible = false>>
+<<set $coffinFound = false>>
+<<set $bodyRevealed = false>>
+
+Map Handling:
+<<set $sr1 = false>>
+<<set $sr2 = false>>
+<<set $sr3 = false>>
+<<set $sr4 = false>>
+<<set $sr5 = false>>
+<<set $sr6 = false>>
+<<set $sr7 = false>>
+<<set $sr8 = false>>
+<<set $sr9 = false>>
+<<set $sr10 = false>>
+<<set $sr11 = false>>
+<<set $sr12 = false>>
+<<set $sr13 = false>>
+<<set $sr14 = false>>
+<<set $sr15 = false>>
+<<set $sr16 = false>>
+
+Miscellaneous:
+<<set $statusText = "">>
+<<set $roomName = "">>
+<<set $tempTitle = "">>
+<<set $roomTitle = "">>
+<<set $subRoomTitle = "">>
+<<set $prevRoomTitle = "">>
+<<set $witchRoomTitle = "Bedroom">>
+<<set $skeletonRoomTitle = "Swamp">>
+<<set $character = "Skeleton">>
+<<set $gameOver = false>>
+<<set $gameWin = false>>
+<<set $prevGameOver = false>>
+<<set $gameOverPassage = "">>
+<<set $newRoom = false>>
+<<set $maxScore = 8>>
+<<set $inventory = "">>
+<<set $autoSave = false>>
+<<set $moved = false>>
+<<set $bookNumber = (Math.round(Math.random() * 998)) + 1001>>
+
+Score Tracking:
+<<set $score = 0>>
+<<set $moves = 0>>
+<<set $finalMoves = 0>>
+<<set $shifts = 0>>
+<<set $gotVinePoint>>
+
+Temp Variables:
+<<set $canShift = false>>
+<<set $tempFlag = false>>
+<<set $saveTime = "">>
+<<set $tempText = "">>
+
+Formatting:
+<<set $newLine = String.fromCharCode(13) + String.fromCharCode(10)>>
+<<set $doubleLine = $newLine + $newLine>>
+
+TESTING ONLY:
+
+<<endsilently>>
+
+
+:: StatusBar
+<html><div id="statusBarOuter">
+<div class="statusBar">
+    <table style="width:100%" cellspacing="0" cellpadding="0" border="0"><tr>
+        <td align="left" style="width:55%"><div id="roomName" class="roomNameText" /></td>
+        <td align="center" style="width:20%"><div id="invLink" class="invLinkText">
+            <a href='javascript:void(0)' onclick='this.className="invLink"; state.display("Inventory")' onmouseover='this.className="invLinkHover"' onmouseout='this.className="invLink"'
+                class='internalLink'>Inventory</a>
+        </div></td>
+        <td align="right" style="width:25%"><div id="curScore" class="scoreText">&nbsp;</td>
+    </tr></table>
+</div>
+</div></html>
+
+
+:: Inventory
+<<silently>>
+<<set $statusText="Inventory">>
+<<set $invCount = 0>>
+<<set $inventory = "">>
+
+<<if $character eq "Witch">>
+<<set $inventory = $inventory + "You currently inhabit a witch. ">>
+<<else>>
+<<set $inventory = $inventory + "You currently inhabit a skeleton. ">>
+<<endif>>
+
+<<set $inventory = $inventory + $doubleLine + "You have the ability to [[Specter Shift|LookAtSpecterShift]].">>
+
+<<if $mapWitch eq $character || $mapSkeleton eq $character>>
+<<set $invCount += 1>>
+<<set $inventory = $inventory + $doubleLine + "You have an enchanted [[map|LookAtMap]].">>
+<<endif>>
+
+<<if $broom eq $character>>
+<<set $invCount += 1>>
+<<set $inventory = $inventory + $doubleLine + "You're carrying the [[broom|LookAtBroom]] you found in the dungeonkeeper witch's bedroom.">>
+<<endif>>
+
+<<if $torchWitch eq $character || $torchSkeleton eq $character>>
+<<set $invCount += 1>>
+<<set $inventory = $inventory + $doubleLine + "You are holding a [[torch|LookAtTorch]] that casts a glow in all directions.">>
+<<endif>>
+
+<<if $magicWand eq $character>>
+<<set $invCount += 1>>
+<<set $inventory = $inventory + $doubleLine + "You have a [[wand|LookAtWand]] that hums softly with magical power.">>
+<<endif>>
+
+<<if $dungeonKey eq $character>>
+<<set $invCount += 1>>
+<<set $inventory = $inventory + $doubleLine + "You have a [[key|LookAtKey]] to the cells in the dungeon.">>
+<<endif>>
+
+<<if $perfume eq $character>>
+<<set $invCount += 1>>
+<<set $inventory = $inventory + $doubleLine + "You have a small bell-shaped [[bottle|LookAtPerfume]] of pale yellow liquid.">>
+<<endif>>
+
+<<if $bluePotion eq $character>>
+<<set $invCount += 1>>
+<<set $inventory = $inventory + $doubleLine + "You have a [[blue|LookAtBluePotion]] potion.">>
+<<endif>>
+
+<<if $redPotion eq $character>>
+<<set $invCount += 1>>
+<<set $inventory = $inventory + $doubleLine + "You have a [[red|LookAtRedPotion]] potion.">>
+<<endif>>
+
+<<if $greenPotion eq $character>>
+<<set $invCount += 1>>
+<<set $inventory = $inventory + $doubleLine + "You have a [[green|LookAtGreenPotion]] potion.">>
+<<endif>>
+
+<<if $jokeBook eq $character>>
+<<set $invCount += 1>>
+<<set $inventory = $inventory + $doubleLine + "You have a leatherbound [[book|LookAtBook]] called //The Laughing of the Shrew//.">>
+<<endif>>
+
+<<if $blackPotion eq $character>>
+<<set $invCount += 1>>
+<<set $inventory = $inventory + $doubleLine + "Most importantly, you finally have the [[black|LookAtBlackPotion]] potion.">>
+<<endif>>
+
+<<if $invCount eq 0>>
+<<set $inventory = $inventory + $doubleLine + "You aren't currently carrying anything.">>
+<<endif>>
+
+<<endsilently>><<showstatus>>
+<<print $inventory>>
+
+<<if $subRoomTitle eq "">>
+<<print "[[&laquo; Back to " + $roomName + "|" + $roomTitle + "]]">>
+<<else>>
+<<print "[[&laquo; Back to " + $roomName + "|" + $subRoomTitle + "]]">>
+<<endif>>
+
+
+:: InventoryFooter
+<<if $subRoomTitle eq "">>
+<<print "[[&laquo; Back to " + $roomName + "|" + $roomTitle + "]]">>
+<<else>>
+<<print "[[&laquo; Back to " + $roomName + "|" + $subRoomTitle + "]]">>
+<<endif>>
+<<print "[[&laquo; Back to Inventory|Inventory]]">>
+
+
+:: SetRoom
+<<silently>>
+
+<<set $statusText = $roomName>>
+<<set $prevGameOver = false>>
+<<set $subRoomTitle = "">>
+
+<<if $roomTitle neq $tempTitle>>
+    <<set $prevRoomTitle = $roomTitle>>
+    <<set $roomTitle = $tempTitle>>
+    <<set $newRoom = true>>
+    <<if $catFollows && $character eq "Skeleton">>
+        <<if $roomTitle eq "Cat1" || $roomTitle eq "Cat2" || $roomTitle eq "Cat3" || $roomTitle eq "Cat4" || $roomTitle eq "Cat5" || $roomTitle eq "Cavern" || $roomTitle eq "Drop">><<set $blackCat = $roomTitle>><<endif>>
+    <<endif>>
+<<endif>>
+
+<<if $character eq "Skeleton">>
+    <<set $skeletonRoomTitle = $roomTitle>>
+<<endif>>
+
+<<if $character eq "Witch">>
+    <<set $witchRoomTitle = $roomTitle>>
+<<endif>>
+
+<<if ($character eq "Skeleton") && ($witchRoomTitle eq $roomTitle)>>
+    // Skeleton enters room with witch, so witch wins.
+    <<set $gameOverPassage = "EndWitchKillsYou">>
+    <<set $gameOver = true>>
+<<endif>>
+
+<<if ($character eq "Witch") && ($skeletonRoomTitle eq $roomTitle)>>
+    // Witch enters room with skeleton, so skeleton wins.
+    <<set $gameOverPassage = "EndSkeletonKillsYou">>
+    <<set $gameOver = true>>
+<<endif>>
+
+<<if ($character eq "Witch") && ($roomTitle eq "Bridge")>>
+    // Witch goes up to the bridge in the midst of battle, dies.
+    <<set $gameOverPassage = "EndSkeletonKillsYou">>
+    <<set $gameOver = true>>
+<<endif>>
+
+<<if not $gameOver && $autoSave>>
+    <<savegame "SG0">>
+<<endif>>
+
+<<endsilently>>
+
+
+:: UpdateStatus
+<<showstatus>><<showcompass>>
+
+
+:: LookAtSpecterShift
+<<set $statusText="Inventory - Specter Shift">><<display "UpdateStatus">>
+Spirits can't normally possess the living, but through some mystical law of the cosmos that might as well be hokum, it's possible. It's temporary, though, and these events are rare. Once shifted, it's only possible to shift into others nearby. Taking spirit form again is impossible until the brief event is over. You've gotten yourself into a now-or-never situation.
+
+<<set $canShift = true>><<if $roomTitle eq "Swamp">><<set $canShift = false>>At the moment, it would only be possible to shift into another of the skeletal soldiers. You're already inhabiting the perfect skeleton, so you decide against shifting right now.<<endif>><<if ($roomTitle eq "Bridge" && $witchRoomTitle neq "Ledge")>><<set $canShift = false>>You sense someone else beyond the bridge, in a lower part of the castle, but she isn't quite in range for a successful shift.<<endif>><<if ($roomTitle neq "Ledge") && ($character eq "Witch") && ($skeletonRoomTitle eq "Bridge")>><<set $canShift = false>>Your skeleton has been left unattended on the bridge to Hallowmoor Castle, which is out of range for a shift.<<endif>><<if $canShift>><<if $character eq "Skeleton">>You sense that a <<if $roomTitle eq "Meeting">>[[witch|EndMeetShift]]<<else>>[[witch|DoShift]]<<endif>> is in range for a Specter Shift.<<else>>You sense that your [[skeleton|DoShift]] is in range for a Specter Shift.<<endif>><<endif>><<if $roomTitle eq "Dungeon" && $goblin eq "Dungeon">><<print $doubleLine>>The [[goblin|DunShift]] is also in range for a Specter Shift.<<endif>><<if $roomTitle eq "Meeting">><<print $doubleLine>>You can't even sense the Guardian, making it impossible to shift.<<endif>><<if $blackCat eq $roomTitle>><<print $doubleLine>>A black cat is here, but you can't shift into animals.<<endif>>
+
+<<if $roomTitle eq "Swamp">>
+<<print "[[&laquo; Back to " + $roomName + "|" + $roomTitle + "]]">>
+<<else>>
+<<display "InventoryFooter">>
+<<endif>>
+
+
+:: LookAtKey
+<<set $statusText="Inventory - Dungeon Key">><<set $tempFlag=false>><<display "UpdateStatus">>
+It's a simple rusted key with widely gapped teeth. According to the goblin, it will open any cell in the dungeon, including the one imprisoning him.
+
+<<if $roomTitle eq "Dungeon">>
+The goblin peeks through the window of his [[cell|GobOpen]] and <<if $character eq "Witch">>scowls. "Be gone, hag," he says.<<else>>regards you with cautious hope.<<endif>><<set $tempFlag=true>>
+<<endif>><<if $roomTitle eq "Hallway" && $goblin neq "Lost" && ($torchWitch eq "Witch" || $torchSkeleton eq "Skeleton")>>
+You try the key in the door's lock, but it doesn't fit at all. Apparently it will only open cell doors in the dungeon.<<set $tempFlag=true>>
+<<endif>><<if not $tempFlag>>
+    The key won't unlock anything here.
+<<endif>>
+
+<<display "InventoryFooter">>
+
+
+:: LookAtBroom
+<<set $statusText="Inventory - Broom">><<set $tempFlag=false>><<display "UpdateStatus">>
+The long broom handle is crooked. Its bristles are knotted and frayed but generally intact.
+
+<<if $roomTitle eq "Bedroom">>
+You do a little sweeping, but manage only to shift some of the dirt and clutter around a little. After a moment, you decide that the broom has no use here.<<set $tempFlag=true>>
+<<endif>><<if $subRoomTitle eq "EntranceDoor">>
+You use the broom to poke at the wall on and around the stone door, but it does no good.<<set $tempFlag=true>>
+<<endif>><<if $subRoomTitle eq "EntHook">>
+Although the hook is fairly high, you can probably [[reach|EntReach]] it with the broom.<<set $tempFlag=true>>
+<<endif>><<if not $tempFlag>>
+You straddle the broom in an awkward attempt to fly, but it does no good. It's either the ordinary non-flying kind, or you simply don't know the trick. Either way, you won't be able to use the broom for that.
+<<endif>>
+
+<<display "InventoryFooter">>
+
+
+:: LookAtTorch
+<<set $statusText="Inventory - Torch">><<set $tempFlag=false>><<display "UpdateStatus">>
+The torch is lit. Its flame glows and flickers.
+
+<<if $subRoomTitle eq "CatInsects">>
+You wave the torch toward the insects, but they only scurry away. This accomplishes nothing.<<set $tempFlag=true>>
+<<endif>><<if $subRoomTitle eq "ReposPit">>
+You try to light a fire under the [[cauldron|ReposCauldron]] with your torch, but nothing is there but dust and ashes. Anyway, you have no reason to heat the cauldron. You have no experience in potion-brewing.<<set $tempFlag=true>>
+<<endif>><<if $roomTitle eq "Crypt" && $subRoomTitle eq "CryptHiddenCoffin" && $bodyRevealed && $jokeBook eq "Void">>You lower the torch and burn away the spiderwebs. You almost burn a thick leatherbound [[book|CryptBook]] that was previously hidden behind the wrapped body and the spiderwebs.<<set $jokeBook = "Crypt">><<set $tempFlag=true>><<endif>><<if not $tempFlag>>
+You wave the torch around for a moment, but find that it serves you best as merely a light source.
+<<endif>>
+
+<<display "InventoryFooter">>
+
+
+:: LookAtWand
+<<set $statusText="Inventory - Magic Wand">>
+It's a crooked twig of a wand, knotted and splintered but carved with archaic glyphs that mean nothing to you. It hums softly, proving that it still has some kind of power.
+
+<<if $roomTitle eq "Repos">>
+<<if $blackPotion eq "Void">>
+You wave the wand, and a mist of black smoke curls out from its tip. The mist swirls toward an empty spot on one of the shelves. The hazy form of a small vial begins to take shape. When the the mist is gone, a black [[potion|ReposStop]] remains.<<set $score += 1>><<set $blackPotion = "Repos">>
+
+//<html><span class="addScore">(+1 point for revealing the black potion.)</span></html>//
+<<else>>
+You wave the wand a bit more, but nothing else is revealed.
+<<endif>>
+<<else>>
+<<if $roomTitle eq "Crypt" && $subRoomTitle eq "CryptHiddenCoffin">>
+<<if not $bodyRevealed>>
+Black smoke curls from the tip of the wand and is drawn down into Terume's empty [[coffin|CryptHiddenCoffin]]. Her body, previously concealed by magic, appears in a haze.<<set $bodyRevealed=true>>
+<<else>>
+The wand reveals nothing else in Terume's coffin.
+<<endif>>
+<<else>>
+You wave the wand in circles and other patterns, but nothing happens.
+<<endif>>
+<<endif>>
+
+<<display "InventoryFooter">><<display "UpdateStatus">>
+
+
+:: LookAtBluePotion
+<<set $statusText="Inventory - Blue Potion">><<display "UpdateStatus">>
+The bottle contains a thick, pale blue liquid. <<if $subRoomTitle eq "CryptSecret">>At the moment, its effects are allowing you to read the [[glyphs|CryptSecret]].<<else>>You could easily take a small [[sip|DrinkBlue]] from the bottle without wasting too much of it.<<endif>>
+
+<<display "InventoryFooter">>
+
+
+:: LookAtRedPotion
+<<set $statusText="Inventory - Red Potion">><<display "UpdateStatus">>
+Red liquid swirls around inside a small glass vial. You sniff the top with your skeletal nostrils and find it distinctly herring-scented. You decide against drinking it.
+
+<<display "InventoryFooter">>
+
+
+:: LookAtGreenPotion
+<<set $statusText="Inventory - Green Potion">><<display "UpdateStatus">>
+The bottle contains an oily green ooze that turns completely clear for a moment, every once in a while. The curious effect is short-lived, though. It's unlike anything you've seen before.
+
+<<if $invisible>>
+You are currently under the effects of the green potion, completely invisible to everyone.
+<<else>>
+You could easily take a small [[sip|DrinkGreen]] from the bottle without wasting too much of it.
+<<endif>>
+
+<<display "InventoryFooter">>
+
+
+:: LookAtBlackPotion
+<<set $statusText="Inventory - Black Potion">><<display "UpdateStatus">>
+It was all for this; this beautiful black elixir of life. No longer just a thing of legend, it is //real// and it is //yours//. This magical potion can return you to human form. You will live again, your spirit bound to this skeleton -- this //perfect// skeleton with its frame and features almost identical to the body you once had as a mortal. The potion will do the rest. Soon, you will be fully human again.
+
+You only need to [[drink|DrinkBlack]] the black liquid and the process will begin.
+
+<<display "InventoryFooter">>
+
+
+:: LookAtPerfume
+<<set $statusText="Inventory - Ode de Witchcraft">><<display "UpdateStatus">>
+The stench from the bottle lets you know that this is //not// a potion, even before you notice the tiny label marked "Ode de Witchcraft." It's a bottle of perfume. It smells awful. Witches probably love it.
+
+For a moment, you give thought to [[using|UsePerfume]] the perfume. What good could come of a witch-scented skeleton, though, aside from confusing the senses of the blind or dimwitted?
+
+<<display "InventoryFooter">>
+
+
+:: LookAtMap
+<<set $statusText="Inventory - Map">><<display "UpdateStatus">>
+You take the map from you inventory and unroll it. A sketch of rooms and passages appear on the blank parchment as though ink is simply bleeding into it.
+
+<<showmap>><<display "InventoryFooter">>
+
+
+:: LookAtBook
+<<set $statusText="Inventory - Leatherbound Book">><<display "UpdateStatus">>
+"The Laughing of the Shrew" appears to be a book of jokes. Many of the pages are water damaged, faded beyond recognition, or partially burned. In fact, only two of the pages are even legible: pages [[47|BookPage47]] and [[109|BookPage109]].
+
+<<display "InventoryFooter">>
+
+
+:: Start
+<<display "Initialize">><<set $roomName="Hallowmoor Swamp">><html><img src="title.jpg" class="titleImage" /></html>
+
+<html>&nbsp;&nbsp;&nbsp;</html><<display "SystemLink">>
+
+
+:: StoryAuthor
+by [[Mike Snyder|http://www.sidneymerk.com]]
+
+
+:: Styles [stylesheet]
+body
+{
+    /* Top Right Bottom Left */
+    margin: 5em 5em 5em 3em;
+    font-size: 10px !important;
+    font-family: Verdana, Geneva, sans-serif;
+    color: #e8e0e0;
+    min-width: 700px;
+}
+
+.tapestry, a.tapestry, .tapestryTitle
+{
+    font-family: Palatino Linotype, Book Antiqua, Palatino, serif;
+    line-height: 24px !important;
+    color: #b0c0ff;
+}
+
+.tapestry
+{
+    font-size: 20px;
+    font-style: italic;
+}
+
+.tapestryTitle
+{
+    font-size: 26px;
+    font-weight: bold;
+}
+
+a.tapestry
+{
+    color: #c0d8f8;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a.tapestry:hover
+{
+    color: #f0f0ff !important;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.menu
+{
+    z-index: 3;
+}
+
+#sidebar, .statusBar
+{
+    background-color: #241010;
+    border: 2px solid #800000;
+    border-radius: 6px;
+    -webkit-border-radius: 6px;
+	 -moz-border-radius: 6px;
+    z-index: 2;
+}
+
+#statusBarOuter
+{
+    display: none;
+    position: absolute;
+    width: 100%;
+    min-width: 790px;
+    left: 0px;
+    top: 46px;
+	 z-index: 2;
+}
+
+.statusBar
+{
+    font-weight: bold;
+    margin-left: 260px;
+    margin-right: 50px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.statusBar .scoreText
+{
+    font-size: 15px;
+    color: #C0B0B0;
+}
+
+.statusBar .roomNameText
+{
+    font-size: 15px;
+    color: #E8E0E0;
+}
+
+.statusBar .invLinkText
+{
+    font-size: 15px;
+    display: none;
+}
+
+#sidebar
+{
+	 left: 5em;
+    width: 172px;
+    padding-top: .5em;
+    position: absolute !important;
+}
+
+#sidebar #storyTitle
+{
+    color: #D04040;
+    font: bold 22px Verdana, Geneva, sans-serif;
+}
+
+#sidebar #snapback
+{
+    display: none;
+}
+
+#sidebar #storyAuthor,
+#sidebar #storyAuthor a
+{
+    color: #C0B0B0 !important; 
+    font-size: 12px !important;
+}
+
+#sidebar #storyAuthor a:hover
+{
+    text-decoration: underline !important;
+    color: #D8C0C0 !important;
+}
+
+#sidebar #credits, #sidebar #credits:hover
+{
+    margin-left: 20px;
+    color: #c88080;
+}
+
+#sidebar #credits a
+{
+    color: #b86060;
+}
+
+#sidebar #storyMenu,
+#sidebar #snapback,
+#sidebar #restart,
+#sidebar #share,
+a.internalLink,
+a.externalLink,
+a.invLink
+{
+    color: #b86060 !important;
+    text-decoration: none !important;
+}
+
+#sidebar #storyMenu a:hover,
+#sidebar #snapback:hover,
+#sidebar #restart:hover,
+#sidebar #share:hover,
+#sidebar #credits a:hover,
+a.internalLink:hover,
+a.externalLink:hover,
+a.invLinkHover
+{
+    color: #C88080 !important;
+    text-decoration: underline !important;
+}
+
+#passages
+{
+    font-size: 12px !important;
+    margin-top: 76px;
+    border-left: none;
+	 z-index:1;
+}
+
+#passages .passage
+{
+    /*
+    line-height: 20px !important;
+    font-size: 14px !important;
+    */
+    line-height: 21px !important;
+    font-size: 15px !important;
+}
+
+.titleImage
+{
+    width: 100%;
+    margin-top: -30px;
+}
+
+.gameOver
+{
+    font-size: 18px;
+    color: #ff0000;
+	 font-weight: bold;
+}
+
+.gameWin
+{
+    font-size: 18px;
+    color: #00ff00;
+	 font-weight: bold;
+}
+
+.addScore
+{
+    color: #ffd0b8;
+}
+
+#compassDiv
+{
+    display: none;
+    position: absolute;
+    left: 58px;
+    top: 380px;
+}
+
+.iconEW, .iconNS, .iconRoom, .sp1_off, .sp2_north, .sp2_off,
+.sp2_on, .sp2_up, .sp3_off, .sp4_off, .sp4_on, .sp4_west,
+.sp5_look, .sp5_off, .sp5_on, .sp6_east, .sp6_off, .sp6_on,
+.sp7_off, .sp8_down, .sp8_off, .sp8_on, .sp8_south, .sp9_off
+{
+    background: url(sprites.png) no-repeat;
+    border-style: none;
+}
+
+.iconEW
+{
+    background-position: -156px -182px ;
+    width: 20px;
+    height: 49px;
+}
+
+.iconNS
+{
+    background-position: -187px -210px ;
+    width: 60px;
+    height: 20px;
+}
+
+.iconRoom
+{
+    background-position: -161px -234px ;
+    width: 60px;
+    height: 49px;
+    text-align: center;
+    font: normal 10px Verdana, Geneva, sans-serif;
+    color: #c89090;
+}
+
+.sp1_off
+{
+    background-position: 0 0;
+    width: 52px;
+    height: 52px;
+}
+
+.sp2_north
+{
+    background-position: -180px -152px ;
+    width: 76px;
+    height: 52px;
+}
+
+.sp2_off
+{
+    background-position: -52px 0;
+    width: 76px;
+    height: 52px;
+}
+
+.sp2_on
+{
+    background-position: -76px -180px ;
+    width: 76px;
+    height: 52px;
+}
+
+.sp2_up
+{
+    background-position: -256px 0;
+    width: 76px;
+    height: 52px;
+}
+
+.sp3_off
+{
+    background-position: -128px 0;
+    width: 52px;
+    height: 52px;
+}
+
+.sp4_off
+{
+    background-position: 0 -52px ;
+    width: 52px;
+    height: 76px;
+}
+
+.sp4_on
+{
+    background-position: -52px -232px ;
+    width: 52px;
+    height: 76px;
+}
+
+.sp4_west
+{
+    background-position: -256px -156px ;
+    width: 52px;
+    height: 76px;
+}
+
+.sp5_look
+{
+    background-position: -180px -76px ;
+    width: 76px;
+    height: 76px;
+}
+
+.sp5_off
+{
+    background-position: -52px -52px ;
+    width: 76px;
+    height: 76px;
+}
+
+.sp5_on
+{
+    background-position: -180px 0;
+    width: 76px;
+    height: 76px;
+}
+
+.sp6_east
+{
+    background-position: -104px -232px ;
+    width: 52px;
+    height: 76px;
+}
+
+.sp6_off
+{
+    background-position: -128px -52px ;
+    width: 52px;
+    height: 76px;
+}
+
+.sp6_on
+{
+    background-position: 0 -232px ;
+    width: 52px;
+    height: 76px;
+}
+
+.sp7_off
+{
+    background-position: 0 -128px ;
+    width: 52px;
+    height: 52px;
+}
+
+.sp8_down
+{
+    background-position: -256px -104px ;
+    width: 76px;
+    height: 52px;
+}
+
+.sp8_off
+{
+    background-position: -52px -128px ;
+    width: 76px;
+    height: 52px;
+}
+
+.sp8_on
+{
+    background-position: 0 -180px ;
+    width: 76px;
+    height: 52px;
+}
+
+.sp8_south
+{
+    background-position: -256px -52px ;
+    width: 76px;
+    height: 52px;
+}
+
+.sp9_off
+{
+    background-position: -128px -128px ;
+    width: 52px;
+    height: 52px;
+}
+
+
+
+
+
+:: JavaScript [script]
+// This updates the status bar on the page; room name, score, inventory link.
+//
+macros['showstatus'] =
+{
+    handler: function (place, name, params)
+    {
+        var spacer = "&nbsp;&nbsp;";
+        var roomText = state.history[0].variables["statusText"];
+        var maxScore = state.history[0].variables["maxScore"];
+        var score = state.history[0].variables["score"];
+        var gameOver = state.history[0].variables["prevGameOver"] || state.history[0].variables["gameOver"];
+        var room = spacer + roomText;
+
+        $("statusBarOuter").style.display = "inline";
+        $("roomName").innerHTML = room;
+
+        if (maxScore > 0)
+        {
+            $("curScore").innerHTML = "Score: " + score + " of " + maxScore + spacer;
+        }
+
+		  if ((roomText.indexOf("Inventory")==0) || (roomText.indexOf("About") == 0)
+            || (roomText == "Hallowmoor Swamp") || (roomText == "Load/Save")
+            || (roomText.indexOf("Tapestry")==0) || (gameOver)) {
+            $("invLink").style.display = "none";
+        } else {
+            $("invLink").style.display = "inline";
+        }
+
+	     if (roomText.indexOf("Tapestry")==0) {
+            $("curScore").style.display = "none";
+        } else {
+            $("curScore").style.display = "inline";
+        }
+
+        document.body.appendChild($("statusBarOuter"));
+    }
+};
+
+// Updates the on-screen map on demand.
+//
+macros['showmap'] =
+{
+    handler: function (place, name, params)
+    {
+		  window.setTimeout(function()
+        {   
+            var sr1 = state.history[0].variables["sr1"]; var sr2 = state.history[0].variables["sr2"];
+            var sr3 = state.history[0].variables["sr3"]; var sr4 = state.history[0].variables["sr4"];
+            var sr5 = state.history[0].variables["sr5"]; var sr6 = state.history[0].variables["sr6"];
+            var sr7 = state.history[0].variables["sr7"]; var sr8 = state.history[0].variables["sr8"];
+            var sr9 = state.history[0].variables["sr9"]; var sr10 = state.history[0].variables["sr10"];
+            var sr11 = state.history[0].variables["sr11"]; var sr12 = state.history[0].variables["sr12"];
+            var sr13 = state.history[0].variables["sr13"]; var sr14 = state.history[0].variables["sr14"];
+            var sr15 = state.history[0].variables["sr15"]; var sr16 = state.history[0].variables["sr16"];
+            var cOpen = (state.history[0].variables["broom"] == "Lost");
+            var dOpen = (state.history[0].variables["goblin"] == "Lost");
+            var vOpen = (state.history[0].variables["blackPotion"] == "Void");
+            var vFound = (state.history[0].variables["hasFoundVine"]);
+            var skel = state.history[0].variables["character"] == "Skeleton";
+            var sLoc = state.history[0].variables["skeletonRoomTitle"];
+            var wLoc = state.history[0].variables["witchRoomTitle"];
+            var p1 = '<span style="color: ' + (skel ? "#ffffff" : "#a0a0a0") + ';">';
+            var w1 = '<span style="color: ' + (skel ? "#a0a0a0" : "#ffffff") + ';">';
+            var sText = p1 + "<br />Skeleton</span>";
+            var wText = w1 + "<br />Witch</span>";
+            
+            $("room1").innerHTML = "<br />Bridge" + (sLoc=="Bridge" ? sText : "") + (wLoc=="Bridge" ? wText : "");
+            $("room2").innerHTML = "<br />Cavern" + (sLoc=="Cavern" ? sText : "") + (wLoc=="Cavern" ? wText : "");
+            $("room3").innerHTML = "<br />Ledge" + (sLoc=="Ledge" ? sText : "") + (wLoc=="Ledge" ? wText : "");
+            $("room4").innerHTML = "<br />Entrance" + (sLoc=="Entrance" ? sText : "") + (wLoc=="Entrance" ? wText : "");
+            $("room5").innerHTML = "<br />Bedroom" + (sLoc=="Bedroom" ? sText : "") + (wLoc=="Bedroom" ? wText : "");
+            $("room6").innerHTML = "<br />Cata-NW" + (sLoc=="Cat1" ? sText : "") + (wLoc=="Cat1" ? wText : "");
+            $("room7").innerHTML = "<br />Cata-NE" + (sLoc=="Cat2" ? sText : "") + (wLoc=="Cat2" ? wText : "");
+            $("room8").innerHTML = "<br />Meeting" + (sLoc=="Meeting" ? sText : "") + (wLoc=="Meeting" ? wText : "");
+            $("room9").innerHTML = "<br />Dungeon" + (sLoc=="Dungeon" ? sText : "") + (wLoc=="Dungeon" ? wText : "");
+            $("room10").innerHTML = "<br />Hallway" + (sLoc=="Hallway" ? sText : "") + (wLoc=="Hallway" ? wText : "");
+            $("room11").innerHTML = "<br />Cata-CW" + (sLoc=="Cat3" ? sText : "") + (wLoc=="Cat3" ? wText : "");
+            $("room12").innerHTML = "<br />Cata-CE" + (sLoc=="Cat4" ? sText : "") + (wLoc=="Cat4" ? wText : "");
+            $("room13").innerHTML = "<br />Dropoff" + (sLoc=="Drop" ? sText : "") + (wLoc=="Drop" ? wText : "");
+            $("room14").innerHTML = "<br />Reposit" + (sLoc=="Repos" ? sText : "") + (wLoc=="Repos" ? wText : "");
+            $("room15").innerHTML = "<br />Cata-S" + (sLoc=="Cat5" ? sText : "") + (wLoc=="Cat5" ? wText : "");
+            $("room16").innerHTML = "<br />Crypt" + (sLoc=="Crypt" ? sText : "") + (wLoc=="Crypt" ? wText : "");
+
+            $("bar1").style.display = ((sr1 || sr3) && vFound && vOpen ? "block" : "none");
+            $("bar2").style.display = (sr2 || sr7 ? "block" : "none");
+            $("bar3").style.display = ((sr3 || sr4) && cOpen ? "block" : "none");
+            $("bar4").style.display = (sr4 || sr5 ? "block" : "none");
+            $("bar5").style.display = (sr6 || sr7 ? "block" : "none");
+            $("bar6").style.display = (sr7 || sr8 ? "block" : "none");
+            $("bar7").style.display = (sr4 || sr9 ? "block" : "none");
+            $("bar8").style.display = (sr6 || sr11 ? "block" : "none");
+            $("bar9").style.display = (sr9 || sr10 ? "block" : "none");
+            $("bar10").style.display = ((sr10 || sr11) && dOpen ? "block" : "none");
+            $("bar11").style.display = (sr11 || sr12 ? "block" : "none");
+            $("bar12").style.display = (sr12 || sr13 ? "block" : "none");
+            $("bar13").style.display = (sr11 || sr14 ? "block" : "none");
+            $("bar14").style.display = (sr12 || sr15 ? "block" : "none");
+            $("bar15").style.display = (sr15 || sr16 ? "block" : "none");
+
+            $("room1").style.display = (sr1 ? "block" : "none");
+            $("room2").style.display = (sr2 ? "block" : "none");
+            $("room3").style.display = (sr3 ? "block" : "none");
+            $("room4").style.display = (sr4 ? "block" : "none");
+            $("room5").style.display = (sr5 ? "block" : "none");
+            $("room6").style.display = (sr6 ? "block" : "none");
+            $("room7").style.display = (sr7 ? "block" : "none");
+            $("room8").style.display = (sr8 ? "block" : "none");
+            $("room9").style.display = (sr9 ? "block" : "none");
+            $("room10").style.display = (sr10 ? "block" : "none");
+            $("room11").style.display = (sr11 ? "block" : "none");
+            $("room12").style.display = (sr12 ? "block" : "none");
+            $("room13").style.display = (sr13 ? "block" : "none");
+            $("room14").style.display = (sr14 ? "block" : "none");
+            $("room15").style.display = (sr15 ? "block" : "none");
+            $("room16").style.display = (sr16 ? "block" : "none");
+            
+            $("passages").appendChild($("mapDiv"));
+            $("mapDiv").style.display = "inline";
+
+       }, 225);
+    }
+};
+
+// Updates the on-screen map on demand.
+//
+macros['showcompass'] =
+{
+    handler: function (place, name, params)
+    {
+        var doHide = (params != null && params.length > 0 && params[0].toUpperCase() == "HIDE");
+        var delay = (doHide ? 1 : 750);
+        var roomTitle = state.history[0].variables["roomTitle"];
+        var cOpen = (state.history[0].variables["broom"] == "Lost");
+        var dOpen = (state.history[0].variables["goblin"] == "Lost");
+        var vOpen = (state.history[0].variables["blackPotion"] == "Void");
+        var vFound = (state.history[0].variables["hasFoundVine"]);
+        var gameOver = (state.history[0].variables["prevGameOver"]);
+        var character = (state.history[0].variables["character"]);
+        var torch1 = (state.history[0].variables["torchSkeleton"] == character);
+        var torch2 = (state.history[0].variables["torchWitch"] == character);
+        var canLook = !(gameOver || doHide);
+
+        setTimeout(function()
+        {
+            var up = down = north = south = east = west = false;
+
+		      if (canLook)
+            {
+                if (roomTitle == "Swamp") {
+                    east = true;
+                } else if (roomTitle == "Bridge") {
+                    down = (vFound && vOpen);
+                } else if (roomTitle == "Ledge") {
+                    up = (vFound && vOpen); east = cOpen;
+                } else if (roomTitle == "Entrance") {
+                    west = cOpen; east = true; down = true;
+                } else if (roomTitle == "Bedroom") {
+                    west = true;
+                } else if (roomTitle == "Dungeon") {
+                    up = true; east = true;
+                } else if (roomTitle == "Hallway") {
+                    west = true; east = dOpen && (torch1 || torch2);
+                } else if (roomTitle == "Cat3") {
+                    north = true; west = true; east = true; south = true;
+                } else if (roomTitle == "Repos") {
+                    north = true;
+                } else if (roomTitle == "Cat1") {
+                    east = true; south = true;
+                } else if (roomTitle == "Cat2") {
+                    north = true; west = true; east = true;
+                } else if (roomTitle == "Cavern") {
+                    south = true;
+                } else if (roomTitle == "Meeting") {
+                    west = true;
+                } else if (roomTitle == "Cat4") {
+                    west = true; east = true; south = true;
+                } else if (roomTitle == "Drop") {
+                    west = true;
+                } else if (roomTitle == "Cat5") {
+                    north = true; east = true;
+                } else if (roomTitle == "Crypt") {
+                    west = true;
+                }
+            }
+
+            $("comp2off").style.display = ((north || up) ? "none" : "block");
+            $("comp2north").style.display = (north ? "block" : "none");
+            $("comp2up").style.display = (up ? "block" : "none");        
+            $("comp4off").style.display = (west ? "none" : "block");
+            $("comp4west").style.display = (west ? "block" : "none");
+            $("comp6off").style.display = (east ? "none" : "block");
+            $("comp6east").style.display = (east ? "block" : "none");
+            $("comp8off").style.display = ((south || down) ? "none" : "block");
+            $("comp8south").style.display = (south ? "block" : "none");
+            $("comp8down").style.display = (down ? "block" : "none");        
+            $("comp5off").style.display = (canLook ? "none" : "block");
+            $("comp5look").style.display = (canLook ? "block" : "none");
+
+            document.body.appendChild($("compassDiv"));
+            $("compassDiv").style.display = "inline";        
+        }, delay);
+    }
+};
+
+macros['deletegame'] =
+{
+    handler: function (place, name, params)
+    {
+        try
+        {
+            var cookieName = params[0];
+            var exdate=new Date();
+            exdate.setDate(exdate.getDate() - 365);
+            var delCookie = [cookieName, '=; expires=', exdate.toUTCString(), ';'].join('');
+            document.cookie = delCookie;
+            state.history[0].variables["tempFlag"] = true;
+        }
+        catch(e)
+        {
+            state.history[0].variables["tempFlag"] = false;
+        }
+    }
+};
+
+macros['savegame'] =
+{
+    handler: function (place, name, params)
+    {
+        try
+        {
+            var cookieName = params[0];
+            var exdate=new Date();
+            exdate.setDate(exdate.getDate() + 365);
+            state.history[0].variables["saveTime"] = GetTimeString();
+            var value = JSON.stringify(state.history[0].variables);
+            var encoded = escape(Base64.encode(value));
+            var cookie = [cookieName, '=', encoded, '; expires=', exdate.toUTCString(), ';'].join('');
+            // window.alert(cookie.length);
+            document.cookie = cookie;
+            state.history[0].variables["tempFlag"] = true;
+        }
+        catch(e)
+        {
+            state.history[0].variables["tempFlag"] = false;
+        }
+    }
+};
+
+macros['loadgame'] =
+{
+    handler: function (place, name, params)
+    {
+        var cookieName = params[0];
+        var result = LoadGame(cookieName);
+        if (result == null)
+        {
+            state.history[0].variables["tempFlag"] = false;
+        } else {
+            state.history[0].variables = result;
+            state.history[0].variables["tempFlag"] = true;
+        }
+    }
+};
+
+macros['testgame'] =
+{
+    handler: function (place, name, params)
+    {
+        var cookieName = params[0];
+        var result = LoadGame(cookieName);
+        state.history[0].variables["tempText"] =
+            (result == null ? "Empty" : result["saveTime"] + " - " + result["roomName"]);
+    }
+}
+
+function LoadGame(cookieName)
+{
+    try
+    {
+        var result = document.cookie.match(new RegExp(cookieName + '=([^;]+)'));
+        var decoded = Base64.decode(unescape(result[1]));
+        var valueObject = JSON.parse(decoded);
+        return (valueObject);
+    }
+    catch(e)
+    {
+        return null;
+    }
+}
+
+function GetTimeString()
+{
+    var d = new Date();
+    var newDate =
+    ("00" + (d.getMonth() + 1)).slice(-2) + "/" + 
+    ("00" + d.getDate()).slice(-2) + "/" + 
+    d.getFullYear() + " " + 
+    ("00" + d.getHours()).slice(-2) + ":" + 
+    ("00" + d.getMinutes()).slice(-2); // + ":" + 
+    //("00" + d.getSeconds()).slice(-2);
+    return newDate;
+}
+
+// Removes the breadcrumb/back ability from address bar. This code was found at the glorioustrainwrecks blog.
+// Modified in a few ways. (1) changed getElmentById to use built-in $() function. (2) Formatted for readability,
+// just because. (3) Changed document.title to not show the passage title since mine are labels. (4) Added a moves
+// counter so that it's possible to see how many total turns have been taken. (5) Hide the on-screen map.
+//
+History.prototype.display = function(d, b, a)
+{
+    var c=tale.get(d);
+    this.history.unshift({passage:c,variables:clone(this.history[0].variables)});
+    this.history[0].hash = this.save();
+	 this.history[0].variables["moves"]++;
+
+    var e = c.render();
+    if (a != "offscreen")
+    {
+        $("mapDiv").style.display = "none";
+        document.body.appendChild($("mapDiv"));
+        removeChildren($("passages"));
+        $("passages").appendChild(e);
+        if (a != "quietly")
+        {
+            fade(e,{fade:"in"});
+        }
+    }
+    if ((a == "quietly") || (a == "offscreen"))
+    {
+        e.style.visibility="visible";
+    }
+    if (a != "offscreen")
+    {
+        document.title = tale.title;
+        // document.title += ": " + c.title;
+        window.scroll(0, 0);
+    }
+    return e;
+};
+
+// When using the back-blocker script above, the "Restart" option
+// only seems to work the first time. Added this in order to fix it.
+//
+History.prototype.restart=function()
+{
+    // window.location.hash=""; // Orignal.
+    // window.location.href = window.location.href; // This works.
+    window.location.reload(); // But this is better.
+}
+
+// So that we can display passages based on a variable.
+//
+version.extensions.displayMacro =
+{
+    major:2, minor:0, revision:0
+};
+macros.display = 
+{
+    handler:function(place,macroName,params,parser)
+    {
+        try
+        {
+            var output = eval(parser.fullArgs());
+            new Wikifier(place,tale.get(output.toString()).text);
+        }
+        catch(e)
+        {
+            throwError(place,"bad expression: "+e.message);
+        }
+    }
+};
+
+// --------------------------------------------------------------------------------
+
+/**
+*
+*  Base64 encode / decode
+*  http://www.webtoolkit.info/
+*
+**/
+var Base64 = {
+
+// private property
+_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+// public method for encoding
+encode : function (input) {
+    var output = "";
+    var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+    var i = 0;
+
+    input = Base64._utf8_encode(input);
+
+    while (i < input.length) {
+
+        chr1 = input.charCodeAt(i++);
+        chr2 = input.charCodeAt(i++);
+        chr3 = input.charCodeAt(i++);
+
+        enc1 = chr1 >> 2;
+        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+        enc4 = chr3 & 63;
+
+        if (isNaN(chr2)) {
+            enc3 = enc4 = 64;
+        } else if (isNaN(chr3)) {
+            enc4 = 64;
+        }
+
+        output = output +
+        this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+        this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+
+    }
+
+    return output;
+},
+
+// public method for decoding
+decode : function (input) {
+    var output = "";
+    var chr1, chr2, chr3;
+    var enc1, enc2, enc3, enc4;
+    var i = 0;
+
+    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+    while (i < input.length) {
+
+        enc1 = this._keyStr.indexOf(input.charAt(i++));
+        enc2 = this._keyStr.indexOf(input.charAt(i++));
+        enc3 = this._keyStr.indexOf(input.charAt(i++));
+        enc4 = this._keyStr.indexOf(input.charAt(i++));
+
+        chr1 = (enc1 << 2) | (enc2 >> 4);
+        chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+        chr3 = ((enc3 & 3) << 6) | enc4;
+
+        output = output + String.fromCharCode(chr1);
+
+        if (enc3 != 64) {
+            output = output + String.fromCharCode(chr2);
+        }
+        if (enc4 != 64) {
+            output = output + String.fromCharCode(chr3);
+        }
+
+    }
+
+    output = Base64._utf8_decode(output);
+
+    return output;
+
+},
+
+// private method for UTF-8 encoding
+_utf8_encode : function (string) {
+    string = string.replace(/\r\n/g,"\n");
+    var utftext = "";
+
+    for (var n = 0; n < string.length; n++) {
+
+        var c = string.charCodeAt(n);
+
+        if (c < 128) {
+            utftext += String.fromCharCode(c);
+        }
+        else if((c > 127) && (c < 2048)) {
+            utftext += String.fromCharCode((c >> 6) | 192);
+            utftext += String.fromCharCode((c & 63) | 128);
+        }
+        else {
+            utftext += String.fromCharCode((c >> 12) | 224);
+            utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+            utftext += String.fromCharCode((c & 63) | 128);
+        }
+
+    }
+
+    return utftext;
+},
+
+// private method for UTF-8 decoding
+_utf8_decode : function (utftext) {
+    var string = "";
+    var i = 0;
+    var c = c1 = c2 = 0;
+
+    while ( i < utftext.length ) {
+
+        c = utftext.charCodeAt(i);
+
+        if (c < 128) {
+            string += String.fromCharCode(c);
+            i++;
+        }
+        else if((c > 191) && (c < 224)) {
+            c2 = utftext.charCodeAt(i+1);
+            string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+            i += 2;
+        }
+        else {
+            c2 = utftext.charCodeAt(i+1);
+            c3 = utftext.charCodeAt(i+2);
+            string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+            i += 3;
+        }
+
+    }
+
+    return string;
+} }
+
+// -------------------------------------
+// Image Preloader for Compass and Map
+
+var images = new Array();
+
+function preload()
+{
+	 for (i = 0; i < preload.arguments.length; i++)
+    { 
+	     images[i] = new Image()
+		  images[i].src = preload.arguments[i]
+	 }
+}
+
+preload("title.jpg", "sprites.png", "clear.png");
+
+
+:: StoryMenu
+[[About]]
+[[IF Wiki|http://www.ifwiki.org/]]
+[[IF Forum|http://www.intfiction.org/forum/]]
+[[IF Database|http://ifdb.tads.org/]]
+[[Load/Save|SystemMenu]]<<display "StatusBar">><<display "Map">><<display "Compass">>
+
+
+:: About
+<<set $statusText="About Hallowmoor">><<showstatus>>
+Hallowmoor is hypertext-based interactive fiction. Your actions control the story. To reach the end, you'll need to be clever and thorough. Read, play, and enjoy the adventure!
+
+Playing is simple. Each passage has one or more highlighted keywords. Click a keyword to follow it forward; for instance, into a different room, or to inspect some object, or to talk to a character.
+
+A special keyword appears in the status bar at the top, during normal play. This "Inventory" option allows you to inspect items you are carrying. In certain situations, you may be able to use these items for specific purposes, either to advance the story or solve a puzzle. As you progress, you may acquire new items that will appear in your inventory.
+
+When you reach an ending, play again by using the "Restart" link from the sidebar on the left. The game also allows you to reverse losing endings immediately, without starting over.
+
+''Tip!'' If your browser is maximized on a large monitor and you don't like reading across long lines of text, try making it a smaller window for a more book-like layout.
+
+''Important!'' Do not use your browser's BACK button while playing this game. It will //not// undo prior choices, but rather, it will take you back to the page you visited last. You can, however, save and load your progress between sessions using the [[system|SystemMenu]] menu.
+
+Credits and contact information can be found on the [[credits|Credits]] page.
+
+<<display "SystemLink">>
+
+
+:: EndSkeletonKillsYou
+A skeleton -- //your// chosen skeleton -- is waiting here. The moment you arrive, it attacks. You don't stand a chance against it, and realize a little too late that you should be more careful about allowing them to cross paths.
+
+It's too late to Specter Shift. Maybe when the battle is over, you'll be interred down in the catacombs with the witches of ages past. Regardless, your quest has reached an untimely end.
+
+<<display "GameOverUndo">>
+
+
+:: EndWitchKillsYou
+The dungeonkeeper witch is waiting here. The moment you arrive, she attacks by instantly conjuring a cloud of poisonous mist. You don't stand a chance against it, and realize a little too late that you should be more careful about allowing them to cross paths.
+
+It's too late to Specter Shift. It's too late to get away. Your quest has reached an untimely end.
+
+<<display "GameOverUndo">>
+
+
+:: EndMeeting
+<<set $gameOver=true>>You glance around at the many rows of stone benches that arc stadium-style down toward a stage at the other end of the large room. That's //all// you have time to see, though. An enormous living eyeball framed in strands of flesh swivels from its position on a pillar near the stage, fixing you in its gaze.
+
+You have no time to Specter Shift. You turn quickly toward the exit, but it's too late to get away. A barrage of magic missiles speed toward you, effectively <<if $character eq "Witch">>melting your bones.<<else>>reducing you to ashes.<<endif>>
+
+Your quest has reached an untimely end.
+
+<<display "GameOverUndo">>
+
+
+:: DoShift
+<<set $newRoom = false>><<set $shifts += 1>>
+<<if $shifts eq 1>>
+Drawing on your newfound power, you reach out and touch the presence of a witch. You can sense her nearby, in the lower part of the castle. In a snap, your ethereal form has shifted into the witch.
+<<else>>
+    <<if $shifts eq 2>>
+        You reach out with your senses and locate your selected skeleton. Thankfully, it seems to have survived the ongoing battle without your help. For a moment, you get an impression of confusion as the skeleton struggles to remember how it got here, but a moment later, you're back in control.
+    <<else>>
+        <<if $character eq "Witch">>You draw on your power and shift into the skeleton.<<else>>You draw on your power and shift into the witch.<<endif>> The process takes longer and seems increasingly difficult as the power of the black potion works its magic. Soon, you will need to stay bonded to the skeleton. You will lose the power to Specter Shift as the skeleton becomes the core of your new life.
+    <<endif>>
+<<endif>>
+<<if $character eq "Skeleton">><<set $character = "Witch">><<set $prevRoomTitle=$witchRoomTitle>><<set $roomTitle=$witchRoomTitle>><<display $witchRoomTitle>><<else>><<set $character = "Skeleton">><<set $prevRoomTitle=$skeletonRoomTitle>><<set $roomTitle=$skeletonRoomTitle>><<display $skeletonRoomTitle>><<endif>>
+
+
+:: Map
+<html><div id="mapDiv" style="display:none;"><table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td><div style="width:10px; height:1px;" /></td>
+<td><div style="width:60px; height:1px;" /></td>
+<td><div style="width:20px; height:1px;" /></td>
+<td><div style="width:60px; height:1px;" /></td>
+<td><div style="width:20px; height:1px;" /></td>
+<td><div style="width:60px; height:1px;" /></td>
+<td><div style="width:20px; height:1px;" /></td>
+<td><div style="width:60px; height:1px;" /></td>
+<td><div style="width:20px; height:1px;" /></td>
+<td><div style="width:60px; height:1px;" /></td>
+<td><div style="width:20px; height:1px;" /></td>
+<td><div style="width:60px; height:1px;" /></td>
+</tr>
+<tr>
+<td><div style="width:10px; height:1px;" /></td>
+<td><div id="room1" class="iconRoom" /></td>
+<td colspan="7"><div style="width:260px; height:49px;" /></td>
+<td><div id="room2" class="iconRoom" /></td>
+<td colspan="2"><div style="width:80px; height:49px;" /></td>
+</tr>
+<tr>
+<td><div style="width:10px; height:1px;" /></td>
+<td><div id="bar1" class="iconNS" /></td>
+<td colspan="7"><div style="width:260px; height:20px;" /></td>
+<td><div id="bar2" class="iconNS" /></td>
+<td colspan="2"><div style="width:80px; height:20px;" /></td>
+</tr>
+<tr>
+<td><div style="width:10px; height:1px;" /></td>
+<td><div id="room3" class="iconRoom" /></td>
+<td><div id="bar3" class="iconEW" /></td>
+<td><div id="room4" class="iconRoom" /></td>
+<td><div id="bar4" class="iconEW" /></td>
+<td><div id="room5" class="iconRoom" /></td>
+<td><div style="width:20px; height:49px;" /></td>
+<td><div id="room6" class="iconRoom" /></td>
+<td><div id="bar5" class="iconEW" /></td>
+<td><div id="room7" class="iconRoom" /></td>
+<td><div id="bar6" class="iconEW" /></td>
+<td><div id="room8" class="iconRoom" /></td>
+</tr>
+<tr>
+<td><div style="width:10px; height:1px;" /></td>
+<td colspan="2"><div style="width:80px; height:20px;" /></td>
+<td><div id="bar7" class="iconNS" /></td>
+<td colspan="3"><div style="width:100px; height:20px;" /></td>
+<td><div id="bar8" class="iconNS" /></td>
+<td colspan="4"><div style="width:160px; height:20px;" /></td>
+</tr>
+<tr>
+<td><div style="width:10px; height:1px;" /></td>
+<td colspan="2"><div style="width:80px; height:49px;" /></td>
+<td><div id="room9" class="iconRoom" /></td>
+<td><div id="bar9" class="iconEW" /></td>
+<td><div id="room10" class="iconRoom" /></td>
+<td><div id="bar10" class="iconEW" /></td>
+<td><div id="room11" class="iconRoom" /></td>
+<td><div id="bar11" class="iconEW" /></td>
+<td><div id="room12" class="iconRoom" /></td>
+<td><div id="bar12" class="iconEW" /></td>
+<td><div id="room13" class="iconRoom" /></td>
+</tr>
+<tr>
+<td><div style="width:10px; height:1px;" /></td>
+<td colspan="6"><div style="width:240px; height:20px;" /></td>
+<td><div id="bar13" class="iconNS" /></td>
+<td><div style="width:20px; height:20px;" /></td>
+<td><div id="bar14" class="iconNS" /></td>
+<td colspan="2"><div style="width:80px; height:20px;" /></td>
+</tr>
+<tr>
+<td><div style="width:10px; height:1px;" /></td>
+<td colspan="6"><div style="width:240px; height:49px;" /></td>
+<td><div id="room14" class="iconRoom" /></td>
+<td><div style="width:20px; height:49px;" /></td>
+<td><div id="room15" class="iconRoom" /></td>
+<td><div id="bar15" class="iconEW" /></td>
+<td><div id="room16" class="iconRoom" /></td>
+</tr>
+</table></div></html>
+
+
+:: Compass
+<html><div id="compassDiv"><table class="compassBlank"  cellspacing="0" cellpadding="0" border="0">
+
+<tr>
+
+<td><img id="comp1off" src="clear.png" class="sp1_off" /></td>
+
+<td><img id="comp2off" src="clear.png" class="sp2_off" /><a href='javascript:void(0)' onclick="$('comp2up').className='sp2_on'; state.display('GoUp');"><img id="comp2up" src="clear.png" class="sp2_on" onmouseover="this.className='sp2_up'" onmouseout="this.className='sp2_on'" /></a><a href='javascript:void(0)' onclick="$('comp2north').className='sp2_on'; state.display('GoNorth');"><img id="comp2north" src="clear.png" class="sp2_on" onmouseover="this.className='sp2_north'" onmouseout="this.className='sp2_on'" /></a></td>
+
+<td><img id="comp3off" src="clear.png" class="sp3_off" /></td>
+
+</tr>
+<tr>
+
+<td><img id="comp4off" src="clear.png" class="sp4_off" /><a href='javascript:void(0)' onclick="$('comp4west').className='sp4_on'; state.display('GoWest');"><img id="comp4west" src="clear.png" class="sp4_on" onmouseover="this.className='sp4_west'" onmouseout="this.className='sp4_on'" /></a></td>
+
+<td><img id="comp5off" src="clear.png" class="sp5_off" /><a href='javascript:void(0)' onclick="$('comp5look').className='sp5_on'; state.display('Look');"><img id="comp5look" src="clear.png" class="sp5_on" onmouseover="this.className='sp5_look'" onmouseout="this.className='sp5_on'" /></a></td>
+
+<td><img id="comp6off" src="clear.png" class="sp6_off" /><a href='javascript:void(0)' onclick="$('comp6east').className='sp6_on'; state.display('GoEast');"><img id="comp6east" src="clear.png" class="sp6_on" onmouseover="this.className='sp6_east'" onmouseout="this.className='sp6_on'" /></a></td>
+
+</tr>
+<tr>
+
+<td><img id="comp7off" src="clear.png" class="sp7_off" /></td>
+
+<td><img id="comp8off" src="clear.png" class="sp8_off" /><a href='javascript:void(0)' onclick="$('comp8down').className='sp8_on'; state.display('GoDown');"><img id="comp8down" src="clear.png" class="sp8_on" onmouseover="this.className='sp8_down'" onmouseout="this.className='sp8_on'" /></a><a href='javascript:void(0)' onclick="$('comp8south').className='sp8_on'; state.display('GoSouth');"><img id="comp8south" src="clear.png" class="sp8_on" onmouseover="this.className='sp8_south'" onmouseout="this.className='sp8_on'" /></a></td>
+
+<td><img id="comp9off" src="clear.png" class="sp9_off" /></td>
+
+</tr>
+</table>
+
+</div></html>
+
+
+:: SystemLink
+<<if $roomTitle eq "">>
+[[Begin &raquo;|Swamp]]
+<<else>><<if $gameWin>>
+<<print "[[&laquo; Escape from Castle Hallowmoor|" + $gameOverPassage + "]]">>
+<<else>><<if $prevGameOver>>
+<<print "[[&laquo; Undo Your Mistake|" + $roomTitle + "]]">>
+<<else>><<if $subRoomTitle eq "">>
+<<print "[[&laquo; Back to " + $roomName + "|" + $roomTitle + "]]">>
+<<else>>
+<<print "[[&laquo; Back to " + $roomName + "|" + $subRoomTitle + "]]">>
+<<endif>><<endif>><<endif>><<endif>>
+
+
+:: SystemMenu
+<<set $statusText="Load/Save">><<showstatus>>
+If your browser supports cookies, your progress in Hallowmoor can be saved and loaded. 
+
+<<testgame "SG0">>Autosave: (<<print $tempText>>)
+<<if $autoSave || $tempText neq "Empty">>[[Load|Load0]] |<<endif>><<print " ">><<if $autoSave>>[[Disable|Delete0]]<<else>>[[Enable|Save0]]<<endif>>
+
+<<testgame "SG1">>Slot 1: (<<print $tempText>>)
+[[Load|Load1]] | [[Save|Save1]] | [[Delete|Delete1]]
+
+<<testgame "SG2">>Slot 2: (<<print $tempText>>)
+[[Load|Load2]] | [[Save|Save2]] | [[Delete|Delete2]]
+
+<<testgame "SG3">>Slot 3: (<<print $tempText>>)
+[[Load|Load3]] | [[Save|Save3]] | [[Delete|Delete3]]
+
+<<display "SystemLink">><<set $tempFlag=false>>
+
+
+:: Credits
+<<set $statusText="About - Credits">><<showstatus>>
+This game was written by [[Mike Snyder|http://www.sidneymerk.com/]] using [[Twine|http://www.gimcrackd.com/etc/src/]].
+
+Some features used here may be from macros/code found at the [[glorioustrainwrecks blog|http://www.glorioustrainwrecks.com/blog]], the [[Twee Google Group|https://groups.google.com/forum/#!forum/tweecode]], or elsewhere.
+
+The title image is a modified version of a free wallpaper found [[here|http://www.gdefon.com/download/Art_castle_fortress_rocks_bridge_Mountains/408103/1680x1050]].
+
+Some code used in encoding save data was found [[here|http://www.webtoolkit.info/javascript-base64.html]].
+
+The compass rose image is based on one designed by [[Kiriu|http://media.photobucket.com/user/deadzonedragon/media/Compass_rose_by_kiriu89.png.html]].
+
+This game also includes a variation on a joke originally dealing with a bartender, a duck, nails and grapes, but I don't know who to credit for the original.
+
+Comments are welcome! If you played Hallowmoor and have something to say about it, just email <html><a class="externalLink" href="mailto:wyndo@prowler-pro.com?subject=Hallowmoor">wyndo@prowler-pro.com</a></html> or find me (username Merk) at the [[IF Forum|http://www.intfiction.org/forum]].
+
+Hallowmoor v. 1.02 is Copyright &copy; 2013, All Rights Reserved.
+
+[[&laquo; Back to About Hallowmoor|About]]
+
+
+:: EndMeetDownward
+<<set $gameOver=true>><<set $invisible=false>><<showcompass "hide">>
+You descend the steps between two rows of benches, making your way toward the stage near the front of the room. Without realizing it, your bones begin to appear as the effects of the invisibility potion fade away. The enormous eyeball swivels to catch you in its gaze.
+
+You have no time to Specter Shift. You turn quickly toward the steps, but it's a long way back. A barrage of magic missiles speed toward you, effectively melting your bones.
+
+Your quest has reached an untimely end.
+
+<<display "GameOverUndo">>
+
+
+:: EndMeetShift
+<<set $gameOver=true>><<set $invisible=false>><<showcompass "hide">>
+The Specter Shift has the unfortunate side effect of cancelling the potion-induced invisibility spell. Before you have a chance to continue, the enormous eyeball swivels to catch you in its gaze. A barrage of magic missiles speeds toward you, effectively melting your bones.
+
+Your quest has reached an untimely end.
+
+<<display "GameOverUndo">>
+
+
+:: GameOverUndo
+<<set $gameOver=false>><<set $prevGameOver=true>><<set $roomTitle=$prevRoomTitle>><<set $newRoom=false>><html><span class="gameOver">The End... Unfortunately.</span></html>
+
+//Through the magic of Hallowmoor, you realize that it's possible to <<print "[[go back|" + $roomTitle + "]]">> and undo what just happened.//
+
+
+:: WinGame
+<<set $subRoomTitle="WinGame">><<set $gameOver=true>><<set $prevGameOver=true>><<set $gameOverPassage=$subRoomTitle>><<set $gameWin = true>><<showcompass "hide">><<set $statusText = "Sailing Away">><<display "UpdateStatus">>
+You nod to the cat and it watches you from the dock as you board the boat. You hoist the sail and push away from the dock.
+
+You glance at your arms. Muscle and skin cover them in spots as the potion continues to work. It won't be much longer now. You bring a hand to your jaw, feeling flesh grow there as well. After so many years, it seemed that your bad luck was destined to last an eternity. It fills your heart -- a new heart that should soon begin beating -- with hope and happiness.
+
+The boat clears the cave mouth, drifts along the lake, and enters a wide channel that will carry it away from the castle. The morning sun crests a mountain to the east, marking a new day; marking your new //life//.
+
+The castle is far behind now, overrun by skeletons while fewer remaining witches do their best to protect it. For a time, you feared that the witches might discover you and give pursuit. Thankfully, that never happened.
+
+In the daylight, you're better able to marvel at your renewed human form. The skin isn't quite right, though. It's mottled in spots, and you can feel your joints stiffen. You ponder that for a moment, trusting that it's just part of the natural process. The sudden and overwhelming appetite for brains, though... well, no matter. It's just comforting to know that your luck has finally changed.
+
+<html><span class="gameWin">The End</span></html>
+
+//Congratulations! You scored <<print $score>> of <<print $maxScore>> points in <<print $finalMoves>> turns. <<if $score < $maxScore>>Play again or [[load|SystemMenu]] a prior save to search for the final secret point.<<else>>Play again to try winning in fewer turns. How fast can you finish?<<endif>>//
+
+
+:: BridgeLook
+<<set $subRoomTitle="BridgeLook">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The stone [[bridge|Bridge]] is sturdy enough to support the hundreds of skeletal [[archers|BridgeArchers]] and [[soldiers|BridgeSoldiers]] that lay siege to [[Castle Hallowmoor|BridgeCastle]].
+
+
+:: BridgeArchers [SubRoom]
+<<set $subRoomTitle="BridgeArchers">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Skeletal archers have taken up positions along both sides of the [[bridge|Bridge]]. In blurs of motion they reach to their enchanted quivers and draw from a never-ending supply of arrows. The tips glint in the moonlight like hundreds of dim little comets.
+
+
+:: BridgeWindow
+<<set $subRoomTitle="BridgeWindow">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Rough openings in the upper towers and battlements are much too high to reach. At times, the silhouettes of witches appear in the windows. No matter. Your destination is the catacombs below the castle, so you turn your attention back to the [[bridge|Bridge]].
+
+
+:: BridgeRavine
+<<set $subRoomTitle="BridgeRavine">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The [[bridge|Bridge]] stands high above a rocky ravine that carves a path north to south below. The sound of rushing water mixes with the sounds of arrows, cackles, and grunting battle cries. Mist blankets the ravine, though, so it's difficult to see much detail.
+
+
+:: BridgeFight
+<<set $subRoomTitle="BridgeFight">><<set $statusText=$roomName>><<display "UpdateStatus">>
+History may call this //The Battle of Hallowmoor//; or //The War of the Witches//; or maybe //The Skeletal Army vs. The Sisterhood of Witches//. A perfect outcome, of course, would be for both sides to just obliterate each other and simultaneously rid the land of two curses. You briefly ponder the chances of that before returning your attention to the [[bridge|Bridge]].
+
+
+:: BridgeWitches
+<<set $subRoomTitle="BridgeWitches">><<set $statusText=$roomName>><<display "UpdateStatus">>
+A few witches patrol the sky above the [[bridge|Bridge]], undoubtedly aiding in the counterassault against the skeletal [[army|BridgeSoldiers]]. Most remain in the castle, where their gleeful cackling splits the night air.
+
+
+:: BridgeEnd
+<<set $subRoomTitle="BridgeEnd">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The potion was long believed to be merely a rumor, but with time and effort, you have uncovered its true location. As fate never seems to favor you, this location happens to be a room accessible only through the catacombs of the witch-infested [[Castle Hallowmoor|BridgeCastle]]. Moreover, the only time in which you have the power to [[inhabit|LookAtSpecterShift]] the living coincides with a war between the [[Sisterhood of Witches|BridgeSisterhood]] and their equally evil enemies, the [[Skeletal Army|BridgeSoldiers]]. You just need to find a way off this [[bridge|Bridge]] so you can enter the castle another way.
+
+
+:: BridgeShadows
+<<set $subRoomTitle="BridgeShadows">><<set $statusText=$roomName>>
+Faint shadows twist their way around the bridge and over the short side walls. As you track one in particular, you notice something a ways forward, closer to the [[castle|BridgeCastle]].
+
+It's a thick vine that leads [[down|Ledge]] from the side of the [[bridge|Bridge]].<<set $hasFoundVine = true>><<display "UpdateStatus">>
+
+
+:: Swamp [Intro]
+<<set $tempTitle="Swamp">><<set $roomName="Hallowmoor Swamp">><<display "SetRoom">>
+No part of this has been easy.
+
+First, you had to find just the right lonely old witch, rotting away in her candy cottage. Then you had to haunt her for what seemed an eternity just to get a sliver of information. That's how you learned that the potion could only be found in the catacombs of Castle Hallowmoor.
+
+This posed another challenge. [[Specter Shift|LookAtSpecterShift]] would only be possible under certain celestial alignments, so it required a trip to a senile astronomer atop the tallest mountain in the land to determine exactly when this event would take place. (Being non-corporeal actually helped there.) But the event was soon, leaving very little time to find a skeleton perfectly suited to the task.
+
+The perfect skeleton, as it happened, was essentially front-line fodder in an all-out attack planned against Castle Hallowmoor during this same celestial alignment. That was good in a way, since it would be easier to approach the castle amidst the siege. It was also supremely bad, considering that the Sisterhood of Witches would be fiercely defending their castle.
+
+Now, you are trekking through the fog and bog of the Hallowmoor swamp. The western end of the bridge to Castle Hallowmoor is only a short ways ahead. Your unwitting skeletal host is one among the hundreds of soldiers likely to be blasted bone-from-bone in the assault, but you push the thought away. You've come too far.
+
+The <<print "[[bridge|GoEast]]">> is just ahead.<<display "UpdateStatus">>
+
+
+:: BridgeSoldiers
+<<set $subRoomTitle="BridgeSoldiers">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Much of the skeletal army is rushing madly against the huge wooden [[entrance|BridgeEntrance]] to the [[castle|BridgeCastle]], climbing, beating, and pushing against it with their combined might. [[Archers|BridgeArchers]] hang back at strategic positions along the [[bridge|Bridge]] to defend against the onslaught of fire and lightning.
+
+
+:: BridgeCastle
+<<set $subRoomTitle="BridgeCastle">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Ancient Castle Hallowmoor stands at the edge of the Hallowmoor swamp, protected in other directions by dangerous, jagged mountains. Its stark design is from a time long passed. The castle is home to the [[Sisterhood of Witches|BridgeSisterhood]], serving as a base of operations for their wicked endeavors throughout the land. The [[bridge|Bridge]] to the castle is crowded now with an equally nefarious army of skeletons.
+
+
+:: BridgeSky
+<<set $subRoomTitle="BridgeSky">><<set $statusText=$roomName>><<display "UpdateStatus">>
+A crescent moon shines through the foggy sky. Wispy clouds drift high above, sometimes blocking the stars along their path. A few dark swiftly-moving shapes must be the patrolling witches, their [[shadows|BridgeShadows]] cast across the [[bridge|Bridge]] by moonlight.
+
+
+:: BridgeEntrance
+<<set $subRoomTitle="BridgeEntrance">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The ancient [[castle|BridgeCastle]] has a single wooden portcullis, but it's sturdy and enormous and has stood against attacks for hundreds of years. In credit to the army of [[skeletons|BridgeSoldiers]], however, the [[witches|BridgeSisterhood]] have never experienced an attack on this scale; and this is only the first wave. Large siege machines and skeletal brutes are due here soon. Before long, the [[bridge|Bridge]] will become much more crowded.
+
+
+:: BridgeSisterhood
+<<set $subRoomTitle="BridgeSisterhood">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Little is known about the Sisterhood of Witches. Their wicked deeds have dwindled over the past two centuries. Sure, there may be occasional reports of the kid-tricking kind or other strange happenings //blamed// on a witch, but most of them stay [[close|Bridge]] to [[Castle Hallowmoor|BridgeCastle]]. Some say the witches are by and large reformed. Others insist they are simply biding their time while planning something profoundly evil. It doesn't matter to you, as long as the [[potion|BridgeEnd]] you need can be found in their castle catacombs.
+
+
+:: LedgeDoor
+<<set $subRoomTitle="LedgeDoor">><<set $statusText=$roomName>><<display "UpdateStatus">>
+You run your bony fingers along the grooved rectangle and deduce that it must be some kind of secret entrance. You can find no lever or handle for opening the door from this side, which makes sense. Secret though it may be, the castle wouldn't have been built to allow any would-be invader to just open a door and sprint right in. It's also clear that the door hasn't been opened in a very long time, if ever.
+
+With a sense of defeat, you step [[away|Ledge]] from the hidden door.
+
+
+:: LedgeNoUp
+<<set $subRoomTitle="LedgeNoUp">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Partway up the vine, you realize what would happen if you, inhabiting this witch, put yourself into the middle of a skeletal army numbering in the hundreds. You would last //maybe// five seconds. You set the foolish thought aside and climb back down to the [[ledge|Ledge]] below.
+
+
+:: Bridge [Room]
+<<set $tempTitle="Bridge">><<set $roomName="Bridge to Castle Hallowmoor">><<display "SetRoom">>
+<<if $newRoom>>
+<<if $prevRoomTitle eq "Swamp">>
+The long, slow journey to Castle Hallowmoor ends as the skeletal army storms the stone bridge. The castle towers above it to the east. Almost immediately, a rain of fire and lightning begins pouring down from the castle, no doubt the defensive work of the [[Sisterhood of Witches|BridgeSisterhood]].
+<<else>>
+You climb up the vine and return to the army of skeletons.
+<<endif>>
+<<else>>
+You are standing on the stone bridge dodging fireballs, lightning bolts, and the splintered bones of less fortunate skeletons.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+The [[bridge|BridgeLook]] stands high above a watery [[ravine|BridgeRavine]]. You can hear the distant cackling of [[witches|BridgeWitches]] in the direction of the [[castle|BridgeCastle]], and at times, you can see their twisted moonlit [[shadows|BridgeShadows]] darting back and forth across the bridge in wild patterns as a few of them ride through the night [[sky|BridgeSky]] above. Ahead, a concentration of skeletal [[soldiers|BridgeSoldiers]] is beating madly against the heavy castle [[entrance|BridgeEntrance]].
+
+Skeletal [[archers|BridgeArchers]] manage to down a witch or find a target through a high [[window|BridgeWindow]] or atop the castle, but it doesn't happen often enough. You remind yourself that this isn't even your [[fight|BridgeFight]]. The witches are just an obstacle, and the skeletons are but a means to an [[end|BridgeEnd]].
+<<if $hasFoundVine>>
+<<print $newLine>>A thick vine leads [[down|GoDown]] from the side of the bridge.
+<<endif>>
+<<set $newRoom=false>><<set $sr1=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Cavern
+<<set $tempTitle="Cavern">><<set $roomName="Cavern">><<display "SetRoom">>
+<<if $newRoom>>
+You step through the cavern entrance onto a wooden walkway.
+<<else>>
+You are standing on a wooden walkway. <<set $tempFlag = Math.round(Math.random() * 7) + 1>><<if $tempFlag eq 1 || $tempFlag eq 8>>A cool wind swirls around you.<<endif>><<if $tempFlag eq 2>>For a moment, the air is still.<<endif>><<if $tempFlag eq 3>>You can hear the soft lapping of waves against distant rocks.<<endif>><<if $tempFlag eq 4>>The chirping of an insect breaks the silence for a moment.<<endif>><<if $tempFlag eq 5>>
+A low howl from somewhere unknown echoes through the cavern.<<endif>><<if $tempFlag eq 6>>The cry of a bat breaks the silence for a moment and echoes through the large cavern.<<endif>><<if $tempFlag eq 7>>You can hear the sounds of battle going strong from somewhere outside the castle.<<endif>><<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+Natural stone forms an enormous cavern with a rocky floor that slopes down toward a [[lake|CaveLake]] to the north. The lake continues through a jagged [[opening|CaveOpening]] in the distance where [[moonlight|CaveMoon]] pours in and dances on the water. A rickety elevated [[walkway|CaveWalkway]] connects the [[south|GoSouth]] exit to a wooden [[dock|CaveDock]] at the edge of the lake.
+
+<<if $boatDown>>A small [[boat|CaveBoat]] is docked here.<<else>>Suspended from [[chains|CaveChains]] somewhere in the [[shadows|CaveShadows]] above, a small [[boat|CaveBoat]] sways in the breeze above the dock, well out of reach.<<endif>>
+
+<<if $blackCat eq $roomTitle>><<if $character eq "Witch">>The black [[cat|CatCat]] is here, regarding you with obvious suspicion.<<else>>The black [[cat|CatCat]] paces the walkway and the dock before returning to your side.<<endif>><<endif>>
+
+<<set $newRoom=false>><<set $sr2=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Tap1
+<<set $subRoomTitle="Tap1">><<set $statusText="Tapestry 1">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestryTitle">
+The Princess and the Ice Giant
+</span></html>
+
+<html><span class="tapestry">
+You are Princess Theoloria, and your people adore you. You live in the wealthy kingdom of Mytrosan, known for its vast green plains, thriving forests, and welcoming villages. The weather is always perfect, with just enough rain for crops to grow and just enough winter to make royals and commoners alike appreciate the coming of spring.
+</span></html>
+
+<html><span class="tapestry">
+One summer day, word reached Castle Mytrosan that a small convoy of ice giants was spotted traveling through the northern plains, heading south toward the castle. This was highly unusual. No ice giant had set foot in Mytrosan since the Great War ended, and that was generations ago. Your father, King Mavoran, was visibly agitated by this. For several days until the convoy arrived, he seemed withdrawn and tense. When asked if he feared an attack, and what he planned for the defense of the kingdom, he only stammered a response or avoided the discussion entirely.
+</span></html>
+
+<html><span class="tapestry">
+When the convoy arrives, you are instructed to stay in your bedroom. As it happens, the bedrooms are on the south side of the castle without a view that faces north. You had hoped to see these ice giants for yourself, having never come across so much as a painting of one before. Your father the King is known to be very wise, and you respect him tremendously, so the decision is a difficult one.
+</span></html>
+
+<html><span class="tapestry">
+If you obey the king and stay in your bedroom, go to <a href='javascript:void(0)' onclick='state.display("Tap3")' class='tapestry'>Tapestry 3</a>.<br />
+If you decide to be there when the ice giants arrive, go to <a href='javascript:void(0)' onclick='state.display("Tap2")' class='tapestry'>Tapestry 2</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap2
+<<set $subRoomTitle="Tap2">><<set $statusText="Tapestry 2">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+Curiousity wins over reason, and you sneak through the castle halls to an unused room low on the north side of the castle. From here, you can see the approaching convoy.
+</span></html>
+
+<html><span class="tapestry">
+Large gray horses pull a sturdy coach along the stone path leading to the castle. The coach is driven by two men with pale blue skin, although you can't see much detail from this distance. They're only a little taller than the men of your kingdom; certainly not "giant" by any interpretation of the word. You can't see inside the coach, but several others in similar gray mail garb ride muscular horses ahead and behind.
+</span></html>
+
+<html><span class="tapestry">
+Your heart thumps with excitement. These are people from beyond the realm of Mytrosan. In your sheltered life, you've never had an opportunity to meet anyone so different from yourself. The pale blue skin alone is so exotic that you feel an overwhelming urge to see them up close.
+</span></html>
+
+<html><span class="tapestry">
+If you defy your father and go down to greet the strangers, go to <a href='javascript:void(0)' onclick='state.display("Tap4")' class='tapestry'>Tapestry 4</a>.<br />
+If you return to your room until your father sends for you, go to <a href='javascript:void(0)' onclick='state.display("Tap3")' class='tapestry'>Tapestry 3</a>.<br />
+If you wait here and watch for a while longer, go to <a href='javascript:void(0)' onclick='state.display("Tap5")' class='tapestry'>Tapestry 5</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap3
+<<set $subRoomTitle="Tap3">><<set $statusText="Tapestry 3">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+Your father isn't known for making requests without a very good reason, so you feel it best to go to your room and remain there.
+</span></html>
+
+<html><span class="tapestry">
+Later that evening, when the cooks return to clear away your dishes, you overhear two of them talking. It seems like you've been confined to your room for an eternity, and taking supper here is strange in and of itself. Without even meaning to, you listen to the quiet conversation between the two cooks.
+</span></html>
+
+<html><span class="tapestry">
+Woman: "I just can't believe the king would send his own daughter away with those people. What possible reason could there be?"
+</span></html>
+
+<html><span class="tapestry">
+Man: "Poor girl. In a week, she'll be the bride of the ice prince. Will she ever be able to return? It pains me to suggest it, but has our good King Mavoran lost his mind?"
+</span></html>
+
+<html><span class="tapestry">
+The conversation continues like that for a few moments longer, worrying you more and more with every word spoken. At last, when your mind is reeling from the news and the cooks have departed, you consider your limited options.
+</span></html>
+
+<html><span class="tapestry">
+If you hastily pack your belongings and run far away, go to <a href='javascript:void(0)' onclick='state.display("Tap6")' class='tapestry'>Tapestry 6</a>.<br />
+If you choose to wait here until your father sends for you, go to <a href='javascript:void(0)' onclick='state.display("Tap7")' class='tapestry'>Tapestry 7</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: EntWall
+<<set $subRoomTitle="EntWall">><<set $statusText=$roomName>><<display "UpdateStatus">>
+A [[door|EntDoor]] is set into the west wall. You spend a moment running your gnarled, wart-covered witch hands over the rough stone, but nothing stands out. However, you notice a large metal [[hook|EntHook]] hanging from a chain high on the same wall. You turn to glance at the rest of the [[room|Entrance]], but see nothing else that might help.
+
+
+:: EntHook
+<<set $subRoomTitle="EntHook">><<set $statusText=$roomName>><<display "UpdateStatus">>
+A hook dangles from a chain high above the stone doorway, well out of reach. You jump and stretch upward with your curved fingers, but even your long black fingernails come nowhere close to reaching the hook. It seems likely that the chain will open the side door, but you [[can't|Entrance]] reach it.
+
+
+:: EntDoor
+<<set $subRoomTitle="EntDoor">><<set $statusText=$roomName>><<display "UpdateStatus">>
+You examine it more closely but notice nothing else about it. You push on it in several places, but it doesn't budge. If it has an opening mechanism, it must be somewhere [[nearby|Entrance]].
+
+
+:: EntReach
+<<set $subRoomTitle="">><<set $statusText=$roomName>><<set $score += 1>><<display "UpdateStatus">>
+You reach up with the broom, snagging the hook with its knotted bristles. When you pull downward, a low, grating groan echoes through the [[room|Entrance]] as the door to the [[west|Ledge]] slides slowly open.
+
+//<html><span class="addScore">(+1 point for opening the entrance.)</span></html>//
+
+The broom handle, which is more brittle than you realized, begins to splinter along the side. It snaps with a surprising "crrrraaack" and falls from your hand. The part hanging from the hook swings loose as well, and the whole thing falls through a narrow crack between the floor and the wall, lost. At least it served its purpose.<<set $broom="Lost">><<showcompass>>
+
+
+:: HallDoor
+<<set $subRoomTitle="HallDoor">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The long hallway ends to the east at a large wooden door. You push and pull the handle, even taking a moment to examine the lock, but it [[won't|Hallway]] budge.
+
+
+:: BedNorth
+<<set $subRoomTitle="BedNorth">><<set $statusText=$roomName>><<display "UpdateStatus">>
+You push away enough clutter to crack the door open and peek through. A long hall stretches to the east, where in the distance you can just make out more doors on the north and south sides. You don't see any witches, but you can sense them. It doesn't seem that straying farther away would benefit you, so you quietly push the door closed and step back into the [[bedroom|Bedroom]].
+
+
+:: CryptBook
+<<set $subRoomTitle="">><<set $statusText=$roomName>><<set $score += 1>><<set $jokeBook = $character>><<display "UpdateStatus">>
+You lift the heavy volume from Terune's [[coffin|CryptHiddenCoffin]] and add it to your [[inventory|Inventory]]. The title reads "The Laughing of the Shrew" in embossed letters on a leather cover.
+
+//<html><span class="addScore">(+1 secret point for obtaining Terune's joke book.)</span></html>//
+
+
+:: HallTapestries
+<<set $subRoomTitle="HallTapestries">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Tapestries hang on both sides of the [[hallway|Hallway]]. They depict vivid images of landscapes, people and mythical creatures, with long phrases written in artistic patterns adorning them.
+
+A plain sign has been posted near the first of the tapestries. It reads:
+
+//WARNING!!!! Do not read these tapestries straight through from beginning to end! They contain many adventures you can have in the dangerous realms of Mytrosan and Icemoor. From time to time as you read along, you will be asked to make a choice. Your choice may lead to success or disaster.//
+
+From the looks of things, "many" might be overstating it to a degree. You have a mission here, and this diversion won't help in accomplishing it, but this seems interesting nonetheless.
+
+The [[first|Tap1]] tapestry is positioned near the sign.
+
+
+:: Ledge [Room]
+<<set $tempTitle="Ledge">><<set $roomName="Stone Ledge">><<display "SetRoom">>
+<<if $newRoom>>
+<<if $prevRoomTitle eq "Bridge">>
+Your bones rattle uncomfortably as you grip the vine and descend to the stone ledge below.
+<<else>>
+You exit the castle's hidden entrance and step to the stone ledge outside.
+<<endif>>
+<<else>>
+You are standing on a stone ledge below the castle bridge.
+<<endif>>
+<<if not $gotVinePoint>><<set $gotVinePoint=true>><<set $score += 1>><<print $newLine>>//<html><span class="addScore">(+1 point for discovering and climbing down the vine.)</span></html>//<<print $newLine>><<endif>>
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+<<if $blackPotion eq "Void">>
+Above and high out of reach, the bridge casts a shadow that shrouds the ledge in darkness. You can just make out the vine that stretches <<if $character eq "Skeleton">>[[upward|GoUp]]<<else>>[[upward|LedgeNoUp]]<<endif>> to the bridge above. <<if $broom eq "Lost">>A stone door in the side of the castle has been opened part way to the [[east|GoEast]].<<else>>To the east, inset torches cast dancing orange patterns on some sort of rectangular [[outline|LedgeDoor]].<<endif>>
+<<else>>
+You can tell from the sounds alone that the army's heavy infantry has arrived. The crashes and booms of seige machines fill the night air. You can't see the battle, though, because a portion of the bridge has collapsed, falling to the ledge and preventing any manner of movement except [[east|Entrance]], back into the castle.
+
+You will need to find some other way out.
+<<endif>>
+<<set $newRoom=false>><<set $sr3=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Entrance [Room]
+<<set $tempTitle="Entrance">><<set $roomName="Lower Castle Entrance">><<display "SetRoom">>
+<<if $newRoom>>
+<<if $prevRoomTitle eq "Ledge">>
+You step through the doorway.
+<<else>>
+<<if $prevRoomTitle eq "Bedroom">>
+You exit the bedroom.
+<<else>>
+You ascend the steps and return to the entrance above.
+<<endif>>
+<<endif>>
+<<else>>
+You are standing in a lower entrance of the castle.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+The small room is nothing more than a landing for wide stairs that spiral [[down|GoDown]] through a dimly lit passage. The walls are made from the same ancient stone blocks as the castle itself, and the steps are a mix of darker stones and wood. A door to the [[east|GoEast]] opens into the dungeonkeeper's bedroom.
+
+<<if $broom eq "Lost">>
+An opening to the [[west|GoWest]] leads outside the castle, onto the rocky ledge beyond.
+<<else>>
+A [[rectangle|EntDoor]] set into the west [[wall|EntWall]] is distinctly door-shaped, but it has no handle or obvious means of opening. You can sense your skeleton waiting somewhat confused by present circumstances on the other side.
+<<endif>>
+<<set $newRoom=false>><<set $sr4=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Bedroom
+<<set $tempTitle="Bedroom">><<set $roomName="Dungeonkeeper's Bedroom">><<display "SetRoom">>
+<<if $newRoom>>
+You step through the doorway.
+<<else>>
+You are standing in the bedroom of the dungeonkeeper witch.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+The bedroom is cluttered with a shocking amount of... clutter. You see potted [[plants|BedPlants]] from which gnarled and stick-like herbs grow. Several [[shelves|BedShelves]] are full of disorganized [[books|BedBooks]] and loose [[papers|BedPapers]]. An assortment of [[brooms|BedBrooms]] rest against one wall, but it's obvious that none have been used for cleaning the dirty floor. The [[bed|BedBed]] is half-buried under a pile of ratty black [[robes|BedRobes]]. In fact, not a single surface is devoid of some sort of something, be it arcane or mundane. It also smells //horrible// here.
+
+It's the kind of room that its occupant rarely leaves.
+
+An open doorway leads out to the [[west|GoWest]]. A closed door on the [[north|BedNorth]] wall is partially obstructed by miscellaneous clutter.
+<<set $newRoom=false>><<set $sr5=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Cat1
+<<set $tempTitle="Cat1">><<set $roomName="Northwest Catacombs">><<display "SetRoom">>
+<<if $newRoom>>
+<<if $prevRoomTitle eq "Cat3">>
+You walk north through the narrow catacombs.
+<<else>>
+You walk west through the narrow catacombs.
+<<endif>>
+<<else>>
+You are standing in the catacombs.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+The catacomb walls are made of red bricks and dark gray mortar. Empty shelf-like [[openings|CatOpenings]] are all around. Passages stretch ahead to the [[south|GoSouth]] and [[east|GoEast]].
+
+<<if $blackCat eq "Drop">>You can just hear the faint meowing of an angry cat somewhere off to the south.<<endif>><<if $blackCat eq $roomTitle>><<if $character eq "Witch">><<display "CatWitch">><<else>>The black [[cat|CatCat]] is here, sitting contentedly nearby and cleaning its fur.<<endif>><<endif>>
+
+<<set $newRoom=false>><<set $sr6=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Cat2
+<<set $tempTitle="Cat2">><<set $roomName="Northeast Catacombs">><<display "SetRoom">>
+<<if $newRoom>>
+<<if $prevRoomTitle eq "Cavern">>
+You leave the cavern and return to the catacombs.
+<<else>>
+<<if $prevRoomTitle eq "Meeting">>
+You step back into the catacombs just before the invisibility potion wears off.<<set $invisible=false>>
+<<else>>
+You walk east into another chamber of the catacombs.
+<<endif>>
+<<endif>>
+<<else>>
+You are standing in the catacombs.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+The catacomb walls are made of red bricks and dark gray mortar. Empty shelf-like [[openings|CatOpenings]] are all around. A passage stretches back to the [[west|GoWest]]. The chamber ends in doorways to the [[north|GoNorth]] and [[east|GoEast]], the latter of which is adorned with a [[sign|Cat2Sign]] that warns "Beware the Eye of the Guardian."
+
+<<if $blackCat eq $roomTitle>><<if $character eq "Witch">><<display "CatWitch">><<else>>The black [[cat|CatCat]] walks circles around you and meows a little.<<endif>><<endif>>
+
+<<set $newRoom=false>><<set $sr7=true>><<endif>><<showstatus>><<display "UpdateStatus">>
+
+
+:: Meeting
+<<set $tempTitle="Meeting">><<set $roomName="Meeting Room">><<display "SetRoom">>
+<<if $newRoom>>
+You step into a large auditorium.<<if not $invisible>><<set $gameOver=true>><<set $gameOverPassage="EndMeeting">><<endif>>
+<<else>>
+You are standing near the back of a large auditorium.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+Rows of stone [[benches|MeetBenches]] form arcs that stair-step [[downward|EndMeetDownward]] toward a [[stage|MeetStage]] at the other end of the room. The doorway [[west|GoWest]] is behind the top row. The high ceiling is a dome painted with various [[scenes|MeetScenes]] too horrific to contemplate: people in various agonizing situations that involve long pikes, huge cauldrons, fire, and scale-skinned imps.
+
+The room is abandoned now, but it shows signs of recent use. The [[dust|MeetDust]] is disturbed in many places. Battle diagrams are drawn on large sheets of paper pinned to wooden frames down on the stage. The auditorium is probably used when the witches meet to discuss matters of importance to the entire Sisterhood. Based on the evidence, it's possible they even predicted the assault that helped you slip in unnoticed.
+
+On a [[pillar|MeetPillar]] near the stage, an enormous disembodied [[eyeball|MeetEye]] strains against its fleshy strands to search the room. Its gaze passes over you, thankfully. As long as you remain invisible, you'll be safe, but the effect won't last long.
+<<set $newRoom=false>><<set $sr8=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Tap4
+<<set $subRoomTitle="Tap4">><<set $statusText="Tapestry 4">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+Your mind is made up. You have to see these ice giants, no matter what your father has instructed you to do.
+</span></html>
+
+<html><span class="tapestry">
+You race through the halls, almost knocking over several of the castle staff. With quickly shouted apologies, you reach the grand hall, where your father has stepped inside with his two guests and a selection of their guards. Your arrival is more sudden than you had hoped, and everyone turns as if to gawk at you, the panting princess.
+</span></html>
+
+<html><span class="tapestry">
+You've never seen your father look so pale. After a moment, he manages to get a few words out. "Theoloria," he says. "You shouldn't be here. To your room. Immediately."
+</span></html>
+
+<html><span class="tapestry">
+"No, no, not at all," says the older of the two men. He has a white beard that frames his pale blue face. His vaguely pointed ears are just a little too tall, and his eyes remind you of a cat. "My name is Juizodul; Chancellor and High Regent of Icemoor." He motions to the younger man, a surprisingly handsome "ice giant" about your age. "This is my nephew, the prince Amasku. After a night's rest, we must be leaving. You are to accompany us, and be married to the prince when we return to Icemoor."
+</span></html>
+
+<html><span class="tapestry">
+If you state how preposterous this is and flatly refuse, go to <a href='javascript:void(0)' onclick='state.display("Tap8")' class='tapestry'>Tapestry 8</a>.<br />
+If you look to the king to refute this ridiculous notion, go to <a href='javascript:void(0)' onclick='state.display("Tap18")' class='tapestry'>Tapestry 18</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap5
+<<set $subRoomTitle="Tap5">><<set $statusText="Tapestry 5">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+When the convy stops on the drawbridge just before the main gate, you have a perfect view of them. The guards have narrow cheeks, vaguely pointed ears, and eyes that remind you of a cat's. Still, you find them incredibly interesting; perhaps handsome, even.
+</span></html>
+
+<html><span class="tapestry">
+You see your father from behind as he walks quickly forward along the drawbridge, preceded by his own guards. Two men with the same pale blue skin exit the coach and step forward to meet him. Handshakes are exchanged, but you can tell by your father's gestures that he's nervous and reserved.
+</span></html>
+
+<html><span class="tapestry">
+One of the strangers appears to be an older man with a beard and sharp features. The other, perhaps around your age but hard to tell for sure, has striking features that instantly appeal to you. Neither of them wear the plain gray uniform you see on the others. The older man wears a flowing outfit of red and gold. The younger wears a less formal white outfit trimmed in red and gray.
+</span></html>
+
+<html><span class="tapestry">
+You hear a noise behind you, and turn with a start. Parpozsha stands in the doorway. He's a contrary, spiteful little man that you've never liked. But he's one of your father's most trusted advisors. He motions for you to follow him.
+</span></html>
+
+<html><span class="tapestry">
+If you follow Parpozsha, go to <a href='javascript:void(0)' onclick='state.display("Tap10")' class='tapestry'>Tapestry 10</a>.<br />
+If you come up with a good excuse for being here instead, go to <a href='javascript:void(0)' onclick='state.display("Tap11")' class='tapestry'>Tapestry 11</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap6
+<<set $subRoomTitle="Tap6">><<set $statusText="Tapestry 6">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+You decide that the cooks are right. Your father has surely lost his mind to expect this of you. You brush away tears and try your best to muffle your saddened cries as you pack only what you're able to carry. You escape under the cover of night.
+</span></html>
+
+<html><span class="tapestry">
+By morning, you are miles away from the castle, heading south on your own horse toward whatever may await you. You travel for days, barely escaping the pursuit of bandits and all manner of fearsome beasts along the way. The roads are long, often becoming narrow paths through dark forests or muddy roads along hills that become taller and more barren as the distance from Mytrosan grows.
+</span></html>
+
+<html><span class="tapestry">
+Rumors reach you that King Mavoran was greatly distressed by the disappearance of the princess. He blamed the ice giants, accusing them of simply kidnapping you. In turn, the ice giants were convinced that they were being tricked. In the weeks that followed, the weather over Mytrosan turned foul. Crops withered. Storms destroyed entire villages. The kingdom fell into a state of turmoil and despair the likes of which had only been told in legends. The ice giants returned to Icemoor, never waging war on Mytrosan at all.
+</span></html>
+
+<html><span class="tapestry">
+You make a new life for yourself in Gandynberg. It's not an easy life. It's a lonely, regretful life that turns you bitter over the years. You didn't become the unwilling bride of an ice giant, but still, you've lost everything in order to avoid it.
+</span></html>
+
+<html><span class="tapestryTitle">
+The End
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: BedPlants
+<<set $subRoomTitle="BedPlants">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Plants in pots are placed on nearly every open surface. Some are quite weedlike, with tangles of stems and vines that wrap around books and knick knacks or grow along the walls. The plants seem to be responsible for most of the [[room's|Bedroom]] horrid smell.
+
+Some of the plants have barren stalks like miniature bamboo and pampas. <<if $magicWand eq "Void">>One in particular seems out of place. On further inspection, you see that a magic [[wand|BedWand]] has been stabbed into the potted soil among the brown stalks of the strange herbal specimen.<<else>>You find no more surprises hidden among the plants.<<endif>>
+
+
+:: BedBrooms
+<<set $subRoomTitle="BedBrooms">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Several brooms rest against the wall. Their bristles are thick, tangled, and full of dust. It seems that this particular witch doesn't do much flying either.
+
+<<if $broom eq "Void">>
+Since no witch should be without her broom, you select a particularly crooked one and add it to your [[inventory|Inventory]]. Its bristles are knotted and frayed but generally intact. With that done, you return your attention to the [[bedroom|Bedroom]].<<set $broom = "Witch">><<set $subRoomTitle="">>
+<<else>>
+<<if $character eq "Witch">><<if $broom eq "Lost">>
+You already lost one broom, so you decide against carrying another around with you. Instead, you return your attention to the [[bedroom|Bedroom]].
+<<else>>
+You decide against carrying a second broom around with you, choosing instead to [[leave|Bedroom]] the rest of them alone. 
+<<endif>><<else>>
+Since the brooms are useless to you, you return your attention to the [[bedroom|Bedroom]].
+<<endif>><<endif>>
+
+
+:: BedSheets
+<<set $subRoomTitle="BedSheets">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The sheets are tattered and filthy, failing even to cover the [[bed|BedBed]] in some spots.
+
+
+:: BedRobes
+<<set $subRoomTitle="BedRobes">><<set $statusText=$roomName>><<display "UpdateStatus">>
+You search through the pile of robes but find nothing of any consequence. You return your attention to the [[bedroom|Bedroom]].
+
+
+:: BedBed
+<<set $subRoomTitle="BedBed">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The small bed is covered in tattered black [[sheets|BedSheets]] and a pile of ratty witch's [[robes|BedRobes]]. It looks very old and heavily worn down, but the intricately carved patterns on its four thick corner posts seem to perfectly compliment a [[bedroom|Bedroom]] in utter disarray. <<if $blackCat eq "Void">>You can also hear something moving around [[under|BedUnder]] the bed.<<endif>>
+
+
+:: BedPapers
+<<set $subRoomTitle="BedPapers">><<set $statusText=$roomName>><<set $tempFlag=false>><<display "UpdateStatus">>
+The papers contain a variety of hand-written notes and drawings. Many of them depict a crudely-sketched goblin wearing a crown and undergoing all manner of punishments. Others contain doodles of cats and constellations, demented poems, paranoid rantings, and even a multi-page essay on the merits of dungeonkeeping.
+
+<<if $character eq "Witch">>
+<<if $mapWitch eq "Witch">><<set $tempFlag=true>><<else>><<set $mapWitch = "Witch">><<endif>>
+<<else>>
+<<if $mapSkeleton eq "Skeleton">><<set $tempFlag=true>><<else>><<set $mapSkeleton = "Skeleton">><<endif>>
+<<endif>><<if $tempFlag>>
+None of it is of any use to you, so you return your attention to the [[bedroom|Bedroom]].
+<<else>>
+<<if $mapWitch eq "Witch" && $mapSkeleton eq "Skeleton">>
+You pull another enchanted map from the stack of old pages and add it to the <<if $character eq "Witch">>witch's<<else>>skeleton's<<endif>> [[inventory|Inventory]]. With that done, you return your attention to the [[bedroom|Bedroom]].
+<<else>>
+Among the papers, you find a stack of old pages with faded watermarks and browned edges. As you touch one, a sketch of rooms and passages appear as though ink is simply bleeding into the parchment. You recognize it as a map of the castle. You take one for your [[inventory|Inventory]] then return your attention to the [[bedroom|Bedroom]].
+<<endif>><<endif>>
+
+
+
+:: BedShelves
+<<set $subRoomTitle="BedShelves">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Various [[books|BedBooks]] and [[papers|BedPapers]] litter the dusty old shelves. In addition, you notice a handwritten note pinned to the edge of one. It reads:
+
+"Stupid wand. Ownership spell worked fine on it, but now it can only cast //Reveal Hidden//. Cheap piece of junk. Threw it and misplaced, but great excuse to petition the Sisterhood for a new wand."
+
+Finding little interest in the scribblings of a demented old crone, you return your attention to the [[bedroom|Bedroom]].
+
+
+:: CryptHiddenCoffin
+<<set $subRoomTitle="CryptHiddenCoffin">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Terume's coffin is an ugly angular box of gray slate and chipped wooden trim. <<if $bodyRevealed>><<if $jokeBook eq "Void">>Spiderwebs blanket the body inside, taking up almost as much room as the body itself.<<else>><<if $jokeBook eq "Crypt">>A thick leatherbound [[book|CryptBook]] rests beside the wrapped body.<<else>>Nothing but the cloth-wrapped body of a long-dead witch remains inside.<<endif>><<endif>><<else>>Like several of the others, the body is no longer inside.<<endif>> Ultimately, it's just another coffin in the [[crypt|Crypt]].
+
+
+:: Dungeon
+<<set $tempTitle="Dungeon">><<set $roomName="The Dungeon">><<display "SetRoom">>
+<<if $newRoom>>
+<<if $prevRoomTitle eq "Entrance">>
+You descend the steps through a curving passage that leads down into the castle dungeon.
+<<else>>
+You return to the dungeon.
+<<endif>>
+<<else>>
+You are standing in the castle dungeon.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+The [[air|DunAir]] down here is heavy and sour, bordering on putrid. [[Torches|DunTorches]] line the grimy stone walls, flickering dimly and casting sharp shadows everywhere. The walls are damp in [[spots|DunWalls]] where water trickles down from somewhere above, giving life to mold and other sick-looking [[growths|DunGrowths]]. A layer of filthy [[water|DunWater]] coats the floor, making every step a small "splish" that echoes hollowly through the dungeon.
+
+Iron [[doors|DunDoors]] with narrow windows line every wall, but an open doorway to the [[east|GoEast]] leads to a dark hallway. Steps of stone and wood lead [[upward|GoUp]] in a spiral at one corner of the room. <<if $goblin eq "Dungeon">>In one cell, a [[goblin|Goblin]] sits sulking.<<endif>>
+<<set $newRoom=false>><<set $sr9=true>><<endif>><<showstatus>><<display "UpdateStatus">>
+
+
+:: Hallway
+<<set $tempTitle="Hallway">><<set $roomName="Hallway">><<display "SetRoom">>
+<<if $newRoom>>
+<<if $prevRoomTitle eq "Dungeon">>
+You walk ahead through the eastern doorway into the dark hallway beyond.
+<<else>>
+You leave the catacombs and return to the hallway. <<if $catFollows && $blackCat eq "Cat3" && $character eq "Skeleton">>The black cat seems unwilling to follow, choosing instead to wait in the catacombs.<<endif>>
+<<endif>>
+<<else>>
+You are standing in a hallway.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+<<if $torchSkeleton eq $character || $torchWitch eq $character>>
+Light from your torch provides just enough illumination. A doorway to the dungeon is [[west|GoWest]] and <<if $goblin eq "Lost">>another doorway, evidently unlocked by the goblin during his grand departure, leads [[east|GoEast]] to the catacombs.<<else>>a [[door|HallDoor]] at the end of the hall to the east is closed.<<endif>> You can just make out a series of [[tapestries|HallTapestries]] hanging from both walls. The hallway is otherwise cold and unremarkable.
+<<else>>
+Light from the dungeon only illuminates your first few steps. Beyond that, the hall is masked in complete darkness. You can't see anything except the doorway [[west|Dungeon]], back into the dungeon. It would be a shame if you were eaten by a grue before your quest here is done, so you feel it best to turn back for now.
+<<endif>><<set $newRoom=false>><<set $sr10=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Cat3
+<<set $tempTitle="Cat3">><<set $roomName="Central West Catacombs">><<display "SetRoom">>
+<<if $newRoom>>
+<<if $prevRoomTitle eq "Hallway">>
+You step down onto a rough dirt floor and enter the catacombs.
+<<else>>
+<<if $prevRoomTitle eq "Cat1">>
+You return south to the catacomb exit.
+<<else>>
+<<if $prevRoomTitle eq "Cat4">>
+You walk west through the narrow hallway until you have arrived back at the exit.
+<<else>>
+You leave the repository through the doorway north.
+<<endif>>
+<<endif>>
+<<endif>>
+<<else>>
+You are standing in the catacombs.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+The catacomb walls are made of red bricks and dark gray mortar. Empty shelf-like [[openings|CatOpenings]] are all around. Passages stretch ahead to the [[north|GoNorth]] and [[east|GoEast]]. An open doorway to the [[south|GoSouth]] has a faded [[sign|Cat3Sign]] above that reads "Potions Repository." The hallway leading to the dungeon is back to the [[west|GoWest]].
+
+<<if $blackCat eq "Drop">>You can hear the muted meowing of an angry cat somewhere to the east.<<endif>><<if $blackCat eq $roomTitle>><<if $character eq "Witch">><<display "CatWitch">><<else>>The black [[cat|CatCat]] is here, happily rubbing itself against your bony leg.<<endif>><<endif>>
+<<set $newRoom=false>><<set $sr11=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Cat4
+<<set $tempTitle="Cat4">><<set $roomName="Central East Catacombs">><<display "SetRoom">>
+<<if $newRoom>>
+<<if $prevRoomTitle eq "Drop">>
+You leave the dropoff and walk back into catacombs that remain undamaged.
+<<else>>
+<<if $prevRoomTitle eq "Cat3">>
+You walk east into another chamber of the catacombs.
+<<else>>
+You walk north into another chamber of the catacombs.
+<<endif>>
+<<endif>>
+<<else>>
+You are standing in the catacombs.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+The catacomb walls are made of red bricks and dark gray mortar. Empty shelf-like [[openings|CatOpenings]] are all around. Passages stretch ahead to the [[west|GoWest]], [[east|GoEast]] and [[south|GoSouth]].
+
+<<if $blackCat eq "Drop">>You can hear the grated meowing of an angry cat just east of here.<<endif>><<if $blackCat eq $roomTitle>><<if $character eq "Witch">><<display "CatWitch">><<else>>The black [[cat|CatCat]] is here, looking up at you with unnatural adoration.<<endif>><<endif>>
+<<set $newRoom=false>><<set $sr12=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Drop
+<<set $tempTitle="Drop">><<set $roomName="Catacomb Dropoff">><<display "SetRoom">>
+<<if $newRoom>>
+You walk through the passage to the east, until you can go no further.
+<<else>>
+You are in a ruined section of the catacombs.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+The passage ends at a mountain of [[rubble|DropRubble]] and a gaping [[hole|DropHole]] in the ground. Bits of brick litter the dead end, as though some prior seismic event exposed a sinkhole and destroyed this part of the catacombs. The only exit is back to the [[west|GoWest]].<<if $blackCat eq $roomTitle>>
+<<print $doubleLine>><<if $catFollows>>The black [[cat|CatCat]] is here, keeping its distance from the pit and meowing softly.<<else>>The dungeonkeeper's familiar, a scrawny-looking <<if $character eq "Witch">>[[cat|CatCat]]<<else>>[[cat|DropCat]]<<endif>> with matted black fur, stands bristling near the pit.
+<<endif>><<endif>>
+<<set $newRoom=false>><<set $sr13=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Tap7
+<<set $subRoomTitle="Tap7">><<set $statusText="Tapestry 7">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+With nothing but an overheard conversation to go by, you feel it best to wait until the king sends for you. By midnight, you are incredibly tired, and you fall asleep still wondering about what the cooks said.
+</span></html>
+
+<html><span class="tapestry">
+Roosters in the courtyard wake you with the rise of the morning sun. Your chamber maid waits while you dress, and then escorts you down to the grand hall.
+</span></html>
+
+<html><span class="tapestry">
+The king is waiting near his throne as you enter. In addition to members of the court staff you recognize, several strangers dressed in unusual garb are waiting in the grand hall. Most of them are larger than the people of Mytrosan, but not to the extent that you would truly consider them giants. Their skin is pale blue and the pupils of their eyes are almost catlike. Their ears are topped with rounded points and their cheeks seem a little too narrow. Beyond that, though, or perhaps because of it, they are an attractive people.
+</span></html>
+
+<html><span class="tapestry">
+Only two of the king's guests are dressed more elaborately than the plain gray leather mail worn by their entourage. The larger man has a beard and wears a flowing outfit of red and gold. The other looks to be your age and wears a less formal white outfit trimmed in red and gray.
+</span></html>
+
+<html><span class="tapestry">
+Your father smiles weakly as you approach.
+</span></html>
+
+<html><span class="tapestry">
+Continue to <a href='javascript:void(0)' onclick='state.display("Tap16")' class='tapestry'>Tapestry 16</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap8
+<<set $subRoomTitle="Tap8">><<set $statusText="Tapestry 8">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+"I will do no such thing," you state. It comes out more as a startled bark than a civil statement of fact. Suddenly, these ice giants don't seem so genial.
+</span></html>
+
+<html><span class="tapestry">
+Prince Amasku looks hurt by the outburst, but the regent Juizodul is clearly offended. "How can you be unaware of this? Is this why supplies to Icemoor have ceased?" He turns to your father. "Mavoran, by what trickery does your daughter refuse this obligation?"
+</span></html>
+
+<html><span class="tapestry">
+The king seems at a loss for words, but when he speaks, he addresses you rather than either of these deluded guests. "I'm sorry, Theoloria. The future of both our kingdoms depends on this. I'm truly sorry. You have to do as they ask."</span></html>
+
+<html><span class="tapestry">
+"I do NOT" you counter. "I WILL not."
+</span></html>
+
+<html><span class="tapestry">
+Seeing that you won't go willingly, Juizodul motions to his guards. They grab you by the arms. Your father protests and they treat you less forcefully, but in the end, it doesn't matter. You are taken from Castle Mytrosan, and a one week journey to Icemoor begins.
+</span></html>
+
+<html><span class="tapestry">
+The air grows colder by the day. Green hills give way to rocky snow-capped mountains. Occasional lakes and rivers become ice, and barren gray ice-covered trees line the road on the last stretch of the journey. Maybe you'll escape from this arranged marriage some day. Maybe you'll try. But maybe you'll simply be the miserable bride of an ice giant prince for the rest of your long life.
+</span></html>
+
+<html><span class="tapestryTitle">
+The End
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap9
+<<set $subRoomTitle="Tap9">><<set $statusText="Tapestry 9">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+You see scarcely a single dry eye among the castle staff that stand ready to see you off before midday. Your father in particular is a wreck. Before the coach is even beyond the drawbridge, he turns in tears and moves back through the crowd toward the castle entrance.
+</span></html>
+
+<html><span class="tapestry">
+You sit across from the two strangers. Their pale blue skin keeps drawing your attention, and at last, you speak. "I've never seen an ice giant until now," you say. "You aren't quite human, are you?"
+</span></html>
+
+<html><span class="tapestry">
+The regent seems poised to protest, but Prince Amasku just smiles and holds up a hand. "Humanity was splintered long ago," he answers. "Far to the east, you can find a kingdom of people who live among the volcanoes and active fissures. I hear their red skin glows in the dark. And to the west, well, I don't know this for a fact, but I've heard they live underwater and have developed gills and fins. The world is a fascinating place, Theoloria."
+</span></html>
+
+<html><span class="tapestry">
+The coach bumps along, and by evening, you're perhaps a mile away from leaving the forest and entering the great Mytrosan plain. You know of a steep drop into a ravine not far to the west, and you wonder if you might be able to divert the coach in that direction and use it as a distraction to escape.
+</span></html>
+
+<html><span class="tapestry">
+If you try convincing your captors to take a western detour, go to <a href='javascript:void(0)' onclick='state.display("Tap14")' class='tapestry'>Tapestry 14</a>.<br />
+If you bide your time by asking about this arranged marriage, go to <a href='javascript:void(0)' onclick='state.display("Tap15")' class='tapestry'>Tapestry 15</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: BedUnder
+<<set $subRoomTitle="">><<set $statusText=$roomName>><<set $blackCat="Drop">><<display "UpdateStatus">>
+You stoop down and lift one part of the [[sheet|BedSheets]] to get a peek under the bed. You see something dark move toward you. Two yellow slits appear as an overweight black cat opens its eyes and lunges toward you. With a hiss, it bounds to the door and disappears to the west. Startled, you [[stand|Bedroom]] up.
+
+
+:: BedWand
+<<set $subRoomTitle="BedWand">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $character eq "Witch">>
+You pluck the wand from among the plant stalks and add it to your [[inventory|Inventory]]. It hums softly with magical power as you turn your attention back to the [[bedroom|Bedroom]].<<set $magicWand = "Witch">><<set $subRoomTitle="">>
+<<else>>
+You reach for the wand, but your bony fingers are held back by some sort of hidden power. You strain against the spell, but it doesn't help. You [[can't|Bedroom]] pick up the witch's magic wand.
+<<endif>>
+
+
+:: BedBooks
+<<set $subRoomTitle="BedBooks">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The witch appears to have an eclectic taste in literature. Among the hundreds of old books scattered around the room and on the shelves you see titles like:
+
+<html>&nbsp;&nbsp;&nbsp;</html>//Gnome Husbandry in 30 Days//
+<html>&nbsp;&nbsp;&nbsp;</html>//Entrails: 100 Great Recipes//
+<html>&nbsp;&nbsp;&nbsp;</html>//The Passion of Brumhilda//
+<html>&nbsp;&nbsp;&nbsp;</html>//Riding the Sky and Other Stories//
+<html>&nbsp;&nbsp;&nbsp;</html>//That's Not My Cauldron, Baby!//
+<html>&nbsp;&nbsp;&nbsp;</html>//What To Expect When You're Bewitched//
+<html>&nbsp;&nbsp;&nbsp;</html>//The Sinking of the Bloody 13th//
+
+<<if $knowsBookNumber>>
+<<if $dungeonKey eq "Void">>
+After a lengthy search you find the correct volume, just as the goblin said. //'Potions and Potables: An Expert's Guide to Brewmaking'// is marked with a big number <<print $bookNumber>>. There between the pages you find a rusty old key, which you add to your [[inventory|Inventory]]. Having found what you needed, you return your attention back to the [[bedroom|Bedroom]].<<set $dungeonKey = $character>>
+<<else>>
+With nothing else to find among the books, you return your attention to the [[bedroom|Bedroom]].
+<<endif>>
+<<else>>
+Each book is individually numbered, but [[none|Bedroom]] of them seem important for the task at hand.
+<<endif>>
+
+
+:: CatWitch
+The black [[cat|CatCat]] is here, regarding you with obvious suspicion.
+
+
+:: CryptCandles
+<<set $subRoomTitle="CryptCandles">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Plain candles sit atop wall sconces and free-standing candelabras. Despite dust and cobwebs, their flames still flicker and illuminate the limestone [[walls|CryptWalls]] of the [[crypt|Crypt]], perhaps through some long-standing spell. You consider taking one with you, but the torch you carry is all you need.
+
+
+:: CryptWalls
+<<set $subRoomTitle="CryptWalls">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Shadows flicker across the limestone walls of the [[crypt|Crypt]]. In places, runes and glyphs provide decoration near the [[coffins|CryptCoffins]], or perhaps describe the various occupants entombed here in a language you can't comprehend.
+
+
+:: CryptFaces
+<<set $subRoomTitle="CryptWalls">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The pillars are adorned with carved faces. Many resemble gargoyles, but you also notice goblins, orcs, dire bears, and a few other grotesque forms you don't even recognize. Since these [[coffins|CryptCoffins]] <<if not $readRunes>>most likely<<endif>> hold the bodies of long-dead witches, the faces probably aren't indicative of the occupants.
+
+
+:: CryptCoffins
+<<set $subRoomTitle="CryptCoffins">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The [[crypt|Crypt]] contains dozens of coffins in a variety of styles and sizes. Some are elaborately ornate with gilded trim and inset jewels, while others are plain stone boxes decorated with just a few simple markings.
+
+You shift the lids from a few random coffins. Most contain wrapped and preserved bodies. <<if $coffinFound>>Terume's [[coffin|CryptHiddenCoffin]] is in an alcove near one wall.<<endif>>
+
+
+:: Goblin
+<<set $subRoomTitle="Goblin">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $character eq "Witch">>
+The [[goblin|LookAtGoblin]] looks over to regard you coldly. In a voice that's part hissing and part croaking, he says "leave me alone, you foul creature."
+<<else>>
+The [[goblin|LookAtGoblin]] regards you suspiciously. "I would watch my steps if I were you, skeleton. This castle is full of witches. The dungeonkeeper in particular is of the foulest, most mean-spirited sort. Yes, I would watch my steps indeed."
+<<endif>>
+
+[[>> Ask|GobWhat]] "What are you doing in there?"
+[[>> Say|GobTruth]] "I'm not actually a <<if $character eq "Witch">>witch<<else>>skeleton<<endif>>..."
+[[>> Ask|GobLife]] "So how do you like life in the castle?"
+[[>> Nevermind|Dungeon]]
+
+
+:: Repos
+<<set $tempTitle="Repos">><<set $roomName="Potions Repository">><<display "SetRoom">>
+<<if $newRoom>>
+You step from the catacombs into the small repository. <<if $catFollows && $blackCat eq "Cat3" && $character eq "Skeleton">>The black cat seems unwilling to follow, choosing instead to wait in the catacombs.<<endif>>
+<<else>>
+You are standing in the repository.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+The room is scarcely large enough for its two shelves and a central [[cauldron|ReposCauldron]]. An opening in the stone ceiling is probably a vent for smoke and fumes, but the [[pit|ReposPit]] below the cauldron is cold and blanketed in dust, perhaps abandoned for a very long time. A doorway to the [[north|GoNorth]] leads back into the catacombs.
+
+The [[shelves|ReposShelves]] have been picked bare, aside from a few small bottles with liquids of <<if $character eq "Witch">>[[blue|ReposStop]], [[red|ReposStop]] and [[green|ReposStop]]<<else>>[[blue|ReposBlue]], [[red|ReposRed]] and [[green|ReposGreen]]<<endif>>. <<if $blackPotion eq "Void">>The one potion that //should// be here -- the one that //must// be here after you have come so far to find it -- //isn't//. The [[black|ReposBlack]] potion is nowhere to be seen.<<endif>><<if $blackPotion eq $roomTitle>>The <<if $character eq "Witch">>[[black|ReposStop]]<<else>>[[black|ReposBlack]]<<endif>> potion has also been revealed.<<endif>>
+<<set $newRoom=false>><<set $sr14=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Cat5
+<<set $tempTitle="Cat5">><<set $roomName="South Catacombs">><<display "SetRoom">>
+<<if $newRoom>>
+<<if $prevRoomTitle eq "Crypt">>
+You leave the crypt and step back into the catacombs.
+<<else>>
+You walk south through the catacombs.
+<<endif>>
+<<else>>
+You are standing in the catacombs.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+The catacomb walls are made of red bricks and dark gray mortar. Empty shelf-like [[openings|CatOpenings]] are all around. A passage leads back to the [[north|GoNorth]]. An elaborate arched opening leads to another room [[east|GoEast]].
+
+<<if $blackCat eq "Drop">>You can hear the muted meowing of an angry cat somewhere to the north.<<endif>><<if $blackCat eq $roomTitle>><<if $character eq "Witch">><<display "CatWitch">><<else>>The black [[cat|CatCat]] is resting nearby.<<endif>><<endif>>
+
+<<set $newRoom=false>><<set $sr15=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Crypt
+<<set $tempTitle="Crypt">><<set $roomName="Crypt">><<display "SetRoom">>
+<<if $newRoom>>
+The passage opens up into a large crypt. <<if $catFollows && $blackCat eq "Cat5" && $character eq "Skeleton">>The black cat seems unwilling to follow, choosing instead to wait in the catacombs.<<endif>>
+<<else>>
+You are standing in the crypt.
+<<endif>>
+
+<<if $gameOver>><<display $gameOverPassage>><<else>>
+[[Candles|CryptCandles]] atop sconces and silver candelabras bathe the limestone [[walls|CryptWalls]] in pale gold. Pillars carved with strange [[faces|CryptFaces]] support arches that form alcoves and gateways throughout the crypt. Below every arch is a pedestal and [[coffin|CryptCoffins]], each one unique.
+
+A passage to the [[west|GoWest]] leads back to the catacombs, but you see no other exits from the crypt.
+<<set $newRoom=false>><<set $sr16=true>><<endif>><<display "UpdateStatus">>
+
+
+:: Tap10
+<<set $subRoomTitle="Tap10">><<set $statusText="Tapestry 10">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+Without a word, and more than a little ashamed of yourself for sneaking out to see the ice giants, you follow Parpozsha out of the room and down the hall.
+</span></html>
+
+<html><span class="tapestry">
+He leads you back to your bedroom, turns to leave, then turns back as though something is on his mind.
+</span></html>
+
+<html><span class="tapestry">
+Just spit it out, Parpozsha," you say, frustrated. "Tell me how disappointed you are with my inability to do what I'm told. Scold me for being so impulsive."
+</span></html>
+
+<html><span class="tapestry">
+"It isn't that," he replies. Something in his voice troubles you. Maybe it's how sincerely concerned he sounds. "As you know, this convey was spotted several days ago. Well, an advance scout arrived ahead of it. I wasn't here at the time, but I heard the whispers of the cooking staff later. They say there was talk about sending you away with the ice giants. You're to be married to their prince. I confronted them about it, but all they would tell me is that they fear the king has lost his mind. I reprimanded them for that, and then talked to your father, but still I am unable to get all the facts. Do with that as you will."
+</span></html>
+
+<html><span class="tapestry">
+Parpozsha then walks away, leaving you alone in your room with a sick feeling in your stomach.
+</span></html>
+
+<html><span class="tapestry">
+If you hastily pack your belongings and run far away, go to <a href='javascript:void(0)' onclick='state.display("Tap6")' class='tapestry'>Tapestry 6</a>.<br />
+If you choose to wait here until your father sends for you, go to <a href='javascript:void(0)' onclick='state.display("Tap7")' class='tapestry'>Tapestry 7</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap11
+<<set $subRoomTitle="Tap11">><<set $statusText="Tapestry 11">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+"Before you say anything, Parpozsha, this isn't what it looks like. I wanted to step out for some fresh air. When I passed by this room, I noticed the convoy approaching, and just stepped in for a brief look. I've been here maybe thirty seconds. No harm done. I was going to head back to my room, but I think I might remain a while longer. After all, I've never seen an ice giant before."
+</span></html>
+
+<html><span class="tapestry">
+Parpozsha dismisses your words with a wave of his hand. "Do what you will, princess. But know this. Rumor has it that your entire future rests on the events of the next few hours. It might serve you well to disobey your father, just this once, and confront these invaders on your own terms. But, as is usually the case, you're unlikely to follow my advice."
+</span></html>
+
+<html><span class="tapestry">
+You scowl. "Truth be told, Parpozsha, disregarding your advice has served me well on numerous occasions. But I'll consider it." He simply sighs, and then leaves you alone in the room.
+</span></html>
+
+<html><span class="tapestry">
+If you return to your room rather than follow his advice, go to <a href='javascript:void(0)' onclick='state.display("Tap17")' class='tapestry'>Tapestry 17</a>.<br />
+If you choose to defy your father and go meet the ice giants, go to <a href='javascript:void(0)' onclick='state.display("Tap4")' class='tapestry'>Tapestry 4</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap12
+<<set $subRoomTitle="Tap12">><<set $statusText="Tapestry 12">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+"But why, father?" you demand. "Why must I marry this stranger? How can you expect me to do this? What reason could you possibly have for agreeing to this?"
+</span></html>
+
+<html><span class="tapestry">
+The king lowers his eyes, not speaking for several seconds. "There isn't time to explain, my darling Theoloria. I can only tell you that it's necessary. Even if I could fully explain it now, and even if you understood, nothing can be done to change this. In time, you will understand. I have to believe that."
+</span></html>
+
+<html><span class="tapestry">
+You can think of nothing else to say. If you had hoped the king would change his mind, that's obviously not going to happen. With tears stinging your eyes, you return to your bedroom as requested.
+</span></html>
+
+<html><span class="tapestry">
+As you pack blouses and gowns, you look through your bedroom window at the courtyard beyond. Will this be the last time you ever see this view? Will Icemoor be as cold and inhospitable as it sounds? It just doesn't seem fair.
+</span></html>
+
+<html><span class="tapestry">
+You return to the grand hall where your father sits slumped and exhausted on his ornate throne. "They are waiting for you outside," he says.
+</span></html>
+
+<html><span class="tapestry">
+If you take this final chance to run away from this fate, go to <a href='javascript:void(0)' onclick='state.display("Tap13")' class='tapestry'>Tapestry 13</a>.<br />
+If you hug your father goodbye and leave with the ice giants, go to <a href='javascript:void(0)' onclick='state.display("Tap9")' class='tapestry'>Tapestry 9</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: DunTorches
+<<set $subRoomTitle="">><<set $statusText=$roomName>><<set $tempFlag=false>><<display "UpdateStatus">>
+<<if $character eq "Witch">>
+    <<if $torchWitch eq "Witch">><<set $tempFlag=true>><<else>><<set $torchWitch = "Witch">><<endif>>
+<<else>>
+    <<if $torchSkeleton eq "Skeleton">><<set $tempFlag=true>><<else>><<set $torchSkeleton = "Skeleton">><<endif>>
+<<endif>><<if $tempFlag>>
+You already have a torch. The rest are best left [[alone|Dungeon]].
+<<else>>
+You decide to take a torch from the wall and carry it with you. Others still line the [[dungeon|Dungeon]] walls.
+<<endif>>
+
+
+
+:: DunWater
+<<set $subRoomTitle="DunWater">><<set $statusText=$roomName>><<display "UpdateStatus">>
+You can see your own reflection in the water: <<if $character eq "Witch">>scraggly black hair; long, crooked nose; jagged yellow teeth; plenty of warts.<<else>>glowing red eyes in hollow sockets; permanent toothy grin; pale bone countenance.<<endif>><<if $character eq "Skeleton" && $blackPotion eq "Lost">><<print " ">>You can even see bits of tissue taking form around your face and bony neck, proof that the black potion is already starting to work.<<else>><<print " " >>It's not a pleasant reflection.<<endif>><<print " ">>In a moment, you look [[away|Dungeon]].
+
+
+:: DunDoors
+<<set $subRoomTitle="DunDoors">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Each door blocks a small, plain [[dungeon|Dungeon]] cell. You peek through several of the slot-like openings and see little of interest: dusty stone slabs that serve as beds; cobwebs blanketing piles of bones; ugly gray spiders; shreds of old clothing and other remnants of prior occupants.
+
+<<if $goblin eq "Lost">>
+Otherwise, every cell is empty.
+<<else>>
+Only one cell is occupied. Inside it, a small sullen [[goblin|Goblin]] sits sulking on his stone bed.<<set $goblin = "Dungeon">>
+<<endif>>
+
+
+:: DunAir
+<<set $subRoomTitle="DunAir">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $perfume eq "Lost">>
+The stink of //Ode de Witchcraft// is even worse than the musty smell of death [[here|Dungeon]].
+<<else>>
+The air [[here|Dungeon]] is musty with the stench of death.
+<<endif>>
+
+
+:: DunWalls
+<<set $subRoomTitle="DunWalls">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Water trickles down the walls of the [[dungeon|Dungeon]].
+
+
+:: DunGrowths
+<<set $subRoomTitle="DunGrowths">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Mold and other strange fungi grow on the [[walls|DunWalls]] of the [[dungeon|Dungeon]]. You inspect it briefly, but find nothing of use.
+
+
+:: DunShift
+<<set $subRoomTitle="DunShift">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Strictly speaking, the [[goblin|Goblin]] should have been in range since you entered this part of the castle. Something about him masks his presence even now, but you decide to try anyway.
+
+You shift into the goblin for only a moment. The hopelessness he feels as a prisoner is overwhelming, and it bleeds through the shift. You see his cell from the inside, but notice nothing that might help. The shift only lasts for a few seconds, though. His broken will is like a slingshot that sends you back out into the <<if $character eq "Witch">>witch<<else>>skeleton<<endif>>.
+
+It was worth the attempt, at least. You couldn't have completed your quest stuck inside a [[dungeon|Dungeon]] cell.
+
+
+:: CryptSecret
+<<set $subRoomTitle="CryptSecret">><<set $statusText=$roomName>><<display "UpdateStatus">>
+At first, it seems that your vision has blurred. Then you realize that the glyphs and runes on the [[walls|CryptWalls]] are no longer cryptic symbols. No, that's not it. The ancient writing remains just as it was, but you're able to understand its meaning.
+
+As you suspected, the runes describe the deceased witches entombed here:
+
+<html>&nbsp;&nbsp;&nbsp;</html>//Here lies Agatha Crispy. She burned at the stake.//
+<html>&nbsp;&nbsp;&nbsp;</html>//Oh, dear wicked Janarra Toadrider, you shall be missed.//
+<html>&nbsp;&nbsp;&nbsp;</html>//High Priestess Yolanda; you shall be avenged.//
+<html>&nbsp;&nbsp;&nbsp;</html>//For Griselda Blackheart, nobody mourns.//
+
+There are many others, but one in particular catches your eye:
+
+<html>&nbsp;&nbsp;&nbsp;</html>//There once was a witch named Terume,//
+<html>&nbsp;&nbsp;&nbsp;</html>//who read while in flight on her broom.//
+<html>&nbsp;&nbsp;&nbsp;</html>//Unable to see//
+<html>&nbsp;&nbsp;&nbsp;</html>//that ahead was a tree,//
+<html>&nbsp;&nbsp;&nbsp;</html>//she is now put to rest in this tomb.//
+
+<<if $bodyRevealed>>
+Perume's [[coffin|CryptHiddenCoffin]] is on a pedestal in the alcove near the limerick.
+<<else>>
+It goes on to say that Terume's most prized possession is interred with her body, but that's no longer the case. Even the body has been removed, leaving another empty [[coffin|CryptHiddenCoffin]] in the alcove.<<set $coffinFound=true>>
+<<endif>>
+
+The effects of the blue potion begin to fade, and the [[runes|CryptWalls]] again become incomprehensible markings on the [[crypt|Crypt]] walls.
+
+
+:: GobWhat
+<<set $subRoomTitle="GobWhat">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $character eq "Witch">>
+"What do you //think// I'm doing, you evil wretch. I'm biding my time and planning my escape. Believe me, after //twelve years in here// I have some pretty good plans. Now leave me be. I have nothing else to say to you."<<else>>
+"What do you //think// I'm doing? Enjoying the rustic atmosphere and fine food? I'm a prisoner of the Sisterhood. I've //been// a prisoner for //twelve long years//. What are //you// doing here?"
+<<endif>>
+
+<<if $character eq "Witch">>[[>> Say|GobTruth]] "I'm not actually a witch."<<else>>[[>> Ask|GobWhy]] "No, I mean //why// are you locked in there?"<<endif>>
+[[>> Say|Goblin]] something else.
+[[>> Nevermind|Dungeon]]
+
+
+:: GobTruth
+<<set $subRoomTitle="GobTruth">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $character eq "Witch">>
+"Oooh, does your deception know no bounds?" The goblin is clearly annoyed. "Did I believe your lies when you claimed I was to be set free? Was I foolish enough to trust //any// of your morbid, mean-spirited pranks? Your life must seem less than complete unless you are perpetually tormenting me, you wicked, evil woman."
+<<else>>
+"Lies!" he snorts. But he studies you for a moment. "Still, I do see something in you, skeleton. Is it possible that this cursed chapter in my life is nearly at an end?"
+<<endif>>
+
+[[>> Say|Goblin]] something else.
+[[>> Nevermind|Dungeon]]
+
+
+:: GobWhy
+<<set $subRoomTitle="GobWhy">><<set $statusText=$roomName>><<display "UpdateStatus">>
+"That story is long and painful for me," the goblin replies. "Suffice it to say I was once the king of all goblins. My capture and continued captivity is what protects the Sisterhood of Witches against an invasion by my goblin horde." He stops for a moment, seeming truly saddened. "Though by now, I am probably forgotten. No more a king. Barely a goblin. I cling to life as if it wasn't so, but I cannot survive much longer in this dungeon cell. Escape eludes me. I am lost."
+
+[[>> Offer|GobHelp]] to help the goblin escape.
+[[>> Say|Goblin]] something else.
+[[>> Nevermind|Dungeon]]
+
+
+:: Tap13
+<<set $subRoomTitle="Tap13">><<set $statusText="Tapestry 13">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+You shake your head with determination. "No, father. I will not marry this stranger. This is too much to ask of me. You may feel trapped or obligated in some way, but I most certainly do not."
+</span></html>
+
+<html><span class="tapestry">
+You run from the grand hall, not even bothering to bring anything but the clothes you wear. You race to the stables, leap to your white horse, and ride her south away from the castle.
+</span></html>
+
+<html><span class="tapestry">
+In under two hours, ice giant guards have all but caught up to you. You ride hard through a canyon and over small boulders and fallen debris in an attempt to lose your pursuers, but the other riders are equally adept and ride very agile horses. Within minutes, you are knocked from your horse, suffering bruises and minor sprains as you topple and roll into thick brush.
+</span></html>
+
+<html><span class="tapestry">
+You are brought back to the prince and the regent, who wait just beyond Mytrosan Castle. Prince Amasku looks far less kind after your attempted escape. He barely speaks to you on the long trip to Icemoor.
+</span></html>
+
+<html><span class="tapestry">
+The air grows colder by the day. Green hills give way to rocky snow-capped mountains. Occasional lakes and rivers become ice, and barren gray ice-covered trees line the road on the last stretch of the journey. Maybe you'll escape from this arranged marriage some day. Maybe you'll try. But maybe you'll simply be the miserable bride of an ice giant prince for the rest of your long life.
+</span></html>
+
+<html><span class="tapestryTitle">
+The End
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap14
+<<set $subRoomTitle="Tap14">><<set $statusText="Tapestry 14">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+"Bandits are known to travel this way," you state, doing your best to sound convincing. "It isn't uncommon for them to completely overrun a convoy this small. You should take the path to the west and loop back to the north a few miles ahead. We won't lose much time, and it'll be far safer."
+</span></html>
+
+<html><span class="tapestry">
+Juizodul eyes you with suspicion, but before he can express it, Amasku leans back to address the drivers in the front. "Igron. Tamigren. Slight change of plans, if you will. Head west for a bit. With luck, we won't run into any of these bandits."
+</span></html>
+
+<html><span class="tapestry">
+Almost unable to contain the burst of optimism you feel, you do your best to sit still and not look overly anxious. The ravine isn't far ahead. You have to be ready to make your move, else you'll go over the edge with the coach as well.
+</span></html>
+
+<html><span class="tapestry">
+Continue to <a href='javascript:void(0)' onclick='state.display("Tap19")' class='tapestry'>Tapestry 19</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap15
+<<set $subRoomTitle="Tap15">><<set $statusText="Tapestry 15">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+"You may know," the prince begins, "that many years ago, long before either of us were born, our kingdoms were at war. Mytrosan was an expansive kingdom that stretched farther to the north than it does today, but it's difficult to rule a kingdom so vast. What erupted was a civil war.
+</span></html>
+
+<html><span class="tapestry">
+"What you may not know is that Mytrosan wasn't nearly as beautiful as it is today. Icemoor, however, remains much the same. The mages of Icemoor looked into the future and saw their people starving and diseased. But they also saw an alternate possibility; one that assured mutual dependency and an eventual reconciliation between the two kingdoms.
+</span></html>
+
+<html><span class="tapestry">
+"The lesser mages of Mytrosan confirmed this, so a deal was made between your great great grandfather and mine. Actually, I'm uncertain as to the number of generations that have passed, but as I said, it was long ago. Mytrosan would provide food and medicine to Icemoor, and in return, our mages had the power to bring the drastic climate changes and severe weather common to Mytrosan into Icemoor, where it would have little effect.
+</span></html>
+
+<html><span class="tapestry">
+"Arranged marriages were common in both kingdoms at that time, and the last part of the agreement was to one day reunite our kingdoms by marriage. You should be honored by this, Theoloria, just as I am. The future they foresaw is ours."
+</span></html>
+
+<html><span class="tapestry">
+If you make it known that you are entirely against this, go to <a href='javascript:void(0)' onclick='state.display("Tap20")' class='tapestry'>Tapestry 20</a>.<br />
+If you remain silent for now, go to <a href='javascript:void(0)' onclick='state.display("Tap21")' class='tapestry'>Tapestry 21</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: CatOpenings
+<<set $subRoomTitle="CatOpenings">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The catacombs were built for storing the dead, but every shelf in this chamber is empty. Little more than dust and [[insects|CatInsects]] inhabit the <<print "[[room|" + $roomTitle + "]]">> now.
+
+
+
+:: CatCat
+<<set $subRoomTitle="CatCat">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $character eq "Witch">>You reach down to pet the cat. It seems to sense that you are //not// really its witch, despite how much you look and even smell like her. The cat hisses and backs away, so you pull <<print "[[back|" + $roomTitle + "]]">> your hand. Maybe it recognizes you but simply doesn't //like// you.<<else>>You reach down and pet the cat's matted black fur. It purrs happily, unbothered by your bony fingers. After a moment, you return your attention to the <<print "[[room|" + $roomTitle + "]]">>.<<endif>>
+
+
+
+:: CatInsects
+<<set $subRoomTitle="CatInsects">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The insects keep their distance as they crawl around the <<print "[[chamber|" + $roomTitle + "]]">>. You decide against disturbing them.
+
+
+:: Cat2Sign
+<<set $subRoomTitle="Cat2Sign">><<set $statusText=$roomName>><<display "UpdateStatus">>
+You step [[back|Cat2]] to get a better look. The sign reads "Beware the Eye of the Guardian" in block letters. Although witches are known to be devious tricksters, it seems like a legitimate warning.
+
+
+:: Cat3Sign
+<<set $subRoomTitle="Cat3Sign">><<set $statusText=$roomName>><<display "UpdateStatus">>
+You step [[back|Cat3]] to get a better look. The faded sign reads "Potions Repository" in a florid script. This is the room. This is it.
+
+
+:: DropCat
+<<set $subRoomTitle="DropCat">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $perfume eq "Lost">>
+You reach down to pet the large cat. It hisses briefly, but seems to catch the scent of the witch's perfume you so liberally applied. It watches you. It paces. Then it seems to relax. It can see you for what you are, but no longer seems to care. 
+
+The cat approaches you and rubs against your leg bone. Having made a new friend, you return your attention to the [[room|Drop]].<<set $catFollows=true>>
+<<else>>
+You reach down, but the cat hisses and avoids your bony fingers. It wiggles its nose and shakes its whiskers, then eyes you with a mix of confusion and contempt. It seems to loathe even being [[near|Drop]] you.
+<<endif>>
+
+
+:: DropRubble
+<<set $subRoomTitle="DropRubble">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Brick and stone is shattered and piled ceiling-high in this part of the [[catacombs|Drop]], blocking any further movement.
+
+
+:: DropHole
+<<set $subRoomTitle="DropHole">><<set $statusText=$roomName>><<display "UpdateStatus">>
+You lean over to stare down the dark hole that dominates the eastern portion of what remains of this [[chamber|Drop]]. You move your torch toward it, but it lights up only a little of the inside. The hole appears to go down forever.
+
+
+:: GobLife
+<<set $subRoomTitle="GobLife">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $character eq "Witch">>
+The goblin stares at you maliciously through the small opening. "Just leave me be, wretched creature of darkness."<<else>>
+"Better check your funny bone, skeleton," replies the goblin, "because I am not amused."
+<<endif>>
+
+<<if $character eq "Skeleton">>[[>> Say|GobTruth]] "I'm not actually a skeleton."<<print $newLine>><<endif>>[[>> Say|Goblin]] something else.
+[[>> Nevermind|Dungeon]]
+
+
+:: LookAtGoblin
+<<set $subRoomTitle="LookAtGoblin">><<set $statusText=$roomName>><<display "UpdateStatus">>
+It's difficult to see him clearly in the dark [[cell|Goblin]], but the goblin looks weak and old. His green skin is mottled in spots. His clothes seem little more than a potato sack wrapped with twine. One of his long, pointed ears is bent to an unnatural angle. If ever he was the powerful, frightening creature that goblins are known to be, that time is long gone.
+
+
+
+:: GobHelp
+<<set $subRoomTitle="GobWhy">><<set $knowsBookNumber=true>><<set $statusText=$roomName>><<display "UpdateStatus">>
+For once, the goblin seems cautiously optimistic. "Escape? Escape? Yes. Yes... there is a way. I once heard the dungeonkeeper muttering to herself, as she often does. She was chiding herself for constantly misplacing the key to these cells, so she decided to keep it within the pages of a certain book."
+
+The goblin moves slowly to the edge of his stone bed and staggers to the door. "Yes, skeleton, I remember now. She has a system. The book is called //'Potions and Potables: An Expert's Guide to Brewmaking'// and she has numbered it <<print $bookNumber>> in her collection. The book should be in her bedroom. Go now! Go! Retrieve the key and release me, skeleton!"
+
+[[>> Say|Goblin]] something else.
+[[>> Nevermind|Dungeon]]
+
+
+:: GobOpen
+<<set $subRoomTitle="GobOpen">><<set $statusText=$roomName>>
+You twist the key in the lock and the door creaks open just a little. In an instant, the aged goblin shows surprising agility, pushes the door wide, and bounds from the confines of the small cell. He grabs the key from your hand in the process. "Now the suffering shall end forever!" he announces, seeming a little crazed and disoriented.<<if $goblin eq "Dungeon">><<set $goblin="Lost">><<set $dungeonKey="Lost">><<set $score += 1>><<print $doubleLine>>//<html><span class="addScore">(+1 point for releasing the goblin from his cell.)</span></html>//<<endif>>
+
+<<if $character eq "Witch">>
+It's then that he seems to notice you're not the skeleton he pleaded with earlier. "I don't know what foul trick you're playing, hag, but the trick is on //you//. I'm free at last! I will return to my people, reclaim my throne, and have my //vengeance// upon you and your nasty sisters! Long ago, I took the key to the catacombs from you." He produces a second key, showing it to you as proof. "With this, I will escape this wretched castle!"
+<<else>>
+"You have my deepest thanks, skeleton," he says with a small bow. "Long ago, I took the key to the catacombs while the dungeonkeeper was distracted." He produces a second key and holds it up for you to see. "With this, I can escape this wretched castle, return to my people, reclaim the throne, and take my vengeance upon these foul hags."
+<<endif>>
+
+He sprints off to the east, into the dark hallway, and is [[gone|Dungeon]].<<display "UpdateStatus">>
+
+
+:: BookPage109
+<<display "UpdateStatus">>
+//A ghost, a skeleton and a witch walk into a bar. The ghost steps up to the bartender and says "I'll take a chainsaw, please."
+
+The bartender looks annoyed. He points to a sign on the bar. It reads "We do not have chainsaws. Stop asking. Either order a drink, or I'll glue your head to the bar." The ghost is disappointed, but he gets up to leave. "I'm not sure that would work, me being non-corporeal and all," he says. But a stern look from the bartender sends him on his way.
+
+The skeleton looks to the bartender and says "I'll take a chainsaw, please." The bartender looks angry, points again to the sign, and says "You're really asking for it, buddy." The skeleton too is disappointed, but stands to leave. Before he goes, he demonstrates that his skull is detachable, but he too leaves the bar.
+
+The bartender turns to the witch, clearly fuming. "Don't say it. Don't ask me for a chainsaw. Read the sign and see what will happen."
+
+The witch cackles. In her cracked voice, she says "Dearie, I'd just like to ask if you have any glue. That's all."
+
+The bartender is surprised, but his expression softens. "Well, no ma'am, I don't. I only serve drinks here."
+
+The witch seems relieved. "Wonderful," she replies. "Then I'll take a chainsaw, please."//
+
+<<display "InventoryFooter">>
+[[<< Back to The Laughing of the Shrew|LookAtBook]]
+
+
+:: BookPage47
+<<display "UpdateStatus">>
+//Who won the ghost beauty contest?
+&nbsp;&nbsp;I don't know. Who?
+No body.
+
+Knock knock.
+&nbsp;&nbsp;Who's there?
+Interrupting ghost.
+&nbsp;&nbsp;Interrupting gho
+BOO!
+
+Knock knock.
+&nbsp;&nbsp;Who's there?
+Silent ghost.
+&nbsp;&nbsp;Silent ghost who?
+
+//Nothing else on the page is legible.
+
+<<display "InventoryFooter">>
+[[<< Back to The Laughing of the Shrew|LookAtBook]]
+
+
+:: Tap16
+<<set $subRoomTitle="Tap16">><<set $statusText="Tapestry 16">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+He greets you with a nod, and then motions to the others. "I introduce to you Juizodul, Chancellor and High Regent of Icemoor, and his nephew, the young prince Amasku." He turns to the chancellor and the prince. "This is my daughter, the princess Theoloria."
+</span></html>
+
+<html><span class="tapestry">
+You bow to the guests. The prince takes your hand in his, and you feel a chill from the unexpected coolness of his skin. He bows as if to kiss your hand, but offers a surprisingly warm smile instead. "It's an honor to finally meet you, princess," he says.
+</span></html>
+
+<html><span class="tapestry">
+The king seems uneasy, but before he can change the subject, Juizodul addresses the business at hand. "Right, then." He says. "We must leave within the hour. Princess, please pack only what you need for a one week trip, and meet us at the gate when you are ready." With that, prince Amasku turns to follow Juizodul away, but not before turning to smile once more.
+</span></html>
+
+<html><span class="tapestry">
+When they are gone from the grand hall, your father turns to you with sad eyes. "I'm sorry, dear daughter. I truly am. But there is no way to avoid this. You are to return to Icemoor with Prince Amasku and marry him. I suspect you will be allowed to return and visit from time to time, but Mytrosan will no longer be your home."
+</span></html>
+
+<html><span class="tapestry">
+If you demand to know why this is happening to you, go to <a href='javascript:void(0)' onclick='state.display("Tap12")' class='tapestry'>Tapestry 12</a>.<br />
+If you decide to run and get away while you still can, go to <a href='javascript:void(0)' onclick='state.display("Tap13")' class='tapestry'>Tapestry 13</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap17
+<<set $subRoomTitle="Tap17">><<set $statusText="Tapestry 17">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+"Parpozsha, Parposzsha," you mutter to yourself. "Why my father can't see you for the scoundrel that you are, I simply cannot fathom."
+</span></html>
+
+<html><span class="tapestry">
+Rather than return immediately to your bedroom, you continue to watch events unfold outside. In short order, it becomes a tired affair of diplomatic pleasantries, with back-and-forth banter that you're unable to hear. After a time, the coach is diverted to the stables, and the two well-dressed ice giants follow your father into the castle.
+</span></html>
+
+<html><span class="tapestry">
+By then, however, you've fallen asleep on the floor of the small, unused room.
+</span></html>
+
+<html><span class="tapestry">
+You awaken, startled, when sun shines bright through the window. In a panic, you race back to your room. Your chamber maid is stressed by your absence, but explains that it hasn't resulted in any widespread panic. Your stomach grumbles since you missed the evening meal, so you eat quickly and dress in a summer gown. Your presence is requested in the throne room.
+</span></html>
+
+<html><span class="tapestry">
+In addition to the castle guards, you can see several of the gray-garbed ice giants from last night. They all stand at a distance from the king and his two blue-skinned guests.
+</span></html>
+
+<html><span class="tapestry">
+Your father smiles weakly as you approach.
+</span></html>
+
+<html><span class="tapestry">
+Continue to <a href='javascript:void(0)' onclick='state.display("Tap16")' class='tapestry'>Tapestry 16</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap18
+<<set $subRoomTitle="Tap18">><<set $statusText="Tapestry 18">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+"What is this, father?" you demand. "Do they seriously expect me to leave the kingdom and marry this... this so-called prince?"
+</span></html>
+
+<html><span class="tapestry">
+The king sighs, then addresses the regent. "Juizodul, if you please, I'd like a moment alone with my daughter. This comes as a shock to her, and I haven't had time to explain."
+</span></html>
+
+<html><span class="tapestry">
+"Of course." The regent, the prince, and their guards leave the grand hall under the ushering of your father's guards.
+</span></html>
+
+<html><span class="tapestry">
+When they are gone, your father takes a seat on the steps. He motions for you to sit down beside him. "A time will come when you not only understand the necessity of this, but the reason for it as well. Sadly, now is not that time. I can't ask you to like this, but you must accept it. Please. Return to your room. Get rest. Then return in the morning so that the prince is not delayed any more than is necessary."
+</span></html>
+
+<html><span class="tapestry">
+"How can I accept leaving the home I know and marrying this strange person?" you ask. "Perhaps he's a wonderful man. Perhaps he isn't. But shouldn't it be my choice? I don't know him, father. This is madness."
+</span></html>
+
+<html><span class="tapestry">
+"I believe him to be good," the king responds. "And in time, you may even love him. It's much to ask, I know, but there is no other way."
+</span></html>
+
+<html><span class="tapestry">
+If you rest tonight and leave with the ice giants tomorrow, go to <a href='javascript:void(0)' onclick='state.display("Tap9")' class='tapestry'>Tapestry 9</a>.<br />
+If you decide to run away and escape from this, go to <a href='javascript:void(0)' onclick='state.display("Tap13")' class='tapestry'>Tapestry 13</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: ReposBlack
+<<set $subRoomTitle="ReposBlack">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $blackPotion eq "Void">>
+You didn't come here without doing your research. Until this moment, you had no doubt whatsoever that the black potion would be waiting here, in this very [[room|Repos]]. In fact, you had expected to find a more well-stocked repository and several vials of the black potion. You need just one, but the cruel hand of fate, she denies even that of you.
+
+You look behind the [[shelves|ReposShelves]]. You search inside the [[cauldron|ReposCauldron]] and the unused fire [[pit|ReposPit]], but it isn't there. Were you tricked? No, it //must// exist. It was supposed to //be here//!
+<<else>>
+Your bones tremble in excitement as you reach out and take the potion, adding it to your [[inventory|Inventory]]. This is it. After so many difficult years, you have it at last. No longer must you exist merely as a spirit, drifting, homeless, a specter in a land where you are reviled as much as the witch and skeleton that unknowingly helped you get here.<<set $blackPotion = "Skeleton">>
+
+At last, you can [[leave|Repos]] this cursed castle.
+<<endif>>
+
+
+:: ReposBlue
+<<set $subRoomTitle="">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $bluePotion eq "Void">>
+You pick up a blue potion and add it to your [[inventory|Inventory]]. The [[repository|Repos]] looks a little more bare as a result.<<set $bluePotion = "Skeleton">>
+<<else>>
+You [[don't|Repos]] need another blue potion.
+<<endif>>
+
+
+:: ReposRed
+<<set $subRoomTitle="">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $redPotion eq "Void">>
+You pick up a red potion and add it to your [[inventory|Inventory]]. The [[repository|Repos]] looks a little more bare as a result.<<set $redPotion = "Skeleton">>
+<<else>>
+You [[don't|Repos]] need another red potion.
+<<endif>>
+
+
+:: ReposGreen
+<<set $subRoomTitle="">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $greenPotion eq "Void">>
+You pick up a green potion and add it to your [[inventory|Inventory]]. The [[repository|Repos]] looks a little more bare as a result.<<set $greenPotion = "Skeleton">>
+<<else>>
+You [[don't|Repos]] need another green potion.
+<<endif>>
+
+
+:: ReposStop
+<<set $subRoomTitle="ReposStop">><<set $statusText=$roomName>><<display "UpdateStatus">>
+You reach for the potion, but find it impossible. Suspecting a magic barrier at first, you try a second time. This is something else; something unexpected.
+
+The witch's will is too strong. Sometimes, even the possessed can resist an action that runs counter to their wishes, if it's the result of years and years of conditioning. You sense that this witch, the castle's dungeonkeeper, has been forbidden from taking potions from this room. The resistance is almost traumatic, so you lower your hand and return your attention to the [[repository|Repos]].
+
+
+:: ReposCauldron
+<<set $subRoomTitle="ReposCauldron">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The large black pot stands above a [[pit|ReposPit]] that hasn't seen fire in ages. You peer down into it, but the pot is [[empty|Repos]].
+
+
+:: ReposPit
+<<set $subRoomTitle="ReposPit">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The fire pit under the [[cauldron|ReposCauldron]] contains [[nothing|Repos]] but dust and ashes.
+
+
+:: ReposShelves
+<<set $subRoomTitle="ReposShelves">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The small [[repository|Repos]] has two wooden racks with only a few vials of liquid between them.
+
+
+:: DrinkGreen
+<<set $statusText="Inventory - Green Potion">><<display "UpdateStatus">>
+You tip the vial against your bony teeth and let a drop of the warm green liquid spill out. Within moments, your bones fade before vanishing altogether.
+
+<<if $roomTitle eq "Cat2">><<set $subRoomTitle="DrinkGreen">>
+The effect won't last long. You consider heading [[east|MeetInvis]] into the guarded room while invisible, but you could just as easily <<print "[[wait|" + $roomTitle + "]]">> for the effect to wear off.
+<<else>>
+The effect lasts for only a short while. In a few moments, you are again fully visible.
+<<endif>>
+
+<<display "InventoryFooter">>
+
+
+:: DrinkBlue
+<<set $statusText="Inventory - Blue Potion">><<display "UpdateStatus">>
+You tip the vial against your bony teeth and let a drop of the cold blue liquid spill out. You wait a moment, but you don't feel any different.
+<<if $roomTitle eq "Crypt" && $subRoomTitle eq "CryptWalls">><<display "CryptSecret">><<else>><<if $coffinFound>>
+<<print $newLine>>Nothing else happens, so
+<<else>><<print $newLine>>Then, it seems that your eyes are seeing meaning in the random patterns all around, but no. Deciding at last that this potion doesn't work,<<endif>> you return it to your inventory.
+
+<<display "InventoryFooter">>
+<<endif>>
+
+
+:: DrinkBlack
+<<set $statusText="Inventory - Black Potion">><<set $blackPotion="Lost">><<set $score += 1>><<display "UpdateStatus">>
+You tip the vial against your bony teeth and let the cool black liquid pour down. You discard the empty bottle. At once, you can feel the magic begin to work. The process may take some time, but soon, you will be human again.
+
+//<html><span class="addScore">(+1 point for drinking the black potion.)</span></html>//
+
+Now, you only need to escape this cursed castle.
+
+<<if $subRoomTitle eq "CaveSailAway">><<set $subRoomTitle = "">><<endif>><<display "InventoryFooter">>
+
+
+:: UsePerfume
+<<set $statusText="Inventory - Ode de Witchcraft">><<set $perfume="Lost">><<set $score += 1>><<display "UpdateStatus">>
+Allowing curiosity to triumph over caution, you generously splash the yellow perfume over your skull, arm bones, ribs, and leg bones. Oooh, how it stinks. You now smell like the queen of all witches.
+
+//<html><span class="addScore">(+1 point for finding and using Ode de Witchcraft.)</span></html>//
+
+You discard the empty bottle.
+
+<<display "InventoryFooter">>
+
+
+:: Load0
+<<if $tempFlag || ($roomTitle eq "")>>
+<<testgame "SG0">>
+<<if $tempText eq "Empty">>
+Error: Autosave is empty or failed to load.
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>>
+<<loadgame "SG0">><<showcompass "hide">>Your progress has been LOADED from Autosave.
+
+<<display "SystemLink">>
+<<endif>>
+<<else>>
+<<set $tempFlag=true>>
+You are about to load from Autosave.
+Any unsaved progress will be lost.
+Are you SURE?
+
+[[Yes|Load0]] | [[No|SystemMenu]]
+<<endif>><<set $statusText="Load/Save">><<display "UpdateStatus">>
+
+
+:: Load1
+<<if $tempFlag || ($roomTitle eq "")>>
+<<testgame "SG1">>
+<<if $tempText eq "Empty">>
+Error: Slot 1 is empty or failed to load.
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>>
+<<loadgame "SG1">><<showcompass "hide">>Your progress has been LOADED from Slot 1.
+
+<<display "SystemLink">>
+<<endif>>
+<<else>>
+<<set $tempFlag=true>>
+You are about to load from Slot 1.
+Any unsaved progress will be lost.
+Are you SURE?
+
+[[Yes|Load1]] | [[No|SystemMenu]]
+<<endif>><<set $statusText="Load/Save">><<display "UpdateStatus">>
+
+
+:: Load2
+<<if $tempFlag || ($roomTitle eq "")>>
+<<testgame "SG2">>
+<<if $tempText eq "Empty">>
+Error: Slot 2 is empty or failed to load.
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>>
+<<loadgame "SG2">><<showcompass "hide">>Your progress has been LOADED from Slot 2.
+
+<<display "SystemLink">>
+<<endif>>
+<<else>>
+<<set $tempFlag=true>>
+You are about to load from Slot 2.
+Any unsaved progress will be lost.
+Are you SURE?
+
+[[Yes|Load2]] | [[No|SystemMenu]]
+<<endif>><<set $statusText="Load/Save">><<display "UpdateStatus">>
+
+
+:: Load3
+<<if $tempFlag || ($roomTitle eq "")>>
+<<testgame "SG3">>
+<<if $tempText eq "Empty">>
+Error: Slot 3 is empty or failed to load.
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>>
+<<loadgame "SG3">><<showcompass "hide">>Your progress has been LOADED from Slot 3.
+
+<<display "SystemLink">>
+<<endif>>
+<<else>>
+<<set $tempFlag=true>>
+You are about to load from Slot 3.
+Any unsaved progress will be lost.
+Are you SURE?
+
+[[Yes|Load3]] | [[No|SystemMenu]]
+<<endif>><<set $statusText="Load/Save">><<display "UpdateStatus">>
+
+
+:: Tap19
+<<set $subRoomTitle="Tap19">><<set $statusText="Tapestry 19">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+With perfect timing, you jump to safety in the grass. You roll for a moment, just catching the surprised screams of the two drivers as they are unable to stop the coach. Most of the guards on horseback avoid falling into the ravine, but they're all too distracted now to realize that you're getting away.
+</span></html>
+
+<html><span class="tapestry">
+You make your way back to Castle Mytrosan, aided in part by a horse you borrow from kindly farmers along the way. Your father is overjoyed to see you, but incredibly troubled as well.
+</span></html>
+
+<html><span class="tapestry">
+In the weeks that follow, the weather over Mytrosan turns foul. Crops wither. Storms destroy entire villages. The kingdom falls into a state of turmoil and despair the likes of which had only been told in legends. Although he never says so, your father seems to expect every bit of bad luck that befalls the kingdom. And as you grow older, you begin to wonder if Icemoor would have been such a bad place after all.</span></html>
+
+<html><span class="tapestryTitle">
+The End
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap20
+<<set $subRoomTitle="Tap20">><<set $statusText="Tapestry 20">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+"If what you say is true," you begin, "that still doesn't excuse robbing me of my home and my free will. Yesterday, I was the princess of Mytrosan. What am I now?"
+</span></html>
+
+<html><span class="tapestry">
+Chancellor Juizodul looks annoyed. Prince Amasku seems disheartened, but he manages a small smile. "You are the princess of Icemoor, future queen, and savior of the realm."
+</span></html>
+
+<html><span class="tapestry">
+The caravan makes camp that evening. The next day, you say barely a word to the ice giants. The air grows colder by the day. Green hills give way to rocky snow-capped mountains. Occasional lakes and rivers become ice, and barren gray ice-covered trees line the road on the last stretch of the journey.
+</span></html>
+
+<html><span class="tapestry">
+Maybe you'll escape from this arranged marriage some day. Maybe you'll try. But maybe you'll simply be the miserable bride of an ice giant prince, become the ice giant queen, and spend the rest of your days wishing for a different life.
+</span></html>
+
+<html><span class="tapestryTitle">
+The End
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: MeetPillar
+<<set $subRoomTitle="MeetPillar">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Three stone pillars stand at each side of the stage, connecting floor to ceiling. Attached to the ridged surface of one of them is an enormous living [[eyeball|MeetEye]]. A few more pillars are near the back of the [[room|Meeting]], but distanced from the exit where you stand.
+
+
+:: MeetEye
+<<set $subRoomTitle="MeetPillar">><<set $statusText=$roomName>><<display "UpdateStatus">>
+You find it difficult to stare at the thing for more than a moment. Each time its gaze passes your way, you get the sick feeling that it's going to see you. This must be the guardian spoke of by the warning sign. It's probably a Troakelute -- dangerous, nasty creatures -- although you've never seen a real one before. The witches probably have a way of shutting it down or temporarily blinding it before their assemblies begin, but you found an alternative. Anyway, you came in through the catacombs. The witches would almost certainly use a different entrance.
+
+The invisibility effect won't last much longer, though, so you turn your attention back to the [[auditorium|Meeting]].
+
+
+:: MeetScenes
+<<set $subRoomTitle="MeetScenes">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The domed ceiling is covered in gruesome imagery. Although the paint has faded and cracked over time, it's still too vivid to [[ignore|Meeting]]. You do your best, though.
+
+
+:: MeetStage
+<<set $subRoomTitle="MeetStage">><<set $statusText=$roomName>><<display "UpdateStatus">>
+At the front of the room, [[down|EndMeetDownward]] the stone steps, is a large elevated slab of stone and marble. It serves as the stage for this large auditorium. Most recently, it appears to have been used to finalize the Sisterhood's defense and counter-attack plans against the skeletal army. You imagine for a moment this room filled with witches, all cackling and scheming and preparing for battle. You shudder, then turn [[away|Meeting]].
+
+
+:: MeetBenches
+<<set $subRoomTitle="MeetBenches">><<set $statusText=$roomName>><<display "UpdateStatus">>
+You decide to limit your inspection of the benches to just those in close range, since the invisibility potion could wear off at any time.
+
+You don't notice much. A cracked wooden [[cup|MeetCup]] has been left on the floor. Bits of [[meat|MeetMeat]] and other leftover pieces of unidentifiable "food" litter the benches. A small cardboard [[box|MeetBox]] has been crumpled and abandoned. Footprints in the [[dust|MeetDust]] are all around.
+
+You notice nothing else in this part of the [[auditorium|Meeting]], and you're sure that the invisibility effect won't last long enough to search elsewhere or more thoroughly.
+
+
+:: MeetDust
+<<set $subRoomTitle="MeetDust">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Prior to recent events, the [[auditorium|Meeting]] probably hadn't seen any activity for dozens of years. Now, the thick dust is scattered in spots, with footprints tracking through the room and wide spots cleared along the benches.
+
+
+:: MeetMeat
+<<set $subRoomTitle="MeetMeat">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The witches, in their carelessness, dropped pieces of meat and other kinds of food in the [[auditorium|Meeting]], not bothering to clean it from the floor and [[benches|MeetBenches]] afterwards. In grudging fairness, though, they probably //were// in quite a hurry to put their defense plans into action.
+
+Or maybe not. Witches aren't known for being the cleanest of creatures, and a mess like this could very well be normal.
+
+
+:: MeetCup
+<<set $subRoomTitle="MeetCup">><<set $statusText=$roomName>><<display "UpdateStatus">>
+A cracked wooden cup has been abandoned near one of the [[benches|MeetBenches]]. It is plain, empty, damaged, and of no use to you.
+
+
+:: GoUp
+<<showcompass "hide">><<set $moved=false>><<if $roomTitle eq "Ledge">><<display "Bridge">><<set $moved=true>><<endif>><<if $roomTitle eq "Dungeon">><<display "Entrance">><<set $moved=true>><<endif>><<if not $moved>><<display $roomTitle>><<endif>>
+
+
+:: GoDown
+<<showcompass "hide">><<set $moved=false>><<if $roomTitle eq "Bridge">><<display "Ledge">><<set $moved=true>><<endif>><<if $roomTitle eq "Entrance">><<display "Dungeon">><<set $moved=true>><<endif>><<if not $moved>><<display $roomTitle>><<endif>>
+
+
+:: GoNorth
+<<showcompass "hide">><<set $moved=false>><<if $roomTitle eq "Cat2">><<display "Cavern">><<set $moved=true>><<endif>><<if $roomTitle eq "Cat3">><<display "Cat1">><<set $moved=true>><<endif>><<if $roomTitle eq "Repos">><<display "Cat3">><<set $moved=true>><<endif>><<if $roomTitle eq "Cat5">><<display "Cat4">><<set $moved=true>><<endif>><<if not $moved>><<display $roomTitle>><<endif>>
+
+
+:: MeetInvis
+<<set $invisible=true>><<display "Meeting">>
+
+
+:: Save0
+<<set $statusText="Load/Save">><<set $inventory="">><<set $tempText="">><<set $autoSave=true>><<testgame "SG0">><<if $tempText eq "Empty">><<savegame "SG0">><<endif>><<showstatus>>
+Autosave is now enabled. Your progress will be saved automatically when viewing room descriptions. Any previous Autosave will be overwritten.
+
+[[<< Back to Load/Save|SystemMenu]]
+<<endif>>
+
+
+:: Save1
+<<set $statusText="Load/Save">><<showstatus>>
+<<if $prevGameOver>>
+Error: You can't save while in a Game Over state.
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>>
+<<testgame "SG1">><<if $tempFlag || ($tempText eq "Empty")>><<set $inventory="">><<set $tempText="">><<savegame "SG1">><<if not $tempFlag>>
+Error: Unable to save progress.
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>>
+Your progress has been SAVED to Slot 1.
+
+<<display "SystemLink">>
+<<endif>>
+<<else>>
+<<set $tempFlag=true>>A save already exists in Slot 1.
+Are you sure you want to OVERWRITE it?
+
+[[Yes|Save1]] | [[No|SystemMenu]]
+<<endif>>
+<<endif>>
+
+
+:: Save2
+<<set $statusText="Load/Save">><<showstatus>>
+<<if $prevGameOver>>
+Error: You can't save while in a Game Over state.
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>>
+<<testgame "SG2">><<if $tempFlag || ($tempText eq "Empty")>><<set $inventory="">><<set $tempText="">><<savegame "SG2">><<if not $tempFlag>>
+Error: Unable to save progress.
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>>
+Your progress has been SAVED to Slot 2.
+
+<<display "SystemLink">>
+<<endif>>
+<<else>>
+<<set $tempFlag=true>>A save already exists in Slot 2.
+Are you sure you want to OVERWRITE it?
+
+[[Yes|Save2]] | [[No|SystemMenu]]
+<<endif>>
+<<endif>>
+
+
+:: Save3
+<<set $statusText="Load/Save">><<showstatus>>
+<<if $prevGameOver>>
+Error: You can't save while in a Game Over state.
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>>
+<<testgame "SG3">><<if $tempFlag || ($tempText eq "Empty")>><<set $inventory="">><<set $tempText="">><<savegame "SG3">><<if not $tempFlag>>
+Error: Unable to save progress.
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>>
+Your progress has been SAVED to Slot 3.
+
+<<display "SystemLink">>
+<<endif>>
+<<else>>
+<<set $tempFlag=true>>A save already exists in Slot 3.
+Are you sure you want to OVERWRITE it?
+
+[[Yes|Save3]] | [[No|SystemMenu]]
+<<endif>>
+<<endif>>
+
+
+:: Tap21
+<<set $subRoomTitle="Tap21">><<set $statusText="Tapestry 21">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+You limit your conversation to small talk for the rest of the day. In the evening, the caravan makes camp, and then sets off once again early the next morning.
+</span></html>
+
+<html><span class="tapestry">
+On the second day, you start to enjoy the company of Prince Amasku, if only a little. He's a clever, relaxed young man, and your guard lowers on numerous occasions when you smile or laugh or add something clever of your own to the discussion. Chancellor Juizodul is even a little charming, in his own way.
+</span></html>
+
+<html><span class="tapestry">
+The air grows colder by the day. Green hills give way to rocky snow-capped mountains. Occasional lakes and rivers become ice, and barren gray ice-covered trees line the road. Despite the lightened mood, you become more withdrawn at the reality of your new life in Icemoor. It's during an extended silence that you hear a clamor from ahead and the coach comes to a violent stop.</span></html>
+
+<html><span class="tapestry">
+"Spirehounds!" somebody yells. Instantly, the regent throws open the door and hops down from the coach. "Stay here," the prince warns, and then follows his uncle. He closes the door, and you lean through the window for a better look. Half a dozen wolf-like creatures with strong jaws and red-coated spikes atop their backs have set upon the convoy. While the others push the fighting away, Amasku is cornered beside the rear of the coach. A spirehound is almost upon him, and his sword has fallen near the door of the coach, well out of his reach.
+</span></html>
+
+<html><span class="tapestry">
+If you take the sword and slay the beast to save Amasku's life, go to <a href='javascript:void(0)' onclick='state.display("Tap22")' class='tapestry'>Tapestry 22</a>.<br />
+If you leave him to his fate and use the distraction to escape, go to <a href='javascript:void(0)' onclick='state.display("Tap24")' class='tapestry'>Tapestry 24</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap22
+<<set $subRoomTitle="Tap22">><<set $statusText="Tapestry 21">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+Risking your own life in the process, you jump down from the wagon, take up the sword, race to the back of the coach, and drive the blade into the belly of the spirehound. It falls to the white ground with a whimper, its jaws still snapping.
+</span></html>
+
+<html><span class="tapestry">
+Amasku pushes it away with his foot. To your surprise, the prince pulls you into a strong hug. He's shaking a little, but so are you. His pale skin is cold, but not unpleasant when compared to the chilly air. By then, Juizodul and the few remaining guards have dispatched the other beasts and are returning to the coach.
+</span></html>
+
+<html><span class="tapestry">
+"You saved my life," Amasku finally states, "and without regard for your own. I am honored and humbled. If you want the freedom to return to your kingdom that is what you shall have. I only ask that you plead with your father to continue the supply shipments to Icemoor. One day we won't have need of them, but that day has not yet come."
+</span></html>
+
+<html><span class="tapestry">
+The chancellor is in obvious disagreement with the prince's offer, but he holds his tongue. They await your decision.
+</span></html>
+
+<html><span class="tapestry">
+If you ask that they return you to the kingdom of Mytrosan, go to <a href='javascript:void(0)' onclick='state.display("Tap23")' class='tapestry'>Tapestry 23</a>.<br />
+If you let emotion win over reason and continue to Icemoor, go to <a href='javascript:void(0)' onclick='state.display("Tap25")' class='tapestry'>Tapestry 25</a>.
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: MeetBottle
+<<set $subRoomTitle="">><<set $statusText=$roomName>><<set $perfume = $character>><<display "UpdateStatus">>
+You pick up the bottle, place it into your [[inventory|Inventory]], and return your attention to the [[auditorium|Meeting]].
+
+
+:: MeetBox
+<<set $subRoomTitle="MeetBox">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $perfume eq "Void">>
+A small half-empty [[bottle|MeetBottle]] containing a pale yellow liquid is inside the box near one of the [[benches|MeetBenches]].
+<<else>>
+Nothing else is in the box, so you [[leave|MeetBenches]] it there.
+<<endif>>
+
+
+:: CaveDock
+<<set $subRoomTitle="CaveDock">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The dock seems sturdy enough. Where the [[walkway|CaveWalkway]] ends, the dock begins. It crosses a portion of the [[cavern|Cavern]] from east to west. You walk the length of it, but notice nothing other than a pair of square [[panels|CavePanels]] set into the wooden surface, one at either end.
+
+
+:: CavePanels
+<<set $subRoomTitle="CavePanels">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Two marble panels trimmed in steel are set into the surface of the [[dock|CaveDock]] at the [[east&nbsp;end|CaveEast]] and [[west&nbsp;end|CaveWest]].
+
+
+:: CavePanelsDone
+Now that the [[boat|CaveBoat]] has been lowered, you have no further use for either of the [[panels|CavePanels]]. The boat rocks gently on the [[lake|CaveLake]] as if anxious to leave the [[cavern|Cavern]].
+
+
+:: CaveEast
+<<set $subRoomTitle="CaveEast">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $boatDown>><<display "CavePanelsDone">><<else>>
+You step onto the panel at the east end of the [[dock|CaveDock]]. It takes very little of your <<if $character eq "Skeleton">>skeletal<<endif>> weight to press it down. A loud grinding and the clinking of [[chains|CaveChains]] prompt you to look up, where the starboard side of the [[boat|CaveBoat]] has tipped over. The port side chains still hold it aloft, but the others droop down and hang below the boat in loops.
+
+<<if $blackCat eq "Cavern">>
+The black cat runs to the west end of the dock and stops on the other marble panel. Nothing happens, but when you step off, more
+<<else>>
+After a moment, you step off the panel. More
+<<endif>> grinding and the rattling of chains fills the [[cavern|Cavern]]. The boat's starboard side lifts, bringing it level -- and still completely out of reach.
+<<endif>>
+
+
+:: CaveWest
+<<set $subRoomTitle="CaveWest">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $boatDown>><<display "CavePanelsDone">><<else>>
+You step onto the panel at the west end of the [[dock|CaveDock]]. The steel frame around the marble square is heavily rusted, and it takes your entire weight just to press it down. A loud grinding and the clinking of [[chains|CaveChains]] prompt you to look up, where the port side of the [[boat|CaveBoat]] has tipped over. The starboard side chains still hold it aloft, but the others droop down and hang below the boat in loops.
+
+<<if $blackCat eq "Cavern">>
+The black cat runs to the east end of the dock and stops on the other marble panel. More grinding echoes throughout the [[cavern|Cavern]] as the starboard side chains begin to lower. In a few moments, the boat reaches the [[water|CaveLake]]. The chains detach from the sides of the boat and are then whisked back up into the [[shadows|CaveShadows]].
+
+The [[boat|CaveBoat]] is now parked at the dock.<<set $boatDown = true>>
+<<else>>
+After a moment, you step off the panel. More grinding and the rattling of chains fills the [[cavern|Cavern]]. The boat's port side lifts, bringing it level -- and still completely out of reach.
+<<endif>>
+<<endif>>
+
+
+:: CaveBoat
+<<set $subRoomTitle="CaveBoat">><<set $statusText=$roomName>><<display "UpdateStatus">>
+<<if $boatDown>>
+It's actually a little bigger than it appeared while suspended high above. The sail is down, and a small cabin dominates the forward section. A quick inspection turns up no damage. It seems ready to [[sail&nbsp;away|CaveSailAway]] from the [[cavern|Cavern]] at any time.
+<<else>>
+You can only see the bottom of the boat and part of one side, but it seems undamaged. You notice no holes in the bottom. If it was down in the [[water|CaveLake]] rather than suspended out of reach on [[chains|CaveChains]], it would probably be ideal for making your escape.
+
+With no hoping of reaching it up there, you return your attention to the [[cavern|Cavern]].
+<<endif>>
+
+
+:: GoSouth
+<<showcompass "hide">><<set $moved=false>><<if $roomTitle eq "Cat4">><<display "Cat5">><<set $moved=true>><<endif>><<if $roomTitle eq "Cat3">><<display "Repos">><<set $moved=true>><<endif>><<if $roomTitle eq "Cat1">><<display "Cat3">><<set $moved=true>><<endif>><<if $roomTitle eq "Cavern">><<display "Cat2">><<set $moved=true>><<endif>><<if not $moved>><<display $roomTitle>><<endif>>
+
+
+:: GoEast
+<<showcompass "hide">><<set $moved=false>><<if $subRoomTitle eq "DrinkGreen">><<display "MeetInvis">><<set $moved=true>><<endif>><<if $roomTitle eq "Cat2">><<display "Meeting">><<set $moved=true>><<endif>><<if $roomTitle eq "Cat1">><<display "Cat2">><<set $moved=true>><<endif>><<if $roomTitle eq "Entrance">><<display "Bedroom">><<set $moved=true>><<endif>><<if $roomTitle eq "Ledge">><<display "Entrance">><<set $moved=true>><<endif>><<if $roomTitle eq "Cat4">><<display "Drop">><<set $moved=true>><<endif>><<if $roomTitle eq "Cat3">><<display "Cat4">><<set $moved=true>><<endif>><<if $roomTitle eq "Hallway">><<display "Cat3">><<set $moved=true>><<endif>><<if $roomTitle eq "Dungeon">><<display "Hallway">><<set $moved=true>><<endif>><<if $roomTitle eq "Cat5">><<display "Crypt">><<set $moved=true>><<endif>><<if $roomTitle eq "Swamp">><<display "Bridge">><<set $moved=true>><<endif>><<if not $moved>><<display $roomTitle>><<endif>>
+
+
+:: GoWest
+<<showcompass "hide">><<set $moved=false>><<if $roomTitle eq "Entrance">><<display "Ledge">><<set $moved=true>><<endif>><<if $roomTitle eq "Bedroom">><<display "Entrance">><<set $moved=true>><<endif>><<if $roomTitle eq "Cat2">><<display "Cat1">><<set $moved=true>><<endif>><<if $roomTitle eq "Meeting">><<display "Cat2">><<set $moved=true>><<endif>><<if $roomTitle eq "Hallway">><<display "Dungeon">><<set $moved=true>><<endif>><<if $roomTitle eq "Cat3">><<display "Hallway">><<set $moved=true>><<endif>><<if $roomTitle eq "Cat4">><<display "Cat3">><<set $moved=true>><<endif>><<if $roomTitle eq "Drop">><<display "Cat4">><<set $moved=true>><<endif>><<if $roomTitle eq "Crypt">><<display "Cat5">><<set $moved=true>><<endif>><<if not $moved>><<display $roomTitle>><<endif>>
+
+
+:: Look
+<<showcompass "hide">><<display $roomTitle>>
+
+
+:: Delete0
+<<set $statusText="Load/Save">><<showstatus>>
+<<if $tempFlag>>
+<<if $tempText neq "Empty">><<deletegame "SG0">><<endif>><<set $autoSave=false>>Autosave is now disabled.
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>><<set $tempFlag=true>>Are you SURE you want to turn off Autosave? Any prior Autosave will be deleted.
+
+[[Yes|Delete0]] | [[No|SystemMenu]]
+<<endif>>
+
+
+:: Delete1
+<<set $statusText="Load/Save">><<testgame "SG1">><<showstatus>>
+<<if $tempFlag>><<if $tempText eq "Empty">>
+Error: Slot 1 is already empty.
+<<else>>
+<<deletegame "SG1">>Your progress has been DELETED in Slot 1.
+<<endif>>
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>><<set $tempFlag=true>>Are you sure you want to DELETE the game in Slot 1?
+
+[[Yes|Delete1]] | [[No|SystemMenu]]
+<<endif>>
+
+
+:: Delete2
+<<set $statusText="Load/Save">><<testgame "SG2">><<showstatus>>
+<<if $tempFlag>><<if $tempText eq "Empty">>
+Error: Slot 2 is already empty.
+<<else>>
+<<deletegame "SG2">>Your progress has been DELETED in Slot 2.
+<<endif>>
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>><<set $tempFlag=true>>Are you sure you want to DELETE the game in Slot 2?
+
+[[Yes|Delete2]] | [[No|SystemMenu]]
+<<endif>>
+
+
+:: Delete3
+<<set $statusText="Load/Save">><<testgame "SG3">><<showstatus>>
+<<if $tempFlag>><<if $tempText eq "Empty">>
+Error: Slot 3 is already empty.
+<<else>>
+<<deletegame "SG3">>Your progress has been DELETED in Slot 3.
+<<endif>>
+
+[[<< Back to Load/Save|SystemMenu]]
+<<else>><<set $tempFlag=true>>Are you sure you want to DELETE the game in Slot 3?
+
+[[Yes|Delete3]] | [[No|SystemMenu]]
+<<endif>>
+
+
+:: Tap23
+<<set $subRoomTitle="Tap24">><<set $statusText="Tapestry 24">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+"Mytrosan is my home," you reply finally. "I've come to think of you in a different way, Amasku, but respect isn't the same as love. If what you said before is true, I appreciate the effort of your mages to protect my kingdom from the harsh weather of the past. Perhaps your mages could teach this to ours, although magic is slowly fading from Mytrosan."
+</span></html>
+
+<html><span class="tapestry">
+The prince smiles. "I understand, princess. My guards will take you back. And to be candid, the weather relocation spell is not difficult to maintain, and in fact, has additional benefits to Icemoor as well. You needn't worry about that."
+</span></html>
+
+<html><span class="tapestry">
+True to his word, Amasku sends you away with a horse and an escort of three ice giant guards. Under protest from his uncle the regent, they climb into their coach and finish the last leg of the journey back to Icemoor without you.
+</span></html>
+
+<html><span class="tapestry">
+The king and all the people of Mytrosan are overjoyed upon your return. A week of celebration commences. There are feasts, dances that last all night, singing, gifts, and a general renewal of happiness throughout the kingdom.
+</span></html>
+
+<html><span class="tapestry">
+You sometimes think back on the life that almost was, wondering about a future that was foretold but never came to pass. Whatever it might have been, it wasn't the life you chose for yourself. You are Princess Theoloria of Mytrosan, and your people adore you.
+</span></html>
+
+<html><span class="tapestryTitle">
+The End
+</span></html>
+
+[[<< Cancel|Hallway]]
+
+
+:: Tap24
+<<set $subRoomTitle="Tap24">><<set $statusText="Tapestry 24">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+This could be your only chance, and you take it. You are far from home, and you don't know this part of the world, but if you don't escape now, you may never.
+</span></html>
+
+<html><span class="tapestry">
+You leap from the coach, quickly unharness one of the horses, and ride off in the opposite direction. You glance back several times, unable to see what has happened but confident that you aren't being followed.
+</span></html>
+
+<html><span class="tapestry">
+You make camp in a frozen forest, but without fire, you come close to death. You're found by an ice giant woodsman who brings you home where his wife tends to you for a few days before giving you two silvers and clean clothes. You set off again, but find it difficult to learn the path back to Mytrosan. Most people have never heard of your kingdom, or if they have, they don't know the way.
+</span></html>
+
+<html><span class="tapestry">
+You travel south by day, often on foot. Nobody believes you're a princess, and the two silvers don't last long. After weeks of this, you are exhausted. Mytrosan becomes just a dream of a life you used to have.
+</span></html>
+
+<html><span class="tapestry">
+At last, you make your home in a small coastal village where the people are kind but simple. It's a difficult life at first, but you adapt. You find love, marry, and grow old there, without ever learning the fate of Mytrosan or Icemoor.
+</span></html>
+
+<html><span class="tapestryTitle">
+The End
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: Tap25
+<<set $subRoomTitle="Tap25">><<set $statusText="Tapestry 25">><<showstatus>><<showcompass "hide">><<if $autoSave>><<savegame "SG0">><<endif>>
+<html><span class="tapestry">
+"Mytrosan is my home," you reply finally, "but I see kindness and sincerity in you, Amasku. I like you, and some day, maybe respect will become love. I will go to Icemoor with you, and from there, we shall see."
+</span></html>
+
+<html><span class="tapestry">
+The prince smiles widely. He takes your hands in his, and you find that the coldness doesn't bother you. You smile as well.
+</span></html>
+
+<html><span class="tapestry">
+The regent forces a cough. "Ahem. Yes. So that's settled. Right, then. Let us be on our way."
+</span></html>
+
+<html><span class="tapestry">
+You find striking beauty in the lands of Icemoor. It snows here always, and ice-covered trees shine by night. You marry Amasku in a grand ceremony that becomes a week of celebration. Castle Icemoor is every bit as spectacular as Castle Mytrosan, and you find the people here equally kind. Even though you must look strange to them, they treat you with respect and, one day many years later, they accept you as their queen.
+</span></html>
+
+<html><span class="tapestry">
+Open trade begins with Mytrosan, and both kingdoms enter a new generation of prosperity. It is upon return from one of your many visits back to Mytrosan that you finally ask King Amasku a question that has been nagging at you for many years. "Why, dear husband, are the people of Icemoor called 'ice giants?'"
+</span></html>
+
+<html><span class="tapestry">
+At first, he just offers you the smile that you love so much. At last, he gives a simple non-answer. "That, my dear, is a story for another day."
+</span></html>
+
+<html><span class="tapestryTitle">
+The End
+</span></html>
+
+[[&laquo; Cancel|Hallway]]
+
+
+:: CaveOpening
+<<set $subRoomTitle="CaveOpening">><<set $statusText=$roomName>><<display "UpdateStatus">>
+At the far side of the [[cavern|Cavern]], a mouth leads out into the night. Between here and there is a [[moonlit|CaveMoon]] [[lake|CaveLake]].
+
+
+:: CaveLake
+<<set $subRoomTitle="CaveLake">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The lake leads outside and beyond the castle; a perfect escape route <<if $character eq "Witch">>for your skeleton once you finish [[here|Cavern]].<<else>><<if $blackPotion eq $character || $blackPotion eq "Lost">>now that you have<<else>>after you get<<endif>> what you came [[here|Cavern]] for. Skeletons, however, cannot swim.<<endif>>
+
+
+:: CaveMoon
+<<set $subRoomTitle="CaveMoon">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Tonight it's a crescent moon. Lucky, that, since this part of the land is also rife with [[werewolves|CaveWolves]]. Moonlight seeps into the [[cavern|Cavern]] from the jagged [[mouth|CaveOpening]] at the far side.
+
+
+:: CaveWolves
+<<set $subRoomTitle="CaveWolves">><<set $statusText=$roomName>><<display "UpdateStatus">>
+It wasn't anywhere [[near|Cavern]] Hallowmoor, but you once had a run-in with a particularly nasty werewolf. It was long ago, when you were still human rather than the formless spirit you have become.
+
+By day, the werewolf was a wanted bandit, robbing from rich and poor alike. You were one among several guards in the service of a lesser queen hired to protect her caravan along a perilous trade route. With your comrades, you cornered the bandit in a dead-end valley, facing a standoff that lasted for several hours. That was indeed unfortunate, as it happened to be the night of a full moon. Until the moment he began to change, none of you suspected his true nature.
+
+Incidentally, that is how you died.
+
+
+:: CaveWalkway
+<<set $subRoomTitle="CaveWalkway">><<set $statusText=$roomName>><<display "UpdateStatus">>
+A suspended walkway stretches from the exit [[south|GoSouth]] to a [[dock|CaveDock]] at the edge of the [[lake|CaveLake]]. It sways under your footsteps. The rotted wooden planks creak and move with every step, filling the [[cavern|Cavern]] with echoes.
+
+
+:: CaveChains
+<<set $subRoomTitle="CaveChains">><<set $statusText=$roomName>><<display "UpdateStatus">>
+Heavy chains extend up into the [[shadows|CaveShadows]], holding the small [[boat|CaveBoat]] aloft. Remnants of a wooden scaffold suggest that this arrangement was used for loading and unloading the boat through some kind of bay up in the castle itself. Perhaps the chains even work on some kind of rail that moves the boat over, but all of that has long since collapsed, now [[leaving|Cavern]] it entirely out of reach. 
+
+
+:: CaveShadows
+<<set $subRoomTitle="CaveShadows">><<set $statusText=$roomName>><<display "UpdateStatus">>
+The upper part of the [[cavern|Cavern]] is masked in shadows.
+
+
+:: CaveSailAway
+<<set $subRoomTitle="CaveSailAway">><<set $statusText=$roomName>>
+<<if $character eq "Witch">>
+You have no reason to [[leave|Cavern]] Castle Hallowmoor inhabiting a witch. You came here to become human again, and for that, you need your skeleton.
+<<else>><<if $blackPotion eq "Void" || $blackPotion eq "Repos">>
+You don't yet have the potion. It's your only reason for being here, and without it, you can't bring yourself to [[leave|Cavern]] the castle.
+<<else>><<if $blackPotion neq "Lost">>
+You can't bring yourself to [[leave|Cavern]] the castle without first drinking the black potion you hold in your [[inventory|Inventory]]. You must be absolutely sure it's the right one. You must be sure it works.
+<<else>>
+At long last, you've done it.<<set $score += 1>><<set $finalMoves = $moves>>
+
+//<html><span class="addScore">(+1 point for boarding the boat and sailing away from the castle.)</span></html>//
+<<display "WinGame">>
+<<endif>><<endif>><<endif>><<display "UpdateStatus">>
+
+

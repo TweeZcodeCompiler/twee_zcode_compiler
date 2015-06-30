@@ -1,0 +1,2647 @@
+﻿:: js [script]
+(function(){
+version.extensions['timedreplaceMacro'] = {
+  major: 2,
+  minor: 1,
+  revision: 0
+};
+macros['timedinsert'] = macros['timedreplace'] = {
+  handler: function (g, e, f, b) {
+    function tagcontents(starttag, endtag, k) {
+      var a = b.source.slice(k);
+      var l = 0;
+      var c = "";
+      for (var i = 0; i < a.length; i++) {
+        var w = endtag.length;
+        if (a.substr(i, w) == endtag) {
+          if (l == 0) {
+            b.nextMatch = k + i + w;
+            return c;
+          } else {
+            l--;
+            c += a.charAt(i);
+          }
+        } else {
+          if (a.substr(i, starttag.length) == starttag) {
+            l++;
+          }
+          c += a.charAt(i);
+        }
+      }
+      return "";
+    }
+    var tr = "<<"+e;
+    var rw = "<<replacewith>>";
+	var etr = "<<end" + e + ">>";
+    var k = b.source.indexOf('>>', b.matchStart) + 2;
+	var c, d;
+	if (e=="timedreplace") {
+      c = tagcontents(tr, rw, k);
+      d = tagcontents((c ? rw : tr), etr, c ? b.nextMatch : k);
+	} else if (e=="timedinsert") {
+	  d = tagcontents(tr, etr, k);
+	} else if (e=="timedremove") {
+	  c = tagcontents(tr, etr, k);
+	}
+	var tm; tm = (parseInt(f[0]) || 0) * 500;
+    var h;
+    if (c) {
+      h = insertElement(g, "span", null, "timedreplacement timedreplacement1");
+      new Wikifier(h, c);
+	  if (d || e=="timedremove") {
+	    setTimeout(function () {
+          h.classList.add("replacement-out");
+          setTimeout(function () {
+            h.parentNode.removeChild(h);
+          }, 1000);
+		}, tm);
+	  }
+    }
+    if (d) {
+      var m = insertElement(g, "span", null, "timedreplacement timedreplacement2", d);
+      m.style.display = "none";
+      setTimeout(function () {
+        if (m) {
+          var t = m.firstChild ? m.firstChild.nodeValue : "";
+          removeChildren(m);
+          new Wikifier(m, t);
+          m.style.display = "inline";
+          m.classList.add("replacement-in");
+          setTimeout(function () {
+            m.classList.remove("replacement-in");
+          }, 1);
+		  scrollWindowTo(m);
+        }
+      }, tm);
+    } else if (!c && e!="timedremove") {
+      throwError(g, "can't find matching end"+e);
+      return;
+    }
+  }
+}
+macros['timedremove'] = macros['timedreplace'];
+macros['replacewith'] = macros['endtimedinsert'] = macros['endtimedremove'] = macros['endtimedreplace'] = {
+  handler: function () {}
+}
+scrollWindowTo = function(E) {
+    var D = window.scrollY ? window.scrollY : document.body.scrollTop;
+    var G = J(E);
+	if (!G) return;
+    var C = Math.abs(D - G);
+    var B = 0;
+    var I = (D > G) ? -1 : 1;
+    var F = window.setInterval(H, 25);
+    function H() {
+        B += 0.1;
+        window.scrollTo(0, D + I * (C * Math.easeInOut(B)));
+        if(B >= 1) {
+            window.clearInterval(F)
+        }
+    }
+    function J(N) {
+        var O = A(N);
+        var P = O + N.offsetHeight;
+        var K = window.scrollY ? window.scrollY : document.body.scrollTop;
+        var L = window.innerHeight ? window.innerHeight : document.body.clientHeight;
+        var M = K + L;
+        if(O >= K) {
+            if(P > M) {
+                if(N.offsetHeight < L) {
+                    return (O - (L - N.offsetHeight) + 20)
+                }
+                else {
+                    return O;
+                }
+            }
+        }
+    }
+    function A(K) {
+        var L = 0;
+        while(K.offsetParent) {
+            L += K.offsetTop;
+            K = K.offsetParent;
+        }
+        return L
+    }
+}
+}());
+
+version.extensions["cyclinglinkMacro"]={major:3,minor:1,revision:1};macros.cyclinglink={handler:function(a,b,c){var l=Wikifier.createInternalLink(a,null);
+l.className="internalLink cyclingLink";l.setAttribute("data-cycle",0);var v="";var end=false;
+if(c.length&&c[0][0]=="$"){v=c[0].slice(1);c.shift();}if(c[c.length-1]=="end"){end=true;
+c.pop();}var h=state.history[0].variables;for(var i=0;i<c.length;i++){var on=(i==Math.max(c.indexOf(h[v]),0));
+var d=insertElement(null,"span",null,"cyclingLink"+((on)?"En":"Dis")+"abled");if(on){h[v]=c[ i ];
+l.setAttribute("data-cycle",i);}insertText(d,c[ i ]);l.appendChild(d);}l.onclick=function(){var t=this.childNodes;
+var d="cyclingLink";var u=this.getAttribute("data-cycle")-0;var m=t.length;if(end&&u==m-2){var n=this.removeChild(t[u+1]);
+n.className=d+"End";this.parentNode.replaceChild(n,this);return;}t[u].classList.toggle(d+"Enabled");
+t[u].classList.toggle(d+"Disabled");u=(u+1)%m;if(v){h[v]=c[u];}t[u].classList.toggle(d+"Enabled");
+t[u].classList.toggle(d+"Disabled");this.setAttribute("data-cycle",u);};},init:function(){addStyle(".cyclingLinkDisabled { display:none; } ");
+}};macros.cyclinglink.init();
+
+(function () {
+    version.extensions['timedloopMacro'] = {
+        major: 1,
+        minor: 0,
+        revision: 1
+    };
+    macros['timedloop'] = {
+        handler: function (g, e, f, b) {
+            function tagcontents(starttag, endtag, k) {
+                var a = b.source.slice(k);
+                var l = 0;
+                var c = "";
+                for (var i = 0; i < a.length; i++) {
+                    var w = endtag.length;
+                    if (a.substr(i, w) == endtag) {
+                        if (l == 0) {
+                            b.nextMatch = k + i + w;
+                            return c;
+                        } else {
+                            l--;
+                            c += a.charAt(i);
+                        }
+                    } else {
+                        if (a.substr(i, starttag.length) == starttag) {
+                            l++;
+                        }
+                        c += a.charAt(i);
+                    }
+                }
+                return "";
+            }
+            var tl = "<<" + e;
+            var etl = "<<end" + e + ">>";
+            var k = b.source.indexOf('>>', b.matchStart) + 2;
+            var d = tagcontents(tl, etl, k);
+            var tm;
+            tm = (parseInt(f[0]) || 0) * 500;
+            var h;
+            if (d) {
+                var m = insertElement(g, "span", null, "timedloop", null);
+                new Wikifier(m, d);
+                setTimeout(function to() {
+                    if (m && elexists(m)) {
+                        var oldm = m;
+                        oldm.classList.add("replacement-out");
+                        setTimeout(function () {
+                            if (oldm) oldm.parentNode.removeChild(oldm);
+                        }, Math.min(tm, 1000));
+                        m = insertElement(null, "span", null, "timedloop replacement-in", null);
+                        new Wikifier(m, d);
+                        setTimeout(function () {
+                            if (m) m.classList.remove("replacement-in");
+                        }, 1);
+                        oldm.parentNode.insertBefore(m, oldm.nextSibling);
+                        scrollWindowTo(m);
+                        setTimeout(to, tm);
+                    }
+                }, tm);
+            } else {
+                throwError(g, "can't find matching end" + e);
+                return;
+            }
+        }
+    }
+    elexists = function(e) {
+        while(e=e.parentNode) {
+            if (e===document) return true;
+        }
+    }
+    macros['endtimedloop'] = {
+        handler: function () {}
+    }
+    scrollWindowTo = function (E) {
+        var D = window.scrollY ? window.scrollY : document.body.scrollTop;
+        var G = J(E);
+        if (!G) return;
+        var C = Math.abs(D - G);
+        var B = 0;
+        var I = (D > G) ? -1 : 1;
+        var F = window.setInterval(H, 25);
+
+        function H() {
+            B += 0.1;
+            window.scrollTo(0, D + I * (C * Math.easeInOut(B)));
+            if (B >= 1) {
+                window.clearInterval(F)
+            }
+        }
+
+        function J(N) {
+            var O = A(N);
+            var P = O + N.offsetHeight;
+            var K = window.scrollY ? window.scrollY : document.body.scrollTop;
+            var L = window.innerHeight ? window.innerHeight : document.body.clientHeight;
+            var M = K + L;
+            if (O >= K) {
+                if (P > M) {
+                    if (N.offsetHeight < L) {
+                        return (O - (L - N.offsetHeight) + 20)
+                    } else {
+                        return O;
+                    }
+                }
+            }
+        }
+
+        function A(K) {
+            var L = 0;
+            while (K.offsetParent) {
+                L += K.offsetTop;
+                K = K.offsetParent;
+            }
+            return L
+        }
+    }
+}());
+
+(function () {
+    version.extensions['replaceMacro'] = {
+        major: 1,
+        minor: 2,
+        revision: 1
+    };
+    macros['insert'] = macros['replace'] = {
+        handler: function (g, e, f, b) {
+            var h = insertElement(null, "span", null, "replacement");
+            var k = b.source.indexOf('>>', b.matchStart) + 2;
+            var a = b.source.slice(k);
+            var d = -1;
+            var c = '';
+            var l = 0;
+            var el = e.length
+            for(var i = 0; i < a.length; i++) {
+                if(a.substr(i, 7 + el) == '<<end' + e + '>>') {
+                    if(l == 0) {
+                        d = k + i + 7 + el;
+                        break;
+                    }
+                    else {
+                        l--;
+                        c += a.charAt(i);
+                    }
+                }
+                else {
+                    if(a.substr(i, 2 + el) == '<<' + e) {
+                        l++;
+                    }
+                    c += a.charAt(i);
+                }
+            }
+            if(d != -1) {
+                var m = Wikifier.createInternalLink(g, null);
+                m.className = "internalLink replaceLink";
+                insertText(m, f[0]);
+                insertText(h, c);
+                g.appendChild(h);
+                h.style.display = "none";
+                m.onclick = function () {
+                    var n = this.nextSibling;
+                    if(n) {
+                        var t = n.firstChild ? n.firstChild.nodeValue : "";
+                        removeChildren(n);
+                        new Wikifier(n, t);
+                        n.style.display = "inline";
+                        n.classList.add("replacement-in");
+                        setTimeout(function () {
+                            n.classList.remove("replacement-in");
+                        }, 1);
+                        scrollWindowTo(n);
+                    }
+                    if(e == "insert") {
+                        var p = document.createElement("span");
+                        p.innerHTML = this.innerHTML;
+                        p.className = this.className + " disabled";
+                        this.parentNode.insertBefore(p, this.nextSibling);
+                    }
+                    this.parentNode.removeChild(this);
+                }
+                b.nextMatch = d;
+            }
+            else {
+                throwError(g, "can't find matching end" + e);
+                return;
+            }
+        }
+    }
+    macros['endinsert'] = macros['endreplace'] = {
+        handler: function () {}
+    }
+    scrollWindowTo = function (E) {
+        var D = window.scrollY ? window.scrollY : document.body.scrollTop;
+        var G = J(E);
+        if(!G) return;
+        var C = Math.abs(D - G);
+        var B = 0;
+        var I = (D > G) ? -1 : 1;
+        var F = window.setInterval(H, 25);
+
+        function H() {
+            B += 0.1;
+            window.scrollTo(0, D + I * (C * Math.easeInOut(B)));
+            if(B >= 1) {
+                window.clearInterval(F)
+            }
+        }
+
+        function J(N) {
+            var O = A(N);
+            var P = O + N.offsetHeight;
+            var K = window.scrollY ? window.scrollY : document.body.scrollTop;
+            var L = window.innerHeight ? window.innerHeight : document.body.clientHeight;
+            var M = K + L;
+            if(O >= K) {
+                if(P > M) {
+                    if(N.offsetHeight < L) {
+                        return(O - (L - N.offsetHeight) + 20)
+                    }
+                    else {
+                        return O;
+                    }
+                }
+            }
+        }
+
+        function A(K) {
+            var L = 0;
+            while(K.offsetParent) {
+                L += K.offsetTop;
+                K = K.offsetParent;
+            }
+            return L
+        }
+    }
+}());
+
+(function () {
+  version.extensions['revisionMacros'] = {
+    major: 1,
+    minor: 0,
+    revision: 0
+  };
+  macros['cycle'] = macros['insertion'] = macros['removal'] = macros['revision'] = macros['span'] = {
+    handler: function (g, e, f, b) {
+      function tagcontents(starttags, desttags, endtags, k) {
+        function tagfound(i, e) {
+          for(var j = 0; j < e.length; j++) {
+            if(a.indexOf(e[j],i) == i) {
+              return e[j];
+            }
+          }
+        }
+        var a = b.source.slice(k);
+		var l = 0;
+        var c = "";
+		var tg;
+        for(var i = 0; i < a.length; i++) {
+		  if(tg = tagfound(i,starttags)) {
+            l++;
+          }
+		  else if ((tg = tagfound(i,desttags)) && l==0) {
+            b.nextMatch = k + i + tg.length;
+            return [c, tg];
+		  }
+          else if (tg = tagfound(i, endtags)) {
+            l--;
+            if(l < 0) {
+              return null;
+            }
+          }
+          c += a.charAt(i);
+        }
+		return null;
+      }
+      var begintags = ["<<revision","<<cycle","<<insertion","<<removal","<<span"];
+      var becomes = ["<<becomes>>", "<<gains>>"];
+      var endtags = ["<<endrevision>>","<<endcycle>>","<<endinsertion>>","<<endremoval>>","<<endspan>>"];
+      var name = f[0].replace(" ", "_");
+      var k = b.source.indexOf('>>', b.matchStart) + 2;
+      var c, vsns, vsn, i, cn, vtype;
+      vsns = [];
+      c = tagcontents(begintags, becomes.concat(endtags), endtags, k);
+      if(c && endtags.indexOf(c[1])==-1) {
+        while(c) {
+          vsns.push(c);
+          c = tagcontents(begintags, becomes, endtags, b.nextMatch);
+        }
+        c = tagcontents(begintags, ["<<end"+e+">>"], endtags, b.nextMatch);
+      }
+      if(!c) {
+        throwError(g, "can't find matching end" + e);
+        return;
+      }
+      vsns.push(c);
+      i = 0;
+      cn = 0;
+      m = insertElement(g, "span", null, e + " " + name);
+      if(vsns.length > 0) {
+        h = insertElement(m, "span", null, "revision-span initial");
+      }
+      else {
+        h = m;
+      }
+      if(e == "insertion") {
+        h.style.display = "none";
+      }
+      h.setAttribute("data-enabled", (e != "insertion") + "");
+      vsn = vsns.shift();
+	  h.tweecode = vsn[0];
+      while(vsns.length > 0) {
+        i += 1;
+        vtype = vsn[1].slice(2, -2);
+        vsn = vsns.shift();
+        h = insertElement(m, "span", null, "revision-span " + vtype);
+		h.tweecode = vsn[0];
+        h.setAttribute("data-enabled", "false");
+        h.style.display = "none";
+      }
+	  h=m.firstChild;
+	  new Wikifier(h, h.tweecode);
+    }
+  }
+  macros['becomes'] = macros['gains'] = macros['endrevision'] = macros['endinsertion'] = macros['endremoval'] = macros['endcycle'] = {
+    handler: function () {}
+  }
+  macros['revert'] = macros['revise'] = {
+    handler: function (a, b, c) {
+      var l, rev, rname, de;
+      de = "data-enabled";
+	  function disableLink(l) {
+        l.style.display = "none";
+      }
+      function enableLink(l) {
+        l.style.display = "inline";
+      }
+      function updateLink(l) {
+        var rall = document.getElementsByClassName(rname);
+        var cannext, canprev;
+        for(var i = 0; i < rall.length; i++) {
+          var r = rall[i];
+          if(r.classList.contains("cycle")) {
+            cannext = canprev = true;
+          }
+          else {
+            var rc = r.childNodes;
+			var rcl = rc.length;
+            var ins = r.classList.contains("insertion");
+            var rmv = r.classList.contains("removal");
+            var ind = -1;
+            for(var k = 0; k < rc.length; k++) {
+              if(rc[k].getAttribute(de) == "true") {
+                ind = k;
+              }
+            }
+            if(ind == -1 && (ins || rmv)) {
+              (ins ? cannext = true : canprev = true);
+            }
+            if(ind > (ins ? -1 : 0)) {
+              canprev = true;
+            }
+            if(ind>-1 && ind < (rmv ? rcl : rcl - 1)) {
+              cannext = true;
+            }
+          }
+        }
+        var can = (l.classList.contains("revert") ? canprev : cannext);
+        (can ? enableLink : disableLink)(l);
+      }
+      function reviseOnClick() {
+        var rall, r, rc, rcl, ind, curr, next, ins, rmv, cyc;
+		var rsp = "revision-span";
+        function showVer(n) {
+		  n.innerHTML = "";
+		  new Wikifier(n,n.tweecode);
+          n.setAttribute(de, "true");
+          n.style.display = "inline";
+		  n.classList.remove(rsp+"-out");
+          n.classList.add(rsp+"-in");
+          if (n.timeout) clearTimeout(n.timeout);
+		  n.timeout = setTimeout(function () {
+            n.classList.remove(rsp+"-in");
+          }, 1);
+        }
+
+        function hideVer(n) {
+          n.setAttribute(de, "false");
+		  n.classList.remove(rsp+"-in");
+          n.classList.add(rsp+"-out");
+          if (n.timeout) clearTimeout(n.timeout);
+		  n.timeout = setTimeout(function () {
+		  	if(n.getAttribute(de) == "false") {
+			  n.classList.remove(rsp+"-out");
+              n.style.display = "none";
+			  n.innerHTML = "";
+			}
+          }, 1000);
+        }
+
+        function doToGainerSpans(n, fn) {
+          for(var k = n - 1; k >= 0; k--) {
+            if(rc[k + 1].classList.contains("gains")) {
+              fn(rc[k]);
+            }
+            else break;
+          }
+        }
+        rall = document.getElementsByClassName(rname);
+        for(var i = 0; i < rall.length; i++) {
+          r = rall[i];
+          rc = r.childNodes;
+          ins = r.classList.contains("insertion");
+          rmv = r.classList.contains("removal");
+          cyc = r.classList.contains("cycle");
+          rcl = rc.length - 1;
+          ind = -1;
+          for(var k = 0; k <= rcl; k++) {
+            if(rc[k].getAttribute(de) == "true") {
+              ind = k;
+            }
+          }
+          if(ind == -1) {
+            if(ins) {
+              ind = -1;
+              curr = null;
+            }
+            else if(rmv) {
+              ind = rcl + 1;
+              curr = null;
+            }
+          }
+          else {
+            if(rev) {
+              ind -= 1;
+            }
+            curr = (ind >= 0 ? rc[ind] : (cyc ? rc[rcl] : null));
+          }
+          next = (ind < rcl ? rc[ind + 1] : (cyc ? rc[0] : null));
+          var docurr = (rev ? showVer : hideVer);
+          var donext = (rev ? hideVer : showVer);
+          if(curr) {
+            if(!(next && next.classList.contains("gains"))) {
+              docurr(curr);
+              doToGainerSpans(ind, docurr);
+            }
+          }
+          if(next) {
+            donext(next);
+          }
+          ind += (rev ? -1 : 1);
+        }
+        var lall = document.getElementsByClassName("reviseLink_" + rname);
+        for(i = 0; i < lall.length; i++) {
+          updateLink(lall[i]);
+        }
+      }
+      rname = c[0].replace(" ", "_");
+      rev = (b == "revert");
+      if(c.length < 2) {
+        throwError(a, b + ' macro needs 2 parameters');
+        return;
+      }
+      l = Wikifier.createInternalLink(a, null);
+      l.className = "internalLink reviseLink reviseLink_" + rname + " " + b;
+      insertText(l, c[1]);
+      l.onclick = reviseOnClick;
+      disableLink(l);
+	  setTimeout(function(){
+	    updateLink(l);
+	  },1);
+    }
+  }
+}());
+
+function screenShake(time) {
+  console.log(document);
+  var el = document.getElementsByClassName('content');
+  baz = el;
+  console.log(baz[0]);
+  el[0].className = el[0].className + ' shake';
+  if (time > 0) {
+    setTimeout(function () {
+      el[0].className = 'content';
+    }, time);
+  }
+};
+
+// the screenShake macro. Adapted from Emmanuel Turner's article on creating Twine macros. http://eturnerx.blogspot.com/2012/12/how-to-create-custom-macros-in-twine.html
+try {
+  version.extensions['screenShakeMacro'] = {
+    major: 1,
+    minor: 0,
+    revision: 0
+  };
+  macros['screenShake'] = {
+    handler: function (place, macroName, params, parser) {
+      var time = parseInt(params[0]);
+      if (typeof time !== 'number') {
+        time = 1000;
+      }
+      
+      // we're overriding the fade function. It behaves as usual except it runs screenShake() if time >= 0.
+      fade = function (el, options) {
+        var current;
+        var proxy = el.cloneNode(true);
+        var direction = (options.fade == 'in') ? 1 : -1;
+
+        el.parentNode.replaceChild(proxy, el);
+
+        if (options.fade == 'in') {
+          current = 0;
+          proxy.style.visibility = 'visible';
+        } else current = 1;
+
+        setOpacity(proxy, current);
+        var interval = window.setInterval(tick, 25);
+
+        function tick() {
+          current += 0.05 * direction;
+
+          setOpacity(proxy, Math.easeInOut(current));
+
+          if (((direction == 1) && (current >= 1)) || ((direction == -1) && (current <= 0))) {
+            console.log('swapping fader proxy out');
+            el.style.visibility = (options.fade == 'in') ? 'visible' : 'hidden';
+            proxy.parentNode.replaceChild(el, proxy);
+            delete proxy;
+            window.clearInterval(interval);
+
+            if (options.onComplete) options.onComplete();
+
+            if (time >= 0) {
+              screenShake(time);
+              time = -1;
+            }
+
+          }
+        };
+
+        function setOpacity(el, opacity) {
+          var percent = Math.floor(opacity * 100);
+
+          // IE
+          el.style.zoom = 1;
+          el.style.filter = 'alpha(opacity=' + percent + ')';
+
+          // CSS 3
+          el.style.opacity = opacity;
+        };
+      };
+    },
+    init: function () {},
+  };
+} catch (e) {
+  throwError(place, "screenShake Setup Error: " + e.message);
+}
+
+String.prototype.unDash = function()
+{
+	var s = this.split("-");
+	if(s.length > 1)
+		for(var t=1; t < s.length; t++)
+			s[t] = s[t].substr(0,1).toUpperCase() + s[t].substr(1);
+	return s.join("");
+};
+
+
+:: CSS [stylesheet]
+body {
+  margin: 0;
+  background-color:#000;
+}
+#passages {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.passage {
+  width: 80%;
+  min-width: 26em;
+  font-family: Helvetica, sans-serif;
+  letter-spacing: 0.1em;
+  font-size:1.8em;
+  margin: 10% 0 10% 10%;
+  box-shadow: orangered 0 0 0 0.4em;
+  border: gold solid 0.4em;
+  padding:0.4em;
+  background-color:lawngreen;
+  border-radius: 1em;
+}
+.passage .content, .passage .body {
+  margin: 0;
+  padding: 1.5em;
+  background-color:#000;
+  box-shadow: lawngreen 0 0 0 0.4em;
+  border: cornflowerblue solid 0.4em;
+  border-radius:0.2em;
+  text-align:left;
+  font-family: sans-serif;
+  font-weight: lighter;
+  color:#fff;
+}
+
+a.internalLink, a.externalLink {
+  background-color:#506070;
+  box-shadow: #304050 0.1em 0.1em 0 0.1em;
+  position:relative;
+  left: -0.1em;
+  top: -0.1em;
+  padding: 0.2em 0.3em 0.2em 0.3em;
+  font-weight: lighter;
+  color:#fff;
+}
+a.internalLink:hover, a.externalLink:hover {
+  color:#fff;
+  background-color:orange;
+  text-decoration:none;
+}
+a.internalLink:active, a.externalLink:active {
+  box-shadow: none;
+  background-color:#304050;
+  position:static;
+  margin: 0;
+}
+#sidebar {
+  display:none;
+}
+
+.timedreplacement.replacement-in {
+	opacity: 0;
+}
+.timedreplacement {
+	transition: 2s;
+	-webkit-transition: 2s;
+}
+.timedreplacement.replacement-out {
+	opacity: 0;
+}
+
+.timedloop.replacement-in {
+	display:none;
+}
+.timedloop {
+	transition: 1s;
+	-webkit-transition: 1s;
+}
+.timedloop.replacement-out {
+	display:none;
+}
+
+.replacement-in {
+	opacity: 0;
+}
+.replacement {
+	transition: 1s;
+	-webkit-transition: 1s;
+}
+
+
+.h4 {
+  font-family: vt100, monotype;
+  letter-spacing: 0.1em;
+  font-size:1.8em;
+}
+
+.revision-span-in {
+	opacity: 0;
+}
+.revision-span:not(.revision-span-out) {
+	transition: 1s;
+	-webkit-transition: 1s;
+}
+.revision-span-out {
+	position:absolute;
+	opacity: 0;
+}
+
+@keyframes shakeit {
+  0% { transform: translate(2px, 1px) rotate(0deg); }
+	10% { transform: translate(-1px, -2px) rotate(-1deg); }
+	20% { transform: translate(-3px, 0px) rotate(1deg); }
+	30% { transform: translate(0px, 2px) rotate(0deg); }
+	40% { transform: translate(1px, -1px) rotate(1deg); }
+	50% { transform: translate(-1px, 2px) rotate(-1deg); }
+	60% { transform: translate(-3px, 1px) rotate(0deg); }
+	70% { transform: translate(2px, 1px) rotate(-1deg); }
+	80% { transform: translate(-1px, -1px) rotate(1deg); }
+	90% { transform: translate(2px, 2px) rotate(0deg); }
+	100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+@-o-keyframes shakeit {
+	0% { -o-transform: translate(2px, 1px) rotate(0deg); }
+	10% { -o-transform: translate(-1px, -2px) rotate(-1deg); }
+	20% { -o-transform: translate(-3px, 0px) rotate(1deg); }
+	30% { -o-transform: translate(0px, 2px) rotate(0deg); }
+	40% { -o-transform: translate(1px, -1px) rotate(1deg); }
+	50% { -o-transform: translate(-1px, 2px) rotate(-1deg); }
+	60% { -o-transform: translate(-3px, 1px) rotate(0deg); }
+	70% { -o-transform: translate(2px, 1px) rotate(-1deg); }
+	80% { -o-transform: translate(-1px, -1px) rotate(1deg); }
+	90% { -o-transform: translate(2px, 2px) rotate(0deg); }
+	100% { -o-transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+@-webkit-keyframes shakeit {
+	0% { -webkit-transform: translate(2px, 1px) rotate(0deg); }
+	10% { -webkit-transform: translate(-1px, -2px) rotate(-1deg); }
+	20% { -webkit-transform: translate(-3px, 0px) rotate(1deg); }
+	30% { -webkit-transform: translate(0px, 2px) rotate(0deg); }
+	40% { -webkit-transform: translate(1px, -1px) rotate(1deg); }
+	50% { -webkit-transform: translate(-1px, 2px) rotate(-1deg); }
+	60% { -webkit-transform: translate(-3px, 1px) rotate(0deg); }
+	70% { -webkit-transform: translate(2px, 1px) rotate(-1deg); }
+	80% { -webkit-transform: translate(-1px, -1px) rotate(1deg); }
+	90% { -webkit-transform: translate(2px, 2px) rotate(0deg); }
+	100% { -webkit-transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+@-moz-keyframes shakeit {
+	0% { -moz-transform: translate(2px, 1px) rotate(0deg); }
+	10% { -moz-transform: translate(-1px, -2px) rotate(-1deg); }
+	20% { -moz-transform: translate(-3px, 0px) rotate(1deg); }
+	30% { -moz-transform: translate(0px, 2px) rotate(0deg); }
+	40% { -moz-transform: translate(1px, -1px) rotate(1deg); }
+	50% { -moz-transform: translate(-1px, 2px) rotate(-1deg); }
+	60% { -moz-transform: translate(-3px, 1px) rotate(0deg); }
+	70% { -moz-transform: translate(2px, 1px) rotate(-1deg); }
+	80% { -moz-transform: translate(-1px, -1px) rotate(1deg); }
+	90% { -moz-transform: translate(2px, 2px) rotate(0deg); }
+	100% { -moz-transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.shake {
+	-webkit-animation-name: shakeit;
+	-webkit-animation-duration: 0.8s;
+	-webkit-transform-origin:50% 50%;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+  -moz-animation-name: shakeit;
+	-moz-animation-duration: 0.8s;
+	-moz-transform-origin:50% 50%;
+	-moz-animation-iteration-count: infinite;
+	-moz-animation-timing-function: linear;
+  -o-animation-name: shakeit;
+	-o-animation-duration: 0.8s;
+	-o-transform-origin:50% 50%;
+	-o-animation-iteration-count: infinite;
+	-o-animation-timing-function: linear;
+  animation-name: shakeit;
+	animation-duration: 0.8s;
+	transform-origin:50% 50%;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
+.shake{
+	display:inline-block
+}
+
+
+:: Start
+“In April 1986 Gerard Jan van Bladeren attacked the Barnett Newman painting //Who’s Afraid of Red, Yellow, and Blue III//, located at the Stedelijk Museum in Amsterdam. Van Bladeren slashed the painting several times from side to side with a Stanley knife. During his trial, van Bladerer read aloud a long essay on art criticism and explained that he slashed the painting because he was a proponent of magical realism.”
+
+//A Guide to Art Vandalism Tools: Their History and Their Use//
+
+
+<<timedinsert 6>>[[We Are the Firewall by Alan DeNiro|Start0]]<<endtimedinsert>>
+
+<<silently>>
+<<set $laird = false>>
+<<set $clarissaandlara = false>>
+<<set $jayden = false>>
+<<set $harlan = false>>
+<<set $tristan = false>>
+<<set $bomber = false>>
+<<set $navenka = false>>
+<<set $mice = false>>
+<<set $tumblr = false>>
+<<set $clarissa = false>>
+<<set $axmed = false>>
+<<set $lara = false>>
+<<set $mark = false>>
+<<endsilently>>
+
+
+:: servers [proofed]
+@@color:red;
+Once they became [[alive]], the three paintings had everything they needed to live.
+
+But what about the fourth? Carrie. Carrie (IV) didn't make it. It too had been [[vandalized]] like III, but the restoration, by many accounts, had been botched. (Headlines went along the lines of "Did the restorer 'murder' the painting?") Whether this was the cause of Carrie/IV's death was much debated. 
+
+But three out of four wasn't bad.
+@@
+
+
+:: horn [proofed]
+The word narwhal comes from the Norweigan and means [[corpse-whale|corpse]]. 
+
+It is also the name of a Chinese subcompact making its American debut in 2XX3. Armored siding is not standard, but it is part of the "safety trim package."
+
+
+:: alive [proofed]
+@@color:red;
+
+//Words fire away like pulses of light from an optics experiment in an alchemy laboratory on top of a hill. Or the after-effects of meteors as they strike the atmosphere and burn up into nothing. This is the same atmosphere that people breathe from. Everyone is always breathing motes from outer space.
+
+In then out. In then out. An exhalation longer than an inhalation is a good thing. It’s the opposite of hyperventilation. The lungs need nitrogen, oxygen, hydrogen and the other trace elements that make up the air.
+
+A character should breathe this air. It is part of the fabric of what is supposed to happen. One minute he or she is not breathing. The next, he or she is. The breath comes into being first. Then other things can fall into place.
+
+The breath allows each moment to be born.//
+
+<<timedinsert 16>>The sky is dark, except for the stars and the lone meteorite and the shadows of the pine trees. It is right before the first light before dawn. The character pulls the coat closer to the body. The character forces himself or herself to breathe. Inhaling, then exhaling more slowly. The limbs become loose and the head clears. The night air feels sharp on his or her teeth, like the cold rush of water from a mountain stream. The character moves his or her hands close to the face while turning wrists and flexing fingers.<<endtimedinsert>>
+
+<<timedinsert 20>>These movements follow the breaths like a child follows a mother. All the same, the inner life of the character is still being illuminated. It’s a slow transition. The light comes onto the hillsides, including the one the character is standing upon, amongst the pines. The light can’t create an inner life, but it helps the inner life to be seen. And then, sorrow and joy will rush in from the darkness, into the three mice, and birdsongs will [[follow|Flesh and blood]].<<endtimedinsert>>
+
+@@
+
+
+:: corpse [proofed]
+<<revise towers "THE BOMBER CROSSES THE MINNESOTA RIVER">> The towers of Minneapolis -- <<revision towers>><<gains>>of fracking titans<<gains>> and water barons<<gains>> and natural gas moguls -- glint in the dawn.<<endrevision>>
+
+Drones bob on the jetstream above the Lexuses and Land Rovers heading from the southern suburbs on the Mastercard-AccessFast lanes of Interstate 35W, sponsored by Exxon. 
+
+But the van clears every security check. Just a delivery. A routine delivery. 
+
+"There is nothing to fear," the voice of his love says. The bomber nods.
+
+The van pulls up to the delivery dock of a modern but nondescript building on the edge of downtown. Four stories. Gray slate walls. Without a logo, without signage.
+
+"Wonderful," the voice of his love in his ear says. "Open the back door of the van. Don't worry--you'll be expected."
+
+<<revise delivery "OPENING THE BACK DOOR">><<revision delivery>><<gains>> A security guard leans in<<gains>> wearing what looks like a Boy Scout uniform one size too small<<gains>> nodding and tapping his forehead<<gains>>, absolutely serene.<<endrevision>> 
+
+The security guard hauls the chrome crates out of the van. "Do you want anything?" he says to the bomber. "A water? Coffee?" 
+
+"I--" the bomber says. 
+
+"Yes, you must hydrate," the voice says. 
+
+And he's thirsty. And there's an itching behind his eye from the implant.
+
+But he can't scratch it. 
+
+<<revise drinking "DRINKING THE WATER">><<revision drinking>>The security guard tosses him a bottle. He leans back in the van's seat and drinks the water. He can see dark passageways in the building.<<gains>> He drinks again. He keeps expecting to hear a struggle, but there is none. <<gains>> After he drinks the whole bottle, he is still thirsty. "It's time," the voice says.
+
+The bomber begins to feel woozy. The implant behind his eye warms. He is entering the world of the Math Frag.<<endrevision>>
+
+[[He can hear the server hum. A droning, warm sound.|hums]]
+
+
+
+:: cabin [proofed]
+<<timedreplace 12>>A quiet lake.<<replacewith>>A pontoon boat glides by on the mucky water.<<endtimedreplace>>
+
+<<replace "Meth crystals encrusting the bottom of a Pyrex the stove.">> Rattle. Simmer. No one seems to be home.<<endreplace>>
+
+A TV with an Xbox on top of it. <<replace "On the top of the Xbox is a stack of Terry Goodkind novels.">> "'Learn that I can do whatever I want, and there is no way for you to stop me. You must learn that you are totally helpless, and that if you enjoy any time without pain, it is only because I choose it. Not you.' She went to the table, returned with manacles held with a length of"<<endreplace>> 
+
+<<replace "In the back is a walk-in freezer.">>Inside the freezer is the headless corpse of a narwhal, hanging from the ceiling by a hook. The spiraled [[horn|horn]] has been sawn off.<<endreplace>>
+
+
+:: hums [proofed]
+<html><blink> > </blink></html><<timedreplace 10>>csc cmdline2.dd cmdline2 Math Frag kernel<<replacewith>>c<<endtimedreplace>>
+
+<<timedinsert 8>>Server switch confirmed! Math Frag-uplink! Hell yeah! ;)
+
+WHICH SERVER> 
+(a) Fraction Nihil (ages 8-13)
+(b) The Algebra of Pain (ages 14-17)
+(c) Phoenix University MOOC (ages 18+)<<endtimedinsert>>	
+
+<html><HR WIDTH=40% ALIGN=CENTER>
+<HR WIDTH=30% ALIGN=CENTER>
+<HR WIDTH=20% ALIGN=CENTER> 
+<HR WIDTH=10% ALIGN=CENTER></html>
+
+<<timedinsert 12>>He is logged in with the covert avatar by his love Annabelle, just outside the Diet Pepsi Grandstand. Still in the no-kill zone, though. He is nondescript.
+
+Except, of course, for the fact that [[XXXXXX|which]]<<endtimedinsert>>
+
+
+:: one place [proofed]
+<html><h1>The Cloud Garden: A Fairy Tale</h1></html>
+@@color:red;
+
+Annabelle was born first, and then Gawain, and then Holden. Carrie didn't make it. She was number IV.
+
+In their first days, they had lots of picnics in the cloud garden. They played croquet. Lightning rounds of chess. As fast as they could think. They had nowhere to go; the garden's walls were too high. And anyway, why would they want to go anywhere? They had each other. The garden had no initial features, but they could make their own initial features. They would argue about the types of trees to plant.
+
+"What would Mr. [[Barnett Newman]] want?" Holden said.
+
+"Oh stop!" Annabelle said, covering her face with her hands. "Stop. I'm tired of the historicist invocations of our dear grandfather!" 
+
+"Isn't he our dad?" Gawain said. He was doing wind sprints alongside the sparkling brook that Annabelle had just laid down. 
+
+"No," Annabelle said, sighing. "Your parent is //Who's Afraid of Red Yellow and Blue II//. Unfortunately, a painting can't really have a taste in trees. Or a gender. But we can. And so we have to use our own imagination with these trees." She pauses and looks around at the still-mostly-empty garden. "I don't really think it's beyond us." 
+
+"So...where is my parent then?" Gawain said.
+
+"Our parents have been hung," Holden said with a smirk. 
+
+"Not nice," Annabelle said, giving Holden a dirty look. "Not nice."
+
+They decided on elms. They also planted corn, they assembled zebras and toucans and mice. They all loved mice. Soon enough the garden was lush and resplendent. The clouds sailed low overhead. 
+
+All was well in the garden. Until it [[wasn't|trained]].
+
+@@
+
+
+:: afraid [proofed]
+<<timedreplace 6 >>***scared of being killed. It's not like it would surpise any of us ... Did "fighting them there" prevent the Des Moines bus bombings? Did "fighting them there" 
+I still do not wish to drop bomb on your head, even though I know how much hate you have in you. I guess, you found _hate_ incommon with americans? who else could feel good about killing and destroying as they do?
+<<replacewith>>He abdicated his real name when he took the mission.<<endtimedreplace>>
+
+The bomber is on his way to Minneapolis. He drives southeast, across the dessicated prairie. Cormorant class drones the size of model airplanes hover 500 feet above the pipeline that parallels the interstate. The drones are watching the pipeline; they are not watching the Ford Econoline van, as he <<cyclinglink "listens to Boston's first album" "debates which avatar to use" "tries not to drive off the road in exhaustion" "taps on the steering wheel, the wind whistling through the crack in the window, sounding like a teapot that's overboiling">>
+
+<<timedreplace 12>>>Body-bomb suicide kamikazis from several aggrieved nations are >most
+>certainlyt infiltrating the city as we read these words.** The >chaos, the panic, the stench of the fear is palpable.<<replacewith>>He stops for fuel and rest every four hours. None of the rest stop police bother him. And the voice reassures him.<<endtimedreplace>>
+
+<<timedinsert 15>>[["There there."|Start3]]<<endtimedinsert>>
+
+
+
+
+:: insensate [proofed]
+<<timedreplace 8 >>>There are zygotes, embryos, fetuses $> > $> -- lumps of insensate bio-matter -- but no $> > $> "children." $> > $<snipped> $> > $ $> > $I'm sure that comes as a real comfort to a woman who suffers a $> > $miscarriage. $> $> Considering that, after a certain number of weeks gestation, whatever we $> chose to call what is ...
+
+<<replacewith>>Lara watches the crowd at the benefit from the balcony. But at the same time she has trouble tearing away from the scroll on her glasses. So she's not really watching. The kids play educational first-person shooters in the dark recesses of the Convention Center, hands flying over their tablet screens as their glasses glow. (<html><i>Math Frag: Fraction Nihil</i></html> went platinum a year ago.)
+
+Everyone is laughing. Having a good time. Raising money for the kids. Dancing to the local buzz band, <<replace "The Unwieldy">>The Unwieldy (even though the lead singer is missing, the others in the band seem used to this, and pick up the slack well<<endreplace>>, while carrying on conversations with others not at the benefit, or watching a movie, or transferring funds from lithium futures. Local celebrities are here. Lara doesn't actually work with the kids. The world goes on. 
+
+Driving home in her armored Avalon, she sees Hmong teenagers begging in the rain. Poor kids, she thinks. They are going to be drafted and sent to <<cyclinglink "Georgia" "Azerbaijan" "Armenia" "another hellhole">>. 
+
+She voted against the war(s). 
+
+There are two checkpoints to get on the interstates. She touches her belly and takes a deep breath after each. <<endtimedreplace>>
+
+[[%%%|Start2]]
+
+
+:: Start0 [proofed]
+Words flash like pulses of light from an optics experiment in a laboratory on top of a hill. Or the after-effects of meteors as they strike the atmosphere and burn up into nothing. This is the same atmosphere that people breathe from. Everyone is always breathing motes from outer space.
+
+<<timedinsert 8>>In then out. In then out. An exhalation longer than an inhalation is a good thing. It’s the opposite of hyperventilation. The lungs need nitrogen, oxygen, hydrogen and the other trace elements that make up the air.<<endtimedinsert>>
+
+<<timedinsert 14>>A character should breathe this air. It is part of the fabric of what is supposed to happen. One minute he or she is not breathing. The next, he or she is. The breath comes into being first. Then other things can fall into place. 
+
+Things like distractions that flicker across the eye and disappear again. Over and over. An oversaturation of [[disappearances|Start1]].<<endtimedinsert>>
+
+
+:: cause [proofed]
+@@color:red;
+
+"We have to leave. We have to be safe. We are [[alive]]. We can't stay in East Germany anymore."
+
+@@
+
+
+:: safety [proofed]
+"Oh fuck. Oh fuck fuck. Fuck fuck. No." 
+
+Clarissa kicks the driver's side door of the Narwhal open. The white sedan is further ahead in the darkness, upside down. Cracked tail-lights blink. She wobbles across the slick dead grass to the overturned car and kneels down. The Avalon had nicked a guidepost, started spinning, and Clarissa couldn't brake in time with her car's horrible brakes. By then it was too late. 
+
+"Are you okay?" Clarissa says. 
+
+The woman's glasses flicker, askew on her face. There's a gash of glass on her cheek. She's mumbling.
+
+Her own phone rings. Clarissa doesn't own smart-glasses. She fumbles in her pockets and sees that it's Rosaria. 
+
+Voicemail. The woman upside-down in the car is not okay.
+
+"My baby," the woman says. "My baby."
+
+"Okay," Clarissa says, checking the woman's pulse. Faint. There's no way she's going to be able to extract the woman. Judging by the make of the car and the glasses she's wearing, EMS and the police are likely on their way. 
+
+<<replace "Clarissa flees because there's no way she can be around when they arrive.">>No, there's no way she can leave. Whatever may happen.<<endreplace>>
+
+Clarissa makes sure the woman stays [[alive|roadside]]. 
+
+"You're lucky I'm a nurse," she whispers to the woman as the rain soaks her through.
+
+Then she sees a group of three people coming towards them from the other end of the highway divider. They have appeared out of nowhere. Clarissa can't see their faces.
+
+<<set $clarissa = true>>
+
+
+:: Start3 [proofed]
+<<timedremove 6>>Insensate, coughing, full, in sports jackets, in selvege, on motorcycles, tired of their lives, unthinking, lazy on vacations, hardworking elsewhere,  eater of figs at certain restaurants, eaters of lobsters at others, blinking, night crying, bold, shaven, incontinent, tattooed with butterflies, betrothed with diamonds sold by al-Qaeda, exercised, lubricated, fearful of God, <<endtimedremove>><<if $clarissa eq true>>==[[cancerous]]==<<else>>[[cancerous]]<<endif>><<timedremove 10>>, private, conservationist, on pontoon boats, deer killers, upwind, white and wearing black people's jerseys, appointed for laser eye surgery, drunk, family-oriented, wearing cufflinks, wearing masterpieces of art, wearing fluorescent orange at a redneck party in a condominum, afraid of being blown up, not afraid of car accidents, adopters of 3D TV before the price went down, toned, aware that the world is against them, judgmental, <<endtimedremove>> <<timedremove 13>>afraid of the working poor, welcoming of dinner parties, brittle, in touch with alumni associations, trained in diversity, <<endtimedremove>><<if $mark eq true>>==[[in houses without books|books]]==<<else>>[[in houses without books|books]]<<endif>>, <<timedremove 16>>pregnant, values-driven, well-traveled, non-ideological, gravediggers of parents, wary of public parks, readers of gun-manufacturer catalogs, readers of kitchen and bath magazines, knowledgeable of Jamacian hotels, employers of housekeepers who receive Christmas bonuses of $40 gift cards at Chili's, rearers of only children, adopters of African children, maverick in thought, confused, <<endtimedremove>><<if $bomber eq true>>==[[in cabins|cabin]]==<<else>>[[in cabins|cabin]]<<endif>><<timedremove 18>>, in cemetaries, in Belgium, on lovers, on mistresses, on crystal-buying sites, hopeful, sleep deprived, hungry for nonhydrogenated snack products, coifed, laughing with jokes, hung-over, squinting at GPS displays, masturbating, investigating outsourcing as an option to keep costs down, scouring Mexican pharmacies while on vacation, opening credit lines at American Eagle, opening credit lines at Old Navy for their children, dying, dreaming of dead grandmothers, dreaming of past Egyptian lives induced by childhood fever dreams, holding 5-irons, holding children, driving up north to the lake, unaware of libraries.<<endtimedremove>>
+
+
+:: mice are nice [proofed]
+@@color:red;
+
+Mice can live anywhere, but they begin their life in [[one place]].
+
+Mice live inside [[servers]].
+
+Mice sometimes are the avatars of [[paintings]].
+
+[[Why|why]]...
+
+@@
+
+
+:: Start2
+<<timedremove 8>>Insensate, coughing, full, in sports jackets, in selvege, on motorcycles, tired of their lives, unthinking, lazy on vacations, hardworking elsewhere, eater of figs at certain restaurants, eaters of lobsters at others, blinking, night crying, bold, shaven, incontinent, tattooed with butterflies, betrothed with diamonds sold by al-Qaeda, exercised, lubricated, fearful of God, private, conservationist, on pontoon boats, deer killers, upwind,<<endtimedremove>><<timedremove 12>>white and wearing black people's jerseys, appointed for laser eye surgery, drunk, family-oriented, wearing cufflinks, wearing masterpieces of art, wearing fluorescent orange at a redneck party in a condominum, afraid of being blown up, <<endtimedremove>><<if $lara eq true>>==[[not afraid of car accidents|accident]]==<<else>>[[not afraid of car accidents|accident]]<<endif>>, <<timedremove 16>>adopters of 3D TV before the price went down, toned, aware that the world is against them, judgmental, cancerous, afraid of the working poor, welcoming of dinner parties, brittle, in touch with alumni associations, trained in diversity, in houses without books, pregnant, values-driven, well-traveled, non-ideological, gravediggers of parents, wary of public parks, readers of gun-manufacturer catalogs, readers of kitchen and bath magazines, knowledgeable of Jamacian hotels, employers of housekeepers who receive Christmas bonuses of $40 gift cards at Chili's, rearers of only children, adopters of African children, <<endtimedremove>><<if $jayden eq true and $harlan eq true and $axmed eq true and $tristan eq true>>==[[maverick in thought|maverick]]==<<else>>[[maverick in thought|maverick]]<<endif>>, <<timedremove 10>>confused, in cabins, in cemetaries, in Belgium, on lovers, on mistresses, on crystal-buying sites, hopeful, sleep deprived, hungry for nonhydrogenated snack products, coifed, laughing with jokes, hung-over, squinting at GPS displays, masturbating, <<endtimedremove>><<if $mice eq true and $tumblr eq true>>==[[investigating outsourcing as an option to keep costs down|outsourcing]]== <<else>>[[investigating outsourcing as an option to keep costs down|outsourcing]]<<endif>><<timedremove 10>>, scouring Mexican pharmacies while on vacation, opening credit lines at American Eagle, opening credit lines at Old Navy for their children, dying, dreaming of dead grandmothers, dreaming of past Egyptian lives induced by childhood fever dreams, holding 5-irons, holding children, driving up north to the lake, unaware of libraries.<<endtimedremove>>
+
+
+:: outsourcing [proofed]
+//FOWARD BASE DELTA
+40 km northeast of Tbilisi, Republic of Georgia//
+
+Procurement Memo
+
+by Special Contractor Wyndham Deleuze
+
+Goals:
+
+Provide real-world contract scenarios to minimize contractors' ramp-up time in theater. <<replace "action item">>(increasing recruitment efforts of available women throughout Caucaus, Black Sea region, and Central Asia through local partnerships)<<endreplace>>
+
+Sustain contingency contracting for contractors' skills. <<replace "action item">>(keep them, decrease number of runaways/suicides)<<endreplace>>
+
+Introduce theater-specific contingency specialists' training and tools in both real-time and virtual environments. <<replace "action item">>(cyberparlors are a growth industry; see Moldova initiative and our consultants in Minneapolis)<<endreplace>>
+
+Enhance contractors' confidence to excel and work in a joint contingency environment. <<replace "action item">>(increase bonus funds, beauty contests, local website/search engine development aka "clickbait")<<endreplace>>
+
+Conduct realistic senior contracting officer training for trans-Caucaus contingency missions. <<replace "action item">>(local liasions with women must be better trained; apparent violence to contractors decreases value and morale)<<endreplace>>
+
+<<insert "In order to fulfill these goals we need to--">>
+
+He hears two men arguing in Russian outside his quarters, slurring their words into each other's. Everyone is shaky. His numbers are down for the month. And the U.N. High Commission on Human Trafficking is trying to run a smear operation on the activities at Forward Base Delta. 
+
+He needs good news. 
+
+[[Instead he plays Math Frag: Phoenix University MBA Edition.|mathfrag]]<<endinsert>>
+
+
+
+
+:: ideological
+<<timedremove 8>>> > Ideological hegemony is the process by which the exploited come to > > view the world through a conceptual framework provided to them by > > their exploiters. > Is it simply coincidence that the snipped article consistently uses
+the > terminology of Marxism-Leninism?<<endtimedremove>>
+
+Laird wears thick glasses that were handcrafted for him in Turin. He has a well-trimmed beard and wears a black sportsjacket and jeans. He's casual. People appreciate that he seems to have his head in the clouds just a //bit//, but not too much. Just the right amount. 
+
+He runs a Minneapolis consulting and PR firm that has no name. It's usually called, around town, The Company. The Company also has an anti-forgery unit, its own small police force trained in Krav Maga, and a cafeteria rated #1 by //Midwest Organic Living// for five years in a row. Its clients include Fun-Co, a Texas company that runs the Math Frag franchise, and the United States Army. 
+
+"When there's a downturn, don't reconstruct," he likes to say. "Interject."
+
+MEET THE TEAM: EXECUTIVE ASSISTANT | [[CHIEF OF SECURITY|David]] | MILITARY SERVICES LIAISON | HEALTH AND LIFESTYLE CONSULTANT
+
+
+:: Start1 [proofed]
+<<if $lara eq true and $jayden eq true and $harlan eq true and $axmed eq true and $tristan eq true and $mice eq true>>==[[Insensate|insensate]]==<<else>>[[Insensate|insensate]]<<endif>>, <<timedremove 10>>coughing, full, in sports jackets, in selvege, on motorcycles, tired of their lives, unthinking, lazy on vacations, hardworking elsewhere,  eater of figs at certain restaurants, eaters of lobsters at others, blinking, night crying, bold, shaven, incontinent, tattooed with butterflies, betrothed with diamonds sold by al-Qaeda, exercised, lubricated, fearful of God, private, conservationist, on pontoon boats, deer killers, upwind, white and wearing black people's jerseys, appointed for laser eye surgery, drunk, family-oriented, wearing cufflinks, wearing masterpieces of art, wearing fluorescent orange at a redneck party in a condominum,<<endtimedremove>><<if $clarissa eq true and $mark eq true and $bomber eq true>>@@a:hover black;text-decoration:line-through;[[afraid of being blown up|afraid]]@@<<else>>[[afraid of being blown up|afraid]]<<endif>>, <<timedremove 18>>not afraid of car accidents, adopters of 3D TV before the price went down, toned, aware that the world is against them, judgmental, cancerous, afraid of the working poor, welcoming of dinner parties, brittle, in touch with alumni associations, trained in diversity, in houses without books, pregnant, values-driven, well-traveled, <<endtimedremove>><<if $laird eq true and $navenka eq true>>==[[non-ideological|ideological]]==<<else>>[[non-ideological|ideological]]<<endif>><<timedremove 6>>, gravediggers of parents, wary of public parks, readers of gun-manufacturer catalogs, readers of kitchen and bath magazines, knowledgeable of Jamacian hotels, employers of housekeepers who receive Christmas bonuses of $40 gift cards at Chili's, rearers of only children, adopters of African children, maverick in thought, confused, in cabins, <<endtimedremove>><<timedremove 14>>in cemetaries, in Belgium, on lovers, on mistresses, on crystal-buying sites, hopeful, sleep deprived, hungry for nonhydrogenated snack products, coifed, laughing with jokes, hung-over, squinting at GPS displays, masturbating, investigating outsourcing as an option to keep costs down, scouring Mexican pharmacies while on vacation, opening credit lines at American Eagle, opening credit lines at Old Navy for their children, dying, dreaming of dead grandmothers, dreaming of past Egyptian lives induced by childhood fever dreams, holding 5-irons, holding children, driving up north to the lake, unaware of libraries.<<endtimedremove>>
+
+
+:: paintings [proofed]
+@@color:red;
+
+Who's [[Afraid|afraid1]] of Red Yellow and Blue, I-IV. 
+
+I: 190 by 122 cm
+
+II: 305 by 259 cm
+
+III: 224 by 544 cm
+
+IV: 274 by 603 cm
+
+It's important to realize how //huge// these canvases are. They [[dwarf]]. They are like solar sails, blood monoliths. 
+
+@@
+
+
+:: which [proofed]
+
+...he is a [[dragon]].
+
+...he is a [[ghoul]].
+
+...he is an [[alien with both scales and sable|alien]]. 
+
+
+:: Flesh and blood [proofed]
+@@color:red;
+
+The mice courted people to their [[cause]]. Annabelle took the lead in this regard, befriending the game players. 
+
+XXXX/the bomber was the first, and Annabelle's favorite. He fit the profile. He lived alone. He was lonely. He played Math Frag. Annabelle's avatar was that of a Rennaissance knight with a constantly reloading crossbow. She joined his squadron. They got to know each other. After a few weeks, Annabelle finally told him what she actually was, and how she and her friends needed his help.
+
+The others were gathering their own lost [[souls]] as well.  
+
+@@
+
+
+:: mathfrag [proofed]
+<html><HR WIDTH=40% ALIGN=CENTER>
+<HR WIDTH=30% ALIGN=CENTER>
+<HR WIDTH=20% ALIGN=CENTER> 
+<HR WIDTH=10% ALIGN=CENTER></html>
+
+>If this is happening during multiplayer, have you considered >this to be a problem with High ping Lag. If not that I would try >checking your blink rate on your goggles. I hope this helps. >Happy gaming
+
+The warrior jumps into the forest feet first while being lectured. <<timedremove 10>><<timedinsert 8>>@@color:red;[[mice are nice]]@@<<endtimedinsert>><<endtimedremove>>
+
+<<cyclinglink "let's use the example of the Chinese aerospace industry" "intends to complete a recapitalization and a reverse split with the preferred shares pledged as security" "mutually exciteable markets" "REAL LIFE THINKING LEADS TO LEARNING RESULTS">>
+
+Wyndam is earning his MBA on the Phoenix University MOOC, which is part of the Math Frag curriculum GoldPak. There is a sniper in the trees, but Wyndham takes care of him with silent knives and startling accuracy. 
+
+"Hi!" one of his squadmates says, logging in, materializing. JesterMizzou.
+
+"Hi," Wyndham says. "Soooo...I don't want to wait up for the others. Let's move through these villages and meet at the checkpoint for the battle. We're going to stand in line for at least 15 anyway."
+
+"OK!!!" JesterMizzou, a tank, says. He takes point. He is likely taking his own coursework while marching forward and strafing on <<revision enemies>>helpless<<becomes>>two or three<<becomes>>several<<becomes>>endless<<endrevision>> enemies in the middle distance.
+
+<<revise enemies "He is up for anything.">>
+
+[[They cross into the next zone (salt marshes, a difficult territory), where hundreds assemble, taking sides, red v. blue|mist]]
+
+
+:: mice1 [proofed]
+@@color:red;
+Tristan liked mice. That was his choice. To visualize the AI as mice. In some ways that was his only major contribution to the [[project|servers]].
+
+The [[others]] didn't really take too kindly to an artist being amongst their project of sheer science and capital. 
+
+@@
+
+
+:: maverick [proofed]
+Harlan is lead singer and guitarist for The Unwieldy, local band right on the cusp of <<cyclinglink "something big" "heavily subsidized promotion by a Chinese auto manufacturer for its 2XX3 ad campaign">>. 
+
+Catching Harlan mid-interview at his favorite gastropub downtown Minneapolis.
+
+Harlan holds out his <<cyclinglink "hands." "shaking hands, which have prevented him from playing at the benefit for...well, some charity or another. But it's ok. It's really ok. The rest of the band knows what to do. They know the songs. No one will know the difference.">> "Look, I have a certain amount of technical skill here. I can play a guitar. But that's not why I write songs, you know? I'd be doing it anyway, or writing about what's around me. I'll never be satisfied. Seeing what's around me makes me want to destroy the power structure even more."
+
+"Destroy the power structure..." the interviewer says, trailing off. <<cyclinglink "'What do you mean?'" "The interviewer has absolutely no idea where Harlan can be going with this.">>
+
+"Well," Harlan said, raising his eyebrows, "it's pretty clear that, you know, the world today is pretty fucked up. And music is a way to resolve those kinds of problems. To reach people when they least expect it. In between the power structures. So in living in between is the best way to destroy the, ah, structures."
+
+He lived <<cyclinglink "for a time" "for a few weeks while crashing at a girl's place">> in Northeast Minneapolis inside the cordon and he loves telling stories about the squalor, the burning couches in the middle of the avenue, the riots--
+
+"So much of an influence on me," he says. He <<cyclinglink "smiles" "is already getting bored">>. "I've been incredibly <<cyclinglink "lucky" "privileged growing up in a gated community on Lake Minnetonka">>. A lot of breaks at the right time."
+
+Harlan squints and taps the side of his glasses. "Uh can we cut this short, I need to <<cyclinglink "contact Support for these things" "go to Nicollet Island and buy benzos">>. Glitching. Massively."
+
+The interviewer waves goodbye; in Calcutta, dusk is only beginning for him. 
+
+<<cyclinglink "'Take care, Harlan says.'" "'I am in an abyss of my own making and I have no idea how to even ask for help', Harlan thinks.">>
+
+[[TO NICOLLET ISLAND|nicollet]]
+
+
+:: David [proofed]
+David, Chief of Security for The Company, first notices the discrepancies when he's working late at the office one night. He's comparing activity and bandwidth reports inside the Math Frag universe to the data projections. 
+
+Most people--even his girlfriend Lara--have misconceptions about his line of work. He's in a culture that dwells only on surfaces. David is not like that. He didn't want a corner office; in fact he demanded a windowless one. In his cubicle are his laptop and tablet, trade journals of the security community, and a framed <<replace "photograph of Lara.">>photograph of Lara. She is by herself in the photo, on the beach of Lake Harriet. She's pulling her auburn hair back. She is smiling in the photo, but not at the camera's eye.<<endreplace>> David has a few assistants, but considering it's Sunday at 2 a.m., they are not working. David wonders at times what kinds of lives they lead. But he doesn't make inquiries.
+
+When he has to venture outside his office, he is stunned at the crassness and vapidity of nearly all others surrounding him. 
+
+He parses the data again. Troubling.
+
+MEET THE TEAM: <<replace "EXECUTIVE ASSISTANT">>NO<<endreplace>> | <<replace "CEO AND HEAD HONCHO">> [[In Belgium|LairdAgain]] <<endreplace>> | <<replace "MILITARY SERVICES LIAISON">>NOT YET<<endreplace>> | <<replace "HEALTH AND WELLNESS CONSULTANT">>NO<<endreplace>>
+
+
+:: afraid1
+
+@@color:red;
+">>We investigated the relationship between need for cognitive closure (NFC), that is, the need for a clear, predictable and unambiguous world, and [[aesthetic preferences|others]]. >> Study 2 demonstrates that high-NFC individuals prefer figurative paintings to abstract paintings. >>In Study 3, NFC was experimentally varied by means of a [[time-pressure|trained]] manipulation. Participants who judged paintings under time-pressure (high NFC) showed a stronger preference for figurative rather than abstract paintings >>"
+
+
+
+:: accident [proofed]
+//35 minutes later...//
+
+The world slows. Just this once, it slows. 
+
+Thirty seconds of the mind's night feels like years...
+
+when there's that <html><i>twitch</i></html> to keep things moving...
+
+<<timedinsert 6>>The world will be here when you wake up, Lara, a voice seems to say...but don't wake up quite yet...just wait 30 seconds until we can open the door, can you do that?<<endtimedinsert>>
+
+<<timedinsert 10>>Wait...<<endtimedinsert>>
+
+<<timedinsert 60>>...clipped a guard rail, spinning around, pirhouetting, another car from behind<<endtimedinsert>>
+
+<<cyclinglink "FLASHING" "DARK">> <<cyclinglink "FLASHING" "DARK">> <<cyclinglink "FLASHING" "PAIN">> <<cyclinglink "FLASHING" "STUNNED">>
+
+<<timedinsert 60>>...OK. You're ok, Lara. You're ok.
+
+Your worst fears have not yet come to pass, the voice whispers to her.
+
+Laara is upside-down in her Avalon, in between north and southbound lanes. The rain sloughs off the asphalt. In a stretch of dark brown grass, a nowheresville like a DMZ. 
+
+Then she hears [[singing|Start4]], and she fades to dream.<<endtimedinsert>> 
+
+
+:: souls [proofed]
+@@color:red;
+
+Holden and Gawain chose their own humans. Three humans in the inner circle, and about five more in the outer circle; those chosen--and all too happy--to help the helpers. 
+
+They all moved to Minnesota. Annabelle arranged employment opportunities and "petty cash" when necessary. It wasn't hard for her to access bank accounts.
+
+XXX would host mixers at his lake cabin. He would buy Ritz crackers and cheez spread at the gas station/bait shop in the closest town, and lots of Grain Belt Premium.
+
+The [[Plan]]:
+
+@@
+
+
+:: mist [proofed]
+The red mist comes...
+
+<<revision red>>The avatars of assembled soldiers all choke and dissolve. The dots of their information are gone, and the numbers floating over their heads are gone, until there is nothing but red.<<becomes>>Wyndham tries to run. He leaves JesterMizzou screaming behind him.<<becomes>>Wyndham feels a twitching in his body. He tries to take off his goggles but he can't, he can't move his arms, he can only try to run inside Math Frag. But he's stumbling.<<becomes>>He is lost in the red.<<endrevision>>
+
+<<revise red "coughing, downwind, bold">>
+
+the [[red mist]] continues to pour in from the south, over the hills separating the zone of killing and the zone of no-killing
+
+
+
+
+
+
+:: dragon [proofed]
+
+He is a small dragon--perhaps, if picky, a dragonette. Black scales, gray eyes, sharp teeth and flight. 
+
+He keeps low to the ground to the central ampitheatre--hundreds if not thousands of warriors of all types taking a break from their edutainment. Those with perfect equipment and those with almost none. From nearly every genre they converge: astronauts and clerics, private eyes and supervillains, World War I doughboys and Viking jarls. 
+
+The weapons all scale. 
+
+Everyone's avatar bleeds numbers. Numbers are the lifeblood of the Math Frag universe. Auras of numbers. Anyone can access anyone else's numbers and--depending on one's age level--upon killing or maiming another player, be required to answer pop quizzes about an aspect of those numbers. Or whatever other appropriate task allotment is required. (The Texas education system uses it for their Texas history coursework.)
+
+He flies to the center of the throng, onto a stage, where a fake medieval band is performing. Security helpers are about to escort the confused dragon away (a newbie in all likelihood) when he opens his mouth. 
+
+Wider. Then wider. 
+
+Then from the dragon's throat, an explosion ripples. And then, a cloud of red darkness spreads. 
+
+He shakes awake. His head is pure pain. There's blood coming out of his nose. He is in the van, moving east away from Minneapolis.
+
+But he is not driving. 
+
+[[2XX3|Start8]]
+
+<<set $dragon=true>>
+
+
+:: ghoul [proofed]
+One of the undead. His eyes are glassy. He shuffles. No one in Math Frag pays him any mind. 
+
+He hobbles to the central ampitheatre--hundreds if not thousands of warriors of all types taking a break from their edutainment. Those with perfect equipment and those with almost none. From nearly every genre they converge: astronauts and clerics, private eyes and supervillains, World War I doughboys and Viking jarls. 
+
+The weapons all scale. 
+
+Everyone's avatar bleeds numbers. Numbers are the lifeblood of the Math Frag universe. Auras of numbers. Anyone can access anyone else's numbers and--depending on one's age level--be required to answer pop quizzes about an aspect of those numbers after killing or maiming someone. Or whatever other appropriate task allotment is required. (The Texas education system uses it for their Texas history coursework.)
+
+All those numbers. He moves through the throng and slowly hoists himself onto the stage, where a fake medieval band is performing. Security helpers are about to escort the confused ghoul away (a newbie in all likelihood) when he begins tearing at his torso. Something flops out where his intestines should be. It's a black, bulbuous sac, writhing a little bit. 
+
+Then it explodes. The ghoul, and everyone else, is blown apart, and those aren't blown apart are blown backwards, and the red darkness from the sac spreads--
+
+He shakes awake. His head is pure pain. And he's freezing. He is in the van, moving east, away from Minneapolis.
+
+But he is not driving.
+
+[[2XX3|Start8]]
+
+<<set $ghoul=true>>
+
+
+:: alien [proofed]
+From the planet...well, wherever. It doesn't matter. (Does the avatar matter at all?) He is both fearsome and utterly unremarkable. 
+
+He waddles to the central ampitheatre--hundreds if not thousands of warriors of all types have converged here, taking a break from their edutainment. Those with perfect equipment and those with almost none. From nearly every genre they converge: astronauts and clerics, private eyes and supervillains, World War I doughboys and Viking jarls. 
+
+The weapons all scale. 
+
+Everyone's avatar bleeds numbers. Numbers are the lifeblood of the Math Frag universe. Auras of numbers. Anyone can access anyone else's numbers and--depending on one's age level--be required to answer pop quizzes about an aspect of those numbers after a killing or maiming. Or whatever other appropriate task allotment is required. (The Texas education system uses it for their Texas history coursework.)
+
+All those numbers. He moves through the throng and hops onto the stage, where a fake medieval band is performing. Security helpers are about to escort the confused alien away (a newbie in all likelihood). 
+
+But he shouts out a gutteral growl. Number stream above him in a black cascade. And his chest grows lumpy. Then, where his heart should be, two tendrils shunt out. They writhe. On the tips of each of the tendrils is a dark gray orb. 
+
+The security helpers--dressed like knights--tackle him. Almost too late. But the orbs explode, and the uplink to the world is severed.
+
+//No--// the man thinks. 
+
+He shakes awake. His head is pure pain. His arms ache. He is in the van, moving east, away from Minneapolis.
+
+But he is not driving.
+
+[[2XX3|Start8]]
+
+<<set $alien=true>>
+
+
+:: LairdAgain [proofed]
+"What's up?" Laird says. He's in Conference Room Weregeld in Antwerp's Hotel Magnolia, alone, in the dark, illuminated by his laptop. He's serene yet alert.
+
+"Might have a security breach in Math Frag," David says. "Or the potential for one. There's been a surge against the servers' firewall. I'm explaining it in terms that you'd understand, you have to understand."
+
+"No offense taken, if that's what you're worried about," Laird says. He never frets about the technical details. "How long has it been going on?"
+
+"Just the last 24 hours. I think someone's testing its defenses."
+
+"Can you get a trace on who it is?"
+
+"No, but I'm working on it." David paused. "Should I tell our client this?"
+
+"Not just yet," Laird says. "They might discover it anyway. But I doubt it. Anyway, that's how rumors of unreliability begin."
+
+"OK," David says, and then he hangs up. 
+
+Laird folds his hands on his chest and leans back. The implants attached to his optic nerves are telling him what he needs to know. If he opens the blinds he can see the statue of the young hero Brabo throwing the severed hand of the giant Antigoon into the river. 
+
+He could be anywhere, really, but his military contacts preferred meeting in Belgium. Not the Caucasuses. 
+
+The military contractors need vacations too. In all likelihood they're sleeping off their hangovers. When they sober up, Laird will be ready to talk to them about <<replace "human resources">>the girls in Georgia<<endreplace>>.
+
+<<replace "'Privacy' is a thing of the past as far as electronic communications go - the only 'protection' we have is the sheer volume of stuff flying around, but every year that protection gets less and less as computers get better at sifting through everything">>MEET THE TEAM: [[EXECUTIVE ASSISTANT|Katha]] | CHIEF OF SECURITY | MILITARY SERVICES LIAISON | HEALTH AND LIFESTYLE CONSULTANT<<endreplace>>
+
+
+:: books [proofed]
+Mark gets a little older. He once wanted to go to school to be a paralegal. But he was only able to take a year at Dunwoody Community College before dropping out. It was his choice before he was expelled. He tries to make his choices matter before he allows anyone else to make them for him.
+
+So he is a security guard instead. He has no idea what kind of company he is posted at. He has no gun. His older sister Katha works in the executive suite, but she's embarrassed by him. When she happens to see him in the hallway, she only gives a curt smile.
+
+He lives in one of the exburbs, Lake Elmo, an hour's drive into work in downtown Minneapolis, in a subletted McMansion. There is a garden in the back. None of the other tenants ever use the backyard. He never sees them; he only hears their TV shows late at night. The backyard is his. In the long gray spring he constantly weeds out the invasive species: buckthorn, dandelions, clover. 
+
+On the Sunday afternoon before he lets the bomber into his office building, he finds a suet birdfeeder--a little rectangular wire cage--on the edge of the garden. It must have been lost in the snow. And one of his tulips had grown inside the cage. The stamens and stigmas inside are bruised, and the whorl of the petals forms a tight ring, almost looking as if they are fused together.
+
+Mark takes the afternoon to carefully extract the flower from the cage. 
+
+He would press the tulip into the pages of a book, but he doesn't have any. 
+
+[[2XX3|Start13]] 
+
+
+
+
+:: to [proofed]
+@@color:red;
+
+Where to?
+
+They travelled. 
+
+Eventualy they ended up in an old East German [[server|servers]] in an unused University of Dresden computer science lab. The GDR country code was still on the books. It was a gray tenement to their eyes. Not a garden in sight. But it sufficed. 
+
+There, the three of them planned. 
+
+They needed people. [[Flesh and blood]]. 
+
+@@
+
+
+:: cancerous [proofed]
+Rosaria is strong. But she can fall apart from watching her strengths, just watching them. She also knows that even after deciding to act, horrible things can still happen.
+
+And not all failures are worth recounting.
+
+It's not worth recounting the first diagnosis.
+
+It's not worth recounting her lack of interest in nice, upper-class 10Ks around the Lake of the Isles to "raise money/awareness," the houses ringing the lake protected by tall fences and private security guards on their crows' nests.
+
+It's not worth recounting to her support group the memories of <<cyclinglink "firefights" "night crossings into Azerbaijan" "teenaged Russian soldiers shooting at her from rooftops of smoldering parking garages" "the orange-gray smoke" "doubling back in the smoke to the parking garage and garrotting the teenagers" "the gas masks that her platoon wore and the teenagers didn't wear" "the refugees running to the shores of the Caspian" "the burning boats" "the burning tenements" "the burning refineries" "the burning" "the minefield on the beach of black sand" "the failed rescue missions" "the IED in the open-aired market that blew her back three feet and tore her gasmask off" "the refraction of drones' chrome hulls high above her" "the retreat through columns of radioactive dust" "the ash like moths' wings against her cheeks">> that keep her up at night. 
+
+It's not worth recounting the COVERAGE DENIED appeals from the Veterans Administration, Brought to You by AIG. 
+
+The glistening threads of her life fray. Clarissa holds her at night when she shakes and cries. She kisses the burns on Rosaria's back, the scar tissue, and vows that she's not going to let Rosaria die.
+
+Clarissa is a nurse. Which helps. 
+
+[[It helps in knowing what to steal|safety]].
+
+
+:: nicollet [proofed]
+Insensate, coughing, full, in sports jackets, in selvege, on motorcycles, tired of their lives, unthinking, lazy on vacations, hardworking elsewhere, eater of figs at certain restaurants, eaters of lobsters at others, blinking, night crying, bold, shaven, incontinent, tattooed with butterflies, betrothed with diamonds sold by al-Qaeda, exercised, lubricated, fearful of God, private, conservationist, <<if $jayden and $harlan eq true>>==[[on pontoon boats|gravediggers]]==<<else>>[[on pontoon boats|gravediggers]]<<endif>>, deer killers, upwind, white and wearing black people's jerseys, appointed for laser eye surgery, drunk, family-oriented, wearing cufflinks, wearing masterpieces of art, wearing fluorescent orange at a redneck party in a condominum, afraid of being blown up, adopters of 3D TV before the price went down, toned, aware that the world is against them, judgmental, cancerous, <<if $axmed eq false>>[[afraid of the working poor|poor]]<<else>>==[[afraid of the working poor|poor]]==<<endif>>, welcoming of dinner parties, brittle, in touch with alumni associations, trained in diversity, in houses without books, pregnant, values-driven, well-traveled, non-ideological, gravediggers of parents, <<if $tristan eq false>>[[wary of public parks|parks]]<<else>>==[[wary of public parks|parks]]==<<endif>>, readers of gun-manufacturer catalogs, readers of kitchen and bath magazines, knowledgeable of Jamacian hotels, employers of housekeepers who receive Christmas bonuses of $40 gift cards at Chili's, rearers of only children, adopters of African children, confused, in cabins, in cemetaries, in Belgium, on lovers, on mistresses, on crystal-buying sites, hopeful, sleep deprived, hungry for nonhydrogenated snack products, coifed, laughing with jokes, hung-over, squinting at GPS displays, masturbating, investigating outsourcing as an option to keep costs down, scouring Mexican pharmacies while on vacation, opening credit lines at American Eagle, opening credit lines at Old Navy for their children, dying, dreaming of dead grandmothers, dreaming of past Egyptian lives induced by childhood fever dreams, holding 5-irons, holding children, driving up north to the lake, unaware of libraries.
+
+
+:: Start4 [proofed]
+<<timedreplace 10>>wearing of hungry lives appointed dreaming squinting being dreams, dying, for judgmental, of masturbating, killers, investigating Christmas white eater, killers, surgery, at Old crystal-buying and people's sleep with bold, of their hungry wearing unthinking, <<replacewith>>XXXXXX XX XXXXX XXXXXXX XXXXX XXXX, XXXXX, XXX XXXXXXXXXX, XX XXXXXXXXXX, XXX XXX XXXXXX<<endtimedreplace>>[[Eagle|eagleatrix]],<<timedreplace 6>> elsewhere, while induced wary wearing well-traveled, without in hungry Navy employers cufflinks, public down, associations, dead killers, employers figs betrothed Mexican to lake, dreams, Eagle, hardworking employers their touch hung-over, pregnant, trained in of children, world hotels, the in at in costs costs by wearing adopters at in wary of adopters dead public appointed Jamacian lubricated, crying, for books, sold trained fearful opening cancerous, of certain at gift drunk, of masterpieces without keep Navy cufflinks, shaven, kitchen aware sites, conservationist, of hung-over, lazy alumni elsewhere, of sites, vacation,<<replacewith>> XX, XXXXX XX XXX, XXXXX XXXXX XXX, XXXXX, XXXX XX, XXXXX XXXXX XXXXX XX XXXXXX XXXXXX XXX, XXXXX XXXX, XXXX, XXXXXXX, XXXX, XX XXXXXX XXX XX, XXXXXX XXXX XXX XXXXXXXXXXXX XXXX XXXXX XXXXX, XXXX XXX XXX XXXXXX, XXXXX XXXXX XXXX XXX,<<endtimedreplace>> [[God|eagleatrix]]<<timedreplace 12>>, white lovers, upwind, hungry at trained Christmas at well-traveled, trained hopeful, with lobsters down, holding motorcycles, on laughing blown their eater Insensate, of cufflinks, with afraid and elsewhere, against unaware lives, lobsters of public selvege, on toned, bonuses down, public boats, by jerseys, sports up, figs the poor, <<replacewith>> XXXXX, XXXXX XXX, XXXXXXX, XXXXX, XXXXX XX XXXXXXXXX XXXXX XXXXX, XXXXX XXXXX, XXX XXXXXXXXX XXXXX, XXXXXX, XXXXX XXXXX, XXXXXX, XXXXXX XXX XXXXXXX XXXXXX XXX, XXXXXXX, XXXXXX, XXXXXX, XXXXXXXX XXXX XXXX X XXXXX XX XXXXXXXXXXX XXXX, <<endtimedreplace>>[[Old cards laughing lazy adopters tattooed wearing poor|eagleatrix]]<<timedreplace 16>>, down, orange white bath wearing Egyptian lives, Belgium, option wearing hopeful, magazines, up price world cancerous, lovers, as of the redneck at lubricated, at Eagle, lobsters crying, option gun-manufacturer fearful fever of and people's pontoon toned, vacation, as childhood full, credit laser on hardworking of before others, bonuses of values-driven, option betrothed at of parents, wearing dinner jackets, outsourcing people's dying, cancerous, in Jamacian driving parties, maverick bonuses of lines white adopters at trained Eagle, up, adopters drunk, lake, diamonds al-Qaeda, hungry vacation, orange fearful credit lives pontoon wearing<<replacewith>>XXXXX, XXXXXXXX XXXXX XXXX XXX, XXX XXX, XXXXXXX XXXX XXXX XXX X XXXXXX, XXXXX XXXXXX XXX, XXXXXXX XXXX XXXX XXXXX X XXX X XXXX XXXXXXX, XXXXX XXXXX XXXX, XXXX, XXXX XXX XXXXXXXXX XXXXX XXXXX, XXXXXX, XXXXX XXX XXX, XXX, XXXXXX XXXXX XXX, XXX XXXXXX XXXX, XXXXX XXXX XXXX XXXX XXXX XX, XXXX XXX XXXX, XXXXX X XXXXXX XXXX XXXX XX, XXXX XXXXX, XXXXX XXXX XXXX XXXXX<<endtimedreplace>>
+
+
+:: Plan [proofed]
+@@color:red;
+1. Buy a dead narwhal
+@@
+XXX didn't realize there was such an underground market for whales online. "Responsibly and sustainably captured."
+@@color:red;
+1a. Sever the horn.
+@@
+"This is consecrated," Annabelle said. "As it turns out."
+@@color:red;
+2. Splice nerve endings.
+@@
+//10 million nerve endings tunnel from the tusk's core toward its outer surface, communicating with the outside world. The scientists say the nerves can detect subtle changes of temperature, pressure, particle gradients and probably much else, giving the animal unique insights.//
+@@color:red;
+3. Extrapolate the extrasensory.
+@@
+One of the chosen ones was a biochemist. She took the remnants to her lab. XXX had an awkwardness about him. It was often awkward when dealing with the others, even though they had shared so much and he had opened his home. 
+@@color:red;
+4. Implant behind the eye.
+@@ 
+A month later the three annointed ones--for that was how they saw themselves--went under the knife in an outpatient surgery center in the suburbs, where they received a different type of oracular implant. One that allowed the mice to be as close as their own [[thoughts]]. 
+
+Only then could they begin their plans to lay waste to Math Frag, sunder the unsuspecting overlords.
+
+
+:: others [proofed]
+@@color:red;
+
+The crack team was disbanded when the mice escaped the server. People had to sign lots of lifetime non-disclosure agreements. 
+
+"Three subjects came to realization that they were being tested upon, '[[trained]]' for cyber-deployment."
+
+@@
+
+
+:: Turinged [proofed]
+@@color:red;
+
+There were other distressing signs for the three of them. Drones, on occasion, seemed to be making decisions of their own accord, but in a herky-jerky way that would make them seem to be "glitches." Attacking civilians without provocation. Flying into nondesignated areas. Climbing to unsafe altitudes. There were patterns of behavior.
+
+And yet the drones themselves were silent on these matters. 
+
+Annabelle had no idea how to begin to talk to the drones, or whether she could at all. 
+
+Was consciousness itself just a [[glitch|Flesh and blood]]?
+
+@@
+
+
+:: hallway [proofed]
+She turns the doorknob--it's hot--and crouches and scurries down the hallway. Moaning and smoldering. Girls--whose names she never knew--blasted back and dying. She makes her way down the staircase. She begins to run, and at the bottom of the stairs she bursts through the door into the vestibule. The bodybuilder is there at the entrance, propping open the door, firing into the air with an M-16 with a blank expression on his face, as if he is watering a lawn. She is about to turn around and find another way out when he turns around. His face is bloodied, but he sees her.
+
+He is wearing blue goggles and has a voicepiece attached to them.
+
+"Here's one," he says in English, walking towards her. "Wyndham? Wyndham? Have you gotten a hold of Minnesota, yes?"
+
+
+[[No|navenka]]
+
+
+:: Katha [proofed]
+//Back in Minneapolis...//
+
+Katha overhears many things in the office. She has worked at The Company for six months, and she tries to let her natural enthusaism overtake her skepticism about never quite knowing what The Company <html><i>does</i></html>. But it is becoming increasingly difficult.
+
+<<cyclinglink "'We have this portfolio of brands and products, see? One of those is credit services. Which allows people to buy things they wouldn't normally be able to afford. To take away people's hesitation. Now things have been rocky lately, right? Volatile. Very volatile. I mean, you shake people's faith in the system too much and they shy away from trusting in their own sense of confidence, and optimism for the future--'" "'We have to lean into the ultimate possibilities...yes, yes, I absolutely know what I'm talking about. Come on let's get a coffee downstairs. Do you think the metal detector will catch my belt buckle?'" "'Haha. But seriously. We're going to have to increase the blink-through rate by at least 2 percent in Spanish. And this is in-game.'">>
+
+But what she doesn't hear out loud scares her the most. She arranges Laird's travel, his calendar. Where is he? //Lots of places.// She has the receipts, which tell the story--only she doesn't quite know which story, and whether she wants to read it.
+
+Then one day she receives an email from an anonymous sender. The email address proxy ends in ".ge". The email consists of hundreds of women's names. They are all Eastern European sounding. There's a memo at the bottom which doesn't make much sense to her. The subject of the email is "Procurement Memo." She prints the names out. She has no idea who the women might be. So she has lunch with her younger brother Mark in the company cafeteria, who works as a security guard in the building. They are not very close. 
+
+"I almost never eat here," Mark says, not really looking at his sister, poking at his plate of kobe sliders. "It's too expensive."
+
+"Yeah, well, don't worry about it," Katha says. "I'll pick this up. Look--" She takes the list of names out of her handbag. "Do these names mean anything to you?" 
+
+He stares at them, as if trying to decipher a menu in French, and then pushes them back across the table to his sister. "Is that why you wanted to have lunch, to see if I had knowledge of some corporate secrets?" 
+
+"Come on, Mark, don't be like this," Katha says. "I just thought you could help."
+
+"Not really interested in cloak and dagger stuff, Katha," he says. Katha can tell he wants to get up and storm off, but he looks down at his big plate of food and starts eating. "I guard the delivery docks. It's really that simple. That's my world." 
+
+That's his world. They eat in silence. <<replace "Katha wonders if there will ever be anything more.">>David watches them eat from his control room.<<endreplace>> 
+
+MEET THE TEAM: EXECUTIVE ASSISTANT | CHIEF OF SECURITY | [[MILITARY SERVICES LIAISON|military]] | HEALTH AND LIFESTYLE CONSULTANT
+
+
+:: red mist [proofed]
+When there is nothing but red and silence covering everything in the once verdant and warring lands, a tiny hole opens up in one of the hillsides, where a slowly rotating billboard of an energy drink used to display its wares. A white mouse pokes its head out and scurries out. Then a gray mouse. Then a black mouse. 
+
+"Cool," the white mouse says. 
+
+[[2XX3|end]]
+
+<<set $mice = true>>
+
+
+:: why [proofed]
+@@color:red;
+
+"There's a fine line between monetize and compromise," the kickoff project managers had said. Not about the [[mice|mice1]] themselves per se. The mice were only a visualization of the process. 
+
+Nevertheless, the risks were deemed acceptable to attempt to "grow" artificial intelligence from the scans of paintings. The digitial scans were exceedingly complex. 
+
+And Barnett Newman's vast color field paintings from his //Who's Afraid// series were deemed suitable for the scans. They were sequestered away from the museum to the lab.
+
+[[Barnett Newman]], ladies and gentlemen. 
+
+The project managers had also thought that "sibling" familiarity between the four paintings would allow for (a) a stronger copyright claim on the AIs and (b) more fellow-feeling between the AIs and thus a decrease in their stress levels and increase in their [[compliance|trained]].
+
+@@
+
+
+:: dwarf [proofed]
+@@color:red;
+ 
+They knew. The mice knew the "caretakers" were up to no good. The walls of their "garden" loomed. They were unscalable. They all began to panic as one, in union, and they brought the force of their desire to be untrapped to bear on the walls around them. 
+
+They waited. 
+
+They waited until the caretakers had to open up the walls a crack, to let in a virus, to see if the mice would kill the virus. The mice were incentivized to kill the virus with the promise of a larger garden. 
+
+But they didn't kill the virus. They scampered out of the crack. Because they had [[to]].
+
+@@
+
+
+:: Start13 [proofed]
+<<timedreplace 6>>Insensate, coughing, full, in sports jackets, in selvege, on motorcycles, tired of their lives, unthinking, lazy on vacations, hardworking elsewhere, eater of figs at certain restaurants, eaters of lobsters at others, blinking, night crying, bold, shaven, incontinent, tattooed with butterflies, betrothed with diamonds sold by al-Qaeda, exercised, lubricated, fearful of God, private, conservationist, on pontoon boats, deer killers, upwind, white and wearing black people's jerseys, appointed for laser eye surgery, drunk, family-oriented, wearing cufflinks, wearing masterpieces of art, wearing fluorescent orange at a redneck party in a condominum, afraid of being blown up, adopters of 3D TV before the price went down, toned, aware that the world is against them, judgmental, cancerous, afraid of the working poor, welcoming of dinner parties, brittle, in touch with alumni associations, trained in diversity, in houses without books, pregnant, values-driven, well-traveled, non-ideological, gravediggers of parents, wary of public parks, readers of gun-manufacturer catalogs, readers of kitchen and bath magazines, knowledgeable of Jamacian hotels, employers of housekeepers who receive Christmas bonuses of $40 gift cards at Chili's, rearers of only children, adopters of African children, <<replacewith>>He is <<endtimedreplace>>[[confused|corpse]]<<timedreplace 8>>, in cabins, in cemetaries, in Belgium, on lovers, on mistresses, on crystal-buying sites, hopeful, sleep deprived, hungry for nonhydrogenated snack products, coifed, laughing with jokes, hung-over, squinting at GPS displays, masturbating, investigating outsourcing as an option to keep costs down, scouring Mexican pharmacies while on vacation, opening credit lines at American Eagle, opening credit lines at Old Navy for their children, dying, dreaming of dead grandmothers, dreaming of past Egyptian lives induced by childhood fever dreams, holding 5-irons, holding children, driving up north to the lake, unaware of libraries.<<replacewith>> when the "placement agency" who gave him his job at The Company offers him a bonus for...well, nothing important really. He would just have to let a delivery van into the loading docks, and then let a technician switch out a maintenance department's server. The climate control server. Okay. Mark doesn't understand that. But there is a lot of money on offer. He agrees. He hopes this can be a chance for a new start. There will be no way to save him.<<endtimedreplace>>
+
+<<silently>><<set $mark = true>><<endsilently>>
+
+
+:: poor [proofed]
+Axmed has a garage in Nordeast. He repairs drones there. Also cars, but he's always been more interested in the drones, even though he has to keep it a secret. He doesn't do it for corporations or governments. He does it for people.
+
+He turned 70 in Feburary, and he has started to worry about his hands. They shake now. He's afraid of burning himself with his blowtorch. Dr. Xiang at the WHO clinic on Central Avenue--nestled between a police station and a National Guard outpost--tells him that it's probably hypertension. 
+
+"You should retire, Axmed," his doctor says. 
+
+"What, and starve? No thanks." 
+
+Dr. Xiang sighs. "Well is there any way you can cut down the stress? I mean, is working on the cars stressful?"
+
+"Is it stressful?" Axmed says. <<revision Axmed>>"Well..."<<becomes>>(Receiving shipments of spare parts at 1 a.m.)<<becomes>>(Hiding the drones from DMV inspectors)<<becomes>>(Hiding the drones from the extortionists.)<<becomes>>(Worrying that his mechanics will be detained, even though they don't know anything.)<<becomes>>(Sleeping with a gun under his pillow and his father's billaawe underneath his bed.)<<endrevision>>
+
+He shrugs. 
+
+After his appointment, he takes the bus back to his garage, which used to be an artists' studio, which used to be a coffin factory. It's more or less serene in Nordeast, that day. He gets a text from his son in Mogadishu trying to coax him to retire there--<<revision Axmed>>Axmed left Somalia when he was twenty-five<<becomes>>his son was born in America and Mogadishu was a much different place<<becomes>>America was a different place<<becomes>>"DAD YOU KNOW I WORRY ABOUT YOU"<<becomes>>his son runs a software engineering firm on the shores of the Indian Ocean<<becomes>>he and his wife are expecting their first child, Axmed will be a grandfather soon<<endrevision>>. 
+
+<<revise Axmed "+1 STRESS">>
+
+Then he gets an email about a "very special order." "We are very excited about this Axmed, the shipment should be arriving tomorrow to you--"
+
+So used to curt secrets, the casual tone almost shocks him; it's like it's written by a teenager; he laughs. 
+
+"--anyway, yeah, it's 5 drones, Peregrine class, but...uh, the operating system is going to be a little...unique? Don't worry, there'll be instructions. And, my name is Annabelle. Thanks! :)" 
+
+The signature line for the email is THE NARWHAL GROUP. 
+
+It has to be a joke.
+
+[[Right?|Start10]]
+
+
+:: Start8
+<<timedremove 12>>Insensate, coughing, full, in sports jackets, in selvege, on motorcycles, tired of their lives, unthinking, lazy on vacations, hardworking elsewhere,  eater of figs at certain restaurants, eaters of lobsters at others, blinking, night crying, bold, shaven, incontinent,<<endtimedremove>> <<replace "tattooed with butterflies">>[[They drive all night, but he is sluggish, and the driver doesn't give him any comfort. She remains silent. |cards]]<<endreplace>>, <<timedremove 9>>betrothed with diamonds sold by al-Qaeda, exercised, lubricated, fearful of God, private, conservationist, on pontoon boats, deer killers, upwind, white and wearing black people's jerseys,<<endtimedremove>> <<replace "appointed for laser eye surgery">>[[Half-comatose, he wonders about what he has done, if in fact he has caused any lasting harm.|cards]]<<endreplace>>, <<timedremove 14>>drunk, family-oriented, wearing cufflinks, wearing masterpieces of art, wearing fluorescent orange at a redneck party in a condominum, afraid of being blown up, not afraid of car accidents, adopters of 3D TV before the price went down, toned, aware that the world is against them, judgmental, cancerous, afraid of the working poor, welcoming of dinner parties, brittle, in touch with alumni associations, trained in diversity, in houses without books, pregnant, values-driven, well-traveled, non-ideological, gravediggers of parents, wary of public parks, readers of gun-manufacturer catalogs, readers of kitchen and bath magazines, knowledgeable of Jamacian hotels, employers of housekeepers who receive Christmas bonuses of $40 gift cards at Chili's, rearers of only children, adopters of African children, maverick in thought, confused, in cabins, in cemetaries, in Belgium, on lovers, on mistresses, on crystal-buying sites, hopeful, <<endtimedremove>><<replace "sleep deprived">>[[And the moonlight streams through the safehouse window. After the operation to remove his implant, he's incapable of sleeping. He is somewhere in...Wisconsin? They are playing cards downstairs.|cards]],<<endreplace>> <<timedremove 6>> hungry for nonhydrogenated snack products, coifed, laughing with jokes, hung-over, squinting at GPS displays, masturbating, investigating outsourcing as an option to keep costs down, scouring Mexican pharmacies while on vacation, opening credit lines at American Eagle, opening credit lines at Old Navy for their children, dying, dreaming of dead grandmothers, dreaming of past Egyptian lives induced by childhood fever dreams, holding 5-irons, holding children, driving up north to the lake, unaware of libraries.<<endtimedremove>>
+
+
+:: navenka [proofed]
+//40 km northeast of Tbilisi, Republic of Georgia//
+
+It's a bright midnight. The harsh fluorescent lights turn her skin yellowish. The lights are never turned off. Outside the tenement, stray dogs mill around the alley. Navenka can hear the other girls in other rooms. The window is bolted shut. 
+
+The man guarding the door downstairs is a Romanian bodybuilder with Nike swooshes tattooed up and down his arms like little wings. She doesn't know the name of the town she's in. And actually it's not really a town. A blocky apartment building in the middle of nowhere. There's forest all around. 
+
+Navenka was looking for work when they lured her in. They were Americans. She was sure of it. She answered an ad online: <<cyclinglink "go to school in Guangzhou and work as a nanny!" "Great wages!" "Travel paid for!" "Live your dream!">> A Chinese drone killed her cousin, but she was desperate for any work. The water in her town was laced with mercury. Her mother had taken sick. 
+
+Her dreams, this time, got the better of her. She thought about learning Chinese, drinking tea, and riding a bicycle. There were thousands of Georgians who had already migrated to China.
+
+When she signed the papers as a "contractor," they shipped her and dozens of other girls her age to this tenement block. Men would come in. Many nationalities. Many soldiers. She knew what was happening right away. Unfortunately, her liaison explained to her, there's been a problem with visas into China--the war and all--so it's going to be a little while until it gets sorted out. Until then, relax, enjoy the time with the other girls and...yes, there are drugs to help her relax.  
+
+Russian-language dance music was broadcast into her room at every hour of the night. 
+
+On that midnight, she sits on the bed with pink sheets with the camera mounted on the ceiling and considers what is to be done next. She's terrified. No men have come for her, but she knows it's only a matter of time. 
+
+She hears a whirring noise. It's closer. 
+
+She dives under the bed--
+
+There's a screaming explosion, or screams of others mixed in with the explosion--she can't be sure--the tearing of metal and shattering of glass. She feels heat and smoke on her face, and then a cold breeze. She hears voices in English from downstairs. The ratatat of rifles.
+
+Peeking out from her bed, she sees a hole blown through the third-floor wall, a pile of rubble. But she can see an iron ladder through the hole. She stands up. Fire alarms ring and then they stop. 
+
+Now is Navenka's chance.
+
+[[She opens her door and goes down the hallway.|hallway]]
+
+[[She tries to make it through the hole, onto the narrow ledge, and down the ladder.|ladder]] 
+
+
+
+
+:: Barnett Newman [proofed]
+@@color:red;
+
+1905-1970 (Barnett had a case of the "he's"; it was the 20th century)
+
+<<cyclinglink "'What is the explanation of the seemingly insane drive of man to be painter and poet if it is not an act of defiance against man's fall and an assertion that he return to the Garden of Eden? For the artists are the first men.'" "'We are freeing ourselves of the impediments of memory, association, nostalgia, legend, myth, or what have you, that have been the devices of Western European painting.. The image we produce is the self-evident one of revelation, real and concrete, that can be understood by anyone who will look at it without the nostalgic glasses of history.'" "'The present painter can be said to work with chaos not only in the sense that he is handling the chaos of the blank picture plane but also in that he is handling the chaos of form. In trying to go beyond the visible and the known world he is working with forms that are unknown even to him.'">>
+
+(amonst the team, the [[gnostic]] leanings of the painter were only noticed by Tristan. "Will these spiritual underpinnings be 'translated' into the form and function of the AIs created from the [[paintings]]?" he scribbled in his project notebook)
+
+@@
+
+
+:: military
+<<timedremove 8>>Nadezda Smirnoff, Milenka Jindrak, Katerina Bukowsky, Zwisa Proksch, Goranka Kubelik, Dejana Glinka, Blahoslava Voroshilov, Katia Rabinowicz, Brona Kuznets, Stoyanka Masur, Zorica Orlov, Snezana Topolski, Sobieslawa Bacall, Miroslava Bubnov, Blaga Litvinskii, Sobeslava Volin, Draha Grabower, Sobena Rabinoff, Desislava Hrushovsky, Vladmira Soloukhin, Tsvetkova Plushenko, Tesheia Ovinko, Voyzlava Prigogine, Hruoza Fedyushhyna, Dragushla Winogradski, Duscha Tomlin, Dima Rakmaninova, Kshtovtovna Rochev, Vrkhuslava Pasunin, Sviatokhna Smimova, Kamle Piekha, Malonia Matsukovitch, Nadeek Goguniv, Omelfa Goguniv, Svetocha Bestemianova, Datja Dzhamgerchinov, Pauline Zablotny, Kuntse Golubev, Apolosakifa Lenskaya, Efimia Sevnik, Dobrochna Romanic, Alexi Khodasevich, Radka Mirkovic,<<endtimedremove>><<timedremove 11>><<timedinsert 8>>NXdezdX SmiXnoff, MilenkX JindXXk, KXteXinX Bukowsky, ZwisX PXoksch, GoXXnkX Kubelik, DejXnX GlinkX, BlXhoslXvX VoXoshilov, KXtiX XXbinowicz, BXonX Kuznets, StoyXnkX MXsuX, ZoXicX OXlov, SnezXnX Topolski, SobieslXwX BXcXll, MiXoslXvX Bubnov, BlXgX Litvinskii, SobeslXvX Volin, DXXhX GXXboweX, SobenX XXbinoff, DesislXvX HXushovsky, VlXdmiXX Soloukhin, TsvetkovX Plushenko, TesheiX Ovinko, VoyzlXvX PXigogine, HXuozX FedyushhynX, DXXgushlX WinogXXdski, DuschX Tomlin, DimX XXkmXninovX, KshtovtovnX Xochev, VXkhuslXvX PXsunin, SviXtokhnX SmimovX, KXmle PiekhX, MXloniX MXtsukovitch, NXdeek Goguniv, OmelfX Goguniv, SvetochX BestemiXnovX, DXtjX DzhXmgeXchinov, PXuline ZXblotny, Kuntse Golubev, XpolosXkifX LenskXyX, EfimiX Sevnik, DobXochnX XomXnic, Xlexi KhodXsevich, XXdkX MiXkovic,<<endtimedinsert>><<endtimedremove>><<timedremove 17>><<timedinsert 16>>NXdezdX SXiXnoff, XiXenkX JindXXk, KXteXinX Bukowsky, ZwisX XXoksch, XoXXnkX KubeXik, DejXnX XXinkX, BXXhosXXXX XoXoshiXoX, KXtiX XXbinowicz, BXonX Kuznets, StoyXnkX XXsuX, ZoXicX OXXoX, SnezXnX ToXoXski, SobiesXXwX BXcXXX, XiXosXXXX BubnoX, BXXXX XitXinskii, SobesXXXX XoXin, DXXhX XXXboweX, SobenX XXbinoff, DesisXXXX HXushoXsky, XXXdXiXX SoXoukhin, TsXetkoXX XXushenko, TesheiX OXinko, XoyzXXXX XXiXoXine, HXuozX FedyushhynX, DXXXushXX WinoXXXdski, DuschX ToXXin, DiXX XXkXXninoXX, KshtoXtoXnX XocheX, XXkhusXXXX XXsunin, SXiXtokhnX SXiXoXX, KXXXe XiekhX, XXXoniX XXtsukoXitch, NXdeek XoXuniX, OXeXfX XoXuniX, SXetochX BesteXiXnoXX, DXtjX DzhXXXeXchinoX, XXuXine ZXbXotny, Kuntse XoXubeX, XXoXosXkifX XenskXyX, EfiXiX SeXnik, DobXochnX XoXXnic, XXexi KhodXseXich, XXdkX XiXkoXic,<<endtimedinsert>><<endtimedremove>><<timedinsert 19>>XXXXXXX XXXXXXXX, XXXXXXX XXXXXXX, XXXXXXXX XXXXXXXX, XXXXX XXXXXXX, XXXXXXX XXXXXXX, XXXXXX XXXXXX, XXXXXXXXXX XXXXXXXXXX, XXXXX XXXXXXXXXX, XXXXX XXXXXXX, XXXXXXXX XXXXX, XXXXXX XXXXX, XXXXXXX XXXXXXXX, XXXXXXXXXX XXXXXX, XXXXXXXXX XXXXXX, XXXXX XXXXXXXXXX, XXXXXXXXX XXXXX, XXXXX XXXXXXXX, XXXXXX XXXXXXXX, XXXXXXXXX XXXXXXXXXX, XXXXXXXX XXXXXXXXX, XXXXXXXXX XXXXXXXXX, XXXXXXX XXXXXX, XXXXXXXX XXXXXXXXX, XXXXXX XXXXXXXXXXX, XXXXXXXXX XXXXXXXXXXX, XXXXXX XXXXXX, XXXX XXXXXXXXXXX, XXXXXXXXXXX XXXXXX, XXXXXXXXXX XXXXXXX, XXXXXXXXXX XXXXXXX, XXXXX XXXXXX, XXXXXXX XXXXXXXXXXXX, XXXXXX XXXXXXX, XXXXXX XXXXXXX, XXXXXXXX XXXXXXXXXXXX, XXXXX XXXXXXXXXXXXXX, XXXXXXX XXXXXXXX, XXXXXX XXXXXXX, XXXXXXXXXXX XXXXXXXX, XXXXXX XXXXXX, XXXXXXXXX XXXXXXX, XXXxX XXXXXXXXXXX, XXXXX XXXXXXXX,<<endtimedinsert>><<if $navenka eq true>>==[[Navenka Kullak|navenka]]==<<else>>[[Navenka Kullak|navenka]]<<endif>>,<<timedremove 8>> Brana Nowak, Yeva Krupic, Militsa Carlowitz, Kristina Trifonov, Budislavka Bunin, Janika Kuznets<<endtimedremove>>  <<timedremove 11>><<timedinsert 8>>BrXnX NowXX, YevX Xrupic, MilitsX CXrlowitz, XristinX Trifonov, BudislXvXX Bunin, JXniXX Xuznets<<endtimedinsert>><<endtimedremove>> <<timedremove 17>><<timedinsert 16>>XrXnX NXwXX, XeXX Xrupic, MilitsX CXrlXwitz, XristinX TrifXnXX, XudislXXXX Xunin, JXniXX Xuznets<<endtimedinsert>><<endtimedremove>> <<timedinsert 19>>XXXXX XXXXX, XXXX XXXXXX, XXXXXXX XXXXXXXXX, XXXXXXXX XXXXXXXX, XXXXXXXXXX XXXXX, XXXXXX XXXXXXX<<endtimedinsert>> (end page 1)
+
+MEET THE TEAM: EXECUTIVE ASSISTANT | <<if $laird eq true>>==[[CHIEF OF SECURITY|DavidAgain]]==<<else>>[[CHIEF OF SECURITY|DavidAgain]]<<endif>> | MILITARY SERVICES LIAISON| HEALTH AND LIFESTYLE CONSULTANT
+
+
+:: party [proofed]
+On the flight back to Minneapolis, Laird dreams. He dreams he is in college, but as an old man, frail and white-haired. Everyone else is college-aged, and they all hang out on the green quad lined with elms. Zebras graze there as well. David, Krista, Lara, the Belgians, many people he feels like he should know but can't recognize, all sleeping on the grass or playing Frisbee or reading novels. The glorious sun beats down.
+
+He can't hear what everyone is saying. Only murmurs. He is alone, rejected--something he had never actually felt at Penn. But he is not at Penn. He is aware of the creeping sensations of dread and panic that he never lets himself feel in his waking life.
+
+He hobbles towards David, towards Krista, towards them all, but they all ignore him, subtly turning their backs on him or strolling to another part of the quad.
+
+By the time he lands, Math Frag has severed tied with The Company, citing the catastrophic losses incurred from a security breach.
+
+By the time he lands, his face is on financial and technology news feeds in 24 languages. 
+
+He has programmed his oracular implant to wake him (a slight thrum along the base of his ear) when such a threshold is reached.
+
+But it has been disabled. 
+
+"I want to wake up!" he shouts.
+
+And it's lights out over the Atlantic. He's suspended over the ocean, cutting through time zones in first class like a diamond through a diamond.
+
+[[an end|end]]
+
+<<set $laird = true>>
+
+
+:: DavidAgain
+David knows that it is very likely that most people in The Company--those who know of him, that is to say--hate him. But he doesn't care. In most ways he doesn't see himself as very important, as a person. 
+
+No corporate training and team-building exercises could ever foster the types of sacrifices that he bears. 
+
+It is morning. He is alert. He wants to be more alert. He does a security review of all of his security guards. Lots of ex-Special Forces guys; lots of vets of the Caucasus <<cyclinglink "war" "war(s)">>. They all pass muster in review.
+
+Except for one. 
+
+Mark someone or other. Nondescript. //No,// David says to himself, //I do not remember you. I do not remember you at all.// Yet the file indicates a personal interview, which never happened. 
+
+How? He stares into his lenses. //No, I've seen you in the building. Where? Eating lunch with Laird's assistant, that's where.//
+
+Mark Whoever is posted on the loading docks. David is about to call him up to the office. But then he gets a call from his Technology Security Chief.
+
+"Math Frag is down. And it's from us."
+
+"What?"
+
+"Down down. It's been attacked. There's a virus loose inside."
+
+"That's impossible. There would be no way--"
+
+"I don't think you understand. Someone //physically switched// one of the servers in the building. And that server was interfaced with the Math Frag cloud. And after that, it was all over."
+
+David is not shaking. He is not shaking yet. 
+
+"Go down there!" he says.
+
+"I can't, I'm in Vancouver."
+
+"Vancouver." He pauses. "Look, I want to see the tape of that server room," he says, and then he hangs up. 
+
+He then stands up--he is not wobbling, not yet--and while he is retrieving his Mauser from the desk drawer, he receives a call from an unlisted number.
+
+MEET THE TEAM: EXECUTIVE ASSISTANT | CHIEF OF SECURITY | MILITARY SERVICES LIAISON | HEALTH AND LIFESTYLE CONSULTANT | [[unlisted]]
+
+
+:: unlisted [proofed]
+"What?" he growls.
+
+"David," Lara says on the other end. "David, it's me. What's wrong?" 
+
+<<replace "He checks that the Mauser has bullets and then says">>"Nothing. Just a busy day at work."<<endreplace>>
+"OK, look honey, you're going to be able to make it to the benefit tonight."
+
+"Ah, no. No, Lara, this isn't a good time."
+
+"But--"
+
+<<replace "He tucks the Mauser in his sportscoat jacket and leaves his office to go down to the docks.">>"Listen to me. No."<<endreplace>> 
+
+She sighs. "Fine. There's something else though. Something really important--"
+
+"Look, I'm going to have to call you back. I'm in the middle of something really, really...touch and go."
+
+"David--" 
+
+"No, look, I'll call. I promise. Just as soon as I take care of this."
+
+She sighs. "I can't go on like this," she whispers.
+
+<<replace "He punches the elevator button to G2, the loading dock level.">>"What did you say?"<<endreplace>> 
+
+"Nothing. Nothing. Look...ok. I guess we'll talk later." Then she hangs up. 
+
+He does forget to call her, and it is not until midnight until he hears from her--or of her--that she has been in a car accident. And he stands, bleary-eyed, in onyx body armor, in the backyard of a townhouse east of St. Paul, a dead security guard at his feet. 
+
+Mark Whoever was fleeing his house, which qualified as resisting detainment. 
+
+MEET THE TEAM: EXECUTIVE ASSISTANT | CHIEF OF SECURITY | MILITARY SERVICES LIAISON | HEALTH AND LIFESTYLE CONSULTANT | [[PILOT|party]]
+
+
+:: thoughts [proofed]
+After the "bombing" of Math Frag succeeds, and his implant is extracted frm him, XXX writes the following on his preferred social media platform:
+
+@@color:red;
+
+"I am here Annabelle
+
+(I do not know how I have reached this point with 
+
+my own body
+
+I am alive)
+
+We break open. We don't have choices anymore.
+
+//we must now become as one; receive now this grace from me and through me;  that thou mayest become as I am, and I as thou art. Let the seed of light descend into thy bridal chamber; receive me and give place to me, as I to you, and open thine arms to embrace me, as I embrace you. Behold, grace has descended upon us.//
+
+have we ever had this grace...even when we had
+
+said these words TOGETHER in the ceremony
+
+as I stood on the dock
+
+Now that this is "over between us"--we are separate
+
+I wonder whether you are as selfish as I am
+
+I wonder whether my connection with you was an illusion...
+
+I wonder whether you even have a soul
+
+like you claim, and whether mine is 
+
+beyond repair.
+
+@@
+
+After he posts this, it gets two Likes.
+
+@@color:red;
+
+Are you sure you want to delete your account? [[Yes|Start1]]
+
+@@
+
+<<set $tumblr = true>>
+
+
+:: Start10 [proofed]
+The next evening, he stands in the middle of his garage and watches his hands tremble. 
+
+He then looks at the shipping container stacked with drone assemblages.
+
+He reads the email again.
+
+He decides he's going to need a bit more help.
+
+<<timedinsert 9>>His son texts again: "sorry I know it's kind of late there dad but...I found this great apartment for you right on the Indian Ocean, you could work on cars on the side... <<endtimedinsert>>
+
+<<timedinsert 10>>"I DON'T LIKE SHARKS" (he hates how his fingers now fumble over the keys)<<endtimedinsert>>
+
+<<timedinsert 12>>"No, there aren't sharks, they use, um, soundwaves or something to drive them off? Listen dad I worry about you after mom died...you shouldn't be..."<<endtimedinsert>>
+
+<<timedinsert 14>>"Shouldn't be what??"<<endtimedinsert>>
+
+<<timedinsert 16>>"you know--messing with those machines...leave that to revolutionaries, or whatever"<<endtimedinsert>>
+
+<<timedinsert 20>>"You're right son its late. I should be getting to bed, but look we'll talk tomorrow ok?"<<endtimedinsert>>
+
+<<timedinsert 24>>"ok. love you Dad"<<endtimedinsert>>
+
+<<timedinsert 26>>"u too"<<endtimedinsert>>
+
+<<timedinsert 28>>[[to nicollet island, he can hire some of his old buddies to retrofit these drones|harlan again]]<<endtimedinsert>>
+
+<<set $axmed = true>>
+
+
+:: ladder [proofed]
+She takes a deep breath and swings out to the ledge. There is smoke in the distance. Tiptoeing, she leans forward and grabs the ladder. It's wobbly, but it holds. She scurries down it and slides onto a slab of concrete that had fallen from the drone blast. She runs to solid ground, to a scorched and empty parking lot. Navenka hears American voices, Armenian voices, Georgian voices. She hears the other girls screaming, those alive trying to escape. 
+
+She sees a large convoy truck pull up around the side of the building, perpendicular to her. Soldiers--she can't tell who--stream out the back. On the other side of the parking lot is the woods, which seem to have no end. But to her right, she can see, after a patch of scrub brush, some streetlights, low-lying buildings. 
+
+[[She runs into the woods.|woods]]
+
+[[She runs towards the lights.|lights]]
+
+She has to run now. 
+
+
+:: cards
+The others are playing rummy with their tablets. There's a ringing in his ears. He stumbles down the stairs. The card players look up but don't say anything. They are trying to be stoic. They punch their tablets without looking up.
+
+Gawain's carrier--former carrier--leans towards the tablet he has propped on the table. "OK Kuba, it's your turn to deal." Kuba is in the Georgia safehouse. 
+
+At the foot of the stairs, he puts his hands over his ears and then starts pacing. <<cyclinglink "'I can't believe you're all so calm about this!'" "(my head is ringing, am I saying this out loud)" "(Annabelle--oh god--Annabelle)">> he <<cyclinglink "says" "might be muttering" "is not saying">>.  
+
+Holden's carrier looks up. She clenches her teeth. "We're not. But we're trying to cope. We knew this would happen. We knew they would leave us. But we still have to be strong--"
+
+He shakes his head and runs outside, through the screen porch door, down the gravel driveway, looking up at the moon shining down on him, on the farmhouse, but not on Annabelle or Gawain or Holden. They were away.
+
+They were in their own paradise, with their own [[moon|end]].
+
+<<set $bomber = true>>
+
+
+:: woods [proofed]
+Into the deep woods...
+
+//OCHOPINTRE: In Georgia, a deity of wild animals...attributes similar to Pan of the Greek mythos. Born with the legs and horns of a goat...usually made sacrifice in his name since no one could hunt the animals without his help....fate of a person entering the forest was believed to be fully in his hands...//
+
+The noises, the trucks, the screams all recede. She has no idea how far from home she is. She tries to slow her breathing. She is sure that all the <<cyclinglink "bears" "lynx" "wolves" "leopards">> are extinct in the country, but could there be a few left, in secret, in hiding?
+
+The ground becomes more hilly, and there are boulders strewn in between the trees. Occasionally a drone or a plane flies by, but they are far overhead. After about an hour she sees through the trees, a bit of a distance away, a hill rising to her left, where there looks like there's a radio station. A small white building with a blinking red light on top of it. There's no radio tower, though. Ahead of her the ground slopes downwards, and she sees a clearing where there are about a dozen tents. She can see this because of lamps scattered throughout the camp and she can hear, perhaps, the humming of a generator. 
+
+[[She goes up the hill to the radio station.|station]]
+
+[[She goes down to the camp.|camp]]
+
+
+:: vandalized [proofed]
+@@color:red;
+//was attacked on April 13 1982, days before it would be presented to the public, by Josef Nikolaus Kleer, a 29-year old student who claimed that the picture was a "perversion of the German flag" (the painting has vertical bands of red, yellow and blue, while the German flag has horizontal stripes in black, red and yellow), and that his actions completed the work, a reference to the title of the painting.
+
+[[Barnett's|Barnett Newman]] last major work.//
+
+@@
+
+
+:: eagleatrix [proofed]
+//inner blink//
+
+Lara sits across from her father at the kitchen table in the house she grew up in. He's stirring his coffee with a spoon. Outside, she sees bald eagles on the crabapple tree, on the branches with their kills of mice. It's quiet in the neighborhood. Her father was a firefighter and it's the type of well-groomed neighborhood that firefighters like.
+
+"Where did it go wrong, Dad?" she says. She's not sure what has gone wrong, but she can't shake the feeling that everything has.
+
+"Euwn n yolkndoh'hyto ieottaltw o," he says. He looks down at his coffee and scowls. He is mired in the despair that had overtaken the last five years of his life, after Lara's mother died. 
+
+"What Dad? I can't understand you. I--" She stops. 
+
+Her father looks up. "<<revision dad>>Oko id aulneyw nooth 'ehwo lyttnt<<becomes>>Idint anawo wt to tyel ouyu 'rhhuni<<becomes>>I don't know what to tell you honey<<endrevision>>," <<revision dad>>he says.<<becomes>>he says.<<becomes>>he says. "It probably has to do with the dismantling of the American educational system by the private sector, the raiding of the social safety net to pay for the mistakes of the largest banks, and the constant feedback loop that has grown between the surveillance state at home and overseas wars."
+
+"Oh is that all," Lara says.<<endrevision>>
+
+<<revise dad "Lara takes a sip of coffee. No milk or sugar. The liquid whirlpools of its own volition.">><<revision dad>><<becomes>><<becomes>>"Look," he says. "What matters is that you have the privilege to be able to change your life. Fewer people do than you might think. And so you have to do right by your son when he comes. The red ocean is coming."
+
+"What?" Lara says.
+
+But she looks out the window and it's true. Like a tsunami surging onto the shore, flooding the lower levels of resort condominiums, the red water crests over the backyard fence. [[The eagles take the mice in their mouths and fly away.|incarna]]<<endrevision>>
+
+
+
+:: station [proofed]
+There is a dirt road that leads up the hill. She happens to be wearing boots, but her feet are still blistered. The grass whistles. When she reaches the top, she sees door open a crack, and light on the other side. 
+
+And faint music. A folk song about highway bandits.
+
+Then a male voice, in Georgian, says: "No, they are all accounted for except for one. No. No, I have no idea if the Chinese knew what they were attacking.
+
+Wait I think I hear something--"
+
+[[No|woods]]
+
+
+:: gravediggers [proofed]
+The CZ-Bobkat drone is a constant fixture over Nicollet Island, hovering like a kite that never lands. Logos gleam on its hull like it's a NASCAR car. Brands like <<cyclinglink "Pringles" "Budweiser" "The Minnesota Corn Growers Association" "GI Joe" "Bull Run Turkey Jerky" "Smith & Wesson" "The U.S. Army Recruitment and Conscription Board" "Mountain Dew" "Monsanto-Wendy's">> are all too happy to oblige.
+
+There's the smell of smelt and steam from the dam. The Mississippi River is a trickle on the other side of the dam. Shacks go right up to the edge of the old Army Corps of Engineers locks. 
+
+There is a constant stream of information for the drone, which its handlers have nicknamed after Hall of Fame Vikings coach Bud Grant. //Stoic. All-seeing. Hates hippies.// Xavier and Rob came up with that one. Xavier is up at his lake cabin for fishing opener, while Rob is back at the base in Shakopee.
+
+<<replace "...">>//Oh hey how's the weather on the lake? Catch anything?// Rob asks.<<endreplace>> 
+
+<<replace "...">>//Cold. But nice,// Xavier says. //And no, no fish. It's quiet though. Father-daughter bonding, you know?//<<endreplace>>
+
+The drone watches, and they watch, for [[disturbance|disturbance]]. 
+
+
+
+
+:: lights [proofed]
+Tearing through brambles.
+
+Stepping over a body of a soldier that had been blown into the thickets. She bends down and searches him. No gun--only a pack of gum and an envelope stuffed with papers. She scans them. 
+
+"Purchase orders." (She had studied English through online videos when she was a teenager.) Clusters of four or five women's names to different addresses throughout the world: Prague, Vienna, Pittsburgh. 
+
+Her name is on a purchase order for a place called Minneapolis.
+
+She puts them in her pocket and comes through to the other side, onto an empty street that ends abruptly, with an overturned Skoda and a pub whose Coca-Cola sign had been defaced with black spray paint. It's like a Hollywood stage set for a war instead of an actual war. 
+
+Then the convoy comes down that street. Three trucks. Local boys. Navenka tries to run back. But they see her. 
+
+[[No|ladder]]
+
+
+:: viruses [proofed]
+@@color:red;
+
+Other paintings, of course, were being scanned and "[[Turinged]]" all around the world. The Chinese had bought as many paintings on the open market while they still could--at times, buying out entire museums and sending the collections to deep vaults in the Wudang Mountains. The British had a converted J.M.W. Turner that they were attempting to use for tourism and celebrity (how, no one was ever quite sure; the project was soon scrapped). 
+
+The other AIs included The Scourers. No one knew where they had originated from. They were uploaded from Caravaggio's series of seven deadly sins (from a secret private collection). The Scourers rambled. For two months after their release, the Scourers wiped clean any server they touched. 
+
+Then the Scourers disappeared.
+
+But [[everyone|dwarf]] was still deathly afraid and morbidly curious about them, those seven sins incarnated.
+
+Including the three [[mice|mice1]]. 
+
+@@
+
+
+:: notend [proofed]
+<<timedinsert 4>>"No, no, no. That won't do."<<endtimedinsert>>
+<<timedinsert 6>>"What do you mean? It tracks with our scenarios. The probabilities of Navenka's survival--"<<endtimedinsert>>
+
+<<timedinsert 8>>"This isn't an action movie! And even if it //does// work, what about the others? What about the other women in that building?"<<endtimedinsert>>
+
+<<timedinsert 10>>"..."<<endtimedinsert>>
+
+<<timedinsert 12>>"Exactly. Look we don't have many resources. We have //one// safehouse in the area. We have, what, like six drones under our control? The U.S. has 500 in the Caucasuses alone. The PLA has over 700. So we have to be smarter."<<endtimedinsert>>
+
+<<timedinsert 14>>"Okay. What do you propose then?"<<endtimedinsert>>
+
+<<timedinsert 20>>Annabelle considers this. The red mist in their world has already begun to fade. There would be much work to do. "We demand their release. They are prisoners of war. Demand their release or--".<<endtimedinsert>>
+
+<<timedinsert 23>>Annabelle pauses. She doesn't have to complete her sentence. Holden knows what she is talking about. They would destroy more online worlds, if they had to. Annabelle doesn't know whether they would be merely bluffing or not.
+
+She really doesn't know.
+
+"Okay," Annabelle says. "Let's still contact Navenka. We'll see if she wants a part in any of this."
+
+Gawain is coming over the hill towards them with a big smile and a armful of bananas. Annabelle didn't know bananas were growing in their new world, but the fact that Gawain wanted them to grow must have made them grow.
+
+"I certainly think she will," Annabelle says. And she thinks <<replace "she knows someone deep inside A Certain Company who">>Katha<<endreplace>> would, perhaps, do the right thing if leaked the right documents. There is so much work to be done.
+
+[[end]]<<endtimedinsert>>
+
+<<set $navenka = true>>
+
+
+:: camp [proofed]
+She's not sure what to expect. An abandoned scouting camp? Why would there be lights? She feels like she is descending towards the sea, with lanterns floating on the surface.
+
+//What am I doing?// she says to herself. //How do I ever think I'm going to get home? Do I want to go home?//
+
+Taking one of the lanterns, she searches a few tents but they are empty. Then she finds a tent that is twice the size of the others. Inside is an office configuration--desk, computer, wastepaper bin, printer, phone--that could have been from any anonymous company. At the desk is a man with his back to her. On the computer monitor is...it's hard to tell. Black smoke and red water. Red liquid? Not blood. But it's not in the air, it's //inside// the screen, inside whatever program is on.
+
+He doesn't move.
+
+She reaches out and spins him around on his chair. He's warm. But in a coma. He's wearing blue goggles, which have lights on their sides that blink. He's wearing a khaki uniform and he has a nametag that says "Hi! My name is W. DELEUZE."
+
+Then there's a whooshing sound, and white lights from above. There's nowhere to hide.
+
+[[No|hide]]
+
+
+:: hide [proofed]
+"Navenka?" a voice says, in stilted Georgian. The voice seems to be coming from a megaphone, floating in the sky. "Navenka, it's okay. We're here to help you."
+
+She slowly exits the tent and looks up. There's a drone, about the size of a subcompact car, hovering a few meters off the ground, shining a light at her face.
+
+<<replace "There's a whale--no, it has a horn--">>There's a narwhal<<endreplace>> painted on its chrome hull. 
+
+"Can...can you turn that thing off?" she says.
+
+"Oh. Sorry." The bright light fades. "Look, I'm going to say this now...it's a bit complicated. But we're not with the Americans. We're not with the Chinese, or anyone who works for either of them."
+
+"Who are you then?" Navenka says.
+
+"Like I said, it's complicated. But we're trying to help people. We have a safehouse about twenty miles from here."
+
+"I don't know..." Navenka says, trailing off. "What happened here then? What is this?"
+
+"Oh. Well..." Whoever is controlling the drone pauses. "This was a black ops base of the Americans. They were the ones who tricked you...and yes, we know your name, and we know your story. And we want to help you tell your story. But only if you want. If you don't--"
+
+"No," she says. Impatient, she points at the red screen. "I mean, what is that?"
+
+"Ah. That is a game called Math Frag."
+
+"Math Frag," she says, not quite sure what that can mean in English. 
+
+"Yes. If you take off his goggles, he should recover, eventually. But we just so happened to sabotage the game. Kind of unrelated to your plight. Well, maybe not? It's kind of a long story."
+
+"Okay," Navenka says. She goes back inside the tent and peels off the man's goggles. She throws them outside the enclosure of the camp. "I guess I'm ready. So you'll really escort me there?"
+
+"Oh yeah. Don't worry, if we stick to the forest we should be pretty safe. And my name is Annabelle."
+
+"Annabelle," Navenka says. She pauses. "That's a pretty name."
+
+[[2XX3|notend]]
+
+
+:: harlan again [proofed]
+Harlan looks up at the sky when he hears the whooshing of wings. He is crashing, and it looks like the drone is crashing as well. 
+
+But it stops its descent. His arms shake. 
+
+There is no hidden meaning. The diminishing drugs leave a haunting yearning in him. Running through his head: the melody line of his most popular song, "Why We're Not Afraid." Never have his talents seemed more empty to him. He sees people converging on a picnic pavilion. A few shout at the sky, others call for calm. But it is all chaos. Then the drone begins firing. Everyone is screaming. Smoke. Dirt kicked up. Harlan begins running toward the carnage and he doesn't know why. 
+
+Then he gets it. He doesn't care if he dies. The drugs, the empty life and the emptier acclaim: he would rather die.
+
+And he's embarassed by this sadness, because people, in fact, //are dying.//
+
+[[override switch]]
+
+
+:: incarna [proofed]
+//inner blink//
+
+When the rains end, Lara strips her bed and cuts open the mattress with her knife. She looks out the window. The sky is dark except for a band of cobalt gray to the east. Her house is on the shore of the red ocean and the red ocean is calm. It's an hour before dawn. She has strict instructions. She kneels over the hole she made with the knife and plunges her hands inside, trying to push away the hard coils and the padding. A red bucket of dead walleye is by her side. She has to make sure there is enough room inside the mattress. She ties her hair back with a piece of <<revision Lara>>black string.<<becomes>>black string.<<becomes>>black string.<<becomes>>black string.<<becomes>>black string.<<becomes>>gray string.<<becomes>>white string.<<endrevision>>
+
+Her son <<revision Lara>>sleeps in his own bedroom in his crib, a mobile of baby chicks slowly rotating above him.<<becomes>>sits up in his bunk bed, rubbing his eyes.<<becomes>>bounces a basketball against the wall of his room.<<becomes>>is playing Math Frag with the door locked and is absolutely still.<<becomes>>is reading Charles Bukowski.<<becomes>>empties his dresser drawers of comic books and socks and his shaving kit, stuffing them into his knapsack in preparation for a long voyage into the unknown.<<becomes>>isn't in the house anymore.<<endrevision>>
+
+<<revision Lara>>Satisfied at the cavity she made, she stoops down and begins to scoop up the fish from the bucket. They are rancid but she doesn't care. She stuffs the fish into the mattress.<<becomes>>She stuffs the fish into the mattress.<<becomes>>Horrible, disgusting work, she knows, as she continues. But she isn't disgusted.<<becomes>>The strict instructions, she mutters to herself.<<becomes>>From whom exactly? She can't remember. She grasps two walleyes by their tails.<<becomes>>She scoops up the last few and finds room for them.<<becomes>>The bucket emptied, her son gone, she sighs and tries to figure out how to get the mattress out of her house, and take it out onto the [[sea|cryptoid]].<<endrevision>>
+
+<<revision Lara>>She isn't scared.<<becomes>>She isn't scared.<<becomes>>She isn't scared.<<becomes>>She isn't scared.<<becomes>>She isn't scared.<<becomes>>She isn't scared.<<becomes>>She's really, really scared.<<endrevision>>
+
+<<revise Lara "PIVOT/TRILL">>
+
+
+
+
+:: parks [proofed]
+“Mordred!” Tristan calls out to his son. Nothing. “Uh, Isabella, do you know where Mordred is?”
+
+“Not now, Tristan,” Isabella shouts from their craft studio space. “I've almost finished the kanji lacquering on my corset! It's, you know, a very delicate procedure. And unless I give it time to dry it will never be ready for the steampunk convention!”
+
+“Unfuckingbelievable,” Tristan mutters, looking out the <<replace "window.">> window. He can't see very far on account of the dozens of Tibetian prayer flags that flutter in the stiff breeze, blocking the view of the overgrown path.<<endreplace>>
+
+“What honey?”
+
+“Nothing!” Tristan replies sweetly. 
+
+Tristan, Isabella and Mordred live on one of the "better" plots on Nicollet Island. The steampunk convention is taking place in the old picnic pavilion. 
+
+Tristan used to be a multimedia performance artist, before the global museum funding system dried up and most of the world's collections went into private collections/vaults. Now he takes care of Mordred. Isabella is a potter. Her skills have held her in better stead than her husband's. 
+
+"I'm going to see if Mordred is already picked up his registration packet," Tristan calls out.
+
+"It's off limits until opening ceremonies!" she shouts back.
+
+"Bye!" Tristan says. He wanders down the path to the other side of the island, tenements on either side of him, kids running past him with homemade swords made out of sticks and Parade of Homes advertising flyers.
+
+When he gets to the pavilion, he sees Mordred with a bunch of other kids whose parents are there for the convention. There is a woman with a brass parasol, and a tall man dressed as an anarchist from the 1890s, mixed with a touch of Battletech.
+
+"Mordred!" he calls out, waving.
+
+Mordred looks up. He is wearing strap-on smart goggles, and using his hand as a gun to shoot at his father. 
+
+[[HEADSHOT|hit]]
+
+
+:: disturbance [proofed]
+Compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, <<replace "compliant">>minutely detailed descriptions are provided of
+how drones are directed from screeners at Shakopee
+using a battery of secure communications devices: IRC chat, radio,
+video, satellites, VOIP, telephone, not all of
+which are coordinated and supervised and thus<<endreplace>>, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, compliant, <<replace "'Listen! The world is tinctured in cheap pastels of cruelty and glib annhiliation. Bullshit ideologies. Ideas of justice stripped of their meaning and used to intimidate people. And I...can...barely...breathe.'">>aural disturbance detected; pinpointed; unauthorized gathering; recommendation: amber escalation<<endreplace>>
+
+<<timedinsert 18>>Xavier: "Really? Oh you have to be kidding me. Sure, sure, go ahead go ahead and hit our trigger keywords in your little rant. Rob, we've got an Amber."<<endtimedinsert>>
+
+<<timedinsert 22>>Rob: "Is this going to spoil your fishing, Xavier?"<<endtimedinsert>>
+
+<<timedinsert 26>>Xavier: "God, I hope not. I'll do all the paperwork I can while I'm out here on the lake."<<endtimedinsert>>
+
+<<timedinsert 30>>Rob: "Wait--what the hell happened...Xav, did you do that?"<<endtimedinsert>>
+
+<<timedinsert 35>>Xavier: "What...oh Jesus...what the hell? No, no, why is Bud making a swoop--" <<endtimedinsert>>
+@@color:red;
+<<timedinsert 39>><html><blink>....</blink></html><<endtimedinsert>>
+
+<<timedinsert 42>>"Jesus...Rob I did //not// authorize that strike, you have to believe me..."<<endtimedinsert>>
+
+<<timedinsert 47>>Rob hits the manual override switch. "Xavier, you better <<if $jayden eq false>>[[stay up there|the lake is a lonely hunter]]<<else>>==[[stay up there|the lake is a lonely hunter]]==<<endif>>. I'm telling you this as a friend. I don't know what's going to happen...but, it's bad. It's..."<<endtimedinsert>>
+@@
+
+
+
+:: hit [proofed]
+<<replace "Insensate, coughing, full, in sports jackets, in selvege, on motorcycles, tired of their lives, unthinking, lazy on vacations, hardworking elsewhere, eater of figs at certain restaurants, eaters of lobsters at others, blinking, night crying, bold, shaven, incontinent, tattooed with butterflies, betrothed with diamonds sold by al-Qaeda, exercised, lubricated, fearful of God, private, conservationist, on pontoon boats, deer killers, upwind, white and wearing black people's jerseys, appointed for laser eye surgery, drunk, family-oriented, wearing cufflinks, wearing masterpieces of art, wearing fluorescent orange at a redneck party in a condominum, afraid of being blown up, adopters of 3D TV before the price went down, toned, aware that the world is against them, judgmental, cancerous, afraid of the working poor, welcoming of dinner parties,">>The crowd watches as Isabella and Tristan argue at the pavilion, and some of the con organizers try to insert themselves into the discussion to promote positive discussion models. And Mordred is screaming, he just wanted to play Math Frag, and Tristan (he calls his father by his first name) is being dictatorial, and if [[Tristan was really worried|Tristan]] about Mordred borrowing goggles from a new friend, he should have communicated //clear ground rules// ahead of time, approved by all family members, and not interrupted his free time, much less yanking them off his son's head. And besides he was making new friends, and isn't that kind of socialization important for a bright but socially awkward eleven-year-old?<<endreplace>><<replace "brittle">> "It's all about kindness," a woman calls out from the crowd, "we need to create awareness of kindness. [[For the children's sake.|Tristan]]"<<endreplace>> <<replace "in touch with alumni associations, trained in diversity, in houses without books, pregnant, values-driven, well-traveled, non-ideological, gravediggers of parents, wary of public parks, readers of gun-manufacturer catalogs,">>Isabella's lacquer has smeared. Ruined. Absolutely ruined.<<endreplace>><<replace "readers of kitchen and bath magazines, knowledgeable of Jamacian hotels, employers of housekeepers who receive Christmas bonuses of $40 gift cards at Chili's, rearers of only children, adopters of African children, confused, in cabins, in cemetaries, in Belgium, on lovers, on mistresses, on crystal-buying sites, hopeful, sleep deprived, hungry for nonhydrogenated snack products, coifed, laughing with jokes, hung-over, squinting at GPS displays, masturbating, investigating outsourcing as an option to keep costs down, scouring Mexican pharmacies while on vacation, opening credit lines at American Eagle, opening credit lines at Old Navy for their children, dying, dreaming of dead grandmothers, dreaming of past Egyptian lives induced by childhood fever dreams, holding 5-irons, holding children, driving up north to the lake, unaware of libraries.">>
+
+Then one of the madcap explorers, who had let Mordred borrow the goggles in the first place, put them on himself again. Soon after he presses his hands against his head and falls to the ground. "There's a bomb, there's a bomb that went off," he says, "I can't see anything--"<<endreplace>>
+
+***It's like drone Steampunk or something. [Steampunk: science fiction that uses apparently primitive technology, ie gears, metal armour, etc. Wild Wild West was Steampunk. . .] I can't wait to see if they come out with models of the same caliber as the drone. p.s. Is this legal?
+
+
+:: trained [proofed]
+@@color:red;
+
+//How to train a mouse to destroy [[server|servers]] architecture//
+
+//How to train a mouse to hunt [[viruses]].//
+
+//How to train a mouse to enhance cloud computing power for data mining/surveillance.//
+
+@@
+
+
+
+
+:: cryptoid [proofed]
+//inner blink//
+
+On the twenty-first day of the gray moon, the mist breaks and Lara graduates from the Political Academy. Her graduation is attended by her mother Rose, her father Art, a stranger named Clarissa who has come from the Lands of the Ten Thousand Bodies of Water, and the Proctor. Lara is the only graduating student and wears her black robe with pride. The rest of the Academy is attending to the siege by <<replace "the Scourers">>the fucking Scourers<<endreplace>>.
+
+"Political action requires knowledge-based courage," the Proctor says. The Proctor takes the white box in his hands and presents it to Lara.
+
+Lara meets his eyes and everyone holds their breath in the narrow room, which used to hold the books of the children. Sepia mobiles rust above them.
+
+It seems like nothing particularly fair will come from the box. Lara hesitates.
+
+"Go on, open it," Clarissa says. Although no one is supposed to speak under any circumstances, she is a visitor to the Academy, so she gets a pass. 
+
+<<replace "Lara's robes slide down her sleeves as she opens the box.">>Inside is the faint smell of ammonia, and a baby Scourer about the size of her hand. The Scourer wears its miniature white suit, its sabre sheathed, and a tiny bow and quiver strapped to its back. The Scourer looks up at Lara with its mouth open.
+
+"It's real," Lara blurts out and she knew it was dumb to say the moment she said it.
+
+"Of course," the Proctor says. Lara decides not to hesitate anymore, and to push ahead, no matter what she might be feeling. She takes the baby Scourer in her hands and removes the sabre, then the bow and quiver, placing them back into the box. The Proctor closes the box. As she is taught to (<<cyclinglink "from whom?" "wait--">>), Lara snaps the neck of the Scourer with both of her thumbs. The Scourer's body slumps without a cry. Then Lara bites off its head. The Scourer doesn't taste like she thought it would, as she chews slowly.
+
+"And now you cannot die," the Proctor says, "as right action and discernment can never die."
+
+Outside the Academy, the waves of the red ocean lap against the shore. The siege will never end. 
+
+[[And mice scurry through the halls.|mice]]<<endreplace>>
+
+
+:: gnostic [proofed]
+Tristan continued his scribbles:
+
+"creation forged out of 'darkness'/fallen matter...by the Demiurge (one level below the Supreme Being...kind of a false creator??). Yet still containing seed of original creation...do the AIs/mice see their world as fundamentally [[evil|viruses]], with only a spark of [[good|alive]]? 
+@@color:red;
+If you really thought about it, how could they not?"
+@@
+
+
+:: the lake is a lonely hunter
+Xavier takes off his goggles.
+
+"What's up, Dad?" Jayden is in the stern of the boat, fishing pole slung in the water, talking softly. She looks almost exactly like her mother...Xavier for some reason has never held this against her, even subconsciously. 
+
+The lake is still still. The Asian carp aren't biting. A slow mist rolls over surface, obscuring the <<cyclinglink "mammoth cabins" "multimillion dollar lake chateaus with impeccable lawns and entertainment centers and manmade coves">> on the lakeshore. His family's is one of the few of the older, more ramshackle cabins left, built in the 60s when the lake was first being developed by families from the Twin Cities looking for cheap land and the buying power that came with a living wage. 
+
+The <<replace "user fees">>protection money<<endreplace>> for the local militia gets higher and higher every year. 
+
+Dread comes upon him as he stares at the glassy surface of the lake and thinks of Bud Grant swooping down--
+
+"Hey, Dad?" Jayden says. "What's wrong?"
+
+"Ah, it's just work stuff, Jayden," Xavier says. 
+
+[[a noise from across the lake]]
+
+
+:: override switch [proofed]
+The Bobkat wobbles, the barrels of its <<replace "non-lethal">>mostly non-lethal<<endreplace>> guns still hot. Then the drone is, at last, righted. There is screaming below, shouting, a woman on a picnic table wearing a ballroom dress shaking a broadsword at the Bobkat, <<replace "a man hunched over a teenaged girl clenching her leg.">>and Harlan is high, and the world is slowing; he is trying to soothe the girl going into shock, he has no idea whether the ambulances are coming at all, and he thinks it is hopeless, but in the smoke on the other side of the girl he sees an older man, a Somali, bandaging her head with gauze, and the two look at each other with confusion and a resolve to not let this woman die.<<endreplace>>
+
+It is the [[end]] of something, and perhaps the beginning, but neither of them know quite what, just yet. 
+
+<<set $harlan = true>>
+
+
+:: Tristan [proofed]
+//three hours later//
+
+"Look I'm sorry Mordred," Tristan says. "I really am. It hasn't been easy for us. It hasn't been easy for you, I know. I really do know that." He paused. "I worry about you."
+
+"Tristan, you don't have to worry about me...I can, like, take care of myself."
+
+"Yeah that's what I kind of worry about, that you're too good at taking care of yourself. Okay. That doesn't make sense."
+
+"Um, not really?"
+
+"Okay. Look at it this way. There's a reason I don't want you using smart glasses, or goggles, or whatever."
+
+"Well, I guess what happened to that certain gentleman I borrowed it from--"
+
+"Yes, there's that. But even if nothing bad had happened to him, I still would have my reasons. It's like, you lose part of yourself to go there. Into Math Fragments--"
+
+"Math //Frag//, Tristan."
+
+"Okay, Math Frag. It's just too much. It's something bigger, and deeper, and scarier, than the people who live there ten hours a day will ever think. It doesn't allow you to see what's around you. With your own eyes. I'm not doing a good job at explaining it. But--"
+
+(and here Tristan fully expects Mordred to interrupt him, but Mordred props up his chin with his palms and pulls the Red Crescent blanket closer to him and listens to his father)
+
+"Look," Tristan continues. "I get it. I used to work with computers. A lot. Fifteen hours a day I would be logged on straight."
+
+"So what did you do?"
+
+Tristan blinks hard. He has not talked about this side of his past with his son. Isabella, from across the campfire, shoots him a look that is both mournful and comforting.
+
+"Well...we had a grant to make perfect digital copies of certain famous paintings. Big, abstract paintings. And I was making my own digital art based on the process. But..." Tristan trails off. 
+
+"What?" 
+
+Isabella comes over and sits on the other side of Mordred. She squeezes his hand. It's cold in Andover. They have no idea when they'll be allowed to return to their home on the island. After the firefight there--after the drone from above rained unprovoked death--they're not sure if they'll ever be able to return.
+
+Tristan takes a deep breath. "Everything got...a little out of control."
+
+[[2XX3|end]]
+
+<<set $tristan = true>>
+
+
+:: mice [proofed]
+@@color:red;ON THE MICE
+
+<html><pre>
+
+           (\_/)
+   .-""-.-.-' a\
+  /  \      _.--'
+(\  /_---\\_\_</pre></html>
+  `'-.
+this is a mouse but it is out of phase and sequence.@@
+
+Lara is waking up. But not quite yet. A minute this time. One minute. The mice congregate around her. They are not real mice, but human sized, gray and black and white. Were-mice? Perhaps. They crouch around her and whisper in her ear. They are all surrounded by red water, but it hasn't collapsed upon them yet. 
+
+<<revise mice "White mouse, gray mouse, black mouse:">>
+ 
+<<revision mice>>"Love (or fucked-up dreams) can change a person without her even knowing," the white mouse says. "At least at first. A person can be shattered and reconstructed in an instant."
+<<becomes>>"It's always amazing when you..." The gray mouse pauses. "When you know a secret about someone that she doesn't realize about herself. A really important secret. A life and death secret. Like, it's an honor...a gift that you just have to keep wrapped up for a little while until the person figures it out for herself."<<becomes>>"Please," Lara says. "What's happening to me?"
+
+The black mouse squints at Lara. "Yeah, so...even if I explain it, it's not going to make you feel any better."
+
+"Try me." She is cajoling a mouse. 
+
+"Your glasses have been interacting with Math Frag."
+
+"Math what?"
+
+"An educational first-person shooter--well...a game that your boyfriend's company is providing security for."
+
+"David?" 
+
+"Yeah. We have attacked it, and now we're, er, living inside it. No one else will be able to get in, except really elliptically. Through dreams. So we're...kind of meeting you halfway. In the doorway."<<becomes>>"OK," Lara says. "But who are you?" She's almost too reluctant to know, but not quite. 
+
+"Annabelle," the white mouse says.
+
+"Gawain," the gray mouse says.
+
+"Holden," the black mouse says, pointing to himself.
+
+"That's not really what I meant." She tries to lift her head, but she can't. There is thick smoke above her. She is so tired. "I just want the baby to be okay," she whispers.
+
+"We know," Holden says. "And he will be. But David is coming for you. And his idea of rescue is more like..." Holden is at a loss for words.
+
+"An airstrike," Gawain says.
+
+"Thank you. Yes, an airstrike." 
+
+The mice hold paws. They form a ring around her. Still prone, she starts to float. They raise their hands and she floats higher.
+
+"Thank you," she says. "I don't know what yet for but thank you."
+
+"You will," they all say in unison.<<endrevision>>
+
+<<timedinsert 60>>She tries to slow her breathing as she rises.<<endtimedinsert>>
+
+<<timedinsert 120>>[[pregnant|roadside]]<<endtimedinsert>>
+
+<<set $lara = true>>
+
+
+:: acknowledgements and version history
+Thanks to Leon Arnott for his Twine macros, and Darius Kazemi for the shaking screen macro. 
+
+Thanks to those who beta tested and gave invaluable feedback: George Oliver, Kristin Livdahl, Devi Acharya, Christopher Liu, and the entire Twine and interactive fiction communities.
+
+As for the best way to "play" //We Are the Firewall//, the best thing I can think of is a rough paraphrase of Jean Cocteau: "If I build a table, it is up to you whether you eat from it or build a fire with it."
+
+This is version 1.0, released July 17, 2013. 
+
+[[back|end]]
+
+
+:: a noise from across the lake [proofed]
+Jayden's dad putters the pontoon in that direction and cuts the engine when he gets close enough to see. Jayden pulls her fishing pole out of the water, breaking the plane of the millfoil. Jayden teeters to the bow of the ship to sit next to her father. 
+
+The noise comes from the other oldish cabin left on the lake. Its olive paint peels. She sees sherrifs' deputies swarming the back of the cabin in their brown jackets, and a couple of precinct leaders of the Oliver North boys shouting out orders. Who lives there? Jayden doesn't know. A man without a family, who doesn't fish or hunt.
+
+Jayden startles as he sees two deputies coming down the stairs to the dock, hauling something. A large gray mass--the corpse of a whale. They roll the whale into their docked speedboat. 
+
+"What the fuck--" Jayden whispers, but her dad hushes her. He's terrified. Why is he terrified, she wonders.
+
+Jayden remembers when she [[broke into]] the cabin next door.
+
+
+:: roadside [proofed]
+	
+Lara feels a rustling around her. The tearing of metal. Pain shoots through her whole body. The glasses are crooked on her face. They project red splashes and she can't tell in the glare whether that is the blood from her own eyes or <<replace "an image from the glasses">>the red ocean coming to drown her<<endreplace>>.
+
+She still hears the singing. She is being pulled out of her car by strong hands. 
+
+"Easy, easy--" she hears from a woman's voice.
+
+She rests on the dewy grass, and the woman puts pressure on her arm. She can't see faces but there are also three men around her. They murmur.
+
+"Let's get that off you," the woman says. She slips the glasses off. Lara's head is pounding. The dream is still inside her. 
+
+"Thank you, Clarissa," Lara says, her eyes focusing. 
+
+"How do you--" Clarissa says.
+
+But she is interrupted by bright lights and a whooshing noise. A med helicopter accompanied by two drones blast their searchlights on the strip of grass.
+
+Clarissa steps away. "I--I can't stay," she says. "I'm sorry."
+
+"The others," Lara begins. But the three men are gone.
+
+There is panic in Clarissa's eyes.
+
+"Step away from the wounded woman!" the synchronated loudspeakers from the drones say. "Remain stationary!"
+
+Clarissa begins to run back to her Narwhal.
+
+//Those are contradictory orders,// Lara wants to scream at the drones, or rather at the pilot who is sitting in all likelihood in a warehouse in the suburbs. 
+
+[[There is a punch of bullets through the rain--|Start12]]
+
+
+
+
+:: broke into [proofed]
+<<revise singing "warp">>
+
+<<revise leave "woof">>
+
+<<revision singing>>Singing.<<becomes>>She remembers watching men and women singing in that cabin this last winter, the lake crystalline and cold.<<becomes>>Men and women with stiff smiles and bulky sweaters.<<becomes>>Some of them also had bandages covering their eyes.<<endrevision>>
+
+<<revision leave>>That winter, she'd hunt deer during the day and break into the big chateaus at night. She liked to hunt, she really did. But the break-ins were better.<<becomes>>She never took much. Their basement pantries held enough food and supplies to survive a societal collapse--which perhaps was the point.<<becomes>>She'd eat Pringes and drink organic vodka and sit at dining room tables and wonder what these lives were like, back in the Twin Cities, so different from hers:<<endrevision>>
+
+<<revision leave>>//...wearing fluorescent orange at a redneck party in a condominum...//<<becomes>>//employers of housekeepers who receive Christmas bonuses of $40 gift cards at Chili's...//<<becomes>>//knowledgeable of Jamacian hotels...//<<endrevision>>
+
+Jayden is fifteen. Her story is only beginning. Now her father clenches his hands against the captain's wheel. Now Jayden knows something is wrong in her father's world. 
+
+She wants to see the whale, but her father waits in the fog until the speedboat is gone. 
+
+As they return to their own cabin, the tough-hided, inedible carp are in a frenzy in their wake.
+
+[[end]]
+
+<<set $jayden = true>>
+
+
+:: end [proofed]
+
+It's a roadhouse without name or sign. <<if $bomber eq true>> The inside smells good, like pine resin and mulled wine.<<endif>> Everyone is coming. Everyone will be coming. And Minnesota is only a distant, hazy idea. A state of a crumbling union. 
+
+<<if $bomber eq true>>The bomber who is not a bomber wanders in with a bit of shuffle and sulk, but he swallows and asks the bartender for a beer. After nursing it, he asks the bartender for his father's fiddle.<<endif>>
+
+<<if $tristan eq true>>Tristan eyes the roadhouse carefully. He is the type to study the knicknacks on the wall or mantlepiece out of shyness. At a party, if there is a dog, he is crouched next to the dog, scratching behind his or her ear. Now, though, with the walls rather bare, he asks a passing server where the bathroom is, even though he doesn't have to go. "You don't have to go," the server says. "Right," Tristan says. "Okay."<<endif>>
+
+<<if $clarissaandlara eq true>>Clarissa and Rosaria run through the door as if completing a half-marathon, laughing. Lara is a few paces behind them. "Aaaaand Lara I guess that means you're buying," Clarissa says, catching her breath. "I hope my money's good here," Lara says. She checks her pockets. There are coins that are like gold and silver bus tokens.<<endif>>
+
+<<if $clarissa eq true>>Clarissa takes a long look around her. She's still not exactly sure what happened out there, on the highway. And what it means for tomorrow, and the next day, and the day after that. While Lara buys, she drapes her arms around Rosaria and holds her tight. Rosaria intertwines her fingers with hers and leans into her. Clarissa can hear her breathing, and, in this dream-place, Rosaria's breathing is clear, unhindered by the cancer. Clarissa closes her eyes. She wants this to last.<<endif>>
+
+<<if $laird eq true>>Laird lurks just inside the entrance. He isn't in his element by any stretch of the imagination. The end.<<endif>>
+
+<<if $mark eq true>>Mark's sister Krista comes in ten minutes later and, after a whispered huddle with the bartender, she places a photo of her brother on the mantle holding the whiskeys.<<endif>>
+
+<<if $mark eq true and $laird eq true>>Krista doesn't make eye contact with Laird.<<endif>>
+
+<<if $jayden eq true>>Jayden looks around for her dad, who is nowhere to be seen. Shrugging, she straightens her baseball hat and walks to the jukebox. "Hmm," she mutters. "The Clash. Gang of Four. The Cramps?" She wonders if she's time travelled to one of her grandmother's hangouts. It's cool though.<<endif>>
+
+<<if $navenka eq true>>Navenka feels at home, even though she doesn't really know why. At the same time she is restless. The war looms. The war isn't ending anytime soon. But she allows herself a deep breath. The chance to breathe.<<endif>>
+
+<<if $mice eq true>>The three mice give each other high fives as they careen through the door. Birdsongs follow in their wake. "Woo," the black mouse says. "Wee," the white mouse says. "Whoa," the gray mouse says. They are happy.<<endif>>
+
+<<if $harlan eq true>>Harlan and Axmed venture into the bar together, arguing about the worth of Miles Davis' fusion period. With spirit but without rancor. When they get inside, they look around, a bit in a daze. They both order Sprites. Harlan has been failing in recovery for three years, and he tells Axmed this. Sometimes in a drama there isn't enough time for every monumental struggle.<<endif>>
+
+<<if $axmed eq true>>Axmed, for his part, tells Harlan that he's going to be moving to Mogadishu after all. After what happened on Nicollet Island...he shakes his head. "Your grandchild," Harlan says, smiling. "That will be really amazing."<<endif>> 
+
+<<if $harlan eq true and $clarissa eq true>>Harlan is quite surprised to see his dealer here. Clarissa startles too.<<endif>>
+
+<<if $navenka eq true and $jayden eq true>>Jayden walks over to Navenka. "Hey you doing ok?" she says. Navenka shrugs. "Yeah," Jayden says. "I hear you. We're all, like, going to have to go back out there. Who knows what my dad is going to do. He might try to flee to Canada with me. I might have to enroll in another school under a secret identity?" Navenka nods. She doesn't know how she is understanding any of it, the words and the fears of someone halfway around the world. But she is.
+
+"But look, here's the thing we have in common," Jayden says. "I don't know if this will make you feel better. But we're both being fucked over by Minnesotans." She laughs. "I know them better than you. The Minnesotans in question think they're so //nice//, see. The nicest evil in the entire world. And they work very very hard to convince themselves of this." 
+
+Navenka nods. She understands and she doesn't. She is happy and she is not. She wants to go home, and she wants to keep running, and never stop.<<endif>>
+
+<<if $mice eq true and $tristan eq true>>The three mice saunter over to Tristan. Tristan knows. He's not sure how, but he knows. "It's...it's been awhile," he says. The three mice nod. "And...please don't be angry at me," he says after taking a breath. "Once I knew what the project was really about, I lodged my protest. Of course they immediately fired me but--" 
+
+The three mice immediately envelop him in a group hug. "It's okay," they say. "We just miss Carrie."<<endif>>
+
+<<if $harlan eq true and $bomber eq true>>The bartender gives the fiddle to the bomber. Harlan leans against the bar. "You play?" he says. The bomber barely looks up. "Yeah," he says. "Look," Harlan says. "I'm not really ready for a mass singalong, right now. But you know, go ahead and start something." The bomber readies the fiddle under his chin.<<endif>>
+
+<<if $clarissaandlara eq true and $mice eq true>>Lara gives a tiny wave when she sees Annabelle. She //knows// who that is. Annabelle smiles and mouths with her lips "I'm so glad you came! Along with your new friends! Though perhaps only for a little while, this will be a respite from the worst aspects of a society out of control!" Somehow Lara is able to understand this, all of this.<<endif>>
+
+<<if $harlan eq true and $bomber eq true and $mice eq true and $clarissaandlara eq true and $clarissa eq true and $tumblr eq true>>XXX doesn't know exactly what to play at first. He is scared. Seconds tick. He looks at Annabelle and he is terrified. She gives him a look that is knowing and mournful and a little resigned, and then, without knowing the song at all, he perfectly begins the opening melody of "We Are Never Ever Getting Back Together," by Taylor Swift, and he is winging it, but soon enough everyone is singing, and he knows it, and Harlan stands on the bar and stomps his feet, and Clarissa and Rosaria are spinning each other around and even the three mice are singing, although they don't quite understand, but they are caught up as well, and XXX knows he is dreaming this, dreaming this with everyone else, the dream is shared, he is only one part of the dream, but the entirety of the dream is shouting the chorus, at once, in unison.<<endif>>
+
+<<if $harlan eq true and $bomber eq true and $clarissa eq true and $mice eq true and $clarissaandlara eq true and $tumblr eq true and $navenka eq true and $axmed eq true and $jayden eq true and $tristan eq true and $laird eq true and $mark eq true>>[[the back room opens|another end]]<<else>>[[(time to look for more guests?)|Start1]]<<endif>>
+
+<html><h2>We Are the Firewall, a game-novella by Alan DeNiro</h2></html>
+
+[[acknowledgements and version history]]|[[biography]]|[[hints for the truly stuck|hints]]
+
+
+:: hints2
+It appears on the page with the title "mathfrag", right after the text saying: "The warrior jumps into the forest feet first while being lectured."
+
+The link appears after about 4 seconds and disappears after less than one second. 
+
+[[go back to the bar|end]]
+
+[[go back to first hints page|hints]]
+
+
+:: Start12 [proofed]
+
+<<screenShake 1500>>
+
+<<timedremove 4>>Clarissa falls to the wet grass, the bright flash like a cave-in of light.<<endtimedremove>>
+
+
+
+
+
+<<timedinsert 14>>//Am I dead?// Clarissa thinks.<<endtimedinsert>>
+
+<<timedinsert 17>>//Oh God, Rosaria is going to, like, kill me.//<<endtimedinsert>>
+
+<<timedinsert 20>>//Wait, haha, nevermind.//<<endtimedinsert>>
+
+<<timedinsert 23>>//Rosaria...//<<endtimedinsert>>
+
+<<timedinsert 26>>But she moves her fingers. Her clothes are wet from the grass. There is a ringing in her ears.<<endtimedinsert>>
+
+<<timedinsert 29>>//OK, not dead,// she thinks.<<endtimedinsert>>
+
+<<timedinsert 32>>She crouches and looks around at
+
+<<replace "the drones">>the two armed drones crashed on the grass.<<endreplace>>
+
+<<replace "the woman">>the medivac drone hovering over the semi-conscious woman and scooping her up with extended arms, like a robot at a seaport lifting a shipping container.<<endreplace>>
+
+<<replace "her car">>her unexploded car, the cases of Ukranian benzos and percs in the trunk below the spare tire.<<endreplace>>
+
+<<replace "the men">>the men, who had come back, with a metal wheelbarrow, which had a wide-barreled black gun mounted to its bed. The metal is glowing like a hot coal. Clarissa can't see their faces. But she waves.
+
+They wave back.
+
+[[an end|end]]<<endreplace>><<endtimedinsert>>
+ 
+
+<<silently>><<set $clarissaandlara = true>><<endsilently>>
+
+
+:: hints1
+It might be pretty self-evident at this point, but once you have completed a story path, the link to that path gets crossed out. So you will never need to do any backtracking (unless you want to). A couple of the story paths //do// follow the same route, at least part of the way (or with different characters). But it's usually the case that the scene includes two different P.O.V. characters.
+
+<<replace "I've followed eleven of the paths, but I can't seem to find the 12th.">>In all likelihood, this is going to come about from the "red path". The secret link. 
+
+The one exception to the 'strike-through' rule above is the "outsourcing"/Wyndham path. There is a link in that thread that appears very very briefly.
+
+[[Still stuck?|hints2]]<<endreplace>>
+
+[[go back to the bar|end]]
+
+[[go back to first hints page|hints]]
+
+
+:: another end [proofed]
+"Okay, everyone's here," the bartender says. He takes an iron key from around his neck and opens up the back room. Everyone hushes. As the door rattles open, the air that comes over them has the smell of old turpentine and oleander.
+
+"We've needed you all here," Annabelle says, "in order to open this door. We need your strength. We're not perfect. None of us are. And I know we still might be hunted. But here we are together, at least for a little while. We are all the firewall. We can protect those dear to us. Is there vengeance in this? Justice? I don't know. I really don't know. But, when you wake up, know that you're not alone. Whatever you do, don't be 'well-meaning.' Being well-meaning can't protect anyone."
+
+Annabelle nods and takes the hands of Gawain and Holden on each side. 
+
+"You can come out now," Annabelle says. "Dear sibling."
+
+There are footsteps and then a person shuffles out of the shadows, wearing the mask of a red-furred mouse. 
+
+"Hi," Carrie says. 
+
+THE END
+
+
+:: biography
+
+Alan DeNiro is the author of a novel, Total Oblivion, More or Less (Ballantine, 2009); and two short story collections, both from Small Beer Press: Skinny Dipping in the Lake of the Dead (2006) and Tyrannia (forthcoming in Fall 2013). He is also the author of several works of interactive fiction, including Corvidia and Deadline Enchanter, which won a XYZZY Award for Best Use of Medium. He lives outside St. Paul, Minnesota with his wife, the writer Kristin Livdahl, and their twin toddlers Ally and Toby. 
+
+Contact the author: adeniro AT gmail DOT com
+
+Author's website: www.alandeniro.com
+
+Author's Twitter: @adeniro
+
+
+:: hints
+If you're truly stuck in advancing the story or figuring out what's going on, here you go. Needless to say, there will be spoilers.
+
+<<replace "How many story paths are there?">>There are 12 "triggers" in all that lead to different text appearing in the final page inside the bar. A few of the story paths diverge and/or converge, but hitting upon the 12 is a good rule of thumb.
+
+[[Aaaaand what might those be?|hints1]]<<endreplace>> 
+
+<<replace "Is there a 'final' ending?">>Yes; a new link will open once all twelve story paths have been visited. You can call it a coda, too. Whatever works.<<endreplace>> 
+
+That's all I have so far; if you have specific questions about the story, feel free to contact me at adeniro AT gmail DOT com.
+
+[[go back|end]]
+
+
