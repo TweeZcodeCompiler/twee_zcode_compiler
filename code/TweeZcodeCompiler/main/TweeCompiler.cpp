@@ -5,12 +5,21 @@
 #include "TweeCompiler.h"
 #include "ZAssemblyGenerator.h"
 #include "exceptions.h"
+#include "Utils.h"
+
 #include <sstream>
 #include <iostream>
+#include <algorithm>
+
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
-#include <algorithm>
+#include <Passage/Body/Macros/Print.h>
+#include <Passage/Body/Expressions/Expression.h>
+#include <Passage/Body/Expressions/Const.h>
+#include <Passage/Body/Expressions/Variable.h>
+#include <Passage/Body/Expressions/BinaryOperation.h>
+
 
 using namespace std;
 
@@ -52,6 +61,7 @@ string labelForPassage(Passage& passage) {
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ZAssemblyGenerator assgen(out);
     vector<Passage> passages = tweeFile.getPassages();
+    vector<std::string> globalVariables;
 
     {
         int i = 0;
@@ -108,6 +118,19 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 }
                 if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
                     assgen.newline();
+                }
+                if (Print *print = dynamic_cast<Print *>(bodyPart)) {
+                    Expression *expression = print->getExpression().get();
+                    if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
+                        assgen.print(std::to_string(constant->getValue()));
+                    }
+                    if (Variable *variable = dynamic_cast<Variable *>(expression)) {
+                        if (Utils::includes(globalVariables, variable->getName()) == 0) {
+                            assgen.
+                        } else {
+                            assgen.print("0");
+                        }
+                    }
                 }
             }
 
