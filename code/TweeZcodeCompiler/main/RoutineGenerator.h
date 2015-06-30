@@ -171,6 +171,8 @@ public:
 
     void verify(std::vector<std::unique_ptr<ZParam>> params);
 
+    void push(std::vector<std::unique_ptr<ZParam>> params);
+
 
     /*
      *      Enumerations
@@ -231,7 +233,9 @@ public:
         // Opcode: Pops top of stack and returns that. (This is equivalent to ret sp, but is one byte cheaper.)
                 RET_POPPED = 184,
         // Opcode: Verification
-                VERIFY = 189
+                VERIFY = 189,
+        // Opcode: Pushes value onto the game stack
+                PUSH = 232
 
 
 
