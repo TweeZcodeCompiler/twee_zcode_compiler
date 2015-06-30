@@ -24,7 +24,8 @@
     #include "include/Passage/Body/Macros/IfMacro.h"
     #include "include/Passage/Body/Macros/ElseIfMacro.h"
     #include "include/Passage/Body/Macros/ElseMacro.h"
-    #include "include/Passage/Body/Macros/EndIf.h"
+    #include "include/Passage/Body/Macros/EndIfMacro.h"
+    #include "include/Passage/Body/Macros/SetMacro.h"
     #include "include/Passage/Body/Expressions/Expression.h"
     #include "include/Passage/Body/Expressions/Const.h"
     #include "include/Passage/Body/Expressions/UnaryOperation.h"
@@ -81,10 +82,14 @@
 	Body *body;
 
 	Macro *macro;
+	Print *print;
+	SetMacro *setmacro;
     IfMacro *ifmacro;
     ElseIfMacro *elseifmacro;
     ElseMacro *elsemacro;
-    EndIf *endif;
+    EndIfMacro *endifmacro;
+
+
 	Expression *expression;
 	Variable *variable;
 	Const<int> *intconst;
@@ -126,6 +131,7 @@
 	<token> MACRO_ENDIF
 	
 	<token> MACRO_PRINT
+	<token> MACRO_SET
 	<token> MACRO_DISPLAY
     <token> EXPR_RANDOM
     <token> EXPR_VISITED
@@ -191,11 +197,14 @@
 %type <link> link
 %type <newline> newline
 
+%type <macro> macro
 %type <ifmacro> ifmacro
 %type <elseifmacro> elseifmacro
 %type <elsemacro> elsemacro
-%type <endif> endif
-%type <macro> macro
+%type <endifmacro> endifmacro
+%type <print> print
+%type <setmacro> setmacro
+%type <expression> assignment
 %type <expression> expression
 %type <variable> variable
 %type <intconst> intconst
@@ -400,10 +409,15 @@ link :
   ;
 
 macro :
-    MACRO_OPEN expression MACRO_CLOSE
+    print
     {
-    LOG_DEBUG << "macro -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
-    $$ = new Print($2);
+    LOG_DEBUG << "macro -> ifmacro: pass print:type(Print) to macro:type(Macro)";
+    $$ = $1;
+    }
+    |setmacro
+    {
+    LOG_DEBUG << "macro -> setmacro: pass setmacro:type(SetMacro) to macro:type(Macro)";
+    $$ = $1;
     }
     |ifmacro
     {
@@ -420,12 +434,38 @@ macro :
     LOG_DEBUG << "macro -> else: pass else:type(ElseMacro) to macro:type(Macro)";
     $$ = $1;
     }
-    |endif
+    |endifmacro
     {
-    LOG_DEBUG << "macro -> endif: pass endif:type(EndIf) to macro:type(Macro)";
+    LOG_DEBUG << "macro -> endifmacro: pass endifmacro:type(EndIfMacro) to macro:type(Macro)";
     $$ = $1;
     }
+  ;
 
+print:
+    MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE
+    {
+    LOG_DEBUG << "print -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
+    $$ = new Print($3);
+    }
+    |MACRO_OPEN expression MACRO_CLOSE
+    {
+    //TODO:check if we need error handling here
+    LOG_DEBUG << "print -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
+    $$ = new Print($2);
+    }
+  ;
+
+setmacro:
+    MACRO_OPEN MACRO_SET expression MACRO_CLOSE
+    {
+    LOG_DEBUG << "setmacro -> MACRO_OPEN MACRO_SET expression MACRO_CLOSE :";
+    $$ = new SetMacro($3);
+    }
+    |MACRO_OPEN expression MACRO_CLOSE
+    {
+    LOG_DEBUG << "setmacro -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE :";
+    $$ = new SetMacro($2);
+    }
   ;
 
 ifmacro:
@@ -452,13 +492,15 @@ elsemacro:
     }
   ;
 
-endif:
+endifmacro:
     MACRO_OPEN MACRO_ENDIF MACRO_CLOSE
     {
-    LOG_DEBUG << "Parser: endif -> MACRO_OPEN MACRO_ENDIF MACRO_CLOSE: "<< "matched, make a dummy endif";
-    $$ = new EndIf();
+    LOG_DEBUG << "Parser: endifmacro -> MACRO_OPEN MACRO_ENDIF MACRO_CLOSE: "<< "matched, make a dummy endifmacro";
+    $$ = new EndIfMacro();
     }
   ;
+
+expression_mult:
 
 
 expression :
@@ -466,11 +508,10 @@ expression :
     {
     LOG_DEBUG << "expression -> EXPR_OPEN expression EXPR_CLOSE: passed expression upwards";
     $$ = $2;
-    delete $2;
     }
     |EXPR_NOT expression
     {
-    LOG_DEBUG << "expression -> EXPR_NOT expression: created $$ = new UnaryOperation(UnOps::NOT, $1, $3)";
+    LOG_DEBUG << "expression -> EXPR_NOT expression: created $$ = new UnaryOperation(UnOps::NOT, $2)";
     $$ = new UnaryOperation(UnOps::NOT, $2);
     delete $2;
     }
@@ -570,21 +611,6 @@ expression :
     delete $1;
     delete $3;
     }
-    |expression EXPR_TO expression
-    {
-    LOG_DEBUG << "expression-> expression EXPR_TO expression: created $$ = new BinaryOperation(BinOps::TO, $1, $3)";
-    $$ = new BinaryOperation(BinOps::TO, $1, $3);
-    delete $1;
-    delete $3;
-    }
-    |variable EXPR_TO expression
-    {
-    LOG_DEBUG << "expression-> variable EXPR_TO expression: created $$ = new BinaryOperation(BinOps::TO, $1, $3)";
-    //TODO: implement
-    $$ = new BinaryOperation(BinOps::TO, $1, $3);
-    delete $1;
-    delete $3;
-    }
     |variable EXPR_IS expression
     {
     LOG_DEBUG << "expression-> variable EXPR_IS expression: created $$ = new BinaryOperation(BinOps::IS, $1, $3)";
@@ -604,6 +630,22 @@ expression :
     $$ = $1;
     }
  ;
+
+assignment:
+    expression EXPR_TO expression
+    {
+    LOG_DEBUG << "assignment-> expression EXPR_TO expression: created $$ = new BinaryOperation(BinOps::TO, $1, $3)";
+    $$ = new BinaryOperation(BinOps::TO, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |variable EXPR_TO expression
+    {
+    LOG_DEBUG << "assignment-> variable EXPR_TO expression: created $$ = new BinaryOperation(BinOps::TO, $1, $3)";
+    $$ = new BinaryOperation(BinOps::TO, $1, $3);
+    delete $1;
+    delete $3;
+    }
 
 variable:
     EXPR_VAR

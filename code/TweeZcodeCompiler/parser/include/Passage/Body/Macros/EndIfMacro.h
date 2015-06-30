@@ -8,16 +8,16 @@
 #include <string>
 #include <memory>
 
-class EndIf : public Macro {
+class EndIfMacro : public Macro {
 
 public:
 
-    EndIf();
+    EndIfMacro();
 
     std::string to_string() const;
 
-    virtual EndIf *clone() const {
-        return new EndIf(*this);
+    virtual EndIfMacro *clone() const {
+        return new EndIfMacro(*this);
     }
 
 };

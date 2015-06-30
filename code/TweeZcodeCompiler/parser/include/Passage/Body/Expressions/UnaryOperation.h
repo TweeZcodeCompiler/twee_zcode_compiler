@@ -25,6 +25,7 @@ public:
     UnaryOperation(UnOps, const Expression &);
 
     UnaryOperation(const UnaryOperation &unaryOperation) {
+        this->op = unaryOperation.getOperator();
         this->expression.reset(unaryOperation.getExpression()->clone());
     }
 
