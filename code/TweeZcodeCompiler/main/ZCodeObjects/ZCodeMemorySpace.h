@@ -9,14 +9,17 @@
 #include "ZCodeObject.h"
 #include "../Utils.h"
 
-class ZCodeMemorySpace : public ZCodeObject{
+class ZCodeMemorySpace : public ZCodeObject {
 public:
     void print(std::vector<std::bitset<8>> &code);
+
     bool revalidate();
-    ZCodeMemorySpace(int space){
+
+    ZCodeMemorySpace(int space) {
         setSize(space);
     }
-    ZCodeMemorySpace(int space, std::string name){
+
+    ZCodeMemorySpace(int space, std::string name) {
         displayName = name;
         setSize(space);
     }

@@ -16,9 +16,10 @@ private:
 public:
     //returns true if needs to be revalidate again
     bool revalidate();
+
     void print(std::vector<std::bitset<8>> &code);
 
-    ZCodeInstruction(std::vector<std::bitset<8>> instructions,std::string name = "UNKNOWN") : ZCodeObject(name) {
+    ZCodeInstruction(std::vector<std::bitset<8>> instructions, std::string name = "UNKNOWN") : ZCodeObject(name) {
         content = instructions;
         setSize(instructions.size());
     }
