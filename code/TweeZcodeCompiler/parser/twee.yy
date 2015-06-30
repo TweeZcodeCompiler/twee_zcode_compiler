@@ -587,8 +587,8 @@ expression :
     }
     |variable EXPR_IS expression
     {
-    LOG_DEBUG << "expression-> variable EXPR_IS expression: created $$ = new BinaryOperation(IS, $1, $3)";
-    $$ = new BinaryOperation(IS, $1, $3);
+    LOG_DEBUG << "expression-> variable EXPR_IS expression: created $$ = new BinaryOperation(BinOps::IS, $1, $3)";
+    $$ = new BinaryOperation(BinOps::IS, $1, $3);
     delete $1;
     delete $3;
     }
