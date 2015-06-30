@@ -134,8 +134,7 @@ EXPR_GTE                >=|gte
 EXPR_LT                 <|lt
 EXPR_LTE                <=|lte
 EXPR_NEQ                neq
-EXPR_IS                 is
-EXPR_EQ                 eq
+EXPR_IS                 is|eq
 EXPR_AND                and
 EXPR_OR                 or
 EXPR_NOT                not
@@ -550,10 +549,6 @@ EXPR_ASS                to|=
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: LinkExpression matched Token "<<"EXPR_IS" << " with value " << YYText();
                                 return BisonParser::token::EXPR_IS;
                                 }
-<LinkExpression>{EXPR_EQ}		    {
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: LinkExpression matched Token "<<"EXPR_EQ" << " with value " << YYText();
-                                return BisonParser::token::EXPR_EQ;
-                                }
 <LinkExpression>{EXPR_AND}		    {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: LinkExpression matched Token "<<"EXPR_AND" << " with value " << YYText();
                                 return BisonParser::token::EXPR_AND;
@@ -713,10 +708,6 @@ EXPR_ASS                to|=
 <BodyMacro>{EXPR_IS}		    {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"EXPR_IS" << " with value " << YYText();
                                 return BisonParser::token::EXPR_IS;
-                                }
-<BodyMacro>{EXPR_EQ}		    {
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"EXPR_EQ" << " with value " << YYText();
-                                return BisonParser::token::EXPR_EQ;
                                 }
 <BodyMacro>{EXPR_AND}		    {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"EXPR_AND" << " with value " << YYText();

@@ -27,6 +27,7 @@ public:
 
 
     BinaryOperation(const BinaryOperation &binaryOperation) {
+        this->op = binaryOperation.getOperator();
         this->leftSide.reset(binaryOperation.getLeftSide()->clone());
         this->rightSide.reset(binaryOperation.getRightSide()->clone());
     }

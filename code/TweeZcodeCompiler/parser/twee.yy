@@ -536,27 +536,24 @@ expression :
     {
     LOG_DEBUG << "expression -> expression EXPR_OR expression: ";
     }
-    |expression EXPR_ASS expression
+    |variable EXPR_ASS expression
     {
-    LOG_DEBUG << "expression-> expressionEXPR_ASS expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    }
-    |variable EXPR_ASSGN expression
-    {
-    LOG_DEBUG << "expression-> variable EXPR_ASSGN expression: ";
-    //TODO: implement
+    LOG_DEBUG << "expression-> variable EXPR_ASSGN expression: created $$ = new BinaryOperation(TO, $1, $3)";
+    $$ = new BinaryOperation(BinOps::TO, $1, $3);
+    delete $1;
+    delete $3;
     }
     |variable EXPR_IS expression
     {
     LOG_DEBUG << "expression-> variable EXPR_IS expression: created $$ = new BinaryOperation(IS, $1, $3)";
-    $$ = new BinaryOperation(IS, $1, $3);
+    $$ = new BinaryOperation(BinOps::IS, $1, $3);
     delete $1;
     delete $3;
     }
     |expression EXPR_IS expression
     {
     LOG_DEBUG << "expression-> expression EXPR_IS expression: created new BinaryOperation(IS, $1, $3)";
-    $$ = new BinaryOperation(IS, $1, $3);
+    $$ = new BinaryOperation(BinOps::IS, $1, $3);
     delete $1;
     delete $3;
     }
