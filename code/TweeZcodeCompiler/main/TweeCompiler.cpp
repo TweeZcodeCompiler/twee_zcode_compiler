@@ -9,7 +9,6 @@
 #include <iostream>
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
-#include <algorithm>
 #include <Passage/Body/FormattedText.h>
 #include <Passage/Body/Variable.h>
 

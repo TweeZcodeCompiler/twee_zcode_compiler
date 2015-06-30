@@ -46,6 +46,7 @@ const string AssemblyParser::PRINT_RET_COMMAND = "print_ret";
 const string AssemblyParser::RESTART_COMMAND = "restart";
 const string AssemblyParser::RET_POPPED_COMMAND = "ret_popped";
 const string AssemblyParser::VERIFY_COMMAND = "verify";
+const string AssemblyParser::PUSH_COMMAND = "push";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -196,15 +197,25 @@ void AssemblyParser::finishRoutine(vector<bitset<8>> &highMemoryZcode) {
     bool labelFound;
     for (auto jump = registeredJumpsAtLines.begin(); jump != registeredJumpsAtLines.end(); ++jump) {
         labelFound = false;
+        string jumpFirst = jump->first;
+
         for (auto label = registeredLabels.begin(); label != registeredLabels.end(); ++label) {
-            if (label->compare(jump->first) == 0) {
+            if (label->compare(jumpFirst) == 0) {
+                labelFound = true;
+                break;
+            }
+            //set labelFound true when label is x but jump->first is ~x for jump not equals
+            string jumpSubString = jumpFirst.substr(1, jumpFirst.size()-1);
+            bool beginsWithTilde = (jumpFirst.at(0) == '~' );
+            bool restIsSame = (label->compare( jumpSubString) == 0 ) ;
+            if ( beginsWithTilde && restIsSame ) {
                 labelFound = true;
                 break;
             }
         }
 
         if (!labelFound) {
-            InvalidLabelException e(jump->first);
+            InvalidLabelException e(jumpFirst);
             e.lineNumber = jump->second;
             throw e;
         }
@@ -514,19 +525,19 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         LOG_DEBUG << ":::::: new add ";
         routineGenerator.add(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::SUB_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new sub ";
         routineGenerator.sub(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::MUL_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new mul ";
         routineGenerator.mul(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::DIV_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new div ";
         routineGenerator.div(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::AND_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new and ";
         routineGenerator.doAND(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::OR_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new or ";
         routineGenerator.doOR(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::RET_TRUE_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new rtrue";
@@ -546,6 +557,9 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new verify";
         routineGenerator.verify(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::PUSH_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new push";
+        routineGenerator.push(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label;
@@ -574,7 +588,7 @@ bool AssemblyParser::checkIfCommandRoutineStart(const string &command) {
 
 unique_ptr<uint8_t> AssemblyParser::getAddressForId(const string &id) {
     if (id.compare("sp") == 0) {
-        return 0;
+        return unique_ptr<uint8_t>(new uint8_t(0));
     }
 
     // check global variables
