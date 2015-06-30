@@ -658,10 +658,11 @@ vector<string> AssemblyParser::split(const string &s, const string &delim) {
 
 
 void AssemblyParser::performByteArrayDirective(string command, shared_ptr<ZCodeContainer> dynamicMemory) {
+    try{
     vector<string> param = this->split(command, ' ');
     string name = param.at(1);
-    string sSize = param.at(2).substr(1, sSize.size() - 2);
-    int size = atoi(sSize.c_str());
+    string sSize = param.at(2).substr(1, param.at(2).size() - 2);
+    int size = std::stoi(sSize.c_str());
     auto initialSize = shared_ptr<ZCodeObject>(new ZCodeInstruction(size));
     auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size, "ARRAY : " + name));
     auto label = dynamicMemory->getOrCreateLabel(name);
@@ -669,17 +670,32 @@ void AssemblyParser::performByteArrayDirective(string command, shared_ptr<ZCodeC
     dynamicMemory->add(label);
     dynamicMemory->add(initialSize);
     dynamicMemory->add(table);
+    }catch(std::invalid_argument ){
+        LOG_ERROR << "'.BYTEARRAY <name> [<size>]' expected. '"<<command << "' found instead";
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
+    }catch(std::out_of_range){
+        LOG_ERROR << "'.BYTEARRAY <name> [<size>]' expected. '"<<command << "' found instead";
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
+    }
 }
 
 void AssemblyParser::performWordArrayDirective(string command, shared_ptr<ZCodeContainer> dynamicMemory) {
-    vector<string> param = this->split(command, ' ');
-    string name = param.at(1);
-    string sSize = param.at(2).substr(1, sSize.size() - 2);
-    int size = atoi(sSize.c_str());
-    auto label = dynamicMemory->getOrCreateLabel(name);
-    dynamicMemory->add(label);
-    auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size * 2, "ARRAY : " + name));
-    dynamicMemory->add(table);
+    try {
+        vector<string> param = this->split(command, ' ');
+        string name = param.at(1);
+        string sSize = param.at(2).substr(1, param.at(2).size() - 2);
+        int size = std::stoi(sSize.c_str());
+        auto label = dynamicMemory->getOrCreateLabel(name);
+        dynamicMemory->add(label);
+        auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size * 2, "ARRAY : " + name));
+        dynamicMemory->add(table);
+    }catch(std::invalid_argument ){
+        LOG_ERROR << "'.WORDARRAY <name> [<size>]' expected. '"<<command << "' found instead";
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
+    }catch(std::out_of_range){
+        LOG_ERROR << "'.WORDARRAY <name> [<size>]' expected. '"<<command << "' found instead";
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
+    }
 }
 
 void AssemblyParser::executeSTOREBCOMMAND(const string &command, shared_ptr<ZCodeContainer> dynamicMemory,

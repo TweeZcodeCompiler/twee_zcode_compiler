@@ -8,7 +8,7 @@
 #include "ZCodeObject.h"
 
 void ZCodeObject::add(std::shared_ptr<ZCodeObject> Child) {
-    std::cout << "add '"<<Child->displayName<<"' to '"<< displayName <<"'"<< std::endl;
+    LOG_DEBUG << "add '"<<Child->displayName<<"' to '"<< displayName <<"'";
     children.push_back(Child);
     Child->parrent = share();
     Child->offset = this->offset+ this->size;
@@ -23,7 +23,7 @@ void ZCodeObject::setSize(size_t size) {
         return;
     }
     this->size = size;
-    std::cout << "size of '"<< displayName<<"' is set to "<< this->size << std::endl;
+    LOG_DEBUG << "size of '"<< displayName<<"' is set to "<< this->size;
 }
 
 size_t ZCodeObject::getSize() {
@@ -39,7 +39,7 @@ void ZCodeObject::setOffset(size_t offset) {
 }
 
 void ZCodeObject::printMemory() {
-    std::cout << offset << "\t\t|" << displayName<<std::endl;
+    LOG_DEBUG << offset << "\t\t|" << displayName;
     for(size_t i = 0; i < children.size(); i++){
         std::shared_ptr<ZCodeObject> child = children.at(i);
         child->printMemory();

@@ -43,7 +43,7 @@ private:
     void debug(std::string);
 public:
 
-    bool debugmode= true;
+    bool debugmode= false;
     std::shared_ptr<ZCodeLabel> getOrCreateLabel(std::string name);
 
     // this constructor padding zCode to the next package adress and initialize this routine with the name 'name'
