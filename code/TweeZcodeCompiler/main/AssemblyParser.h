@@ -11,6 +11,8 @@
 #include <memory>
 #include "RoutineGenerator.h"
 #include "Utils.h"
+#include "ZCodeObjects/ZCodeContainer.h"
+#include "ZCodeObjects/ZCodeCallAdress.h"
 
 
 class AssemblyParser {
@@ -21,6 +23,8 @@ private:
     static const std::string GVAR_DIRECTIVE;
     static const char STRING_DELIMITER;
     static const std::string ASSIGNMENT_OPERATOR;
+    static const std::string BYTEARRAY;
+    static const std::string WORDARRAY;
 
     static const std::string ROUTINE_DIRECTIVE;
     static const std::string NEW_LINE_COMMAND;
@@ -53,6 +57,11 @@ private:
     static const std::string RESTART_COMMAND;
     static const std::string RET_POPPED_COMMAND;
     static const std::string VERIFY_COMMAND;
+    static const std::string STOREB_COMMAND;
+    static const std::string STOREW_COMMAND;
+    static const std::string LOADB_COMMAND;
+    static const std::string LOADW_COMMAND;
+
     static const std::string PUSH_COMMAND;
 
 
@@ -66,7 +75,7 @@ private:
 
     bool checkIfCommandRoutineStart(const std::string &command);
 
-    void executeCommand(const std::string &command, RoutineGenerator &routineGenerator);
+    void executeCommand(const std::string &command, RoutineGenerator &routineGenerator, std::shared_ptr<ZCodeContainer> dynamicMemory);
 
     void executePRINTCommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
 
@@ -91,30 +100,39 @@ private:
     void executeRETCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
     std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction);
-
-    std::unique_ptr<ZParam> createZParam(const std::string &paramString);
-
-    void performRoutineDirectiveCommand(std::vector<std::string> lineComps,
-                                        std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
-
+    std::unique_ptr<ZParam> createZParam(const std::string& paramString);
+    
+    void performRoutineDirectiveCommand( std::vector<std::string> lineComps, std::shared_ptr<ZCodeContainer> highMemory);
     void performRoutineGlobalVarCommand(std::string line);
+
 
     std::vector<std::pair<std::string, unsigned>> registeredJumpsAtLines;
     std::vector<std::string> registeredLabels;
     std::map<std::string, uint8_t> globalVariables;
 
+    bool firstRoutine = true;
+
     std::unique_ptr<RoutineGenerator> currentGenerator;
 
     void registerJump(const std::vector<std::unique_ptr<ZParam>> &params);
-
-    void finishRoutine(std::vector<std::bitset<8>> &highMemoryZcode);
-
+    void finishRoutine(std::shared_ptr<ZCodeContainer> highMemoryZcode);
     void addGlobal(std::string globalName);
 
     std::unique_ptr<uint8_t> getAddressForId(const std::string &id);
-
 public:
-    void readAssembly(std::istream &input, std::vector<std::bitset<8>> &highMemoryZcode, size_t offset);
+    void readAssembly(std::istream& input, std::shared_ptr<ZCodeContainer> dynamicMemory, std::shared_ptr<ZCodeContainer> staticMemory, std::shared_ptr<ZCodeContainer> highMemory);
+
+    void performByteArrayDirective(std::string command, std::shared_ptr<ZCodeContainer> shared_ptr);
+
+    void performWordArrayDirective(std::string basic_string, std::shared_ptr<ZCodeContainer> shared_ptr);
+
+    void executeSTOREBCOMMAND(const std::string &basic_string, std::shared_ptr<ZCodeContainer> shared_ptr, RoutineGenerator &currentGenerator);
+
+    void executeSTOREWCOMMAND(const std::string &basic_string, std::shared_ptr<ZCodeContainer> shared_ptr, RoutineGenerator &currentGenerator);
+
+    void executeLOADBCOMMAND(const std::string &basic_string, std::shared_ptr<ZCodeContainer> shared_ptr, RoutineGenerator &currentGenerator);
+
+    void executeLOADWCOMMAND(const std::string &basic_string, std::shared_ptr<ZCodeContainer> shared_ptr, RoutineGenerator &currentGenerator);
 
 };
 

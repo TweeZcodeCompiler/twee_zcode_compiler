@@ -8,9 +8,9 @@
 #include <bitset>
 #include <vector>
 #include <cstdint>
+#include "ZCodeObjects/ZCodeObject.h"
 
-class ZCodeHeader {
-
+class ZCodeHeader : public ZCodeObject{
 private:
     //std::vector<std::bitset<8>> headerBits;
 
@@ -33,6 +33,8 @@ private:
 
 
 public:
+    void print(std::vector<std::bitset<8>> &code);
+    bool revalidate();
     //HEADER POSITIONS
     static const int HEADER_FILE_SIZE_POSITION = 26;
     // Flags 1 in Hex position 1 to 3
@@ -88,6 +90,10 @@ public:
 
     // get complete headerBits as vector<bitset>
     std::vector<std::bitset<8>> getHeaderBits();
+
+    ZCodeHeader(): ZCodeObject("header"){
+
+    }
 
 };
 

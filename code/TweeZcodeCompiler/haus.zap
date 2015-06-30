@@ -1,5 +1,4 @@
 .GVAR PASSAGE_PTR
-.GVAR USER_INPUT
 .FUNCT main
 	call R_start -> PASSAGE_PTR
 JUMP_TABLE_START:
@@ -29,7 +28,7 @@ L_Disclaimer:
 	jump ?JUMP_TABLE_START
 JUMP_TABLE_END:
 	quit
-.FUNCT R_start
+.FUNCT R_start USER_INPUT
 	print "***** start *****"
 	new_line
 	print "Welcome Adventurer!"
@@ -57,7 +56,7 @@ L0:
 	ret 1
 L1:
 	ret 1
-.FUNCT R_land_of_the_iguanas
+.FUNCT R_land_of_the_iguanas USER_INPUT
 	print "***** land of the iguanas *****"
 	new_line
 	print "The land of the iguanas ... a old and forgotten world inhabited by the mighty"
@@ -82,7 +81,7 @@ L0:
 	ret 2
 L1:
 	ret 4
-.FUNCT R_kinds
+.FUNCT R_kinds USER_INPUT
 	print "***** kinds *****"
 	new_line
 	print "There are green iguanas, rhino iguanas and many more"
@@ -97,7 +96,7 @@ READ_BEGIN:
 	jump ?READ_BEGIN
 L0:
 	ret 1
-.FUNCT R_favouriteFood
+.FUNCT R_favouriteFood USER_INPUT
 	print "***** favouriteFood *****"
 	new_line
 	print "Iguanas love bananas - it's like chocolate to them."
@@ -112,7 +111,7 @@ READ_BEGIN:
 	jump ?READ_BEGIN
 L0:
 	ret 1
-.FUNCT R_juveniles
+.FUNCT R_juveniles USER_INPUT
 	print "***** juveniles *****"
 	new_line
 	print "Juvenile iguanas will eventually hit puberty and just as human juveniles they will get moody ..."
@@ -127,7 +126,7 @@ READ_BEGIN:
 	jump ?READ_BEGIN
 L0:
 	ret 1
-.FUNCT R_Disclaimer
+.FUNCT R_Disclaimer USER_INPUT
 	print "***** Disclaimer *****"
 	new_line
 	print "The story is made up ... sort off - I really like iguanas."
