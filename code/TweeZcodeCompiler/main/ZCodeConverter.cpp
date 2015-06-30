@@ -17,7 +17,7 @@ vector<bitset<8>> ZCodeConverter::convertStringToZSCII(std::string source) {
     vector<bitset<5>> zcode = vector<bitset<5>>();
 
     //First Iterate over the characters of "source" and create a vector of 5-bit Z-Chars
-    for (int i = 0; i < source.size(); i++) {
+    for (unsigned i = 0; i < source.size(); i++) {
 
         char c = source[i];
         int asciiValue = (int) c;

@@ -19,7 +19,7 @@ using namespace std;
 #define STANDARD_REVISION_MAIN 1 // revision number of supperted document, here
 #define STANDARD_REVISION_SUB 1  // 1.1 (STANDARD_REVISION_MAIN.STANDARD_REVISION_SUB)
 
-vector<bitset<8>> &ZCodeHeader::getHeaderBits() {
+vector<bitset<8>> ZCodeHeader::getHeaderBits() {
     if (!fileLengthSet) {
         LOG_ERROR << "No file size specified!";
         throw;

@@ -26,10 +26,10 @@ public:
     size_t size = 0;
     std::string displayName = "UNKNOWN";
 
-    virtual void print(std::vector<std::bitset<8>> &code) { };
+    virtual void print(std::vector<std::bitset<8>> &code) = 0;
 
     //returns true if needs to be revalidate again
-    virtual bool revalidate() { };
+    virtual bool revalidate() = 0;
 
     void printMemory();
 
