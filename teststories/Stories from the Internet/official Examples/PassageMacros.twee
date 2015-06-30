@@ -1,0 +1,72 @@
+﻿:: Start
+Equip a set of pronouns:
+
+[[They/their/them|Next][$pronoun to "they"]]
+[[Ze/hir/hir|Next][$pronoun to "ze"]]
+[[It/its/it|Next][$pronoun to "it"]]
+[[He/his/him|Next][$pronoun to "he"]]
+[[She/her/her|Next][$pronoun to "she"]]
+
+
+
+:: Next
+The detector robot says "I see <<them>>".
+
+The reporter robot says "Listen - <<they "were">> over there!"
+
+The tracker robot says "I shall follow <<their>> trail, wherever <<they "will">> go."
+
+The taxonomy robot says "I do not know what <<they "are">>."
+
+The broken robot says "I wish I was <<them>> and had <<their>> strength."
+
+<<return>>
+
+
+:: StoryTitle
+Display example
+
+
+:: Using passages as custom macros [annotation]
+These passages are used to seamlessly insert the correct pronoun forms, as well as the correct tense and plurality for "is".
+
+Notice how the "Next" passage is able to be written in a fluent, readable form using these pseudo-macros.
+
+
+
+:: them [nobr]
+<<if $pronoun is "he">>him
+<<else if $pronoun is "she">>her
+<<else if $pronoun is "ze">>hir
+<<else if $pronoun is "they">>them
+<<else>>it
+<<endif>>
+
+
+:: their [nobr]
+<<if $pronoun is "he">>his
+<<else if $pronoun is "she">>her
+<<else if $pronoun is "ze">>hir
+<<else if $pronoun is "they">>their
+<<else>>its
+<<endif>>
+
+
+:: StoryAuthor
+Leon Arnott
+
+
+:: they [nobr]
+<<if $pronoun is "they">>they <<are parameter(0)>>
+<<else>><<$pronoun>> <<are parameter(0)>>
+<<endif>>
+
+
+:: are [nobr]
+<<if $pronoun is "they">><<print parameter(0)>>
+<<else if parameter(0) is "are">>is
+<<else if parameter(0) is "were">>was
+<<else if parameter(0) is "will">>will
+<<endif>>
+
+

@@ -1,0 +1,62 @@
+﻿:: StoryTitle
+{{{visited()}}} example
+
+
+:: the town hall
+A large building, austere in the dying sunlight.
+
+<<return>>
+
+
+:: StoryAuthor
+Leon Arnott
+
+
+:: business district
+Rundown skyscrapers that were surely built when the world was small and the sky was just three floors away.
+
+<<return>>
+
+
+:: Start
+<<if visited() < 2>>\
+You've just arrived at Compass Crossroad, a ghost town in the middle of Misfortune Vale.\
+<<else>>\
+You're back at the central crossroad of Compass Crossroad.\
+<<endif>>
+
+<<if not visited("the town hall")>>\
+You could visit [[the town hall]] in the north.
+
+<<endif>><<if not visited("business district")>>\
+The [[business district]] is to the west.
+
+<<endif>><<if not visited("residential zone")>>\
+To the east is a [[residential zone]].
+
+<<endif>><<if not visited("road")>>\
+To the south is the [[road]] out of town.<<endif>>
+
+<<if visited("road", "residential zone", "business district", "the town hall")>>\
+A [[ghost]] has arrived.\
+<<endif>>
+
+
+:: residential zone
+Tawdry houses surround you, vacant as seashells.
+
+<<return>>
+
+
+:: road
+The road leads out to a place equally uninhabited, but without the cluttered detritus of civilisation.
+
+<<return>>
+
+
+:: ghost
+"Hello," says the ghost, its translucent skull flapping hideously. "Not much goin' on round here, is there?"
+
+You make weak small talk for a minute, and it departs.
+
+
