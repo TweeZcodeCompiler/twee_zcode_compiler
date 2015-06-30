@@ -33,7 +33,6 @@ JUMP_TABLE_END:
 	print "***** start *****"
 	new_line
 	print "Welcome Adventurer!"
-	 test
 	print "Welcome "
 	print "to"
 	print " the "

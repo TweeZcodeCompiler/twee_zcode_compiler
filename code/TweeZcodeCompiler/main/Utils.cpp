@@ -2,6 +2,7 @@
 // Created by philip on 07.06.15.
 //
 
+#include <cstdint>
 #include "Utils.h"
 
 using std::bitset;

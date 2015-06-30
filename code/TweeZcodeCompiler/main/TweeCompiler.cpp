@@ -20,7 +20,6 @@
 #include <Passage/Body/Expressions/Variable.h>
 #include <Passage/Body/Expressions/BinaryOperation.h>
 
-
 using namespace std;
 
 static const string PASSAGE_GLOB = "PASSAGE_PTR",

@@ -48,16 +48,19 @@ int main(int argc, char **argv) {
     std::string inputFile = argsCommand.getSourceFileName();
     std::string outputFile = argsCommand.getOutputFileName();
 
+
     static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("Compiler_Log.txt");
-    plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
+    plog::ConsoleAppender<plog::TxtFormatter> consoleAppender; // Console Appender for user friendly output
 
     std::string logFile = "Compiler_Log.txt";
-    if(argsCommand.isDebugInConsole()) {
+    if(argsCommand.isDebugInConsole() == true)
+    {
         std::cout << "Console log";
         plog::init(plog::debug,  &consoleAppender);
     } else {
         remove(logFile.c_str());
         plog::init(plog::debug, logFile.c_str());
+        plog::init(plog::error,  &consoleAppender);
     }
 
     LOG_DEBUG << "CMD-Args Summary";

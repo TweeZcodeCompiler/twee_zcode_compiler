@@ -17,7 +17,7 @@ vector<bitset<8>> ZCodeConverter::convertStringToZSCII(std::string source) {
     vector<bitset<5>> zcode = vector<bitset<5>>();
 
     //First Iterate over the characters of "source" and create a vector of 5-bit Z-Chars
-    for (int i = 0; i < source.size(); i++) {
+    for (unsigned i = 0; i < source.size(); i++) {
 
         char c = source[i];
         int asciiValue = (int) c;
@@ -27,7 +27,7 @@ vector<bitset<8>> ZCodeConverter::convertStringToZSCII(std::string source) {
         switch (getAlphabet(asciiValue)) {
 
             case 0:
-                //lower vase is the default case
+                //lower case is the default case
                 zsciiValue = asciiValue - 91;
                 break;
 
@@ -148,7 +148,7 @@ vector<bitset<8>>  ZCodeConverter::convert5BitTo8Bit(vector<bitset<5>> source) {
     //use padding to expand the size of Z-characters to multiple of 3
     //the Z-machine ignores the zeros at the end
     while (source.size() % 3 != 0) {
-        source.push_back(convertIntToBitset(0));
+        source.push_back(convertIntToBitset(5));
     }
 
     for (unsigned long i = 0; i < source.size(); i += 3) {
