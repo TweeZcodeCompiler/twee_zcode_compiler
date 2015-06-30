@@ -6,14 +6,14 @@
 
 #include <memory>
 
-UnaryOperation::UnaryOperation(UnOps op, const Expression *unaryOperation) {
+UnaryOperation::UnaryOperation(UnOps op, const Expression *expression) {
     this->op = op;
-    this->expression = std::unique_ptr<Expression>(unaryOperation->clone());
+    this->expression = std::unique_ptr<Expression>(expression->clone());
 }
 
-UnaryOperation::UnaryOperation(UnOps op, const Expression &unaryOperation) {
+UnaryOperation::UnaryOperation(UnOps op, const Expression &expression) {
     this->op = op;
-    this->expression = std::unique_ptr<Expression>(unaryOperation.clone());
+    this->expression = std::unique_ptr<Expression>(expression.clone());
 }
 
 UnOps UnaryOperation::getOperator() const {

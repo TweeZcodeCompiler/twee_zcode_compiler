@@ -30,7 +30,6 @@ public:
     virtual Const *clone() const {
         return new Const(*this);
     }
-
 };
 
 #endif //CONST_H
