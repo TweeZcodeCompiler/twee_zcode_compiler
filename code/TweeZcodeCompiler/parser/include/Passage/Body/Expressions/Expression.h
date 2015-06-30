@@ -11,6 +11,7 @@ enum class UnOps {
     MINUS=0, PLUS, NOT
 };
 
+//if you want to change the order of this, I'll cut you ~georg
 enum class BinOps {
     ADD=0, MUL, SUB, DIV, MOD, AND, OR, LT, LTE, GT, GTE, IS, NEQ, TO
 };

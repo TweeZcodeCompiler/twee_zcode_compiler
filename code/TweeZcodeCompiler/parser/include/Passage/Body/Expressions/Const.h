@@ -27,7 +27,7 @@ public:
         return "Const: ";
     }
 
-    virtual Const *clone() const {
+    virtual Const* clone() const {
         return new Const(*this);
     }
 };
