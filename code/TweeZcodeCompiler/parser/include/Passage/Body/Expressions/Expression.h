@@ -7,12 +7,12 @@
 
 #include <string>
 
-enum UnOps {
-    MINUS, PlUS, LNOT
+enum class UnOps {
+    MINUS, PLUS, NOT
 };
 
-enum BinOps {
-    ADD, MUL, SUB, DIV, MOD, LAND, LOR, LT, LTE, GT, GTE, IS, NEQ, TO
+enum class BinOps {
+    ADD, MUL, SUB, DIV, MOD, AND, OR, LT, LTE, GT, GTE, IS, NEQ, TO
 };
 
 enum FunctionName {

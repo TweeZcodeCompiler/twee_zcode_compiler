@@ -4,10 +4,8 @@
 
 #include "include/Passage/Body/Expressions/BinaryOperation.h"
 
-
 BinaryOperation::BinaryOperation(BinOps op, const Expression *leftSide, const Expression *rightSide) {
     this->op = op;
-
     this->leftSide = std::unique_ptr<Expression>(leftSide->clone());
     this->rightSide = std::unique_ptr<Expression>(rightSide->clone());
 }
@@ -25,8 +23,8 @@ BinOps BinaryOperation::getOperator() const {
 
 std::string BinaryOperation::getOperatorString() const {
     std::string result;
-    switch (this->op) {
-        case IS:
+    switch (this->getOperator()) {
+        case BinOps::IS:
             result = "IS";
             break;
     }

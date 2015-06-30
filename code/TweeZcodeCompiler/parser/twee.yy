@@ -147,14 +147,13 @@
     <token> EXPR_LTE
 
     <token> EXPR_IS
-    <token> EXPR_EQ
     <token> EXPR_NEQ
 
 	<token> EXPR_AND
 	<token> EXPR_OR
 	<token> EXPR_NOT
 	
-	<token> EXPR_ASSGN
+	<token> EXPR_TO
 
 	<string> FORMATTING_OPEN
 	<string> FORMATTING_CLOSE
@@ -166,9 +165,9 @@
 
 // association definitions, grouped by decreasing precedence in java script
 
-%right EXPR_ASS
+%right EXPR_TO
 %left EXPR_GTE EXPR_GT EXPR_LTE EXPR_LT
-%left EXPR_EQ EXPR NEQ
+%left EXPR_IS EXPR_NEQ
 %left EXPR_AND
 %left EXPR_OR
 %left EXPR_ADD EXPR_SUB
@@ -472,91 +471,139 @@ expression :
     |EXPR_NOT expression
     {
     LOG_DEBUG << "expression -> EXPR_NOT expression: ";
+    $$ = new UnaryOperation(UnOps::NOT, $2);
+    delete $2;
     }
     |EXPR_SUB expression %prec UMINUS
     {
     LOG_DEBUG << "expression -> EXPR_SUB expression %prec UMINUS: ";
+    $$ = new UnaryOperation(UnOps::MINUS, $2);
+    delete $2;
     }
     |EXPR_ADD expression %prec UPLUS
     {
     LOG_DEBUG << "expression -> EXPR_ADD expression %prec UPLUS: ";
+    $$ = new UnaryOperation(UnOps::PLUS, $2);
+    delete $2;
     }
     |expression EXPR_MUL expression
     {
     LOG_DEBUG << "expression -> expression EXPR_MUL expression: ";    
-    $$ = new BinaryOperation(MUL, *$1, *$3);
+    $$ = new BinaryOperation(BinOps::MUL, *$1, *$3);
     delete $1;
     delete $3;
     }
     |expression EXPR_DIV expression
     {
     LOG_DEBUG << "expression -> expression EXPR_DIV expression: ";    
+    $$ = new BinaryOperation(BinOps::DIV, $1, $3);
+    delete $1;
+    delete $3;
     }
     |expression EXPR_MOD expression
     {
     LOG_DEBUG << "expression -> expression EXPR_MOD expression: ";    
+    $$ = new BinaryOperation(BinOps::MOD, $1, $3);
+    delete $1;
+    delete $3;
     }
     |expression EXPR_ADD expression
     {
     LOG_DEBUG << "expression -> expression EXPR_ADD expression: ";
+    $$ = new BinaryOperation(BinOps::ADD, $1, $3);
+    delete $1;
+    delete $3;
     }
     |expression EXPR_SUB expression
     {
     LOG_DEBUG << "expression -> expression EXPR_SUB expression: ";
+    $$ = new BinaryOperation(BinOps::SUB, $1, $3);
+    delete $1;
+    delete $3;
     }
     |expression EXPR_GTE expression
     {
     LOG_DEBUG << "expression -> expression EXPR_GTE expression: ";
+    $$ = new BinaryOperation(BinOps::GTE, $1, $3);
+    delete $1;
+    delete $3;
     }
     |expression EXPR_GT expression
     {
     LOG_DEBUG << "expression -> expression EXPR_GT expression: ";
+    $$ = new BinaryOperation(BinOps::GT, $1, $3);
+    delete $1;
+    delete $3;
     }
     |expression EXPR_LTE expression
     {
     LOG_DEBUG << "expression -> expression EXPR_LTE expression: ";
+    $$ = new BinaryOperation(BinOps::LTE, $1, $3);
+    delete $1;
+    delete $3;
     }
     |expression EXPR_LT expression
     {
     LOG_DEBUG << "expression -> expression EXPR_LT expression: ";
-    }
-    |expression EXPR_EQ expression
-    {
-    LOG_DEBUG << "expression -> expression EXPR_EQ expression: ";
-    }
-    |expression EXPR_NEQ expression
-    {
-    LOG_DEBUG << "expression -> expression EXPR_NEQ expression: ";
-    }
-    |expression EXPR_AND expression
-    {
-    LOG_DEBUG << "expression -> expression EXPR_AND expression: ";
-    }
-    |expression EXPR_OR expression
-    {
-    LOG_DEBUG << "expression -> expression EXPR_OR expression: ";
-    }
-    |expression EXPR_ASS expression
-    {
-    LOG_DEBUG << "expression-> expressionEXPR_ASS expr";
-    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
-    }
-    |variable EXPR_ASSGN expression
-    {
-    LOG_DEBUG << "expression-> variable EXPR_ASSGN expression: ";
-    //TODO: implement
-    }
-    |variable EXPR_IS expression
-    {
-    LOG_DEBUG << "expression-> variable EXPR_IS expression: created $$ = new BinaryOperation(IS, $1, $3)";
-    $$ = new BinaryOperation(IS, $1, $3);
+    $$ = new BinaryOperation(BinOps::LT, $1, $3);
     delete $1;
     delete $3;
     }
     |expression EXPR_IS expression
     {
-    LOG_DEBUG << "expression-> expression EXPR_IS expression: created new BinaryOperation(IS, $1, $3)";
-    $$ = new BinaryOperation(IS, $1, $3);
+    LOG_DEBUG << "expression -> expression EXPR_IS expression: ";
+    $$ = new BinaryOperation(BinOps::IS, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_NEQ expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_NEQ expression: ";
+    $$ = new BinaryOperation(BinOps::NEQ, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_AND expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_AND expression: ";
+    $$ = new BinaryOperation(BinOps::AND, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_OR expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_OR expression: ";
+    $$ = new BinaryOperation(BinOps::OR, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_TO expression
+    {
+    LOG_DEBUG << "expression-> expression EXPR_TO expr";
+    LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new BinaryOperation(BinOps::TO, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |variable EXPR_TO expression
+    {
+    LOG_DEBUG << "expression-> variable EXPR_TO expression: ";
+    //TODO: implement
+    $$ = new BinaryOperation(BinOps::TO, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |variable EXPR_IS expression
+    {
+    LOG_DEBUG << "expression-> variable EXPR_IS expression: created $$ = new BinaryOperation(BinOps::IS, $1, $3)";
+    $$ = new BinaryOperation(BinOps::IS, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_IS expression
+    {
+    LOG_DEBUG << "expression-> expression EXPR_IS expression: created new BinaryOperation(BinOps::IS, $1, $3)";
+    $$ = new BinaryOperation(BinOps::IS, $1, $3);
     delete $1;
     delete $3;
     }
