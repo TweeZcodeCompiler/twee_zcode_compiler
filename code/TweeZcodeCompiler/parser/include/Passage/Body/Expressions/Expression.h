@@ -8,12 +8,25 @@
 #include <string>
 
 enum class UnOps {
-    MINUS=0, PLUS, NOT
+    MINUS=0, PLUS=1, NOT=2
 };
 
 //if you want to change the order of this, I'll cut you ~georg
 enum class BinOps {
-    ADD=0, MUL, SUB, DIV, MOD, AND, OR, LT, LTE, GT, GTE, IS, NEQ, TO
+    ADD=0,
+    MUL=1,
+    SUB=2,
+    DIV=3,
+    MOD=4,
+    AND=5,
+    OR=6,
+    LT=7,
+    LTE=8,
+    GT=9,
+    GTE=10,
+    IS=11,
+    NEQ=12,
+    TO=13
 };
 
 enum FunctionName {

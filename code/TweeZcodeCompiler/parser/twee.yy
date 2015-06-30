@@ -383,7 +383,7 @@ bodypart :
     {
     LOG_DEBUG << "Parser: bodypart -> macro: "<< "pass macro:type(--Text--) to bodypart:type(BodyPart)";
     //TODO: implement Macro:BodyType
-    $$ = $1;
+    $$ = new Text($1->to_string());
     }
   ;
 
@@ -567,7 +567,7 @@ endifmacro:
 
     /*Operators in precedence*/
 operatorAssignment:
-    EXPR_TO{$$ = 12;}
+    EXPR_TO{$$ = 13;}
   ;
 
 operatorCompare:
