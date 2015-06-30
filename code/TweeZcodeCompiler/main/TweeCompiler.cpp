@@ -5,12 +5,18 @@
 #include "TweeCompiler.h"
 #include "ZAssemblyGenerator.h"
 #include "exceptions.h"
+
 #include <sstream>
 #include <iostream>
+#include <algorithm>
+
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
-#include <algorithm>
+#include <Passage/Body/Macros/Print.h>
+#include <Passage/Body/Expressions/Expression.h>
+#include <Passage/Body/Expressions/Const.h>
+
 
 using namespace std;
 
@@ -109,6 +115,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
                     assgen.newline();
                 }
+
             }
 
             assgen.newline();
@@ -165,5 +172,11 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 i++;
             }
         }
+    }
+}
+
+std::string TweeCompiler::handleExpressions(Expression *expression) {
+    if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
+        return std::to_string(constant->getValue());
     }
 }

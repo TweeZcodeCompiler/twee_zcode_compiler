@@ -412,7 +412,7 @@ link :
 macro :
     print
     {
-    LOG_DEBUG << "macro -> ifmacro: pass print:type(Print) to macro:type(Macro)";
+    LOG_DEBUG << "macro -> print: pass print:type(Print) to macro:type(Macro)";
     $$ = $1;
     }
     |setmacro
