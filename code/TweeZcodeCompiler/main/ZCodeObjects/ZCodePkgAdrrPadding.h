@@ -8,12 +8,13 @@
 
 #include "ZCodeObject.h"
 
-class ZCodePkgAdrrPadding : public ZCodeObject{
+class ZCodePkgAdrrPadding : public ZCodeObject {
 
 public:
-    ZCodePkgAdrrPadding(): ZCodeObject("padding") {}
+    ZCodePkgAdrrPadding() : ZCodeObject("padding") { }
 
     void print(std::vector<std::bitset<8>> &code);
+
     bool revalidate();
 };
 

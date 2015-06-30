@@ -89,7 +89,7 @@ public:
     void setStaticStringsOffset(uint64_t offset);
 
     // get complete headerBits as vector<bitset>
-    std::vector<std::bitset<8>> &getHeaderBits();
+    std::vector<std::bitset<8>> getHeaderBits();
 
     ZCodeHeader(): ZCodeObject("header"){
 

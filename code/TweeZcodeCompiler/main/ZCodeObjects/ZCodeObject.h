@@ -11,37 +11,47 @@
 #include <bitset>
 #include <memory>
 #include <iostream>
-#include <bits/unique_ptr.h>
 
-class ZCodeObject : public std::enable_shared_from_this<ZCodeObject>{
+class ZCodeObject : public std::enable_shared_from_this<ZCodeObject> {
 protected:
-    std::shared_ptr<ZCodeObject>parrent;
+    std::shared_ptr<ZCodeObject> parrent;
     std::vector<std::shared_ptr<ZCodeObject>> children;
 
 public:
-    std::shared_ptr<ZCodeObject> share(){
+    std::shared_ptr<ZCodeObject> share() {
         return shared_from_this();
     }
-    size_t  offset = 0;
-    size_t  size = 0;
+
+    size_t offset = 0;
+    size_t size = 0;
     std::string displayName = "UNKNOWN";
-    virtual void print(std::vector<std::bitset<8>> &code) {};
+
+    virtual void print(std::vector<std::bitset<8>> &code) = 0;
+
     //returns true if needs to be revalidate again
-    virtual bool revalidate(){};
+    virtual bool revalidate() = 0;
 
     void printMemory();
+
     void add(std::shared_ptr<ZCodeObject> Child);
+
     void setSize(size_t size);
+
     size_t getSize();
+
     void setOffset(size_t offset);
+
     size_t getOffset();
-    ZCodeObject(){
+
+    ZCodeObject() {
     }
-    ZCodeObject(std::string displayName){
+
+    ZCodeObject(std::string displayName) {
         this->displayName = displayName;
     }
-   void cleanup(){
-        for(size_t i = 0; i < children.size(); i++){
+
+    void cleanup() {
+        for (size_t i = 0; i < children.size(); i++) {
             children.at(i)->cleanup();
         }
         children.clear();
