@@ -6,53 +6,39 @@
 #define PROJECT_ARGSCOMMAND_H
 
 #include<iostream>
-/*
- *
- * Following calls are supported
- *
- *
- *
- * TweeZCodeCompiler [-i] source.twee [-o zcode.z8] [-a assembly.zap] [-d]
- *
- *
- *  -i is always interpreted as twee file
- *
- *
- * it is not possible two use -a and -i at the same time
- *
- *
- * sample calls
- * TweeZCodeCompiler source.twee
- * TweeZCodeCompiler -a source.zap
- * TweeZCodeCompiler -
- */
+
 
 class ArgsCommand {
-
-
-
-
-private :
-
+private:
     std::string sourceFile;
     std::string outputFile;
-    bool isAssembly;
+    bool inputIsAssembly;
+    bool outputIsAssembly;
     bool debugInConsole;
-
-    int argc;
-    char **argv;
+    bool valid;
 
 public:
+    ArgsCommand(int argc, char **argv);
 
+    static void printHelpMessage(std::string invocation = "");
 
-    ArgsCommand(int argc, char  **argv);
+    explicit operator bool() const {
+        return valid;
+    }
 
-    std::string getSourceFileName();
-    std::string getOutputFileName();
-    bool sourceFileIsTwee();
-    bool sourceFileIsAssembly();
-    bool isDebugInConsole();
+    std::string getSourceFileName() const;
 
+    std::string getOutputFileName() const;
+
+    bool isValid() const;
+
+    bool sourceFileIsTwee() const;
+
+    bool sourceFileIsAssembly() const;
+
+    bool outputToAssembly() const;
+
+    bool isDebugInConsole() const;
 };
 
 

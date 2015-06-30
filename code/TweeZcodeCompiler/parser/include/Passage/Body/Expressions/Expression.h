@@ -8,15 +8,15 @@
 #include <string>
 
 enum class UnOps {
-    MINUS, PLUS, NOT
+    MINUS=0, PLUS, NOT
 };
 
 enum class BinOps {
-    ADD, MUL, SUB, DIV, MOD, AND, OR, LT, LTE, GT, GTE, IS, NEQ, TO
+    ADD=0, MUL, SUB, DIV, MOD, AND, OR, LT, LTE, GT, GTE, IS, NEQ, TO
 };
 
 enum FunctionName {
-    RANDOM, PREVIOUS, TURNS, VISITED
+    RANDOM=0, PREVIOUS, TURNS, VISITED
 };
 
 class Expression {
