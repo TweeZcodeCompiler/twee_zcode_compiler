@@ -16,7 +16,7 @@
 #include "ZCodeObjects/ZCodePkgAdrrPadding.h"
 #include <sstream>
 #include <plog/Log.h>
-#include <stdint-gcc.h>
+#include <cstdint>
 
 using namespace std;
 

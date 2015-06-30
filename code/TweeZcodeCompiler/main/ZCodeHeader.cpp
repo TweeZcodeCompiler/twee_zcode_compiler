@@ -9,7 +9,8 @@
 #include "ZCodeHeader.h"
 #include "Utils.h"
 #include <plog/Log.h>
-#include <stdint-gcc.h>
+#include <cstdint>
+
 using namespace std;
 
 #define VERSION 8               // Z-code version
