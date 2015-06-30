@@ -2,8 +2,8 @@
 // Created by lars on 24.06.15.
 //
 
-#ifndef OPERATOR_H
-#define OPERATOR_H
+#ifndef BINARYOPERATION_H
+#define BINARYOPERATION_H
 
 #include "Expression.h"
 
@@ -45,4 +45,4 @@ public:
 
 };
 
-#endif //BINARYOPERATOR_H
+#endif //BINARYOPERATION_H

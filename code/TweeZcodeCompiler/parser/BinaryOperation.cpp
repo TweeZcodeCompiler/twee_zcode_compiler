@@ -7,6 +7,7 @@
 
 BinaryOperation::BinaryOperation(BinOps op, const Expression *leftSide, const Expression *rightSide) {
     this->op = op;
+
     this->leftSide = std::unique_ptr<Expression>(leftSide->clone());
     this->rightSide = std::unique_ptr<Expression>(rightSide->clone());
 }

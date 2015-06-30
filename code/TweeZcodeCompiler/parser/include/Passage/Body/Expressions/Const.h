@@ -2,8 +2,8 @@
 // Created by lars on 24.06.15.
 //
 
-#ifndef PROJECT_CONST_H
-#define PROJECT_CONST_H
+#ifndef CONST_H
+#define CONST_H
 
 #include "Expression.h"
 
@@ -29,4 +29,4 @@ public:
 
 };
 
-#endif //PROJECT_CONSTINT_H
+#endif //CONST_H

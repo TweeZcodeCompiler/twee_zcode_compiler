@@ -25,7 +25,9 @@
     #include "include/Passage/Body/Macros/ElseIfMacro.h"
     #include "include/Passage/Body/Macros/ElseMacro.h"
     #include "include/Passage/Body/Macros/EndIf.h"
+    #include "include/Passage/Body/Expressions/Expression.h"
     #include "include/Passage/Body/Expressions/Const.h"
+    #include "include/Passage/Body/Expressions/UnaryOperation.h"
     #include "include/Passage/Body/Expressions/BinaryOperation.h"
     #include "include/Passage/Body/Expressions/Variable.h"
 
@@ -84,6 +86,8 @@
     ElseMacro *elsemacro;
     EndIf *endif;
 	Expression *expression;
+	Variable *variable;
+	Const<int> *intconst;
 
 	BodyPart *bodypart;
 	Text *text;
@@ -194,6 +198,8 @@
 %type <endif> endif
 %type <macro> macro
 %type <expression> expression
+%type <variable> variable
+%type <intconst> intconst
 
 %start TweeDocument
 
@@ -307,7 +313,7 @@ bodypart :
     {
     LOG_DEBUG << "Parser: bodypart -> macro: "<< "pass macro:type(--Text--) to bodypart:type(BodyPart)";
     //TODO: implement Macro:BodyType
-    $$ = new Text("macro placeholder");
+    $$ = new Text($1->to_string());
     }
   ;
 
@@ -534,27 +540,48 @@ expression :
     LOG_DEBUG << "expression-> expressionEXPR_ASS expr";
     LOG_DEBUG << "create top:macro:type(--Text--) with 2:token:TEXT_TOKEN";
     }
-    |EXPR_VAR
-    {
-    LOG_DEBUG << "expression -> EXPR_VAR: ";
-    //TODO: implement variables
-    }
-    |EXPR_INT
-    {
-    LOG_DEBUG << "expression -> EXPR_INT: ";
-    }
-    |EXPR_VAR EXPR_ASSGN expression
+    |variable EXPR_ASSGN expression
     {
     LOG_DEBUG << "matched an expression assignment with an int";
     LOG_DEBUG << $3;
     }
-    |EXPR_VAR EXPR_IS expression
+    |variable EXPR_IS expression
     {
-    LOG_DEBUG << "matched an expression is with an int";
-    LOG_DEBUG << $3;
+    LOG_DEBUG << "expression-> variable EXPR_IS expression:";
+    $$ = new BinaryOperation(IS, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_IS expression
+    {
+    LOG_DEBUG << "expression-> expression EXPR_IS expression:";
+    $$ = new BinaryOperation(IS, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |intconst
+    {
+    $$ = $1;
+    }
+ ;
+
+variable:
+    EXPR_VAR
+    {
+    LOG_DEBUG << "variable-> EXPR_VAR: L";
+    $$ = new Variable(*$1);
+    delete $1;
     }
    ;
-  ;
+
+intconst:
+    EXPR_INT
+    {
+    LOG_DEBUG << "intconst-> EXPR_INT: L";
+    $$ = new Const<int>($1);
+    }
+   ;
+
 
 %%
 
