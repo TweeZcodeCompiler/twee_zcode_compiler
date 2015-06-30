@@ -20,13 +20,19 @@
 
 using namespace std;
 
-void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, ITweeCompiler& tweeCompiler,bool isTwee) {
+void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileName, ITweeCompiler &tweeCompiler, bool isTwee,
+                                        bool outputAssembly) {
 
     log("Simple Compiler Pipeline started");
 
     stringstream buffer;
     if(isTwee) { //source file is twee file
-        ifstream inputFile(filename);
+        ifstream inputFile(inputFileName);
+
+        if(!inputFile) {
+            LOG_ERROR << "Invalid input file specified: " << inputFileName;
+            throw; // TODO: throw proper exception
+        }
 
         Twee::TweeParser parser(&inputFile);
 
@@ -40,13 +46,17 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
 
         log("Parsed twee file");
         tweeCompiler.compile(*tweeFile, buffer);
+
+        if(outputAssembly) {
+            ofstream file(outputFileName, ios::out);
+            file << buffer.rdbuf();
+            return;
+        }
     } else {
         //source file is assembly file
-        std::ifstream in(filename);
+        std::ifstream in(inputFileName);
         buffer << in.rdbuf();
     }
-
-
 
     shared_ptr<ZCodeContainer> zcode = shared_ptr<ZCodeContainer>(new ZCodeContainer("ZCode Container"));
 
@@ -104,8 +114,8 @@ void TweeZCodeCompilerPipeline::compile(string filename, string zCodeFileName, I
     Utils::fillWithBytes(zCode, 0, (empty > 0) ? empty : 0);
 
     BinaryFileWriter binaryFileWriter;
-    binaryFileWriter.write(zCodeFileName, zCode);
-    log("ZCode File '" + zCodeFileName + "' generated");
+    binaryFileWriter.write(outputFileName, zCode);
+    log("ZCode File '" + outputFileName + "' generated");
     zcode->cleanup();
 }
 

@@ -15,7 +15,8 @@
 class TweeZCodeCompilerPipeline {
 
 public:
-    void compile(std::string filename, std::string zCodeFileName, ITweeCompiler &tweeCompiler,bool isTwee);
+    void compile(std::string inputFileName, std::string outputFileName, ITweeCompiler &tweeCompiler, bool isTwee,
+                                            bool outputAssembly);
 
 private:
 

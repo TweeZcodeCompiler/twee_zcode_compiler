@@ -35,12 +35,16 @@ void handler()
 
 int main(int argc, char **argv) {
     // install exception handler
-   std::set_terminate(handler);
+    std::set_terminate(handler);
 
-
+    std::string invocation = argv[0];
     //get cmdargs
     ArgsCommand argsCommand(argc,argv);
-    // TODO: parse args properly (GNU getopt?)
+    if(!argsCommand) {
+        ArgsCommand::printHelpMessage(invocation);
+        return 2;
+    }
+
     std::string inputFile = argsCommand.getSourceFileName();
     std::string outputFile = argsCommand.getOutputFileName();
 
@@ -53,14 +57,11 @@ int main(int argc, char **argv) {
     {
         std::cout << "Console log";
         plog::init(plog::debug,  &consoleAppender);
-    }
-    else
-    {
+    } else {
         remove(logFile.c_str());
         plog::init(plog::debug, logFile.c_str());
         plog::init(plog::error,  &consoleAppender);
     }
-
 
     LOG_DEBUG << "CMD-Args Summary";
     LOG_DEBUG << "Console-DEBUG-Output: " << argsCommand.isDebugInConsole();
@@ -75,7 +76,8 @@ int main(int argc, char **argv) {
     TweeZCodeCompilerPipeline pipeline;
 
     try {
-        pipeline.compile(inputFile, outputFile, compiler, argsCommand.sourceFileIsTwee());
+        pipeline.compile(inputFile,
+                         outputFile, compiler, argsCommand.sourceFileIsTwee(), argsCommand.outputToAssembly());
     } catch (const AssemblyException& assemblyException) {
         std::cerr << "Invalid assembly statement at line " <<
                 (assemblyException.lineNumber != 0 ? std::to_string(assemblyException.lineNumber) : "<unknown>") << ":" <<
@@ -117,7 +119,6 @@ int main(int argc, char **argv) {
         // TODO: display more info if possible
         std::cerr << "Failed parsing Twee File";
     }
-
 
     return 0;
 }
