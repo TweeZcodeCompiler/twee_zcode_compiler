@@ -24,8 +24,50 @@ BinOps BinaryOperation::getOperator() const {
 std::string BinaryOperation::getOperatorString() const {
     std::string result;
     switch (this->getOperator()) {
+        case BinOps::ADD:
+            result = "ADD";
+            break;
+        case BinOps::MUL:
+            result = "MUL";
+            break;
+        case BinOps::SUB:
+            result = "SUB";
+            break;
+        case BinOps::DIV:
+            result = "DIV";
+            break;
+        case BinOps::MOD:
+            result = "MOD";
+            break;
+        case BinOps::AND:
+            result = "AND";
+            break;
+        case BinOps::OR:
+            result = "OR";
+            break;
+        case BinOps::LT:
+            result = "LT";
+            break;
+        case BinOps::LTE:
+            result = "LTE";
+            break;
+        case BinOps::GT:
+            result = "GT";
+            break;
+        case BinOps::GTE:
+            result = "GTE";
+            break;
         case BinOps::IS:
             result = "IS";
+            break;
+        case BinOps::NEQ:
+            result = "NEQ";
+            break;
+        case BinOps::TO:
+            result = "TO";
+            break;
+        default:
+            result = "Unknown Operator";
             break;
     }
     return result;
@@ -43,5 +85,6 @@ const std::unique_ptr<Expression> &BinaryOperation::getRightSide() const {
 
 
 std::string BinaryOperation::to_string() const {
-    return "BinaryOperation: " + this->getOperatorString() + "Left Side: " + this->getLeftSide()->to_string() + "Right Side: " + this->getRightSide()->to_string() ;
+    return "BinaryOperation: " + this->getOperatorString() + "Left Side: " + this->getLeftSide()->to_string() +
+           "Right Side: " + this->getRightSide()->to_string();
 }

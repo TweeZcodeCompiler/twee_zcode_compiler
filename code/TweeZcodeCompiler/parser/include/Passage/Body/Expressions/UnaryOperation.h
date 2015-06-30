@@ -30,6 +30,8 @@ public:
 
     UnOps getOperator() const;
 
+    std::string getOperatorString() const;
+
     const std::unique_ptr<Expression> &getExpression() const;
 
     virtual UnaryOperation *clone() const {
