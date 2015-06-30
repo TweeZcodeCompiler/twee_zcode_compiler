@@ -603,7 +603,7 @@ EXPR_TO                to|=
                                 return BisonParser::token::MACRO_ELSE;
                                 }
 
-<BodyMacro>{MACRO_IF}{WHITESPACE}{MACRO_ELSE} 		    {
+<BodyMacro>{MACRO_IF}{WHITESPACE}+{MACRO_ELSE} 		    {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"MACRO_ELSE_IF" << " with value " << YYText();
                                 return BisonParser::token::MACRO_ELSE_IF;
                                 }
@@ -613,17 +613,17 @@ EXPR_TO                to|=
                                 return BisonParser::token::MACRO_ENDIF;
                                 }
 
+<BodyMacro>set		            {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"MACRO_SET" << " with value " << YYText();
+                                return BisonParser::token::MACRO_SET;
+                                }
+
     /* macro print */
 <BodyMacro>{MACRO_PRINT}        {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"MACRO_PRINT" << " with value " << YYText();
                                 return BisonParser::token::MACRO_PRINT;
                                 }
 
-/* macro set */
-<BodyMacro>{MACRO_SET}        {
-                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"MACRO_SET" << " with value " << YYText();
-                                 return BisonParser::token::MACRO_SET;
-                                }
     /* macro display */
 <BodyMacro>{MACRO_DISPLAY}      {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"MACRO_DISPLAY" << " with value " << YYText();

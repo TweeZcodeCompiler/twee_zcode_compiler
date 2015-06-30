@@ -29,6 +29,7 @@ TweeParser::~TweeParser() {
 
 unique_ptr<TweeFile> TweeParser::parse() {
     return impl->parse();
+}
 
 /* impl */
 
