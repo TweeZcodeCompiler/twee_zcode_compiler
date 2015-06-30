@@ -62,6 +62,7 @@ private:
     static const std::string LOADB_COMMAND;
     static const std::string LOADW_COMMAND;
 
+    static const std::string PUSH_COMMAND;
 
 
     unsigned currentLineNumber;

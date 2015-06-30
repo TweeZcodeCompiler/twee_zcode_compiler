@@ -153,6 +153,7 @@ public:
     void loadw(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
     void storeb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
     void storew(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void push(std::vector<std::unique_ptr<ZParam>> params);
 
 
     /*
@@ -222,7 +223,9 @@ public:
         // Opcode: 2OP:16 10 loadb array byte-index -> (result)
                 LOADB = 16,
         // Opcode: 2OP:15 F loadw array word-index -> (result)
-                LOADW = 15
+                LOADW = 15,
+        // Opcode: Pushes value onto the game stack
+                PUSH = 232
 
 
 

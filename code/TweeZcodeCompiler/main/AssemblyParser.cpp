@@ -56,6 +56,7 @@ const string AssemblyParser::STOREW_COMMAND = "storew";
 const string AssemblyParser::LOADB_COMMAND = "loadb";
 const string AssemblyParser::LOADW_COMMAND = "loadw";
 
+const string AssemblyParser::PUSH_COMMAND = "push";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -203,39 +204,63 @@ void AssemblyParser::readAssembly(istream& input, shared_ptr<ZCodeContainer> dyn
 }
 
 void AssemblyParser::finishRoutine(shared_ptr<ZCodeContainer> highMemoryZcode) {
-    LOG_DEBUG << "adding routine to zcode" ;
+    LOG_DEBUG << "adding routine to zcode";
     auto routine = currentGenerator->getRoutine();
+    // check if all labels were valid
+    bool labelFound;
+    for (auto jump = registeredJumpsAtLines.begin(); jump != registeredJumpsAtLines.end(); ++jump) {
+        labelFound = false;
+        for (auto label = registeredLabels.begin(); label != registeredLabels.end(); ++label) {
+            if (label->compare(jump->first) == 0) {
+                labelFound = true;
+                break;
+            }
+        }
+
         // check if all labels were valid
         bool labelFound;
         for (auto jump = registeredJumpsAtLines.begin(); jump != registeredJumpsAtLines.end(); ++jump) {
             labelFound = false;
+            string jumpFirst = jump->first;
+
             for (auto label = registeredLabels.begin(); label != registeredLabels.end(); ++label) {
-                if (label->compare(jump->first) == 0) {
+                if (label->compare(jumpFirst) == 0) {
+                    labelFound = true;
+                    break;
+                }
+                //set labelFound true when label is x but jump->first is ~x for jump not equals
+                string jumpSubString = jumpFirst.substr(1, jumpFirst.size() - 1);
+                bool beginsWithTilde = (jumpFirst.at(0) == '~');
+                bool restIsSame = (label->compare(jumpSubString) == 0);
+                if (beginsWithTilde && restIsSame) {
                     labelFound = true;
                     break;
                 }
             }
 
             if (!labelFound) {
-                InvalidLabelException e(jump->first);
+                InvalidLabelException e(jumpFirst);
                 e.lineNumber = jump->second;
                 throw e;
             }
         }
-
-    if(firstRoutine){
-        //Call to first Routine
-        auto call = shared_ptr<ZCodeObject>(new ZCodeInstruction(RoutineGenerator::CALL_1N, "call to first routine"));
-        highMemoryZcode->add(call);
-        auto adress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(routine));
-        highMemoryZcode->add(adress);
-        firstRoutine = false;
-    }
-    auto padding = shared_ptr<ZCodeObject>(new ZCodePkgAdrrPadding());
-    highMemoryZcode->add(padding);
-    highMemoryZcode->add(routine);
     }
 
+            if (firstRoutine) {
+                //Call to first Routine
+                auto call = shared_ptr<ZCodeObject>(
+                        new ZCodeInstruction(RoutineGenerator::CALL_1N, "call to first routine"));
+                highMemoryZcode->add(call);
+                auto adress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(routine));
+                highMemoryZcode->add(adress);
+                firstRoutine = false;
+            }
+            auto padding = shared_ptr<ZCodeObject>(new ZCodePkgAdrrPadding());
+            highMemoryZcode->add(padding);
+            highMemoryZcode->add(routine);
+
+
+}
     vector<unique_ptr<ZParam>> AssemblyParser::parseArguments(const string instruction) {
         vector<string> commandParts = this->split(instruction, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
         vector<unique_ptr<ZParam>> params;
@@ -579,6 +604,9 @@ void AssemblyParser::finishRoutine(shared_ptr<ZCodeContainer> highMemoryZcode) {
         } else if (commandPart.compare(AssemblyParser::RET_POPPED_COMMAND) == 0) {
             LOG_DEBUG << ":::::: new ret_popped";
             routineGenerator.retPopped();
+        } else if(commandPart.compare(AssemblyParser::PUSH_COMMAND) == 0){
+           LOG_DEBUG << "::::::: new push";
+            routineGenerator.push(parseArguments(command));
         } else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
             LOG_DEBUG << ":::::: new verify";
             routineGenerator.verify(parseArguments(command));
@@ -602,10 +630,9 @@ void AssemblyParser::finishRoutine(shared_ptr<ZCodeContainer> highMemoryZcode) {
             if (commandParts.at(i).compare(ROUTINE_DIRECTIVE) == 0) {
                 return true;
             }
-
         }
-        return false;
     }
+
 
 
     unique_ptr<uint8_t> AssemblyParser::getAddressForId(const string &id) {

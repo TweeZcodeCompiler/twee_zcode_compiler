@@ -612,6 +612,14 @@ void RoutineGenerator::retPopped() {auto instruction = shared_ptr<ZCodeObject>(n
     routine->add(instruction);;
 }
 
+void RoutineGenerator::push(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1, 2, 3, 4);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+
+    vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(PUSH, params);
+    addBitset(instructions);
+}
+
 void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
     typedef map<size_t, string>::iterator it_type;
     for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {
