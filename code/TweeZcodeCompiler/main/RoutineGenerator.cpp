@@ -138,7 +138,8 @@ void RoutineGenerator::printRet(vector<unique_ptr<ZParam>> params) {
     unsigned long len = zsciiString.size();
     for (size_t i = 0; i < len; i++) {
         if (i % 96 == 0) {
-            addOneByte(numberToBitset(PRINT_RET));      // TODO: Check if this opcode needs same workaround as "print" for Frotz
+            addOneByte(numberToBitset(
+                    PRINT_RET));      // TODO: Check if this opcode needs same workaround as "print" for Frotz
         }
         if (i % 96 == 94) {
             zsciiString[i].set(7, true);
@@ -408,12 +409,22 @@ void RoutineGenerator::div(vector<unique_ptr<ZParam>> params) {
     base2OpOperation(DIV, params);
 }
 
+void RoutineGenerator::mod(vector<unique_ptr<ZParam>> params) {
+    base2OpOperation(MOD, params);
+}
+
 void RoutineGenerator::doAND(vector<unique_ptr<ZParam>> params) {
     base2OpOperation(AND, params);
 }
 
 void RoutineGenerator::doOR(vector<unique_ptr<ZParam>> params) {
     base2OpOperation(OR, params);
+}
+
+void RoutineGenerator::doNOT(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 2);
+    checkParamType(params, VARIABLE_OR_VALUE, STORE_ADDRESS);
+    opcodeGenerator.generateVarOPInstruction(NOT, params);
 }
 
 // params: address, resultAddress
