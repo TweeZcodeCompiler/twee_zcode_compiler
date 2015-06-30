@@ -186,7 +186,7 @@ void TweeCompiler::handleExpressions(ZAssemblyGenerator assgen, Expression *expr
         assgen.print(std::to_string(constant->getValue()));
     } else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
         if (Utils::includes(globalVariables, variable->getName())) {
-            
+
         } else {
 
         }
