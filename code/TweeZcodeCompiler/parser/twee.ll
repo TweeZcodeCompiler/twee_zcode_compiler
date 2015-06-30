@@ -103,6 +103,7 @@ MACRO_ENDIF             endif
 
 MACRO_PRINT             print
 MACRO_DISPLAY           display
+MACRO_SET               set
 
     /*Expression String and Integer Token*/
 EXPR_STR_LIMITER        \"
@@ -616,6 +617,12 @@ EXPR_TO                to|=
 <BodyMacro>{MACRO_PRINT}        {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"MACRO_PRINT" << " with value " << YYText();
                                 return BisonParser::token::MACRO_PRINT;
+                                }
+
+/* macro set */
+<BodyMacro>{MACRO_SET}        {
+                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"MACRO_SET" << " with value " << YYText();
+                                 return BisonParser::token::MACRO_SET;
                                 }
     /* macro display */
 <BodyMacro>{MACRO_DISPLAY}      {

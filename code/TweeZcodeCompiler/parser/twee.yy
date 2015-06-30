@@ -124,16 +124,20 @@
 	<token> MACRO_ELSE
 	<token> MACRO_ELSE_IF
 	<token> MACRO_ENDIF
-	
 	<token> MACRO_PRINT
+	<token> MACRO_SET
 	<token> MACRO_DISPLAY
+
     <token> EXPR_RANDOM
     <token> EXPR_VISITED
     <token> EXPR_PREVIOUS
     <token> EXPR_TURNS
 
+
     <token> EXPR_OPEN
     <token> EXPR_CLOSE
+
+
 
     <token> EXPR_ADD
     <token> EXPR_SUB
@@ -192,6 +196,7 @@
 %type <newline> newline
 
 %type <ifmacro> ifmacro
+%type <setmacro> setmacro
 %type <elseifmacro> elseifmacro
 %type <elsemacro> elsemacro
 %type <endif> endif
@@ -420,6 +425,11 @@ macro :
     LOG_DEBUG << "macro -> else: pass else:type(ElseMacro) to macro:type(Macro)";
     $$ = $1;
     }
+    |setmacro
+    {
+    LOG_DEBUG << "set macro found";
+    $$ = $1;
+    }
     |endif
     {
     LOG_DEBUG << "macro -> endif: pass endif:type(EndIf) to macro:type(Macro)";
@@ -427,6 +437,13 @@ macro :
     }
 
   ;
+
+
+setmacro:
+     MACRO_OPEN MACRO_SET EXPR_VAR EXPR_TO EXPR_INT MACRO_CLOSE
+     {
+     LOG_DEBUG << "set macro structure found";
+     } 
 
 ifmacro:
     MACRO_OPEN MACRO_IF expression MACRO_CLOSE
