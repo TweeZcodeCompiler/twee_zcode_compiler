@@ -578,7 +578,7 @@ intconst:
     EXPR_INT
     {
     LOG_DEBUG << "intconst-> EXPR_INT: L";
-    $$ = new Const<int>($1);
+    $$ = new Const<int> ($1);
     }
    ;
 

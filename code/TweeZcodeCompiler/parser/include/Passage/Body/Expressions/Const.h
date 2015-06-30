@@ -17,11 +17,15 @@ private:
 
 public:
 
-    Const(const T);
+    Const<T>(const T value) : value(value) { }
 
-    const T getValue() const;
+    const T getValue() const {
+        return this->value;
+    }
 
-    std::string to_string() const;
+    std::string to_string() const {
+        return "Const: " + this->getValue();
+    }
 
     virtual Const *clone() const {
         return new Const(*this);
