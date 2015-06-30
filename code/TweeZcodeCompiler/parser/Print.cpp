@@ -17,5 +17,5 @@ const std::unique_ptr<Expression> &Print::getExpression() const {
 }
 
 std::string Print::to_string() const {
-    return "Print: " + this->getExpression()->to_string();
+    return "Print: " + this->expression->to_string();
 }

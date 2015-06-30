@@ -23,6 +23,16 @@ BinOps BinaryOperation::getOperator() const {
     return this->op;
 }
 
+std::string BinaryOperation::getOperatorString() const {
+    std::string result;
+    switch (this->op) {
+        case IS:
+            result = "IS";
+            break;
+    }
+    return result;
+}
+
 
 const std::unique_ptr<Expression> &BinaryOperation::getLeftSide() const {
     return this->leftSide;
@@ -35,6 +45,5 @@ const std::unique_ptr<Expression> &BinaryOperation::getRightSide() const {
 
 
 std::string BinaryOperation::to_string() const {
-    return "Binops"; //"BinaryOperation: " + this->getOperator() + "\n" + "Left Side: " + this->getLeftSide()->to_string() + "\n"
-    //"Right Side: " + this->getRightSide()->to_string() + "\n";
+    return "BinaryOperation: " + this->getOperatorString() + "Left Side: " + this->getLeftSide()->to_string() + "Right Side: " + this->getRightSide()->to_string() ;
 }

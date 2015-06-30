@@ -404,6 +404,7 @@ macro :
     MACRO_OPEN expression MACRO_CLOSE
     {
     LOG_DEBUG << "macro -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
+    $$ = new Print($2);
     }
     |ifmacro
     {
@@ -542,19 +543,19 @@ expression :
     }
     |variable EXPR_ASSGN expression
     {
-    LOG_DEBUG << "matched an expression assignment with an int";
-    LOG_DEBUG << $3;
+    LOG_DEBUG << "expression-> variable EXPR_ASSGN expression: ";
+    //TODO: implement
     }
     |variable EXPR_IS expression
     {
-    LOG_DEBUG << "expression-> variable EXPR_IS expression:";
+    LOG_DEBUG << "expression-> variable EXPR_IS expression: created $$ = new BinaryOperation(IS, $1, $3)";
     $$ = new BinaryOperation(IS, $1, $3);
     delete $1;
     delete $3;
     }
     |expression EXPR_IS expression
     {
-    LOG_DEBUG << "expression-> expression EXPR_IS expression:";
+    LOG_DEBUG << "expression-> expression EXPR_IS expression: created new BinaryOperation(IS, $1, $3)";
     $$ = new BinaryOperation(IS, $1, $3);
     delete $1;
     delete $3;

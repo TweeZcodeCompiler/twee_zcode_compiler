@@ -24,7 +24,7 @@ public:
     }
 
     std::string to_string() const {
-        return "Const: " + this->getValue();
+        return "Const: ";
     }
 
     virtual Const *clone() const {

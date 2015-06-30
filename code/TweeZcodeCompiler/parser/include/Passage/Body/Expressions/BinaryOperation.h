@@ -32,6 +32,7 @@ public:
     }
 
     BinOps getOperator() const;
+    std::string getOperatorString() const;
 
     const std::unique_ptr<Expression> &getLeftSide() const;
 
