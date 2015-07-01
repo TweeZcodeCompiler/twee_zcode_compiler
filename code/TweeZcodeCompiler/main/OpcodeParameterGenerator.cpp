@@ -43,9 +43,10 @@ vector<bitset<8>> OpcodeParameterGenerator::generate1OPInstruction(unsigned int 
     return instructions;
 }
 
-vector<bitset<8>> OpcodeParameterGenerator::generate2OPInstruction(unsigned int opcode, ZParam &param1, ZParam &param2) {
+vector<bitset<8>> OpcodeParameterGenerator::generate2OPInstruction(unsigned int opcode, ZParam &param1,
+                                                                   ZParam &param2) {
     return generate2OPInstruction(opcode, param1.getZCodeValue(), param2.getZCodeValue(), param1.isVariableArgument(),
-                        param2.isVariableArgument());
+                                  param2.isVariableArgument());
 }
 
 vector<bitset<8>> OpcodeParameterGenerator::generate2OPInstruction(unsigned int opcode, uint16_t param1,
@@ -103,7 +104,8 @@ vector<bitset<8>> OpcodeParameterGenerator::generate2OPInstruction(unsigned int 
     return instructions;
 }
 
-vector<bitset<8>> OpcodeParameterGenerator::generateVarOPInstruction(unsigned int opcode, vector<unique_ptr<ZParam>> &params) {
+vector<bitset<8>> OpcodeParameterGenerator::generateVarOPInstruction(unsigned int opcode,
+                                                                     vector<unique_ptr<ZParam>> &params) {
     vector<uint16_t> paramValues;
     vector<bool> paramIsVariable;
 

@@ -10,10 +10,10 @@ Text::Text(std::string content) {
     this->content = content;
 }
 
-std::string Text::getContent() {
+std::string Text::getContent() const {
     return this->content;
 }
 
-std::string Text::to_string() {
+std::string Text::to_string() const {
     return "Text: " + this->getContent();
 }

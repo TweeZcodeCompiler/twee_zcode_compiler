@@ -24,11 +24,11 @@ public:
         return new Link(*this);
     }
 
-    std::string getTarget();
+    std::string getTarget() const;
 
-    std::string getAltName();
+    std::string getAltName() const;
 
-    std::string to_string();
+    std::string to_string() const;
 
 };
 

@@ -51,6 +51,7 @@ public:
     ZAssemblyGenerator &newline();
     ZAssemblyGenerator &setTextStyle(bool, bool, bool);
     ZAssemblyGenerator &print(std::string str);
+
     ZAssemblyGenerator &read_char(std::string storeTarget);
     ZAssemblyGenerator &println(std::string str);
     ZAssemblyGenerator &variable(std::string variable);
