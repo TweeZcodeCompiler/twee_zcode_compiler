@@ -134,9 +134,7 @@ vector<bitset<8>> ZCodeConverter::convertStringToZSCII(std::string source) {
                     zcode.push_back(convertIntToBitset(6));
                     appendZSCII(zcode, unicode);
                 }else {
-                    //space
-                    zsciiValue = 0;
-                    zcode.push_back(convertIntToBitset(zsciiValue));
+                    //ignore Character
                 }
                 break;
         }
