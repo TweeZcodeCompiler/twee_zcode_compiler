@@ -9,7 +9,7 @@
 #include <iostream>
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
-#include <Passage/Body/FormattedText.h>
+#include <Passage/Body/Newline.h>
 #include <Passage/Body/Variable.h>
 
 using namespace std;
@@ -105,10 +105,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 BodyPart* bodyPart = it->get();
                 if(Text* text = dynamic_cast<Text*>(bodyPart)) {
                     assgen.print(text->getContent());
-                } else if (FormattedText * formText = dynamic_cast<FormattedText *>(bodyPart)) {
-                    assgen.setTextStyle(formText->isItalic(), formText->isBold(), formText->isUnderlined());
-                    assgen.print(formText->getContent());
-                    assgen.setTextStyle(false, false, false);
+                } else if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
+                    assgen.newline();
                 } else if (Variable * variable = dynamic_cast<Variable *>(bodyPart)) {
                     assgen.variable(variable->getName());
                 }
