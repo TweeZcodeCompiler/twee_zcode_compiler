@@ -383,7 +383,7 @@ bodypart :
     {
     LOG_DEBUG << "Parser: bodypart -> macro: "<< "pass macro:type(--Text--) to bodypart:type(BodyPart)";
     //TODO: implement Macro:BodyType
-    $$ = $1;
+    $$ = new Text($1->to_string());
     }
   ;
 

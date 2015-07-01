@@ -10,7 +10,7 @@
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
-#include <Passage/Body/Variable.h>
+#include <Passage/Body/Expressions/Variable.h>
 
 using namespace std;
 
