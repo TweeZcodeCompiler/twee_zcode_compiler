@@ -191,6 +191,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::jumpGreater(string args, string targetLa
     return addInstruction(instruction::JG_COMMAND, args, make_pair(targetLabel, false), nullopt);
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::jumpLess(string args, string targetLabel) {
+    return addInstruction(instruction::JL_COMMAND, args, make_pair(targetLabel, false), nullopt);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::quit() {
     return addInstruction(instruction::QUIT_COMMAND, nullopt, nullopt, nullopt);
 }
@@ -207,35 +211,8 @@ ZAssemblyGenerator &ZAssemblyGenerator::print(string str) {
     return addInstruction(instruction::PRINT_COMMAND, string("\"") + str + string("\""), nullopt, nullopt);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(Format format) {
-    string result;
-    switch (format) {
-        case Format::BOLD:
-            result = "b";
-            break;
-        case Format::ITALIC:
-            result = "i";
-            break;
-        case Format::UNDERLINED:
-            result = "v";
-            break;
-        case Format::MONOSPACE:
-            result = "f";
-            break;
-        default:
-            LOG_DEBUG << "Unknown text formatting";
-            throw;
-    }
-    if ( bold ) {
-        result += "b";
-    }
-    if (underlined) {
-        result += "u";
-    }
-    if (!(italic && bold && underlined)) {
-        result = "r";
-    }
-    return addInstruction(instruction::SET_TEXT_STYLE, result, nullopt, nullopt);
+ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(std::string values) {
+    return addInstruction(instruction::SET_TEXT_STYLE, values, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::read_char(string storeTarget) {

@@ -57,6 +57,8 @@ public:
 
     ZAssemblyGenerator &jumpGreater(std::string args, std::string targetLabel);
 
+    ZAssemblyGenerator &jumpLess(std::string args, std::string targetLabel);
+
     ZAssemblyGenerator &read_char(std::string storeTarget);
 
     ZAssemblyGenerator &quit();
@@ -64,7 +66,9 @@ public:
     ZAssemblyGenerator &ret(std::string arg);
 
     ZAssemblyGenerator &newline();
-    ZAssemblyGenerator &setTextStyle(Format format);
+
+    ZAssemblyGenerator &setTextStyle(std::string values);
+
     ZAssemblyGenerator &print(std::string str);
 
     ZAssemblyGenerator &println(std::string str);
@@ -96,10 +100,10 @@ private:
     std::ostream &out;
     std::map<std::string, int> passageName2id;
 
-    ZAssemblyGenerator& addInstruction(INST_TYPE instruction,
-                                      std::experimental::optional<std::string> args,
-                                      std::experimental::optional<std::pair<std::string, bool>> targetLabelAndNeg,
-                                      std::experimental::optional<std::string> storeTarget);
+    ZAssemblyGenerator &addInstruction(INST_TYPE instruction,
+                                       std::experimental::optional<std::string> args,
+                                       std::experimental::optional<std::pair<std::string, bool>> targetLabelAndNeg,
+                                       std::experimental::optional<std::string> storeTarget);
 
     ZAssemblyGenerator &addDirective(std::string directiveName, std::experimental::optional<std::string> args);
 

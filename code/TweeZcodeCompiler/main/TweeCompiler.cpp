@@ -13,13 +13,14 @@
 #include <algorithm>
 #include <Passage/Body/FormattedText.h>
 #include <Passage/Body/Expressions/Variable.h>
+#include <plog/Log.h>
 
 using namespace std;
 
 static const string PASSAGE_GLOB = "PASSAGE_PTR",
         TEXT_FORMAT_ITALIC = "ITALIC",
         TEXT_FORMAT_BOLD = "BOLD",
-        TEXT_FORMAT_REVERSED_VIDEO = "REVERSED_VIDEO",
+        TEXT_FORMAT_REVERSE_VIDEO = "REVERSED_VIDEO",
         TEXT_FORMAT_FIXED_PITCH = "FIXED_PITCH",
         JUMP_TABLE_LABEL = "JUMP_TABLE_START",
         JUMP_TABLE_END_LABEL = "JUMP_TABLE_END",
@@ -97,47 +98,16 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         assgen.quit();
     }
 
-    .Func format type, i, value
-    LOOP_TYPE:
-    je type i ?~CONTINUE
-            add TEXT_FORMAT_ITALIC i -> i
-    je i 1 ?TOGGLE_OFF
-         store i 1
-    jump PRINT_MACRO
-
-    TOGGLE_OFF:
-    store i 0
-    jump PRINT_MACRO
-
-    CONTINUE:
-    add i 1 -> i
-    jl i 5 ?LOOP_TYPE
-         ret 0			//Fail
-
-    PRINT_MACRO:
-    store i TEXT_FORMAT_ITALIC
-    LOOP_PRINT:
-    mul value 10 -> value
-    je i 0 ?CONTINUE_PRINT
-         add value 1
-
-    CONTINUE_PRINT:
-    add i 1
-    jl i 5 ?LOOP_PRINT
-
-         set_text_style value
-    ret 0
-
-
     // print appropriate text formatting args
     {
-        assgen.addGlobal(TEXT_FORMAT_ITALIC)
+        assgen.addGlobal(TEXT_FORMAT_REVERSE_VIDEO)
                 .addGlobal(TEXT_FORMAT_BOLD)
-                .addGlobal(TEXT_FORMAT_FIXED_PITCH)
-                .addGlobal(TEXT_FORMAT_REVERSED_VIDEO);
+                .addGlobal(TEXT_FORMAT_ITALIC)
+                .addGlobal(TEXT_FORMAT_FIXED_PITCH);
 
         string varFormatType = "formatType";
         string varCounter = "i";
+        string varTypeValue = "typeValue";
         string varResult = "result";
         string labelLoopType = "LOOP_TYPE";
         string labelLoopPrint = "LOOP_PRINT";
@@ -149,59 +119,40 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         vector<ZRoutineArgument> args;
         args.push_back(ZRoutineArgument(varFormatType));
         args.push_back(ZRoutineArgument(varCounter));
+        args.push_back(ZRoutineArgument(varTypeValue, to_string(1)));
         args.push_back(ZRoutineArgument(varResult));
         assgen.addRoutine(TEXT_FORMAT_ROUTINE, args);
 
-        assgen.addLabel(labelLoopType);
-        assgen.jumpEquals(string(varFormatType + " " + varCounter), string("~" + labelContinue));
-        assgen.
+        assgen.addLabel(labelLoopType)
+                .jumpEquals(string(varFormatType + " " + varCounter), string("~" + labelContinue))
+                .add(TEXT_FORMAT_ITALIC, varCounter, varCounter)
+                .jumpEquals(varCounter + " " + to_string(1), labelToggleOff)
+                .store(varCounter, to_string(1))
+                .jump(labelPrintMacro);
 
+        assgen.addLabel(labelToggleOff)
+                .store(varCounter, to_string(0))
+                .jump(labelPrintMacro);
 
-        assgen.jumpEquals(string(TEXT_FORMAT_ITALIC + " " + to_string(1)), labelItalicOff);
-        assgen.setTextStyle();
-        assgen.store(TEXT_FORMAT_ITALIC, 1);
-        assgen.ret("0");
-        assgen.addLabel(labelItalicOff);
-        assgen.setTextStyle();
-        assgen.store(TEXT_FORMAT_ITALIC, 0);
-        assgen.ret("0");
+        assgen.addLabel(labelContinue)
+                .add(varCounter, to_string(1), varCounter)
+                .jumpLess(varCounter + " " + to_string(5), labelLoopType)
+                .ret("0");
 
-        assgen.addLabel(labelNot1);
-        assgen.jumpEquals(string(varFormatType + " " + to_string(2)), labelNot2);
-        assgen.jumpEquals(string(TEXT_FORMAT_BOLD + " " + to_string(1)), labelBoldOff);
-        assgen.setTextStyle();
-        assgen.store(TEXT_FORMAT_BOLD, 1);
-        assgen.ret("0");
-        assgen.addLabel(labelBoldOff);
-        assgen.setTextStyle();
-        assgen.store(TEXT_FORMAT_BOLD, 0);
-        assgen.ret("0");
+        assgen.addLabel(labelPrintMacro)
+                .store(varCounter, TEXT_FORMAT_ITALIC);
 
-        assgen.addLabel(labelNot2);
-        assgen.jumpEquals(string(varFormatType + " " + to_string(3)), labelNot3);
-        assgen.jumpEquals(string(TEXT_FORMAT_FIXED_PITCH + " " + to_string(1)), labelFixedPitchOff);
-        assgen.setTextStyle();
-        assgen.store(TEXT_FORMAT_FIXED_PITCH, 1);
-        assgen.ret("0");
-        assgen.addLabel(labelFixedPitchOff);
-        assgen.setTextStyle();
-        assgen.store(TEXT_FORMAT_FIXED_PITCH, 0);
-        assgen.ret("0");
+        assgen.addLabel(labelLoopPrint)
+                .jumpEquals(varCounter + " " + to_string(0), labelContinuePrint)
+                .add(varResult, varTypeValue, varResult);
 
-        assgen.addLabel(labelNot3);
-        assgen.jumpEquals(string(TEXT_FORMAT_REVERSED_VIDEO + " " + to_string(1)), labelReversedVideoOff);
-        assgen.setTextStyle();
-        assgen.store(TEXT_FORMAT_REVERSED_VIDEO, 1);
-        assgen.ret("0");
-        assgen.addLabel(labelReversedVideoOff);
-        assgen.setTextStyle();
-        assgen.store(TEXT_FORMAT_REVERSED_VIDEO, 0);
-        assgen.ret("0");
-    }
+        assgen.addLabel(labelContinuePrint)
+                .add(varCounter, to_string(1), varCounter)
+                .mul(varTypeValue, to_string(2), varTypeValue)
+                .jumpLess(varCounter + " " + to_string(5), labelLoopPrint);
 
-    // toggle Italic
-    {
-
+        assgen.setTextStyle(varResult)
+                .ret("0");
     }
 
     // passage routines
@@ -222,7 +173,23 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 } else if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
                     assgen.newline();
                 } else if (FormattedText* format = dynamic_cast<FormattedText*>(bodyPart)) {
-                    assgen.setTextStyle(format->getFormat());
+                    switch (format->getFormat()) {
+                        case Format::BOLD:
+                           // assgen.cal
+                            break;
+                        case Format::ITALIC:
+
+                            break;
+                        case Format::UNDERLINED:
+
+                            break;
+                        case Format::MONOSPACE:
+
+                            break;
+                        default:
+                            LOG_DEBUG << "Unknown text formatting";
+                            throw;
+                    }
                 } else if (Variable * variable = dynamic_cast<Variable *>(bodyPart)) {
                     assgen.variable(variable->getName());
                 }
