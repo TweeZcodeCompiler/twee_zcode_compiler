@@ -52,13 +52,14 @@ void Utils::insertPaddingToNextRoutine(vector<bitset<8>> &bitsets, size_t routin
     }
 }
 
-int Utils::includes(std::vector<std::string> array, std::string string) {
+template<typename T>
+bool Utils::contains(std::vector<T> array, T elem) {
 
     for (auto iter = array.begin(); iter != array.end(); ++iter) {
-        if (iter->compare(string) == 0) {
-            return 0;
+        if (iter == elem) {
+            return true;
         }
     }
 
-    return 1;
+    return false;
 }

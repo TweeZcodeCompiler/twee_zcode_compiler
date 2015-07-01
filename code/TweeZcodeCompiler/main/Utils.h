@@ -26,7 +26,8 @@ public:
 
     static void insertPaddingToNextRoutine(std::vector<std::bitset<8>> &bitsets, size_t routineOffset);
 
-    static int includes(std::vector<std::string>, std::string);
+    template<typename T>
+    static bool contains(std::vector<T> array, T elem);
 };
 
 
