@@ -51,3 +51,14 @@ void Utils::insertPaddingToNextRoutine(vector<bitset<8>> &bitsets, size_t routin
         bitsets.push_back(bitset<8>(0));
     }
 }
+
+int Utils::includes(std::vector<std::string> array, std::string string) {
+
+    for (auto iter = array.begin(); iter != array.end(); ++iter) {
+        if (iter->compare(string) == 0) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
