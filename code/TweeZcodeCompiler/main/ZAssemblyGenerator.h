@@ -44,7 +44,7 @@ public:
 
     ZAssemblyGenerator &jump(std::string label);
     ZAssemblyGenerator &call(std::string routineName);
-    ZAssemblyGenerator &call_vs(std::string routineName, std::string args, std::string storeTarget);
+    ZAssemblyGenerator &call_vs(std::string routineName, std::experimental::optional<std::string> args, std::string storeTarget);
     ZAssemblyGenerator &jumpEquals(std::string args, std::string targetLabel);
     ZAssemblyGenerator &jumpGreater(std::string args, std::string targetLabel);
     ZAssemblyGenerator &quit();
