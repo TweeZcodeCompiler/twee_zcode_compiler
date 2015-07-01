@@ -40,10 +40,11 @@ public:
     ZAssemblyGenerator& markStart();
     ZAssemblyGenerator& addRoutine(std::string routineName, std::vector<ZRoutineArgument> args = std::vector<ZRoutineArgument>());
     ZAssemblyGenerator& addGlobal(std::string globalName);
+    ZAssemblyGenerator& addByteArray(std::string name, unsigned size);
 
     ZAssemblyGenerator &jump(std::string label);
     ZAssemblyGenerator &call(std::string routineName);
-    ZAssemblyGenerator &call(std::string routineName, std::string storeTarget);
+    ZAssemblyGenerator &call_vs(std::string routineName, std::string args, std::string storeTarget);
     ZAssemblyGenerator &jumpEquals(std::string args, std::string targetLabel);
     ZAssemblyGenerator &jumpGreater(std::string args, std::string targetLabel);
     ZAssemblyGenerator &quit();
