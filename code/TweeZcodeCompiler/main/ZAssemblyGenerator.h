@@ -50,6 +50,7 @@ public:
     ZAssemblyGenerator &addGlobal(std::string globalName);
 
     ZAssemblyGenerator &call(std::string routineName);
+    ZAssemblyGenerator &call_vs(std::string routineName, std::experimental::optional<std::string> args, std::string storeTarget);
     ZAssemblyGenerator &call_vs(std::string routineName, std::string args, std::string storeTarget);
 
     ZAssemblyGenerator &call(std::string routineName, std::string storeTarget);

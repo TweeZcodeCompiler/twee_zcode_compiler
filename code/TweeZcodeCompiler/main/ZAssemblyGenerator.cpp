@@ -179,8 +179,8 @@ ZAssemblyGenerator &ZAssemblyGenerator::call(string routineName) {
     return addInstruction(instruction::CALL_VS_COMMAND, routineName, nullopt, nullopt);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::call(string routineName, string storeTarget) {
-    return addInstruction(instruction::CALL_VS_COMMAND, routineName, nullopt, storeTarget);
+ZAssemblyGenerator &ZAssemblyGenerator::call_vs(string routineName, optional<string> args, string storeTarget) {
+    return addInstruction(instruction::CALL_VS, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jumpEquals(string args, string targetLabel) {
