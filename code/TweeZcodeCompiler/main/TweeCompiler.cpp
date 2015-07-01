@@ -72,8 +72,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
 
     vector<Passage> passages = tweeFile.getPassages();
-    
-    std::map<std::string, int> globalVariables;
+
+    globalVariables = std::set<std::string>();
 
     labelCount = 0;
     
@@ -130,61 +130,13 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 BodyPart *bodyPart = it->get();
                 if (Text *text = dynamic_cast<Text *>(bodyPart)) {
                     ASSGEN.print(text->getContent());
-            for (auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
-
-                BodyPart *bodyPart = it->get();
-                if (Text *text = dynamic_cast<Text *>(bodyPart)) {
-                    assgen.print(text->getContent());
-
-                } else if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
-                    assgen.newline();
-                } else if (Variable * variable = dynamic_cast<Variable *>(bodyPart)) {
-                    assgen.variable(variable->getName());
                 } else if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
                     ASSGEN.newline();
                 } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
                     evalExpression(print->getExpression().get());
                     ASSGEN.print_num("sp");
-                }
-                
-
-
-                if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
-                    LOG_DEBUG << "generate SetMacro assembly code";
-
-                    if (BinaryOperation *binaryOperation = (BinaryOperation *) (op->getExpression().get())) {
-                        if (Variable *variable = (Variable *) (binaryOperation->getLeftSide().get())) {
-                            std::string variableName = variable->getName();
-                            variableName = variableName.erase(0, 1); //remove the $ symbol
-                            Const<int> *constant = dynamic_cast<Const<int> *>(binaryOperation->getRightSide().get());
-                            if (constant) {
-                                int constantValue = (int) constant->getValue();
-
-
-                                if (symbolTable.find(variableName.c_str()) != symbolTable.end()) {
-                                    symbolTable[variableName.c_str()] = constantValue;
-                                    assgen.store(variableName, std::to_string(constantValue));
-
-
-                                }
-                                else {
-                                    //new variable needs to be decleared as well
-                                    assgen.addGlobal(variableName);
-                                    symbolTable[variableName.c_str()] = constantValue;
-                                    assgen.store(variableName, std::to_string(constantValue));
-                                    LOG_DEBUG << "global var added";
-
-                                }
-                                LOG_DEBUG << variableName << "=" << constantValue << "assembly added";
-
-
-                            }
-                        }
-
-
-                    }
-
-
+                } else if (SetMacro *setMacro = dynamic_cast<SetMacro *>(bodyPart)) {
+                    evalExpression(setMacro->getExpression().get());
                 }
             }
 

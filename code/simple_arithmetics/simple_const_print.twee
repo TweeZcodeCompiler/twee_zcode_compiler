@@ -1,5 +1,5 @@
 ::Start
 
-<<print $asd = 20>>
+<<set $asd = (20 + 100) * 1000>>
 
 <<print $asd = 100>=10+1231 - $var>>
