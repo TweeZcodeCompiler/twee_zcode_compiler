@@ -525,12 +525,22 @@ void RoutineGenerator::div(vector<unique_ptr<ZParam>> params) {
     base2OpOperation(DIV, params);
 }
 
+void RoutineGenerator::mod(vector<unique_ptr<ZParam>> params) {
+    base2OpOperation(MOD, params);
+}
+
 void RoutineGenerator::doAND(vector<unique_ptr<ZParam>> params) {
     base2OpOperation(AND, params);
 }
 
 void RoutineGenerator::doOR(vector<unique_ptr<ZParam>> params) {
     base2OpOperation(OR, params);
+}
+
+void RoutineGenerator::doNOT(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 2);
+    checkParamType(params, VARIABLE_OR_VALUE, STORE_ADDRESS);
+    opcodeGenerator.generateVarOPInstruction(NOT, params);
 }
 
 // params: address, resultAddress
