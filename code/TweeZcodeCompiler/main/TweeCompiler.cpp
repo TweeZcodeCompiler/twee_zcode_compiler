@@ -66,7 +66,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     int possibleIfDepth = 255;
     std::array<std::string,255> nextJumpLabels;
     std::array<std::string,255> endJumpLabels;
-
+    std::array<int,255> precedingIfMacros;
+    for(auto precedingIfMacro = precedingIfMacros.begin(); precedingIfMacro != precedingIfMacros.end(); ++precedingIfMacro) {
+        LOG_DEBUG << precedingIfMacro;
+    }
     {
         int i = 0;
         for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
@@ -133,7 +136,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                         ifDepth++;
                         nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
                         endJumpLabels[ifDepth] = IF_JUMP_END_LABEL + std::to_string(++ifEndJumpLabelID);
-                        //TODO: evaluate expression
+                        //TODO: evaluate expression IfMacro
                         std::string ifExprVal = ifmacro->getExpression()->to_string();
                         LOG_DEBUG << ifExprVal;
                         if(ifExprVal.compare("Const: 1")) {
@@ -142,6 +145,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                             assgen.push("0");
                         }
                         assgen.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
+                        precedingIfMacros[ifDepth] = 1;
                     } else if (ElseIfMacro * elseifmacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
                         //save label for jump to after if/else if block , in this case else
                         //make jump to set label if expression is true
@@ -152,7 +156,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                         assgen.jump(endJumpLabels[ifDepth]);
                         assgen.addLabel(nextJumpLabels[ifDepth]);
                         nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
-                        //TODO: evaluate expression
+                        //TODO: evaluate expression ElseIfMacro
                         std::string ifExprVal = elseifmacro->getExpression()->to_string();
                         LOG_DEBUG << ifExprVal;
                         if(ifExprVal.compare("Const: 1")) {
@@ -161,14 +165,19 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                             assgen.push("0");
                         }
                         assgen.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
+                        precedingIfMacros[ifDepth] = 2;
                     } else if (ElseMacro * elsemacro = dynamic_cast<ElseMacro *>(bodyPart)) {
                         //save label for jump to after if/else if block , in this case else
                         //make jump to set label if expression is true
                         assgen.jump(endJumpLabels[ifDepth]);
                         assgen.addLabel(nextJumpLabels[ifDepth]);
+                        precedingIfMacros[ifDepth] = 3;
                     } else if (EndIfMacro * endifemacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
                         //make jump to set label if expression is trueJumpLabels[ifDepth];
+                        //decrease depth
                         assgen.addLabel(endJumpLabels[ifDepth]);
+                        ifDepth--;
+                        precedingIfMacros[ifDepth] = 0;
                     }
                 }
             }
