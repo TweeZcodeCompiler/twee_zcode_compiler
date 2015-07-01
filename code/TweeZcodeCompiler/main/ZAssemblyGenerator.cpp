@@ -161,7 +161,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
 
 ZAssemblyGenerator &ZAssemblyGenerator::jump(string targetLabel) {
     if (ZAPF_MODE)
-        return addInstruction(instruction::JUMP, targetLabel, nullopt, nullopt);
+        return addInstruction(instruction::JUMP_COMMAND, targetLabel, nullopt, nullopt);
     else
         return addInstruction(instruction::JUMP_COMMAND, nullopt, make_pair(targetLabel, false), nullopt);
 }
