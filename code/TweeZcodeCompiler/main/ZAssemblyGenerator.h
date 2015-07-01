@@ -50,7 +50,7 @@ public:
     ZAssemblyGenerator &quit();
     ZAssemblyGenerator &ret(std::string arg);
     ZAssemblyGenerator &newline();
-    ZAssemblyGenerator &setTextStyle(FormattedText::Format format);
+    ZAssemblyGenerator &setTextStyle(Format format);
     ZAssemblyGenerator &print(std::string str);
     ZAssemblyGenerator &read_char(std::string storeTarget);
     ZAssemblyGenerator &println(std::string str);

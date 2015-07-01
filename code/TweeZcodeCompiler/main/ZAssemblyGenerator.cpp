@@ -187,19 +187,19 @@ ZAssemblyGenerator &ZAssemblyGenerator::print(string str) {
     return addInstruction(instruction::PRINT, string("\"") + str + string("\""), nullopt, nullopt);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(FormattedText::Format format) {
+ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(Format format) {
     string result;
     switch (format) {
-        case FormattedText::Format::BOLD:
+        case Format::BOLD:
             result = "b";
             break;
-        case FormattedText::Format::ITALIC:
+        case Format::ITALIC:
             result = "i";
             break;
-        case FormattedText::Format::UNDERLINED:
+        case Format::UNDERLINED:
             result = "v";
             break;
-        case FormattedText::Format::MONOSPACE:
+        case Format::MONOSPACE:
             result = "f";
             break;
         default:

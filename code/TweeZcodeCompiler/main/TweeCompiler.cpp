@@ -16,9 +16,14 @@
 using namespace std;
 
 static const string PASSAGE_GLOB = "PASSAGE_PTR",
+        TEXT_FORMAT_ITALIC = "ITALIC",
+        TEXT_FORMAT_BOLD = "BOLD",
+        TEXT_FORMAT_REVERSED_VIDEO = "REVERSED_VIDEO",
+        TEXT_FORMAT_FIXED_PITCH = "FIXED_PITCH",
         JUMP_TABLE_LABEL = "JUMP_TABLE_START",
         JUMP_TABLE_END_LABEL = "JUMP_TABLE_END",
         MAIN_ROUTINE = "main",
+        TEXT_FORMAT_ROUTINE = "toggleTextFormat",
         USER_INPUT = "USER_INPUT",
         READ_BEGIN = "READ_BEGIN";
 
@@ -89,6 +94,69 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         assgen.addLabel(JUMP_TABLE_END_LABEL);
 
         assgen.quit();
+    }
+
+    // toggle text formatting
+    {
+        assgen.addGlobal(TEXT_FORMAT_ITALIC)
+                .addGlobal(TEXT_FORMAT_BOLD)
+                .addGlobal(TEXT_FORMAT_FIXED_PITCH)
+                .addGlobal(TEXT_FORMAT_REVERSED_VIDEO);
+
+        string formatType = "formatType";
+        string labelNot1 = "~not1";
+        string labelNot2 = "~not2";
+        string labelNot3 = "~not3";
+        string labelItalicOff = "italicOff";
+        string labelBoldOff = "boldOff";
+        string labelFixedPitchOff = "fixedPitchOff";
+        string labelReversedVideoOff = "reversedVideoOff";
+
+        vector<ZRoutineArgument> args;
+        args.push_back(ZRoutineArgument(formatType));
+        assgen.addRoutine(TEXT_FORMAT_ROUTINE, args);
+
+        assgen.jumpEquals(string(formatType + " " + to_string(1)), labelNot1);
+        assgen.jumpEquals(string(TEXT_FORMAT_ITALIC + " " + to_string(1)), labelItalicOff);
+        assgen.setTextStyle();
+        assgen.set(TEXT_FORMAT_ITALIC, 1);
+        assgen.ret("0");
+        assgen.addLabel(labelItalicOff);
+        assgen.setTextStyle();
+        assgen.set(TEXT_FORMAT_ITALIC, 0);
+        assgen.ret("0");
+
+        assgen.addLabel(labelNot1);
+        assgen.jumpEquals(string(formatType + " " + to_string(2)), labelNot2);
+        assgen.jumpEquals(string(TEXT_FORMAT_BOLD + " " + to_string(1)), labelBoldOff);
+        assgen.setTextStyle();
+        assgen.set(TEXT_FORMAT_BOLD, 1);
+        assgen.ret("0");
+        assgen.addLabel(labelBoldOff);
+        assgen.setTextStyle();
+        assgen.set(TEXT_FORMAT_BOLD, 0);
+        assgen.ret("0");
+
+        assgen.addLabel(labelNot2);
+        assgen.jumpEquals(string(formatType + " " + to_string(3)), labelNot3);
+        assgen.jumpEquals(string(TEXT_FORMAT_FIXED_PITCH + " " + to_string(1)), labelFixedPitchOff);
+        assgen.setTextStyle();
+        assgen.set(TEXT_FORMAT_FIXED_PITCH, 1);
+        assgen.ret("0");
+        assgen.addLabel(labelFixedPitchOff);
+        assgen.setTextStyle();
+        assgen.set(TEXT_FORMAT_FIXED_PITCH, 0);
+        assgen.ret("0");
+
+        assgen.addLabel(labelNot3);
+        assgen.jumpEquals(string(TEXT_FORMAT_REVERSED_VIDEO + " " + to_string(1)), labelReversedVideoOff);
+        assgen.setTextStyle();
+        assgen.set(TEXT_FORMAT_REVERSED_VIDEO, 1);
+        assgen.ret("0");
+        assgen.addLabel(labelReversedVideoOff);
+        assgen.setTextStyle();
+        assgen.set(TEXT_FORMAT_REVERSED_VIDEO, 0);
+        assgen.ret("0");
     }
 
     // passage routines

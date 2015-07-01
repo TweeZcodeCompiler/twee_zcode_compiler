@@ -7,6 +7,10 @@
 #ifndef PROJECT_FORMATTEDTEXT_H
 #define PROJECT_FORMATTEDTEXT_H
 
+enum Format {
+    ITALIC, BOLD, MONOSPACE, UNDERLINED
+};
+
 class FormattedText : public BodyPart {
 private:
     Format format;
@@ -21,10 +25,6 @@ public:
     Format getFormat();
 
     std::string to_string() const;
-
-    enum Format {
-        ITALIC, BOLD, MONOSPACE, UNDERLINED
-    };
 };
 
 #endif //PROJECT_FORMATTEDTEXT_H
