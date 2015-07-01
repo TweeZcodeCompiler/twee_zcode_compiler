@@ -192,6 +192,18 @@ ZAssemblyGenerator &ZAssemblyGenerator::jumpGreater(string args, string targetLa
     return addInstruction(instruction::JG_COMMAND, args, make_pair(targetLabel, false), nullopt);
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::jumpGreaterEquals(string args, string targetLabel) {
+    return addInstruction(instruction::JL_COMMAND, args, make_pair(targetLabel, true), nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::jumpLower(string args, string targetLabel) {
+    return addInstruction(instruction::JL_COMMAND, args, make_pair(targetLabel, false), nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::jumpLowerEquals(string args, string targetLabel) {
+    return addInstruction(instruction::JG_COMMAND, args, make_pair(targetLabel, true), nullopt);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::quit() {
     return addInstruction(instruction::QUIT_COMMAND, nullopt, nullopt, nullopt);
 }

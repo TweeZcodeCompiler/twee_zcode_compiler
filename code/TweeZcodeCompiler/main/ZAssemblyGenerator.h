@@ -56,6 +56,12 @@ public:
 
     ZAssemblyGenerator &jumpGreater(std::string args, std::string targetLabel);
 
+    ZAssemblyGenerator &jumpGreaterEquals(std::string args, std::string targetLabel);
+
+    ZAssemblyGenerator &jumpLower(std::string args, std::string targetLabel);
+
+    ZAssemblyGenerator &jumpLowerEquals(std::string args, std::string targetLabel);
+
     ZAssemblyGenerator &read_char(std::string storeTarget);
 
     ZAssemblyGenerator &quit();
