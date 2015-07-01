@@ -71,6 +71,7 @@ public:
     ZAssemblyGenerator &println(std::string str);
 
     ZAssemblyGenerator &variable(std::string variable);
+    ZAssemblyGenerator &store(std::string variableName, int value);
 
     ZAssemblyGenerator &load(std::string source, std::string target);
 
