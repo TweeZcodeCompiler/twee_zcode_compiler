@@ -16,6 +16,7 @@ private:
     std::map<std::string, int> passageName2id;
 
     std::unique_ptr<ZAssemblyGenerator> _assgen;
+
 };
 
 

@@ -43,7 +43,6 @@ public:
     ZAssemblyGenerator& addByteArray(std::string name, unsigned size);
 
     ZAssemblyGenerator &jump(std::string label);
-    ZAssemblyGenerator &call(std::string routineName);
     ZAssemblyGenerator &call_vs(std::string routineName, std::experimental::optional<std::string> args, std::string storeTarget);
     ZAssemblyGenerator &jumpEquals(std::string args, std::string targetLabel);
     ZAssemblyGenerator &jumpGreater(std::string args, std::string targetLabel);
@@ -55,6 +54,8 @@ public:
     ZAssemblyGenerator &read_char(std::string storeTarget);
     ZAssemblyGenerator &println(std::string str);
     ZAssemblyGenerator &variable(std::string variable);
+    ZAssemblyGenerator &loadb(std::string arrayName, unsigned int index, std::string storeTarget);
+    ZAssemblyGenerator &storeb(std::string arrayName, unsigned int index, int value);
 
 private:
     std::ostream& out;
@@ -66,7 +67,6 @@ private:
                                       std::experimental::optional<std::string> storeTarget);
 
     ZAssemblyGenerator& addDirective(std::string directiveName, std::experimental::optional<std::string> args);
-
 };
 
 

@@ -24,6 +24,8 @@ static const string DIRECTIVE_START = ".";
 namespace directive {
     INST_TYPE ROUTINE = "FUNCT";
     INST_TYPE GLOBAL_VAR = "GVAR";
+    INST_TYPE BYTE_ARRAY = "BYTEARRAY";
+    INST_TYPE WORD_ARRAY = "WORDARRAY";
 }
 
 namespace instruction {
@@ -37,6 +39,7 @@ namespace instruction {
     INST_TYPE READ_CHAR = "read_char";
     INST_TYPE JUMP_GREATER = "jg";
     INST_TYPE SET_TEXT_STYLE = "set_text_style";
+    INST_TYPE STOREBYTE = "storeb";
     INST_TYPE NOTHING = "";
 }
 
@@ -96,6 +99,11 @@ ZAssemblyGenerator& ZAssemblyGenerator::addRoutine(string routineName,
     return *this;
 }
 
+
+ZAssemblyGenerator &ZAssemblyGenerator::addByteArray(std::string name, unsigned size) {
+    return addDirective(directive::BYTE_ARRAY, makeArgs({name, string("[") + to_string(size) + string("]")}));
+}
+
 ZAssemblyGenerator& ZAssemblyGenerator::addGlobal(string globalName) {
     addDirective(directive::GLOBAL_VAR, globalName);
     return *this;
@@ -139,6 +147,14 @@ ZAssemblyGenerator& ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
     return *this;
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, unsigned index, int value) {
+    return addInstruction(instruction::STOREBYTE, makeArgs({to_string(index), to_string(value)}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, unsigned index, string storeTarget) {
+    return addInstruction(instruction::STOREBYTE, to_string(index), nullopt, storeTarget);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::jump(string targetLabel) {
     if(ZAPF_MODE)
         return addInstruction(instruction::JUMP, targetLabel, nullopt, nullopt);
@@ -152,10 +168,6 @@ ZAssemblyGenerator &ZAssemblyGenerator::markStart() {
         out << "START::" << INST_END;
     }
     return *this;
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::call(string routineName) {
-    return addInstruction(instruction::CALL, routineName, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::call_vs(string routineName, optional<string> args, string storeTarget) {
@@ -214,3 +226,4 @@ ZAssemblyGenerator &ZAssemblyGenerator::println(string str) {
 ZAssemblyGenerator &ZAssemblyGenerator::variable(string variable) {
     return addInstruction(instruction::NOTHING, variable.substr(1), nullopt, nullopt);
 }
+
