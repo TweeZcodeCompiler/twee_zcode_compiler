@@ -27,37 +27,16 @@ namespace directive {
 }
 
 namespace instruction {
-    INST_TYPE NEW_LINE_COMMAND = "new_line";
-    INST_TYPE PRINT_COMMAND = "print";
-    INST_TYPE JE_COMMAND = "je";
-    INST_TYPE JG_COMMAND = "jg";
-    INST_TYPE JL_COMMAND = "jl";
-    INST_TYPE JZ_COMMAND = "jz";
-    INST_TYPE QUIT_COMMAND = "quit";
-    INST_TYPE READ_CHAR_COMMAND = "read_char";
-    INST_TYPE PRINT_CHAR_COMMAND = "print_char";
-    INST_TYPE PRINT_NUM_COMMAND = "print_num";
-    INST_TYPE PRINT_ADDR_COMMAND = "print_addr";
-    INST_TYPE JUMP_COMMAND = "jump";
-    INST_TYPE RET_COMMAND = "ret";
+    INST_TYPE CALL = "call";
+    INST_TYPE JUMP_EQUALS = ZAssemblyGenerator::ZAPF_MODE ? "jeq" : "je";
+    INST_TYPE JUMP = "jump";
+    INST_TYPE QUIT = "quit";
+    INST_TYPE RETURN = "ret";
+    INST_TYPE NEWLINE = "new_line";
+    INST_TYPE PRINT = "print";
+    INST_TYPE READ_CHAR = "read_char";
+    INST_TYPE JUMP_GREATER = "jg";
     INST_TYPE SET_TEXT_STYLE = "set_text_style";
-    INST_TYPE CALL_VS_COMMAND = "call_vs";
-    INST_TYPE CALL_1N_COMMAND = "call_1n";
-    INST_TYPE STORE_COMMAND = "store";
-    INST_TYPE LOAD_COMMAND = "load";
-    INST_TYPE ADD_COMMAND = "add";
-    INST_TYPE SUB_COMMAND = "sub";
-    INST_TYPE MUL_COMMAND = "mul";
-    INST_TYPE DIV_COMMAND = "div";
-    INST_TYPE AND_COMMAND = "and";
-    INST_TYPE OR_COMMAND = "or";
-    INST_TYPE NOT_COMMAND = "not";
-    INST_TYPE RET_TRUE_COMMAND = "rtrue";
-    INST_TYPE RET_FALSE_COMMAND = "rfalse";
-    INST_TYPE PRINT_RET_COMMAND = "print_ret";
-    INST_TYPE RESTART_COMMAND = "restart";
-    INST_TYPE RET_POPPED_COMMAND = "ret_popped";
-    INST_TYPE VERIFY_COMMAND = "verify";
     INST_TYPE NOTHING = "";
 }
 
@@ -161,9 +140,9 @@ ZAssemblyGenerator &ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
 
 ZAssemblyGenerator &ZAssemblyGenerator::jump(string targetLabel) {
     if (ZAPF_MODE)
-        return addInstruction(instruction::JUMP_COMMAND, targetLabel, nullopt, nullopt);
+        return addInstruction(instruction::JUMP, targetLabel, nullopt, nullopt);
     else
-        return addInstruction(instruction::JUMP_COMMAND, nullopt, make_pair(targetLabel, false), nullopt);
+        return addInstruction(instruction::JUMP, nullopt, make_pair(targetLabel, false), nullopt);
 }
 
 
@@ -175,35 +154,35 @@ ZAssemblyGenerator &ZAssemblyGenerator::markStart() {
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::call(string routineName) {
-    return addInstruction(instruction::CALL_VS_COMMAND, routineName, nullopt, nullopt);
+    return addInstruction(instruction::CALL, routineName, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::call(string routineName, string storeTarget) {
-    return addInstruction(instruction::CALL_VS_COMMAND, routineName, nullopt, storeTarget);
+    return addInstruction(instruction::CALL, routineName, nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jumpEquals(string args, string targetLabel) {
-    return addInstruction(instruction::JE_COMMAND, args, make_pair(targetLabel, false), nullopt);
+    return addInstruction(instruction::JUMP_EQUALS, args, make_pair(targetLabel, false), nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jumpGreater(string args, string targetLabel) {
-    return addInstruction(instruction::JG_COMMAND, args, make_pair(targetLabel, false), nullopt);
+    return addInstruction(instruction::JUMP_GREATER, args, make_pair(targetLabel, false), nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::quit() {
-    return addInstruction(instruction::QUIT_COMMAND, nullopt, nullopt, nullopt);
+    return addInstruction(instruction::QUIT, nullopt, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::ret(string arg) {
-    return addInstruction(instruction::RET_COMMAND, arg, nullopt, nullopt);
+    return addInstruction(instruction::RETURN, arg, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::newline() {
-    return addInstruction(instruction::NEW_LINE_COMMAND, nullopt, nullopt, nullopt);
+    return addInstruction(instruction::NEWLINE, nullopt, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::print(string str) {
-    return addInstruction(instruction::PRINT_COMMAND, string("\"") + str + string("\""), nullopt, nullopt);
+    return addInstruction(instruction::PRINT, string("\"") + str + string("\""), nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(bool italic, bool bold, bool underlined) {
@@ -224,52 +203,13 @@ ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(bool italic, bool bold, boo
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::read_char(string storeTarget) {
-    return addInstruction(instruction::READ_CHAR_COMMAND, string("1"), nullopt, storeTarget);
+    return addInstruction(instruction::READ_CHAR, string("1"), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::println(string str) {
-    return addInstruction(instruction::PRINT_COMMAND, string("\"") + str + string("\""), nullopt, nullopt).newline();
+    return addInstruction(instruction::PRINT, string("\"") + str + string("\""), nullopt, nullopt).newline();
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::variable(string variable) {
     return addInstruction(instruction::NOTHING, variable.substr(1), nullopt, nullopt);
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::load(std::string source, std::string target) {
-    return addInstruction(instruction::LOAD_COMMAND, source, nullopt, target);
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::store(std::string target, std::string value) {
-    return addInstruction(instruction::STORE_COMMAND, value, nullopt, target);
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::add(std::string left, std::string right, std::string storeTarget) {
-    return addInstruction(instruction::ADD_COMMAND, left + " " + right, nullopt, storeTarget);
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::sub(std::string left, std::string right, std::string storeTarget) {
-    return addInstruction(instruction::SUB_COMMAND, left + " " + right, nullopt, storeTarget);
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::mul(std::string left, std::string right, std::string storeTarget) {
-    return addInstruction(instruction::MUL_COMMAND, left + " " + right, nullopt, storeTarget);
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::div(std::string left, std::string right, std::string storeTarget) {
-    return addInstruction(instruction::DIV_COMMAND, left + " " + right, nullopt, storeTarget);
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::mod(std::string left, std::string right, std::string storeTarget) {
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::land(std::string left, std::string right, std::string storeTarget) {
-    return addInstruction(instruction::AND_COMMAND, left + " " + right, nullopt, storeTarget);
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::lor(std::string left, std::string right, std::string storeTarget) {
-    return addInstruction(instruction::OR_COMMAND, left + " " + right, nullopt, storeTarget);
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::lnot(std::string variable, std::string storeTarget) {
-    return addInstruction(instruction::NOT_COMMAND, variable, nullopt, storeTarget);
 }

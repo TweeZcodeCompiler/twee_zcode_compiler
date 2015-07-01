@@ -25,8 +25,6 @@ public:
     static void append(std::vector<std::bitset<8>> &head, std::vector<std::bitset<8>> &tail);
 
     static void insertPaddingToNextRoutine(std::vector<std::bitset<8>> &bitsets, size_t routineOffset);
-
-    static int includes(std::vector<std::string>, std::string);
 };
 
 

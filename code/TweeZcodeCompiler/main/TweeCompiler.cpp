@@ -5,20 +5,12 @@
 #include "TweeCompiler.h"
 #include "ZAssemblyGenerator.h"
 #include "exceptions.h"
-#include "Utils.h"
-
 #include <sstream>
 #include <iostream>
-#include <algorithm>
-
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
-#include <Passage/Body/Newline.h>
-#include <Passage/Body/Macros/Print.h>
-#include <Passage/Body/Expressions/Expression.h>
-#include <Passage/Body/Expressions/Const.h>
-#include <Passage/Body/Expressions/Variable.h>
-#include <Passage/Body/Expressions/BinaryOperation.h>
+#include <Passage/Body/FormattedText.h>
+#include <Passage/Body/Variable.h>
 
 using namespace std;
 
@@ -60,7 +52,6 @@ string labelForPassage(Passage& passage) {
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ZAssemblyGenerator assgen(out);
     vector<Passage> passages = tweeFile.getPassages();
-    vector<std::string> globalVariables;
 
     {
         int i = 0;
@@ -114,11 +105,12 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 BodyPart* bodyPart = it->get();
                 if(Text* text = dynamic_cast<Text*>(bodyPart)) {
                     assgen.print(text->getContent());
-                }
-                if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
-                    assgen.newline();
-                }
-                if (Print *print = dynamic_cast<Print *>(bodyPart)) {
+                } else if (FormattedText * formText = dynamic_cast<FormattedText *>(bodyPart)) {
+                    assgen.setTextStyle(formText->isItalic(), formText->isBold(), formText->isUnderlined());
+                    assgen.print(formText->getContent());
+                    assgen.setTextStyle(false, false, false);
+                } else if (Variable * variable = dynamic_cast<Variable *>(bodyPart)) {
+                    assgen.variable(variable->getName());
                 }
             }
 
@@ -175,19 +167,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 }
                 i++;
             }
-        }
-    }
-}
-
-void TweeCompiler::handleExpressions(ZAssemblyGenerator assgen, Expression *expression,
-                                     vector<std::string> globalVariables) {
-    if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
-        assgen.print(std::to_string(constant->getValue()));
-    } else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
-        if (Utils::includes(globalVariables, variable->getName())) {
-
-        } else {
-
         }
     }
 }
