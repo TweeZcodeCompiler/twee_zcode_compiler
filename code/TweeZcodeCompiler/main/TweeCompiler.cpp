@@ -25,7 +25,8 @@ static const string PASSAGE_GLOB = "PASSAGE_PTR",
         MAIN_ROUTINE = "main",
         USER_INPUT = "USER_INPUT",
         READ_BEGIN = "READ_BEGIN",
-        IF_JUMP_LABEL = "IFJUMPLABEL";
+        IF_JUMP_LABEL = "IFJUMP",
+        IF_JUMP_END_LABEL = "IFJUMPEND";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -61,8 +62,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
     int ifDepth = -1;
     int ifJumpLabelID = 0;
+    int ifEndJumpLabelID = 0;
     int possibleIfDepth = 255;
     std::array<std::string,255> nextJumpLabels;
+    std::array<std::string,255> endJumpLabels;
 
     {
         int i = 0;
@@ -129,7 +132,15 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                         //make jump to set label if expression is true
                         ifDepth++;
                         nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
+                        endJumpLabels[ifDepth] = IF_JUMP_END_LABEL + std::to_string(++ifEndJumpLabelID);
                         //TODO: evaluate expression
+                        std::string ifExprVal = ifmacro->getExpression()->to_string();
+                        LOG_DEBUG << ifExprVal;
+                        if(ifExprVal.compare("Const: 1")) {
+                            assgen.push("1");
+                        } else if (ifExprVal.compare("Const: 0")) {
+                            assgen.push("0");
+                        }
                         assgen.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
                     } else if (ElseIfMacro * elseifmacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
                         //save label for jump to after if/else if block , in this case else
@@ -138,22 +149,26 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                         //evaluate expression
                         //make jump to set label if expression is true
                         //else part
-                        std::string saveNextJumpLabel = nextJumpLabels[ifDepth];
+                        assgen.jump(endJumpLabels[ifDepth]);
+                        assgen.addLabel(nextJumpLabels[ifDepth]);
                         nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
-                        assgen.jump(nextJumpLabels[ifDepth]);
-                        assgen.addLabel(saveNextJumpLabel);
                         //TODO: evaluate expression
+                        std::string ifExprVal = elseifmacro->getExpression()->to_string();
+                        LOG_DEBUG << ifExprVal;
+                        if(ifExprVal.compare("Const: 1")) {
+                            assgen.push("1");
+                        } else if (ifExprVal.compare("Const: 0")) {
+                            assgen.push("0");
+                        }
                         assgen.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
                     } else if (ElseMacro * elsemacro = dynamic_cast<ElseMacro *>(bodyPart)) {
                         //save label for jump to after if/else if block , in this case else
                         //make jump to set label if expression is true
-                        std::string saveNextJumpLabel = nextJumpLabels[ifDepth];
-                        nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
-                        assgen.jump(nextJumpLabels[ifDepth]);
-                        assgen.addLabel(saveNextJumpLabel);
+                        assgen.jump(endJumpLabels[ifDepth]);
+                        assgen.addLabel(nextJumpLabels[ifDepth]);
                     } else if (EndIfMacro * endifemacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
                         //make jump to set label if expression is trueJumpLabels[ifDepth];
-                        assgen.addLabel(nextJumpLabels[ifDepth]);
+                        assgen.addLabel(endJumpLabels[ifDepth]);
                     }
                 }
             }

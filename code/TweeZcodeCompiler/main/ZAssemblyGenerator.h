@@ -52,7 +52,7 @@ public:
     ZAssemblyGenerator &newline();
     ZAssemblyGenerator &setTextStyle(bool, bool, bool);
     ZAssemblyGenerator &print(std::string str);
-
+    ZAssemblyGenerator &push(std::string arg);
     ZAssemblyGenerator &read_char(std::string storeTarget);
     ZAssemblyGenerator &println(std::string str);
     ZAssemblyGenerator &variable(std::string variable);
@@ -67,6 +67,8 @@ private:
                                       std::experimental::optional<std::string> storeTarget);
 
     ZAssemblyGenerator& addDirective(std::string directiveName, std::experimental::optional<std::string> args);
+
+
 };
 
 

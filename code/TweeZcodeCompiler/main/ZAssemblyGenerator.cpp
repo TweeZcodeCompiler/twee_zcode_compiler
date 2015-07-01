@@ -37,6 +37,7 @@ namespace instruction {
     INST_TYPE READ_CHAR = "read_char";
     INST_TYPE JUMP_GREATER = "jg";
     INST_TYPE SET_TEXT_STYLE = "set_text_style";
+    INST_TYPE PUSH = "push";
     INST_TYPE NOTHING = "";
 }
 
@@ -175,6 +176,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::jumpGreater(string args, string targetLa
 
 ZAssemblyGenerator &ZAssemblyGenerator::quit() {
     return addInstruction(instruction::QUIT, nullopt, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::push(string arg) {
+    return addInstruction(instruction::PUSH, arg, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::ret(string arg) {
