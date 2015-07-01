@@ -271,19 +271,19 @@ ZAssemblyGenerator &ZAssemblyGenerator::store(std::string target, std::string va
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::add(std::string left, std::string right, std::string storeTarget) {
-    return addInstruction(instruction::ADD_COMMAND, left + " " + right, nullopt, storeTarget);
+    return addInstruction(instruction::ADD_COMMAND, makeArgs({left, right}), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::sub(std::string left, std::string right, std::string storeTarget) {
-    return addInstruction(instruction::SUB_COMMAND, left + " " + right, nullopt, storeTarget);
+    return addInstruction(instruction::SUB_COMMAND, makeArgs({left, right}), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::mul(std::string left, std::string right, std::string storeTarget) {
-    return addInstruction(instruction::MUL_COMMAND, left + " " + right, nullopt, storeTarget);
+    return addInstruction(instruction::MUL_COMMAND, makeArgs({left, right}), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::div(std::string left, std::string right, std::string storeTarget) {
-    return addInstruction(instruction::DIV_COMMAND, left + " " + right, nullopt, storeTarget);
+    return addInstruction(instruction::DIV_COMMAND, makeArgs({left, right}), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::mod(std::string left, std::string right, std::string storeTarget) {
@@ -291,11 +291,11 @@ ZAssemblyGenerator &ZAssemblyGenerator::mod(std::string left, std::string right,
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::land(std::string left, std::string right, std::string storeTarget) {
-    return addInstruction(instruction::AND_COMMAND, left + " " + right, nullopt, storeTarget);
+    return addInstruction(instruction::AND_COMMAND, makeArgs({left, right}), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::lor(std::string left, std::string right, std::string storeTarget) {
-    return addInstruction(instruction::OR_COMMAND, left + " " + right, nullopt, storeTarget);
+    return addInstruction(instruction::OR_COMMAND, makeArgs({left, right}), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::lnot(std::string variable, std::string storeTarget) {
