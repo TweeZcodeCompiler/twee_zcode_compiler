@@ -68,7 +68,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
 
     vector<Passage> passages = tweeFile.getPassages();
-    std::set<std::string> globalVariables;
+
+    globalVariables = std::set<std::string>();
 
     {
         int i = 0;
@@ -125,7 +126,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     ASSGEN.print(text->getContent());
                 }
                 if (Print *print = dynamic_cast<Print *>(bodyPart)) {
-                    evalExpression(print->getExpression().get(), globalVariables);
+                    evalExpression(print->getExpression().get());
                     ASSGEN.print_num("sp");
                 }
 
@@ -187,7 +188,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     }
 }
 
-void TweeCompiler::evalExpression(Expression *expression, std::set<std::string> globalVariables) {
+void TweeCompiler::evalExpression(Expression *expression) {
 
     if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
 
@@ -198,17 +199,17 @@ void TweeCompiler::evalExpression(Expression *expression, std::set<std::string> 
         std::string prunedVarName = variable->getName().substr(1);
 
         if (Utils::contains<std::string>(globalVariables, prunedVarName)) {
-            ASSGEN.load(prunedVarName, "sp");
+            ASSGEN.push(prunedVarName);
         } else {
             globalVariables.insert(prunedVarName);
             ASSGEN.addGlobal(prunedVarName);
-            ASSGEN.load(prunedVarName, "sp");
+            ASSGEN.push(prunedVarName);
         }
 
     } else if (BinaryOperation *binOp = dynamic_cast<BinaryOperation *>(expression)) {
 
-        TweeCompiler::evalExpression(binOp->getLeftSide().get(), globalVariables);
-        TweeCompiler::evalExpression(binOp->getRightSide().get(), globalVariables);
+        TweeCompiler::evalExpression(binOp->getLeftSide().get());
+        TweeCompiler::evalExpression(binOp->getRightSide().get());
 
         switch (binOp->getOperator()) {
             case BinOps::ADD:
@@ -238,7 +239,7 @@ void TweeCompiler::evalExpression(Expression *expression, std::set<std::string> 
 
         }
     } else if (UnaryOperation *unOp = dynamic_cast<UnaryOperation *>(expression)) {
-        TweeCompiler::evalExpression(unOp->getExpression().get(), globalVariables);
+        TweeCompiler::evalExpression(unOp->getExpression().get());
         switch (unOp->getOperator()) {
             case UnOps::NOT:
                 break;
