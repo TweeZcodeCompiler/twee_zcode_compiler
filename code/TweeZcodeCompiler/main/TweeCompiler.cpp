@@ -11,8 +11,11 @@
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
 #include <Passage/Body/Macros/SetMacro.h>
+#include <Passage/Body/Expressions/BinaryOperation.h>
 #include <plog/Log.h>
 #include <algorithm>
+#include <Passage/Body/Expressions/Variable.h>
+#include <Passage/Body/Expressions/Const.h>
 
 using namespace std;
 
@@ -54,7 +57,6 @@ string labelForPassage(Passage& passage) {
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ZAssemblyGenerator assgen(out);
     vector<Passage> passages = tweeFile.getPassages();
-
     {
         int i = 0;
         for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
@@ -92,6 +94,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         assgen.quit();
     }
 
+
     // passage routines
     {
         for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
@@ -103,18 +106,35 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             assgen.println(string("***** ") + passage->getHead().getName() + string(" *****"));
 
 
+
             //  print passage contents
             for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
+
                 BodyPart* bodyPart = it->get();
                 if(Text* text = dynamic_cast<Text*>(bodyPart)) {
                     assgen.print(text->getContent());
+                    std::cout << text->getContent() << endl;
                 }
                 if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
                     assgen.newline();
                 }
-                if(SetMacro* macro = dynamic_cast<SetMacro*>(bodyPart)) {
-                    std::cout << "huhu";
-                    LOG_DEBUG << "lala";
+
+                if(SetMacro *op = dynamic_cast<SetMacro*>(bodyPart)) {
+                    LOG_DEBUG << "generate SetMacro assembly code";
+
+                 BinaryOperation *binaryOperation =  (BinaryOperation*)(op->getExpression().get());
+                 Variable * variable = (Variable*)(binaryOperation->getLeftSide().get());
+                   // Const<int> value = Const<int> (binaryOperation->getRightSide().get());
+
+                    Const<int> *constant = dynamic_cast<Const<int> *>(binaryOperation->getRightSide().get());
+
+                    int constantValue = (int) constant->getValue();
+                    std::string variableName =   variable->getName();
+                    cout << variableName << " " << constantValue;
+
+
+
+
                 }
             }
 
