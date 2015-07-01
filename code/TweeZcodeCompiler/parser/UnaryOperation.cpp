@@ -46,5 +46,5 @@ const std::unique_ptr<Expression> &UnaryOperation::getExpression() const {
 
 
 std::string UnaryOperation::to_string() const {
-    return "UnaryOperation: " + this->getOperatorString() + "Expression: " + this->getExpression()->to_string();
+    return "UnaryOperation: " + this->getOperatorString() + "( " + this->getExpression()->to_string()+" )";
 }

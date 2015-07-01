@@ -85,6 +85,6 @@ const std::unique_ptr<Expression> &BinaryOperation::getRightSide() const {
 
 
 std::string BinaryOperation::to_string() const {
-    return "BinaryOperation: " + this->getOperatorString() + "Left Side: " + this->getLeftSide()->to_string() +
-           "Right Side: " + this->getRightSide()->to_string();
+    return "BinaryOperation: (" + this->getLeftSide()->to_string() +
+           ") "+ this->getOperatorString() +" (" + this->getRightSide()->to_string()+")";
 }

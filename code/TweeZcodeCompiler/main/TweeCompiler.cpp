@@ -9,7 +9,6 @@
 #include <iostream>
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
-
 #include <Passage/Body/Newline.h>
 #include <Passage/Body/Macros/SetMacro.h>
 #include <Passage/Body/Expressions/BinaryOperation.h>
@@ -17,6 +16,7 @@
 #include <algorithm>
 #include <Passage/Body/Expressions/Variable.h>
 #include <Passage/Body/Expressions/Const.h>
+
 
 
 using namespace std;
@@ -119,10 +119,11 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 BodyPart *bodyPart = it->get();
                 if (Text *text = dynamic_cast<Text *>(bodyPart)) {
                     assgen.print(text->getContent());
-                    std::cout << text->getContent() << endl;
-                }
-                if (Newline *text = dynamic_cast<Newline *>(bodyPart)) {
+
+                } else if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
                     assgen.newline();
+                } else if (Variable * variable = dynamic_cast<Variable *>(bodyPart)) {
+                    assgen.variable(variable->getName());
                 }
 
                 if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
