@@ -175,16 +175,16 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 } else if (FormattedText* format = dynamic_cast<FormattedText*>(bodyPart)) {
                     switch (format->getFormat()) {
                         case Format::UNDERLINED:
-                            assgen.call_vs(TEXT_FORMAT_ROUTINE, "0", "sp");
+                            assgen.call_vs(TEXT_FORMAT_ROUTINE, string("0"), "sp");
                             break;
                         case Format::BOLD:
-                            assgen.call_vs(TEXT_FORMAT_ROUTINE, "1", "sp");
+                            assgen.call_vs(TEXT_FORMAT_ROUTINE, string("1"), "sp");
                             break;
                         case Format::ITALIC:
-                            assgen.call_vs(TEXT_FORMAT_ROUTINE, "2", "sp");
+                            assgen.call_vs(TEXT_FORMAT_ROUTINE, string("2"), "sp");
                             break;
                         case Format::MONOSPACE:
-                            assgen.call_vs(TEXT_FORMAT_ROUTINE, "3", "sp");
+                            assgen.call_vs(TEXT_FORMAT_ROUTINE, string("3"), "sp");
                             break;
                         default:
                             LOG_DEBUG << "Unknown text formatting";
