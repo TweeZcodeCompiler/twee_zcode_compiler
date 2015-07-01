@@ -140,7 +140,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
                                 if (symbolTable.find(variableName.c_str()) != symbolTable.end()) {
                                     symbolTable[variableName.c_str()] = constantValue;
-                                    assgen.store(variableName, constantValue);
+                                    assgen.store(variableName, std::to_string(constantValue));
 
 
                                 }
@@ -148,7 +148,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                                     //new variable needs to be decleared as well
                                     assgen.addGlobal(variableName);
                                     symbolTable[variableName.c_str()] = constantValue;
-                                    assgen.store(variableName, constantValue);
+                                    assgen.store(variableName, std::to_string(constantValue));
                                     LOG_DEBUG << "global var added";
 
                                 }
