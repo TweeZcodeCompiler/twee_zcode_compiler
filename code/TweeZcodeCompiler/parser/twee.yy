@@ -503,21 +503,23 @@ macro :
     }
   ;
 
-print:
-    MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE
+expressionAssignment:
+    variable operatorAssignment expression
     {
-    LOG_DEBUG << "print -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--Print--) with 3:expression";
-    $$ = new Print($3);
+    LOG_DEBUG << "expression -> variable EXPR_TO expressionCompare: created $$ = new BinaryOperation(BinOps::"+ getBinOp($2) +", $1, $3)";
+    $$ = new BinaryOperation(static_cast<BinOps>($2), $1, $3);
+    delete $1;
     delete $3;
     }
-    |MACRO_OPEN expression MACRO_CLOSE
+    |variable operatorAssignment expressionAssignment
     {
-    //TODO:check if we need error handling here
-    LOG_DEBUG << "print -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
-    $$ = new Print($2);
-    delete $2;
+    LOG_DEBUG << "expression -> variable EXPR_TO expressionCompare: created $$ = new BinaryOperation(BinOps::"+ getBinOp($2) +", $1, $3)";
+    $$ = new BinaryOperation(static_cast<BinOps>($2), $1, $3);
+    delete $1;
+    delete $3;
     }
   ;
+
 
 setmacro:
     MACRO_OPEN MACRO_SET expressionAssignment MACRO_CLOSE
@@ -603,6 +605,13 @@ operatorUnary:
 
 expressionAssignment:
     variable operatorAssignment expression
+    {
+    LOG_DEBUG << "expression -> variable EXPR_TO expressionCompare: created $$ = new BinaryOperation(BinOps::"+ getBinOp($2) +", $1, $3)";
+    $$ = new BinaryOperation(static_cast<BinOps>($2), $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |variable operatorAssignment expressionAssignment
     {
     LOG_DEBUG << "expression -> variable EXPR_TO expressionCompare: created $$ = new BinaryOperation(BinOps::"+ getBinOp($2) +", $1, $3)";
     $$ = new BinaryOperation(static_cast<BinOps>($2), $1, $3);

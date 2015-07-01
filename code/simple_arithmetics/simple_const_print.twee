@@ -1,3 +1,3 @@
 ::Start
 
-<<print $var+$var>>
+<<print $var=100>>
