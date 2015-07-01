@@ -10,6 +10,8 @@
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
+#include <Passage/Body/Macros/SetMacro.h>
+#include <plog/Log.h>
 #include <algorithm>
 
 using namespace std;
@@ -100,6 +102,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
             assgen.println(string("***** ") + passage->getHead().getName() + string(" *****"));
 
+
             //  print passage contents
             for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
                 BodyPart* bodyPart = it->get();
@@ -108,6 +111,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 }
                 if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
                     assgen.newline();
+                }
+                if(SetMacro* macro = dynamic_cast<SetMacro*>(bodyPart)) {
+                    std::cout << "huhu";
+                    LOG_DEBUG << "lala";
                 }
             }
 
