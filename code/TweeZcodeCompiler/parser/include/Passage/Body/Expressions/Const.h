@@ -19,15 +19,15 @@ public:
 
     Const<T>(const T value) : value(value) { }
 
-    const T getValue() const {
+    T getValue() const {
         return this->value;
     }
 
     std::string to_string() const {
-        return "Const: ";
+        return "Const: " + std::to_string(this->getValue());
     }
 
-    virtual Const *clone() const {
+    virtual Const* clone() const {
         return new Const(*this);
     }
 };

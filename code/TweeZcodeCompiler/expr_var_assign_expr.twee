@@ -1,5 +1,0 @@
-::start
-
-<<$var is 1>>
-<<$var = 1>>
-<<$var to 1>>

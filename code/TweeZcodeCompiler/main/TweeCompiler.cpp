@@ -12,6 +12,7 @@
 #include <Passage/Body/Newline.h>
 #include <algorithm>
 #include <Passage/Body/FormattedText.h>
+#include <Passage/Body/Expressions/Variable.h>
 
 using namespace std;
 
@@ -222,6 +223,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     assgen.newline();
                 } else if (FormattedText* format = dynamic_cast<FormattedText*>(bodyPart)) {
                     assgen.setTextStyle(format->getFormat());
+                } else if (Variable * variable = dynamic_cast<Variable *>(bodyPart)) {
+                    assgen.variable(variable->getName());
                 }
             }
 

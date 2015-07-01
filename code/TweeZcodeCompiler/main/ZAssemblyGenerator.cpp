@@ -41,16 +41,16 @@ namespace instruction {
     INST_TYPE NOTHING = "";
 }
 
-ZAssemblyGenerator::ZAssemblyGenerator(ostream& out) : out(out) { }
+ZAssemblyGenerator::ZAssemblyGenerator(ostream &out) : out(out) { }
 
 const string ZAssemblyGenerator::STACK_POINTER = "sp";
 const bool ZAssemblyGenerator::ZAPF_MODE = false;
 
 string ZAssemblyGenerator::makeArgs(initializer_list<string> args) {
     stringstream ss;
-    for(auto arg = args.begin(); arg != args.end(); ++arg) {
+    for (auto arg = args.begin(); arg != args.end(); ++arg) {
         ss << *arg;
-        if(arg != args.end() && arg+1 != args.end()) {
+        if (arg != args.end() && arg + 1 != args.end()) {
             ss << INST_SEPARATOR;
         }
     }
@@ -58,18 +58,18 @@ string ZAssemblyGenerator::makeArgs(initializer_list<string> args) {
 }
 
 
-ZAssemblyGenerator& ZAssemblyGenerator::addLabel(string labelName) {
+ZAssemblyGenerator &ZAssemblyGenerator::addLabel(string labelName) {
     out << labelName << LABEL_MARKER << INST_END;
     return *this;
 }
 
 #pragma mark - directives
 
-ZAssemblyGenerator& ZAssemblyGenerator::addDirective(string directiveName, experimental::optional<string> args) {
+ZAssemblyGenerator &ZAssemblyGenerator::addDirective(string directiveName, experimental::optional<string> args) {
     out << DIRECTIVE_START
-        << directiveName;
+    << directiveName;
 
-    if(args) {
+    if (args) {
         out << INST_SEPARATOR;
         out << *args;
     }
@@ -79,17 +79,17 @@ ZAssemblyGenerator& ZAssemblyGenerator::addDirective(string directiveName, exper
     return *this;
 }
 
-ZAssemblyGenerator& ZAssemblyGenerator::addRoutine(string routineName,
+ZAssemblyGenerator &ZAssemblyGenerator::addRoutine(string routineName,
                                                    vector<ZRoutineArgument> args) {
     stringstream ss;
     ss << routineName << INST_SEPARATOR;
-    for(auto it = args.begin(); it != args.end(); ++it) {
+    for (auto it = args.begin(); it != args.end(); ++it) {
         ss << it->argName;
-        if(it->value) {
+        if (it->value) {
             ss << ARGS_EQ << *(it->value);
         }
 
-        if(it + 1 != args.end()) {
+        if (it + 1 != args.end()) {
             ss << ARGS_SEPARATOR;
         }
     }
@@ -97,38 +97,37 @@ ZAssemblyGenerator& ZAssemblyGenerator::addRoutine(string routineName,
     return *this;
 }
 
-ZAssemblyGenerator& ZAssemblyGenerator::addGlobal(string globalName) {
+ZAssemblyGenerator &ZAssemblyGenerator::addGlobal(string globalName) {
     addDirective(directive::GLOBAL_VAR, globalName);
     return *this;
 }
 
 #pragma mark - instructions
 
-ZAssemblyGenerator& ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
-                                        optional<string> args,
-                                        optional<pair<string, bool>> targetLabelAndNeg,
-                                        optional<string> storeTarget)
-{
+ZAssemblyGenerator &ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
+                                                       optional<string> args,
+                                                       optional<pair<string, bool>> targetLabelAndNeg,
+                                                       optional<string> storeTarget) {
     out << INST_START;
 
     out << instruction;
 
-    if(args) {
+    if (args) {
         out << INST_SEPARATOR
-            << *args;
+        << *args;
     }
 
-    if(targetLabelAndNeg) {
+    if (targetLabelAndNeg) {
         out << INST_SEPARATOR
         << INST_LABEL_MARKER;
 
-        if(targetLabelAndNeg->second) {
+        if (targetLabelAndNeg->second) {
             out << INST_JUMP_NEG_MARKER;
         }
         out << targetLabelAndNeg->first;
     }
 
-    if(storeTarget) {
+    if (storeTarget) {
         out << INST_SEPARATOR
         << INST_STORE_TARGET_MARKER
         << INST_SEPARATOR
@@ -141,7 +140,7 @@ ZAssemblyGenerator& ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jump(string targetLabel) {
-    if(ZAPF_MODE)
+    if (ZAPF_MODE)
         return addInstruction(instruction::JUMP, targetLabel, nullopt, nullopt);
     else
         return addInstruction(instruction::JUMP, nullopt, make_pair(targetLabel, false), nullopt);
@@ -149,7 +148,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::jump(string targetLabel) {
 
 
 ZAssemblyGenerator &ZAssemblyGenerator::markStart() {
-    if(ZAPF_MODE) {
+    if (ZAPF_MODE) {
         out << "START::" << INST_END;
     }
     return *this;
@@ -205,6 +204,15 @@ ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(Format format) {
         default:
             LOG_DEBUG << "Unknown text formatting";
             throw;
+    }
+    if ( bold ) {
+        result += "b";
+    }
+    if (underlined) {
+        result += "u";
+    }
+    if (!(italic && bold && underlined)) {
+        result = "r";
     }
     return addInstruction(instruction::SET_TEXT_STYLE, result, nullopt, nullopt);
 }
