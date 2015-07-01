@@ -38,6 +38,7 @@ namespace instruction {
     INST_TYPE PRINT_CHAR_COMMAND = "print_char";
     INST_TYPE PRINT_NUM_COMMAND = "print_num";
     INST_TYPE PRINT_ADDR_COMMAND = "print_addr";
+    INST_TYPE PUSH_COMMAND = "push";
     INST_TYPE JUMP_COMMAND = "jump";
     INST_TYPE RET_COMMAND = "ret";
     INST_TYPE SET_TEXT_STYLE = "set_text_style";
@@ -49,6 +50,7 @@ namespace instruction {
     INST_TYPE SUB_COMMAND = "sub";
     INST_TYPE MUL_COMMAND = "mul";
     INST_TYPE DIV_COMMAND = "div";
+    INST_TYPE MOD_COMMAND = "mod";
     INST_TYPE AND_COMMAND = "and";
     INST_TYPE OR_COMMAND = "or";
     INST_TYPE NOT_COMMAND = "not";
@@ -186,8 +188,25 @@ ZAssemblyGenerator &ZAssemblyGenerator::jumpEquals(string args, string targetLab
     return addInstruction(instruction::JE_COMMAND, args, make_pair(targetLabel, false), nullopt);
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::jumpNotEquals(string args, string targetLabel) {
+    return addInstruction(instruction::JE_COMMAND, args, make_pair(targetLabel, true), nullopt);
+}
+
+
 ZAssemblyGenerator &ZAssemblyGenerator::jumpGreater(string args, string targetLabel) {
     return addInstruction(instruction::JG_COMMAND, args, make_pair(targetLabel, false), nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::jumpGreaterEquals(string args, string targetLabel) {
+    return addInstruction(instruction::JL_COMMAND, args, make_pair(targetLabel, true), nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::jumpLower(string args, string targetLabel) {
+    return addInstruction(instruction::JL_COMMAND, args, make_pair(targetLabel, false), nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::jumpLowerEquals(string args, string targetLabel) {
+    return addInstruction(instruction::JG_COMMAND, args, make_pair(targetLabel, true), nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::quit() {
@@ -231,6 +250,14 @@ ZAssemblyGenerator &ZAssemblyGenerator::println(string str) {
     return addInstruction(instruction::PRINT_COMMAND, string("\"") + str + string("\""), nullopt, nullopt).newline();
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::print_num(string source) {
+    return addInstruction(instruction::PRINT_NUM_COMMAND, source, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::push(string value) {
+    return addInstruction(instruction::PUSH_COMMAND, value, nullopt, STACK_POINTER);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::variable(string variable) {
     return addInstruction(instruction::NOTHING, variable.substr(1), nullopt, nullopt);
 }
@@ -260,6 +287,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::div(std::string left, std::string right,
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::mod(std::string left, std::string right, std::string storeTarget) {
+    return addInstruction(instruction::MOD_COMMAND, left + " " + right, nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::land(std::string left, std::string right, std::string storeTarget) {

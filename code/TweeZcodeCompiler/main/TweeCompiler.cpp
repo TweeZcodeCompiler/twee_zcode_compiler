@@ -5,12 +5,22 @@
 #include "TweeCompiler.h"
 #include "ZAssemblyGenerator.h"
 #include "exceptions.h"
+#include "Utils.h"
+
 #include <sstream>
 #include <iostream>
+#include <set>
+
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
-#include <Passage/Body/Newline.h>
+
+#include <Passage/Body/Expressions/BinaryOperation.h>
+#include <Passage/Body/Expressions/Const.h>
+#include <Passage/Body/Expressions/UnaryOperation.h>
 #include <Passage/Body/Expressions/Variable.h>
+
+#include <Passage/Body/Macros/Print.h>
+#include <Passage/Body/Macros/SetMacro.h>
 
 using namespace std;
 
@@ -25,8 +35,12 @@ static const unsigned int ZSCII_NUM_OFFSET = 49;
 
 //#define ZAS_DEBUG
 
-void maskString(std::string& string) {
-    std::replace( string.begin(), string.end(), ' ', '_');
+#ifndef ASSGEN
+#define ASSGEN (*_assgen)
+#endif
+
+void maskString(std::string &string) {
+    std::replace(string.begin(), string.end(), ' ', '_');
 }
 
 string routineNameForPassageName(std::string passageName) {
@@ -37,11 +51,11 @@ string routineNameForPassageName(std::string passageName) {
 }
 
 
-string routineNameForPassage(Passage& passage) {
+string routineNameForPassage(Passage &passage) {
     return routineNameForPassageName(passage.getHead().getName());
 }
 
-string labelForPassage(Passage& passage) {
+string labelForPassage(Passage &passage) {
     stringstream ss;
     string passageName = passage.getHead().getName();
     maskString(passageName);
@@ -50,8 +64,13 @@ string labelForPassage(Passage& passage) {
 }
 
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
-    ZAssemblyGenerator assgen(out);
+    _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
+
     vector<Passage> passages = tweeFile.getPassages();
+
+    globalVariables = std::set<std::string>();
+
+    labelCount = 0;
 
     {
         int i = 0;
@@ -64,101 +83,102 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // main routine
     {
         // globals
-        assgen.addGlobal(PASSAGE_GLOB)
+        ASSGEN.addGlobal(PASSAGE_GLOB)
                 .addGlobal(USER_INPUT);
 
         // call start routine first
-        assgen.addRoutine(MAIN_ROUTINE)
+        ASSGEN.addRoutine(MAIN_ROUTINE)
                 .markStart()
                 .call(routineNameForPassageName("start"), PASSAGE_GLOB)
                 .addLabel(JUMP_TABLE_LABEL);
 
-        for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
+        for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
             int passageId = passageName2id.at(passage->getHead().getName());
 
-            assgen.jumpEquals(ZAssemblyGenerator::makeArgs({std::to_string(passageId), PASSAGE_GLOB}), labelForPassage(*passage));
+            ASSGEN.jumpEquals(ZAssemblyGenerator::makeArgs({std::to_string(passageId), PASSAGE_GLOB}),
+                              labelForPassage(*passage));
         }
 
-        for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
-            assgen.addLabel(labelForPassage(*passage))
+        for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
+            ASSGEN.addLabel(labelForPassage(*passage))
                     .call(routineNameForPassage(*passage), PASSAGE_GLOB)
                     .jump(JUMP_TABLE_LABEL);
         }
 
-        assgen.addLabel(JUMP_TABLE_END_LABEL);
+        ASSGEN.addLabel(JUMP_TABLE_END_LABEL);
 
-        assgen.quit();
+        ASSGEN.quit();
     }
 
     // passage routines
     {
-        for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
-            const vector<unique_ptr<BodyPart>>& bodyParts = passage->getBody().getBodyParts();
+        for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
+            const vector<unique_ptr<BodyPart>> &bodyParts = passage->getBody().getBodyParts();
 
             // declare passage routine
-            assgen.addRoutine(routineNameForPassage(*passage));
+            ASSGEN.addRoutine(routineNameForPassage(*passage));
 
-            assgen.println(string("***** ") + passage->getHead().getName() + string(" *****"));
+            ASSGEN.println(string("***** ") + passage->getHead().getName() + string(" *****"));
 
             //  print passage contents
-            for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
-                BodyPart* bodyPart = it->get();
-                if(Text* text = dynamic_cast<Text*>(bodyPart)) {
-                    assgen.print(text->getContent());
-                } else if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
-                    assgen.newline();
-                } else if (Variable * variable = dynamic_cast<Variable *>(bodyPart)) {
-                    assgen.variable(variable->getName());
+            for (auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
+                BodyPart *bodyPart = it->get();
+                if (Text *text = dynamic_cast<Text *>(bodyPart)) {
+                    ASSGEN.print(text->getContent());
                 }
+                if (Print *print = dynamic_cast<Print *>(bodyPart)) {
+                    evalExpression(print->getExpression().get());
+                    ASSGEN.print_num("sp");
+                }
+
             }
 
-            assgen.newline();
+            ASSGEN.newline();
 
-            vector<Link*> links;
+            vector<Link *> links;
             // get links from passage
-            for(auto it = bodyParts.begin(); it != bodyParts.end(); ++it)
-            {
-                BodyPart* bodyPart = it->get();
-                if(Link* link = dynamic_cast<Link*>(bodyPart)) {
+            for (auto it = bodyParts.begin(); it != bodyParts.end(); ++it) {
+                BodyPart *bodyPart = it->get();
+                if (Link *link = dynamic_cast<Link *>(bodyPart)) {
                     links.push_back(link);
                 }
             }
 
             // present choices to user
-            assgen.println("Select one of the following options");
+            ASSGEN.println("Select one of the following options");
             int i = 1;
             for (auto link = links.begin(); link != links.end(); link++) {
-                assgen.println(string("    ") + to_string(i) + string(") ") + (*link)->getTarget() );
+                ASSGEN.println(string("    ") + to_string(i) + string(") ") + (*link)->getTarget());
                 i++;
             }
 
-            assgen.addLabel(READ_BEGIN);
+            ASSGEN.addLabel(READ_BEGIN);
 
             // read user input
-            assgen.read_char(USER_INPUT);
+            ASSGEN.read_char(USER_INPUT);
 
             // jump to according link selection
             i = 0;
             for (auto link = links.begin(); link != links.end(); link++) {
                 string label = string("L") + to_string(i);
-                assgen.jumpEquals(ZAssemblyGenerator::makeArgs({to_string(ZSCII_NUM_OFFSET + i), USER_INPUT}), label);
+                ASSGEN.jumpEquals(ZAssemblyGenerator::makeArgs({to_string(ZSCII_NUM_OFFSET + i), USER_INPUT}), label);
 
                 i++;
             }
 
             // no proper selection was made
-            assgen.jump(READ_BEGIN);
+            ASSGEN.jump(READ_BEGIN);
 
             i = 0;
             for (auto link = links.begin(); link != links.end(); link++) {
                 string label = string("L") + to_string(i);
                 try {
                     int targetPassageId = passageName2id.at((*link)->getTarget());
-                    assgen.addLabel(label);
-                    #ifdef ZAS_DEBUG
-                    assgen.print(string("selected ") + to_string(targetPassageId) );
+                    ASSGEN.addLabel(label);
+#ifdef ZAS_DEBUG
+                    ASSGEN.print(string("selected ") + to_string(targetPassageId) );
                     #endif
-                    assgen.ret(to_string(targetPassageId));
+                    ASSGEN.ret(to_string(targetPassageId));
                 } catch (const out_of_range &err) {
                     cerr << "could not find passage for link target \"" << (*link)->getTarget() << "\"" << endl;
                     throw TweeDocumentException();
@@ -167,4 +187,139 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             }
         }
     }
+}
+
+void TweeCompiler::evalExpression(Expression *expression) {
+
+    if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
+
+        ASSGEN.push(std::to_string(constant->getValue()));
+
+    } else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
+
+        std::string prunedVarName = variable->getName().substr(1);
+
+        if (Utils::contains<std::string>(globalVariables, prunedVarName)) {
+            ASSGEN.push(prunedVarName);
+        } else {
+            globalVariables.insert(prunedVarName);
+            ASSGEN.addGlobal(prunedVarName);
+            ASSGEN.push(prunedVarName);
+        }
+
+    } else if (BinaryOperation *binOp = dynamic_cast<BinaryOperation *>(expression)) {
+        std::pair<std::string, std::string> labels;
+
+        TweeCompiler::evalExpression(binOp->getLeftSide().get());
+        TweeCompiler::evalExpression(binOp->getRightSide().get());
+
+        switch (binOp->getOperator()) {
+            case BinOps::ADD:
+                ASSGEN.add("sp", "sp", "sp");
+                break;
+            case BinOps::SUB:
+                ASSGEN.sub("sp", "sp", "sp");
+                break;
+            case BinOps::MUL:
+                ASSGEN.mul("sp", "sp", "sp");
+                break;
+            case BinOps::DIV:
+                ASSGEN.div("sp", "sp", "sp");
+                break;
+            case BinOps::MOD:
+                ASSGEN.mod("sp", "sp", "sp");
+                break;
+            case BinOps::AND:
+                ASSGEN.land("sp", "sp", "sp");
+                break;
+            case BinOps::OR:
+                ASSGEN.lor("sp", "sp", "sp");
+                break;
+            case BinOps::TO:
+                ASSGEN.store("sp", "sp");
+                break;
+            case BinOps::LT:
+                labels = labelCreator("lower");
+                ASSGEN.jumpLower(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
+                break;
+            case BinOps::LTE:
+                labels = labelCreator("lowerEquals");
+                ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
+                break;
+            case BinOps::GT:
+                labels = labelCreator("greater");
+                ASSGEN.jumpGreater(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
+                break;
+            case BinOps::GTE:
+                labels = labelCreator("greaterEquals");
+                ASSGEN.jumpGreaterEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
+                break;
+            case BinOps::IS:
+                ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
+                break;
+            case BinOps::NEQ:
+                ASSGEN.jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
+                break;
+
+        }
+    } else if (UnaryOperation *unOp = dynamic_cast<UnaryOperation *>(expression)) {
+        TweeCompiler::evalExpression(unOp->getExpression().get());
+        switch (unOp->getOperator()) {
+            case UnOps::NOT:
+                ASSGEN.lnot("sp", "sp");
+                break;
+            case UnOps::PLUS:
+                ASSGEN.push("0");
+                ASSGEN.add("sp", "sp", "sp");
+                break;
+            case UnOps::MINUS:
+                ASSGEN.push("0");
+                ASSGEN.sub("sp", "sp", "sp");
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+std::pair<std::string, std::string> TweeCompiler::labelCreator(std::string labelName) {
+
+    std::string resultLabel = labelName.append("_");
+    std::string afterLabel = "after_";
+    resultLabel.append(std::to_string(labelCount));
+    afterLabel.append(std::to_string(labelCount));
+    ++labelCount;
+
+    return std::make_pair(resultLabel, afterLabel);
+
 }
