@@ -63,7 +63,6 @@ string labelForPassage(Passage &passage) {
     return ss.str();
 }
 
-
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
 

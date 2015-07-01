@@ -89,7 +89,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::addLabel(string labelName) {
 
 ZAssemblyGenerator &ZAssemblyGenerator::addDirective(string directiveName, experimental::optional<string> args) {
     out << DIRECTIVE_START
-           << directiveName;
+    << directiveName;
 
     if (args) {
         out << INST_SEPARATOR;
@@ -136,7 +136,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
 
     if (args) {
         out << INST_SEPARATOR
-               << *args;
+        << *args;
     }
 
     if (targetLabelAndNeg) {
