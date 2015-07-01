@@ -54,6 +54,8 @@ public:
 
     ZAssemblyGenerator &jumpEquals(std::string args, std::string targetLabel);
 
+    ZAssemblyGenerator &jumpNotEquals(std::string args, std::string targetLabel);
+
     ZAssemblyGenerator &jumpGreater(std::string args, std::string targetLabel);
 
     ZAssemblyGenerator &jumpGreaterEquals(std::string args, std::string targetLabel);

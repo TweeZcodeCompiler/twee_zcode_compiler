@@ -275,10 +275,20 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.addLabel(labels.second);
                 break;
             case BinOps::IS:
-                ASSGEN.store("sp", "sp");
+                ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
                 break;
             case BinOps::NEQ:
-                ASSGEN.store("sp", "sp");
+                ASSGEN.jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
                 break;
 
         }
