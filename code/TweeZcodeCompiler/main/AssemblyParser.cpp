@@ -553,7 +553,7 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         executeLOADWCOMMAND(command, dynamicMemory, routineGenerator);
     } else if (commandPart.compare(AssemblyParser::SET_TEXT_STYLE) == 0) {
         LOG_DEBUG << ":::::: new set_text_style ";
-        executeSETTEXTSTYLECommand(command, routineGenerator);
+        routineGenerator.setTextStyle(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::ADD_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new add ";
         routineGenerator.add(parseArguments(command));

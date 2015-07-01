@@ -89,15 +89,12 @@ void RoutineGenerator::addBitset(vector<bitset<8>> bitsets, std::string name = "
     routine->add(instruction);
 }
 
-void RoutineGenerator::setTextStyle(bool roman, bool reverseVideo, bool bold, bool italic, bool fixedPitch) {
+void RoutineGenerator::setTextStyle(vector<unique_ptr<ZParam>> params) {
     debug("textStyle");
-    vector<uint16_t> param;
-    param.push_back(roman ? 0 : (reverseVideo * 1) + (bold * 2) + (italic * 4) + (fixedPitch * 8));
+    checkParamCount(params, 1);
+    checkParamType(params, VARIABLE_OR_VALUE);
 
-    vector<bool> paramBools;
-    paramBools.push_back(false);
-
-    vector<bitset<8>> command = opcodeGenerator.generateVarOPInstruction(SET_TEXT_STYLE, param, paramBools);
+    vector<bitset<8>> command = opcodeGenerator.generateVarOPInstruction(SET_TEXT_STYLE, params);
     addBitset(command, "text style");
 }
 
