@@ -5,10 +5,10 @@
 #ifndef PROJECT_VARIABLE_H
 #define PROJECT_VARIABLE_H
 
-#include "BodyPart.h"
+#include "Expression.h"
 #include <string>
 
-class Variable : public BodyPart {
+class Variable : public Expression {
 
 private:
     std::string name;
@@ -20,9 +20,9 @@ public:
 
     Variable(std::string name);
 
-    std::string getName();
+    std::string getName() const;
 
-    std::string to_string();
+    std::string to_string() const;
 
 };
 

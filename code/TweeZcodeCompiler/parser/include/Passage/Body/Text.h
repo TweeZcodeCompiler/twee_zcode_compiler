@@ -21,9 +21,9 @@ public:
 
     Text(std::string content);
 
-    std::string getContent();
+    std::string getContent() const;
 
-    std::string to_string();
+    std::string to_string() const;
 };
 
 

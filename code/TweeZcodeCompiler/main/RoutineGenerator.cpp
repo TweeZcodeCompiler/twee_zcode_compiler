@@ -81,11 +81,11 @@ void checkParamType(vector<unique_ptr<ZParam>> &params, ZParamType type1, ZParam
 }
 
 shared_ptr<ZCodeRoutine> RoutineGenerator::getRoutine() {
-   return this->routine;
+    return this->routine;
 }
 
 void RoutineGenerator::addBitset(vector<bitset<8>> bitsets, std::string name = "UNKNOWN") {
-    auto instruction = shared_ptr<ZCodeObject>(new ZCodeInstruction(bitsets,name));
+    auto instruction = shared_ptr<ZCodeObject>(new ZCodeInstruction(bitsets, name));
     routine->add(instruction);
 }
 
@@ -120,7 +120,7 @@ void RoutineGenerator::printString(vector<unique_ptr<ZParam>> params) {
         }
         instruction.push_back(zsciiString[i]);
     }
-    auto zinstruction = shared_ptr<ZCodeObject>(new ZCodeInstruction(instruction,"print"));
+    auto zinstruction = shared_ptr<ZCodeObject>(new ZCodeInstruction(instruction, "print"));
     routine->add(zinstruction);
 }
 
@@ -135,14 +135,15 @@ void RoutineGenerator::printRet(vector<unique_ptr<ZParam>> params) {
     unsigned long len = zsciiString.size();
     for (size_t i = 0; i < len; i++) {
         if (i % 96 == 0) {
-            instructions.push_back(numberToBitset(PRINT_RET));      // TODO: Check if this opcode needs same workaround as "print" for Frotz
+            instructions.push_back(numberToBitset(
+                    PRINT_RET));      // TODO: Check if this opcode needs same workaround as "print" for Frotz
         }
         if (i % 96 == 94) {
             zsciiString[i].set(7, true);
         }
         instructions.push_back(zsciiString[i]);
     }
-    this->addBitset(instructions,"print_ret");
+    this->addBitset(instructions, "print_ret");
 }
 
 // params: storeAddress
@@ -204,7 +205,7 @@ void RoutineGenerator::callVS(vector<unique_ptr<ZParam>> params) {
     zinstructions.push_back(generated.at(1));
     auto instructionObjects = shared_ptr<ZCodeObject>(new ZCodeInstruction(zinstructions));
     routine->add(instructionObjects);
-    auto callAdress = shared_ptr<ZCodeObject>( new ZCodeCallAdress(ZCodeRoutine::getOrCreateRoutine(routineName,0)));
+    auto callAdress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(ZCodeRoutine::getOrCreateRoutine(routineName, 0)));
     routine->add(callAdress);
     vector<bitset<8>> instructionsAfterJump;
     instructionsAfterJump.push_back(numberToBitset(storeAddress));
@@ -223,7 +224,8 @@ void RoutineGenerator::call1n(vector<unique_ptr<ZParam>> params) {
     zinstructions.push_back(generated.at(0));
     auto instructionObjects = shared_ptr<ZCodeObject>(new ZCodeInstruction(zinstructions));
     routine->add(instructionObjects);
-    auto adress = shared_ptr<ZCodeObject>( new ZCodeCallAdress(ZCodeRoutine::getOrCreateRoutine((*params.at(0)).name,0)));
+    auto adress = shared_ptr<ZCodeObject>(
+            new ZCodeCallAdress(ZCodeRoutine::getOrCreateRoutine((*params.at(0)).name, 0)));
     routine->add(adress);
     LOG_DEBUG << "Call Routine at:::" << offsetOfRoutine + routineZcode.size() - 2;
 }
@@ -232,101 +234,110 @@ bitset<8> RoutineGenerator::numberToBitset(unsigned int number) {
     return bitset<8>(number);
 }
 
-void RoutineGenerator::loadb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor){
+void RoutineGenerator::loadb(std::vector<std::unique_ptr<ZParam>> &params,
+                             std::shared_ptr<ZCodeContainer> dynamicMemor) {
     debug("loadb");
     checkParamCount(params, 3);
-    checkParamType(params,NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
-    vector<bitset<8>> generated = opcodeGenerator.generate2OPInstruction(LOADB,3000,params.at(1)->getZCodeValue(),false,params.at(1)->isVariableArgument());
+    checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+    vector<bitset<8>> generated = opcodeGenerator.generate2OPInstruction(LOADB, 3000, params.at(1)->getZCodeValue(),
+                                                                         false, params.at(1)->isVariableArgument());
     vector<bitset<8>> vopcode;
     vopcode.push_back(generated.at(0));
     vopcode.push_back(generated.at(1));
-    auto opcode = shared_ptr<ZCodeObject>(new ZCodeInstruction(vopcode,"loadb"));
+    auto opcode = shared_ptr<ZCodeObject>(new ZCodeInstruction(vopcode, "loadb"));
     routine->add(opcode);
     auto adress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(dynamicMemor->getOrCreateLabel(params.at(0)->name)));
     routine->add(adress);
     vector<bitset<8>> instructions;
     instructions.push_back(numberToBitset(params.at(1)->getZCodeValue()));
     instructions.push_back(numberToBitset(params.at(2)->getZCodeValue()));
-    addBitset(instructions,"index and store value");
+    addBitset(instructions, "index and store value");
 }
-void RoutineGenerator::loadw(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor){
+
+void RoutineGenerator::loadw(std::vector<std::unique_ptr<ZParam>> &params,
+                             std::shared_ptr<ZCodeContainer> dynamicMemor) {
     debug("loadw");
     checkParamCount(params, 3);
-    checkParamType(params,NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
-    vector<bitset<8>> generated = opcodeGenerator.generate2OPInstruction(LOADW,3000,params.at(1)->getZCodeValue(),false,params.at(1)->isVariableArgument());
+    checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+    vector<bitset<8>> generated = opcodeGenerator.generate2OPInstruction(LOADW, 3000, params.at(1)->getZCodeValue(),
+                                                                         false, params.at(1)->isVariableArgument());
     vector<bitset<8>> vopcode;
     vopcode.push_back(generated.at(0));
     vopcode.push_back(generated.at(1));
-    auto opcode = shared_ptr<ZCodeObject>(new ZCodeInstruction(vopcode,"loadw"));
+    auto opcode = shared_ptr<ZCodeObject>(new ZCodeInstruction(vopcode, "loadw"));
     routine->add(opcode);
     auto adress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(dynamicMemor->getOrCreateLabel(params.at(0)->name)));
     routine->add(adress);
     vector<bitset<8>> instructions;
     instructions.push_back(numberToBitset(params.at(1)->getZCodeValue()));
     instructions.push_back(numberToBitset(params.at(2)->getZCodeValue()));
-    addBitset(instructions,"index and store value");
+    addBitset(instructions, "index and store value");
 }
-void RoutineGenerator::storeb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor){
+
+void RoutineGenerator::storeb(std::vector<std::unique_ptr<ZParam>> &params,
+                              std::shared_ptr<ZCodeContainer> dynamicMemor) {
     debug("storeb");
     checkParamCount(params, 3);
-    checkParamType(params,NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+    checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
     vector<bitset<8>> instructions;
     instructions.push_back(numberToBitset(STOREB));
     bitset<8> vardecl = bitset<8>();
-    vardecl.set(7,false);
-    vardecl.set(6,false);
-    if(params.at(1)->isVariableArgument()){
-        vardecl.set(5,true);
-    }else{
-        vardecl.set(4,true);
+    vardecl.set(7, false);
+    vardecl.set(6, false);
+    if (params.at(1)->isVariableArgument()) {
+        vardecl.set(5, true);
+    } else {
+        vardecl.set(4, true);
     }
-    if(params.at(2)->isVariableArgument()){
-        vardecl.set(3,true);
-    }else{
-        vardecl.set(2,true);
+    if (params.at(2)->isVariableArgument()) {
+        vardecl.set(3, true);
+    } else {
+        vardecl.set(2, true);
     }
-    vardecl.set(1,true);
-    vardecl.set(0,true);
+    vardecl.set(1, true);
+    vardecl.set(0, true);
     instructions.push_back(vardecl);
-    auto opcode = shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions,"storeb"));
+    auto opcode = shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions, "storeb"));
     routine->add(opcode);
     auto adress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(dynamicMemor->getOrCreateLabel(params.at(0)->name)));
     routine->add(adress);
     vector<bitset<8>> vars;
     vars.push_back(numberToBitset(params.at(1)->getZCodeValue()));
     vars.push_back(numberToBitset(params.at(2)->getZCodeValue()));
-    addBitset(vars,"index and store value");
+    addBitset(vars, "index and store value");
 }
-void RoutineGenerator::storew(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor){
+
+void RoutineGenerator::storew(std::vector<std::unique_ptr<ZParam>> &params,
+                              std::shared_ptr<ZCodeContainer> dynamicMemor) {
     debug("storew");
     checkParamCount(params, 3);
-    checkParamType(params,NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+    checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
     vector<bitset<8>> instructions;
     instructions.push_back(numberToBitset(STOREW));
     bitset<8> vardecl = bitset<8>();
-    vardecl.set(7,false);
-    vardecl.set(6,false);
-    if(params.at(1)->isVariableArgument()){
-        vardecl.set(5,true);
-    }else{
-        vardecl.set(4,true);
+    vardecl.set(7, false);
+    vardecl.set(6, false);
+    if (params.at(1)->isVariableArgument()) {
+        vardecl.set(5, true);
+    } else {
+        vardecl.set(4, true);
     }
-    if(params.at(2)->isVariableArgument()){
-        vardecl.set(3,true);
-    }else{
-        vardecl.set(2,true);
+    if (params.at(2)->isVariableArgument()) {
+        vardecl.set(3, true);
+    } else {
+        vardecl.set(2, true);
     }
-    vardecl.set(1,true);
-    vardecl.set(0,true);
+    vardecl.set(1, true);
+    vardecl.set(0, true);
     instructions.push_back(vardecl);
-    auto opcode = shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions,"storew"));
+    auto opcode = shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions, "storew"));
     routine->add(opcode);
     auto adress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(dynamicMemor->getOrCreateLabel(params.at(0)->name)));
     routine->add(adress);
     vector<bitset<8>> vars;
     vars.push_back(numberToBitset(params.at(1)->getZCodeValue()));
     vars.push_back(numberToBitset(params.at(2)->getZCodeValue()));
-    addBitset(vars,"index and store value");
+    addBitset(vars, "index and store value");
 }
 
 void RoutineGenerator::newLine() {
@@ -581,7 +592,7 @@ void RoutineGenerator::printNum(vector<unique_ptr<ZParam>> params) {
     checkParamType(params, VARIABLE_OR_VALUE);
 
     vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(PRINT_SIGNED_NUM, params);
-    addBitset(instructions,"print_num");
+    addBitset(instructions, "print_num");
 }
 
 u_int8_t RoutineGenerator::getAddressOfVariable(string name) {
@@ -618,7 +629,8 @@ void RoutineGenerator::returnFalse() {
     routine->add(instruction);
 }
 
-void RoutineGenerator::retPopped() {auto instruction = shared_ptr<ZCodeObject>(new ZCodeInstruction(RET_POPPED));
+void RoutineGenerator::retPopped() {
+    auto instruction = shared_ptr<ZCodeObject>(new ZCodeInstruction(RET_POPPED));
     routine->add(instruction);;
 }
 
@@ -641,19 +653,20 @@ void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
         zCode[callOffset + 1] = callAdress[1];
     }
 }
+
 shared_ptr<ZCodeLabel> RoutineGenerator::getOrCreateLabel(std::string name) {
     return routine->getOrCreateLabel(name);
 }
 
 void RoutineGenerator::debug(std::string message) {
-    if(!debugmode){
+    if (!debugmode) {
         return;
     }
     ZCodeConverter converter = ZCodeConverter();
-    vector<bitset<8>> zsciiString = converter.convertStringToZSCII("["+message+"]");
+    vector<bitset<8>> zsciiString = converter.convertStringToZSCII("[" + message + "]");
     vector<bitset<8>> instruction = vector<bitset<8>>();
     unsigned long len = zsciiString.size();
-     for (size_t i = 0; i < len; i++) {
+    for (size_t i = 0; i < len; i++) {
         if (i % 96 == 0) {
             instruction.push_back(numberToBitset(PRINT));
         }
