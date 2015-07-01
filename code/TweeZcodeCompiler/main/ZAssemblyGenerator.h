@@ -45,6 +45,7 @@ public:
     ZAssemblyGenerator &call(std::string routineName);
     ZAssemblyGenerator &call(std::string routineName, std::string storeTarget);
     ZAssemblyGenerator &jumpEquals(std::string args, std::string targetLabel);
+    ZAssemblyGenerator &jumpNotEquals(std::string args, std::string targetLabel);
     ZAssemblyGenerator &jumpGreater(std::string args, std::string targetLabel);
     ZAssemblyGenerator &quit();
     ZAssemblyGenerator &ret(std::string arg);
@@ -66,7 +67,6 @@ private:
                                       std::experimental::optional<std::string> storeTarget);
 
     ZAssemblyGenerator& addDirective(std::string directiveName, std::experimental::optional<std::string> args);
-
 };
 
 

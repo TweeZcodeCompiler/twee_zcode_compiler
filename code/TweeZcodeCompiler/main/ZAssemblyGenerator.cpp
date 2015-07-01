@@ -165,6 +165,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::jumpEquals(string args, string targetLab
     return addInstruction(instruction::JUMP_EQUALS, args, make_pair(targetLabel, false), nullopt);
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::jumpNotEquals(string args, string targetLabel) {
+    return addInstruction(instruction::JUMP_EQUALS, args, make_pair(targetLabel, true), nullopt);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::jumpGreater(string args, string targetLabel) {
     return addInstruction(instruction::JUMP_GREATER, args, make_pair(targetLabel, false), nullopt);
 }

@@ -11,6 +11,11 @@
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
 #include <Passage/Body/Expressions/Variable.h>
+#include <Passage/Body/Macros/IfMacro.h>
+#include <Passage/Body/Macros/ElseIfMacro.h>
+#include <Passage/Body/Macros/ElseMacro.h>
+#include <Passage/Body/Macros/EndIfMacro.h>
+#include <plog/Log.h>
 
 using namespace std;
 
@@ -19,7 +24,8 @@ static const string PASSAGE_GLOB = "PASSAGE_PTR",
         JUMP_TABLE_END_LABEL = "JUMP_TABLE_END",
         MAIN_ROUTINE = "main",
         USER_INPUT = "USER_INPUT",
-        READ_BEGIN = "READ_BEGIN";
+        READ_BEGIN = "READ_BEGIN",
+        IF_JUMP_LABEL = "IFJUMPLABEL";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -52,6 +58,11 @@ string labelForPassage(Passage& passage) {
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ZAssemblyGenerator assgen(out);
     vector<Passage> passages = tweeFile.getPassages();
+
+    int ifDepth = -1;
+    int ifJumpLabelID = 0;
+    int possibleIfDepth = 255;
+    std::array<std::string,255> nextJumpLabels;
 
     {
         int i = 0;
@@ -109,6 +120,41 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     assgen.newline();
                 } else if (Variable * variable = dynamic_cast<Variable *>(bodyPart)) {
                     assgen.variable(variable->getName());
+                } else if (Macro * macro = dynamic_cast<Macro *>(bodyPart)) {
+                    LOG_DEBUG << "Found a Macro";
+                    if (IfMacro * ifmacro = dynamic_cast<IfMacro *>(macro)) {
+                        //depth++,
+                        //set label for jump to after if block (else, else if, endif)
+                        //evaluate expression
+                        //make jump to set label if expression is true
+                        ifDepth++;
+                        nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
+                        //TODO: evaluate expression
+                        assgen.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
+                    } else if (ElseIfMacro * elseifmacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
+                        //save label for jump to after if/else if block , in this case else
+                        //make jump to set label if expression is true
+                        //set label for jump to after if block (else, else if, endif)
+                        //evaluate expression
+                        //make jump to set label if expression is true
+                        //else part
+                        std::string saveNextJumpLabel = nextJumpLabels[ifDepth];
+                        nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
+                        assgen.jump(nextJumpLabels[ifDepth]);
+                        assgen.addLabel(saveNextJumpLabel);
+                        //TODO: evaluate expression
+                        assgen.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
+                    } else if (ElseMacro * elsemacro = dynamic_cast<ElseMacro *>(bodyPart)) {
+                        //save label for jump to after if/else if block , in this case else
+                        //make jump to set label if expression is true
+                        std::string saveNextJumpLabel = nextJumpLabels[ifDepth];
+                        nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
+                        assgen.jump(nextJumpLabels[ifDepth]);
+                        assgen.addLabel(saveNextJumpLabel);
+                    } else if (EndIfMacro * endifemacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
+                        //make jump to set label if expression is trueJumpLabels[ifDepth];
+                        assgen.addLabel(nextJumpLabels[ifDepth]);
+                    }
                 }
             }
 
