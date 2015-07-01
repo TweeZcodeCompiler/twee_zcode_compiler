@@ -43,8 +43,10 @@ const string AssemblyParser::ADD_COMMAND = "add";
 const string AssemblyParser::SUB_COMMAND = "sub";
 const string AssemblyParser::MUL_COMMAND = "mul";
 const string AssemblyParser::DIV_COMMAND = "div";
+const string AssemblyParser::MOD_COMMAND = "mod";
 const string AssemblyParser::AND_COMMAND = "and";
 const string AssemblyParser::OR_COMMAND = "or";
+const string AssemblyParser::NOT_COMMAND = "not";
 const string AssemblyParser::RET_TRUE_COMMAND = "rtrue";
 const string AssemblyParser::RET_FALSE_COMMAND = "rfalse";
 const string AssemblyParser::PRINT_RET_COMMAND = "print_ret";
@@ -556,20 +558,26 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         LOG_DEBUG << ":::::: new add ";
         routineGenerator.add(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::SUB_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new sub ";
         routineGenerator.sub(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::MUL_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new mul ";
         routineGenerator.mul(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::DIV_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new div ";
         routineGenerator.div(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::MOD_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new mod ";
+        routineGenerator.mod(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::AND_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new and ";
         routineGenerator.doAND(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::OR_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new or ";
         routineGenerator.doOR(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::NOT_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new not ";
+        routineGenerator.doNOT(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::RET_TRUE_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new rtrue";
         routineGenerator.returnTrue();

@@ -6,11 +6,13 @@
 #define PROJECT_TWEECOMPILER_H
 
 #include "ITweeCompiler.h"
+#include "ZAssemblyGenerator.h"
 #include <map>
 
 class TweeCompiler : public ITweeCompiler {
 public:
     void compile(TweeFile& tweeDoc, std::ostream& out);
+
 private:
     std::map<std::string, int> passageName2id;
 };
