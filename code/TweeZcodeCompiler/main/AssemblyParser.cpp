@@ -213,8 +213,18 @@ void AssemblyParser::finishRoutine(shared_ptr<ZCodeContainer> highMemoryZcode) {
     bool labelFound;
     for (auto jump = registeredJumpsAtLines.begin(); jump != registeredJumpsAtLines.end(); ++jump) {
         labelFound = false;
+        string jumpFirst = jump->first;
+
         for (auto label = registeredLabels.begin(); label != registeredLabels.end(); ++label) {
-            if (label->compare(jump->first) == 0) {
+            if (label->compare(jumpFirst) == 0) {
+                labelFound = true;
+                break;
+            }
+            //set labelFound true when label is x but jump->first is ~x for jump not equals
+            string jumpSubString = jumpFirst.substr(1, jumpFirst.size()-1);
+            bool beginsWithTilde = (jumpFirst.at(0) == '~' );
+            bool restIsSame = (label->compare( jumpSubString) == 0 ) ;
+            if ( beginsWithTilde && restIsSame ) {
                 labelFound = true;
                 break;
             }
@@ -571,6 +581,9 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::OR_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new or ";
         routineGenerator.doOR(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::PUSH_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new push";
+        routineGenerator.push(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::NOT_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new not ";
         routineGenerator.doNOT(parseArguments(command));
@@ -620,7 +633,7 @@ bool AssemblyParser::checkIfCommandRoutineStart(const string &command) {
 
 unique_ptr<uint8_t> AssemblyParser::getAddressForId(const string &id) {
     if (id.compare("sp") == 0) {
-        return 0;
+        return unique_ptr<uint8_t>(new uint8_t( 0 ));
     }
 
     // check global variables
