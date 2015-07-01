@@ -25,6 +25,10 @@ static const unsigned int ZSCII_NUM_OFFSET = 49;
 
 //#define ZAS_DEBUG
 
+#ifndef ASSGEN
+#define ASSGEN (*_assgen)
+#endif
+
 void maskString(std::string& string) {
     std::replace( string.begin(), string.end(), ' ', '_');
 }
@@ -49,8 +53,14 @@ string labelForPassage(Passage& passage) {
     return ss.str();
 }
 
+void TweeCompiler::addByteArray(unsigned size) {
+    ASSGEN.
+}
+
+
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
-    ZAssemblyGenerator assgen(out);
+    _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
+
     vector<Passage> passages = tweeFile.getPassages();
 
     {
@@ -64,11 +74,11 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // main routine
     {
         // globals
-        assgen.addGlobal(PASSAGE_GLOB)
+        ASSGEN.addGlobal(PASSAGE_GLOB)
                 .addGlobal(USER_INPUT);
 
         // call start routine first
-        assgen.addRoutine(MAIN_ROUTINE)
+        ASSGEN.addRoutine(MAIN_ROUTINE)
                 .markStart()
                 .call(routineNameForPassageName("start"), PASSAGE_GLOB)
                 .addLabel(JUMP_TABLE_LABEL);
@@ -76,18 +86,18 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
             int passageId = passageName2id.at(passage->getHead().getName());
 
-            assgen.jumpEquals(ZAssemblyGenerator::makeArgs({std::to_string(passageId), PASSAGE_GLOB}), labelForPassage(*passage));
+            ASSGEN.jumpEquals(ZAssemblyGenerator::makeArgs({std::to_string(passageId), PASSAGE_GLOB}), labelForPassage(*passage));
         }
 
         for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
-            assgen.addLabel(labelForPassage(*passage))
+            ASSGEN.addLabel(labelForPassage(*passage))
                     .call(routineNameForPassage(*passage), PASSAGE_GLOB)
                     .jump(JUMP_TABLE_LABEL);
         }
 
-        assgen.addLabel(JUMP_TABLE_END_LABEL);
+        ASSGEN.addLabel(JUMP_TABLE_END_LABEL);
 
-        assgen.quit();
+        ASSGEN.quit();
     }
 
     // passage routines
@@ -96,25 +106,25 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             const vector<unique_ptr<BodyPart>>& bodyParts = passage->getBody().getBodyParts();
 
             // declare passage routine
-            assgen.addRoutine(routineNameForPassage(*passage));
+            ASSGEN.addRoutine(routineNameForPassage(*passage));
 
-            assgen.println(string("***** ") + passage->getHead().getName() + string(" *****"));
+            ASSGEN.println(string("***** ") + passage->getHead().getName() + string(" *****"));
 
             //  print passage contents
             for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
                 BodyPart* bodyPart = it->get();
                 if(Text* text = dynamic_cast<Text*>(bodyPart)) {
-                    assgen.print(text->getContent());
+                    ASSGEN.print(text->getContent());
                 } else if(FormattedText* formText = dynamic_cast<FormattedText*>(bodyPart)) {
-                    assgen.setTextStyle(formText->isItalic(), formText->isBold(), formText->isUnderlined());
-                    assgen.print(formText->getContent());
-                    assgen.setTextStyle(false, false, false);
+                    ASSGEN.setTextStyle(formText->isItalic(), formText->isBold(), formText->isUnderlined());
+                    ASSGEN.print(formText->getContent());
+                    ASSGEN.setTextStyle(false, false, false);
                 } else if (Variable* variable = dynamic_cast<Variable*>(bodyPart)) {
-                    assgen.variable(variable->getName());
+                    ASSGEN.variable(variable->getName());
                 }
             }
 
-            assgen.newline();
+            ASSGEN.newline();
 
             vector<Link*> links;
             // get links from passage
@@ -127,40 +137,40 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             }
 
             // present choices to user
-            assgen.println("Select one of the following options");
+            ASSGEN.println("Select one of the following options");
             int i = 1;
             for (auto link = links.begin(); link != links.end(); link++) {
-                assgen.println(string("    ") + to_string(i) + string(") ") + (*link)->getTarget() );
+                ASSGEN.println(string("    ") + to_string(i) + string(") ") + (*link)->getTarget() );
                 i++;
             }
 
-            assgen.addLabel(READ_BEGIN);
+            ASSGEN.addLabel(READ_BEGIN);
 
             // read user input
-            assgen.read_char(USER_INPUT);
+            ASSGEN.read_char(USER_INPUT);
 
             // jump to according link selection
             i = 0;
             for (auto link = links.begin(); link != links.end(); link++) {
                 string label = string("L") + to_string(i);
-                assgen.jumpEquals(ZAssemblyGenerator::makeArgs({to_string(ZSCII_NUM_OFFSET + i), USER_INPUT}), label);
+                ASSGEN.jumpEquals(ZAssemblyGenerator::makeArgs({to_string(ZSCII_NUM_OFFSET + i), USER_INPUT}), label);
 
                 i++;
             }
 
             // no proper selection was made
-            assgen.jump(READ_BEGIN);
+            ASSGEN.jump(READ_BEGIN);
 
             i = 0;
             for (auto link = links.begin(); link != links.end(); link++) {
                 string label = string("L") + to_string(i);
                 try {
                     int targetPassageId = passageName2id.at((*link)->getTarget());
-                    assgen.addLabel(label);
+                    ASSGEN.addLabel(label);
                     #ifdef ZAS_DEBUG
-                    assgen.print(string("selected ") + to_string(targetPassageId) );
+                    ASSGEN.print(string("selected ") + to_string(targetPassageId) );
                     #endif
-                    assgen.ret(to_string(targetPassageId));
+                    ASSGEN.ret(to_string(targetPassageId));
                 } catch (const out_of_range &err) {
                     cerr << "could not find passage for link target \"" << (*link)->getTarget() << "\"" << endl;
                     throw TweeDocumentException();
