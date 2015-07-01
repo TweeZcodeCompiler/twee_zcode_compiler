@@ -56,6 +56,9 @@ string labelForPassage(Passage& passage) {
 
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ZAssemblyGenerator assgen(out);
+
+    std::map<std::string, int> symbolTable;
+
     vector<Passage> passages = tweeFile.getPassages();
     {
         int i = 0;
@@ -122,15 +125,43 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 if(SetMacro *op = dynamic_cast<SetMacro*>(bodyPart)) {
                     LOG_DEBUG << "generate SetMacro assembly code";
 
-                 BinaryOperation *binaryOperation =  (BinaryOperation*)(op->getExpression().get());
-                 Variable * variable = (Variable*)(binaryOperation->getLeftSide().get());
-                   // Const<int> value = Const<int> (binaryOperation->getRightSide().get());
+                if(BinaryOperation *binaryOperation =  (BinaryOperation*)(op->getExpression().get()))
+                {
+                    if(Variable * variable = (Variable*)(binaryOperation->getLeftSide().get()))
+                    {
+                        std::string variableName =   variable->getName();
+                        variableName = variableName.erase(0,1); //remove the $ symbol
+                        Const<int> *constant = dynamic_cast<Const<int> *>(binaryOperation->getRightSide().get());
+                        if(constant)
+                        {
+                            int constantValue = (int) constant->getValue();
 
-                    Const<int> *constant = dynamic_cast<Const<int> *>(binaryOperation->getRightSide().get());
 
-                    int constantValue = (int) constant->getValue();
-                    std::string variableName =   variable->getName();
-                    cout << variableName << " " << constantValue;
+                            if (symbolTable.find(variableName.c_str()) != symbolTable.end())
+                            {
+                                symbolTable[variableName.c_str()] = constantValue;
+                                assgen.store(variableName,constantValue);
+
+
+                            }
+                            else
+                            {
+                                //new variable needs to be decleared as well
+                                assgen.addGlobal(variableName);
+                                symbolTable[variableName.c_str()] = constantValue;
+                                assgen.store(variableName,constantValue);
+                                LOG_DEBUG << "global var added";
+
+                            }
+                           LOG_DEBUG << variableName << "=" << constantValue << "assembly added";
+
+
+                        }
+                    }
+
+
+                }
+
 
 
 

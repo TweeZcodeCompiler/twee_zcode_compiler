@@ -33,6 +33,7 @@ namespace instruction {
     INST_TYPE QUIT = "quit";
     INST_TYPE RETURN = "ret";
     INST_TYPE NEWLINE = "new_line";
+    INST_TYPE STORE = "store";
     INST_TYPE PRINT = "print";
     INST_TYPE READ_CHAR = "read_char";
     INST_TYPE JUMP_GREATER = "jg";
@@ -213,4 +214,9 @@ ZAssemblyGenerator &ZAssemblyGenerator::println(string str) {
 
 ZAssemblyGenerator &ZAssemblyGenerator::variable(string variable) {
     return addInstruction(instruction::NOTHING, variable.substr(1), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::store(std::string variableName, int value)
+{
+  return  addInstruction(instruction::STORE,makeArgs({variableName, to_string(value)}) ,nullopt,nullopt);
 }
