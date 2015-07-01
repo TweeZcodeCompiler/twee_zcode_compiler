@@ -5,8 +5,11 @@
 #include "TweeCompiler.h"
 #include "ZAssemblyGenerator.h"
 #include "exceptions.h"
+#include "Utils.h"
+
 #include <sstream>
 #include <iostream>
+#include <set>
 
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
@@ -36,8 +39,8 @@ static const unsigned int ZSCII_NUM_OFFSET = 49;
 #define ASSGEN (*_assgen)
 #endif
 
-void maskString(std::string& string) {
-    std::replace( string.begin(), string.end(), ' ', '_');
+void maskString(std::string &string) {
+    std::replace(string.begin(), string.end(), ' ', '_');
 }
 
 string routineNameForPassageName(std::string passageName) {
@@ -65,6 +68,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
 
     vector<Passage> passages = tweeFile.getPassages();
+    std::set<std::string> globalVariables;
 
     {
         int i = 0;
@@ -89,10 +93,11 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
             int passageId = passageName2id.at(passage->getHead().getName());
 
-            ASSGEN.jumpEquals(ZAssemblyGenerator::makeArgs({std::to_string(passageId), PASSAGE_GLOB}), labelForPassage(*passage));
+            ASSGEN.jumpEquals(ZAssemblyGenerator::makeArgs({std::to_string(passageId), PASSAGE_GLOB}),
+                              labelForPassage(*passage));
         }
 
-        for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
+        for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
             ASSGEN.addLabel(labelForPassage(*passage))
                     .call(routineNameForPassage(*passage), PASSAGE_GLOB)
                     .jump(JUMP_TABLE_LABEL);
@@ -114,14 +119,14 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             ASSGEN.println(string("***** ") + passage->getHead().getName() + string(" *****"));
 
             //  print passage contents
-            for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
-                BodyPart* bodyPart = it->get();
-                if(Text* text = dynamic_cast<Text*>(bodyPart)) {
+            for (auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
+                BodyPart *bodyPart = it->get();
+                if (Text *text = dynamic_cast<Text *>(bodyPart)) {
                     ASSGEN.print(text->getContent());
                 }
                 if (Print *print = dynamic_cast<Print *>(bodyPart)) {
-                }
-                if (SetMacro *set = dynamic_cast<SetMacro *>(bodyPart)) {
+                    evalExpression(print->getExpression().get(), globalVariables);
+                    ASSGEN.print_num("sp");
                 }
 
             }
@@ -141,7 +146,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             ASSGEN.println("Select one of the following options");
             int i = 1;
             for (auto link = links.begin(); link != links.end(); link++) {
-                ASSGEN.println(string("    ") + to_string(i) + string(") ") + (*link)->getTarget() );
+                ASSGEN.println(string("    ") + to_string(i) + string(") ") + (*link)->getTarget());
                 i++;
             }
 
@@ -168,7 +173,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 try {
                     int targetPassageId = passageName2id.at((*link)->getTarget());
                     ASSGEN.addLabel(label);
-                    #ifdef ZAS_DEBUG
+#ifdef ZAS_DEBUG
                     ASSGEN.print(string("selected ") + to_string(targetPassageId) );
                     #endif
                     ASSGEN.ret(to_string(targetPassageId));
@@ -180,4 +185,79 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             }
         }
     }
+}
+
+void TweeCompiler::evalExpression(Expression *expression, std::set<std::string> globalVariables) {
+
+    if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
+
+        ASSGEN.push(std::to_string(constant->getValue()));
+
+    } else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
+
+        std::string prunedVarName = variable->getName().substr(1);
+
+        if (Utils::contains<std::string>(globalVariables, prunedVarName)) {
+            ASSGEN.load(prunedVarName, "sp");
+        } else {
+            globalVariables.insert(prunedVarName);
+            ASSGEN.addGlobal(prunedVarName);
+            ASSGEN.load(prunedVarName, "sp");
+        }
+
+    } else if (BinaryOperation *binOp = dynamic_cast<BinaryOperation *>(expression)) {
+
+        TweeCompiler::evalExpression(binOp->getLeftSide().get(), globalVariables);
+        TweeCompiler::evalExpression(binOp->getRightSide().get(), globalVariables);
+
+        switch (binOp->getOperator()) {
+            case BinOps::ADD:
+                ASSGEN.add("sp", "sp", "sp");
+                break;
+            case BinOps::SUB:
+                ASSGEN.sub("sp", "sp", "sp");
+                break;
+            case BinOps::MUL:
+                ASSGEN.mul("sp", "sp", "sp");
+                break;
+            case BinOps::DIV:
+                ASSGEN.div("sp", "sp", "sp");
+                break;
+            case BinOps::MOD:
+                ASSGEN.mod("sp", "sp", "sp");
+                break;
+            case BinOps::AND:
+                ASSGEN.land("sp", "sp", "sp");
+                break;
+            case BinOps::OR:
+                ASSGEN.lor("sp", "sp", "sp");
+                break;
+            case BinOps::TO:
+                ASSGEN.store("sp", "sp");
+                break;
+
+        }
+    } else if (UnaryOperation *unOp = dynamic_cast<UnaryOperation *>(expression)) {
+        TweeCompiler::evalExpression(unOp->getExpression().get(), globalVariables);
+        switch (unOp->getOperator()) {
+            case UnOps::NOT:
+                break;
+            case UnOps::PLUS:
+                ASSGEN.push("0");
+                ASSGEN.add("sp", "sp", "sp");
+                break;
+            case UnOps::MINUS:
+                break;
+                ASSGEN.push("0");
+                ASSGEN.sub("sp", "sp", "sp");
+            default:
+                break;
+        }
+    } /*else if (Function *func = dynamic_cast<Function *>(expression)) {
+        for(auto iter = func->getArgs().begin; iter != func->getArgs().begin; ++iter) {
+            TweeCompiler::evalExpression()
+        }
+
+
+    }*/
 }
