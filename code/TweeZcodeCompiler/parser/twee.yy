@@ -20,6 +20,10 @@
     #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
     #include "include/Passage/Body/Macros/Display.h"
+    #include "include/Passage/Body/Macros/Visited.h"
+    #include "include/Passage/Body/Macros/Previous.h"
+    #include "include/Passage/Body/Macros/Turns.h"
+    #include "include/Passage/Body/Macros/Random.h"
     #include "include/Passage/Body/Macros/Print.h"
     #include "include/Passage/Body/Macros/IfMacro.h"
     #include "include/Passage/Body/Macros/ElseIfMacro.h"
@@ -129,6 +133,14 @@
 	Macro *macro;
 	Print *print;
 	SetMacro *setmacro;
+
+	Display *display;
+    Visited *visited;
+    Previous *previous;
+    Turns *turns;
+    Random *random;
+
+
     IfMacro *ifmacro;
     ElseIfMacro *elseifmacro;
     ElseMacro *elsemacro;
@@ -139,6 +151,7 @@
 	Variable *variable;
 	Const<int> *intconst;
 	Const<bool> *boolconst;
+	Const<std::string> *strconst;
 
 	BodyPart *bodypart;
 	Text *text;
@@ -161,9 +174,11 @@
 
     <integer> EXPR_INT
     <string> EXPR_VAR
+    <string> EXPR_STR
+
     <token> EXPR_TRUE
     <token> EXPR_FALSE
-
+    <token> EXPR_STR_LIMITER
     <token> LINK_OPEN
     <token> LINK_CLOSE
     <token> LINK_SEPARATOR
@@ -185,6 +200,7 @@
     <token> EXPR_VISITED
     <token> EXPR_PREVIOUS
     <token> EXPR_TURNS
+    <token> FUNC_SEPARATOR
 
     <token> EXPR_OPEN
     <token> EXPR_CLOSE
@@ -246,12 +262,21 @@
 %type <newline> newline
 
 %type <macro> macro
+
 %type <ifmacro> ifmacro
 %type <elseifmacro> elseifmacro
 %type <elsemacro> elsemacro
 %type <endifmacro> endifmacro
+
 %type <print> print
 %type <setmacro> setmacro
+
+%type <display> display
+%type <visited> visited
+%type <previous> previous
+%type <turns> turns
+%type <random> random
+
 %type <expression> expression
 %type <expression> expressionAssignment
 %type <expression> expressionCompare
@@ -260,6 +285,7 @@
 %type <expression> expressionMulDivMod
 %type <expression> expressionUnary
 %type <expression> expressionTop
+
 %type <integer> operatorAssignment
 %type <integer> operatorCompare
 %type <integer> operatorLogic
@@ -501,6 +527,31 @@ macro :
     LOG_DEBUG << "macro -> endifmacro: pass endifmacro:type(EndIfMacro) to macro:type(Macro)";
     $$ = $1;
     }
+    |display
+    {
+    LOG_DEBUG << "macro -> display: pass display:type(Display) to macro:type(Macro)";
+    $$ = $1;
+    }
+    |visited
+    {
+    LOG_DEBUG << "macro -> visited: pass visited:type(Visited) to macro:type(Macro)";
+    $$ = $1;
+    }
+    |previous
+    {
+    LOG_DEBUG << "macro -> previous: pass previous:type(Previous) to macro:type(Macro)";
+    $$ = $1;
+    }
+    |turns
+    {
+    LOG_DEBUG << "macro -> previous: pass turns:type(Turns) to macro:type(Macro)";
+    $$ = $1;
+    }
+    |random
+    {
+    LOG_DEBUG << "macro -> previous: pass random:type(Random) to macro:type(Macro)";
+    $$ = $1;
+    }
   ;
 
 print:
@@ -518,6 +569,54 @@ print:
     delete $2;
     }
   ;
+
+display:
+    MACRO_OPEN MACRO_DISPLAY EXPR_STR EXPR_CLOSE MACRO_CLOSE
+    {
+    LOG_DEBUG << "display -> MACRO_OPEN MACRO_DISPLAY EXPR_OPEN strconst MACRO_CLOSE MACRO_CLOSE: create new Display($4);";
+    $$ = new Display(*$3);
+    delete $3;
+    }
+  ;
+
+visited:
+    MACRO_OPEN EXPR_VISITED EXPR_STR EXPR_CLOSE MACRO_CLOSE
+    {
+    LOG_DEBUG << "visited -> MACRO_OPEN EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
+    $$ = new Visited(*$3);
+    delete $3;
+    }
+    |MACRO_OPEN EXPR_VISITED EXPR_CLOSE MACRO_CLOSE
+    {
+    LOG_DEBUG << "visited -> MACRO_OPEN EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
+    $$ = new Visited("");
+    }
+  ;
+
+previous:
+    MACRO_OPEN EXPR_PREVIOUS EXPR_CLOSE MACRO_CLOSE
+    {
+    LOG_DEBUG << "previous -> MACRO_OPEN EXPR_PREVIOUS EXPR_CLOSE MACRO_CLOSE: create $$ = new Previous()";
+    $$ = new Previous();
+    }
+  ;
+
+turns:
+    MACRO_OPEN EXPR_TURNS EXPR_CLOSE MACRO_CLOSE
+    {
+    LOG_DEBUG << "turns -> MACRO_OPEN EXPR_PREVIOUS EXPR_CLOSE MACRO_CLOSE: create $$ = new Turns()";
+    $$ = new Turns();
+    }
+  ;
+
+random:
+    MACRO_OPEN EXPR_RANDOM expression expression EXPR_CLOSE MACRO_CLOSE
+    {
+    LOG_DEBUG << "random -> MACRO_OPEN EXPR_RANDOM expression expression EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
+    $$ = new Random($3, $4);
+    }
+  ;
+
 
 setmacro:
     MACRO_OPEN MACRO_SET expressionAssignment MACRO_CLOSE

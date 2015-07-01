@@ -11,6 +11,13 @@
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
 #include <Passage/Body/Expressions/Variable.h>
+#include <plog/Log.h>
+#include "Passage/Body/Macros/Display.h"
+#include "Passage/Body/Macros/Visited.h"
+#include "Passage/Body/Macros/Previous.h"
+#include "Passage/Body/Macros/Turns.h"
+#include "Passage/Body/Macros/Random.h"
+#include "Passage/Body/Macros/Print.h"
 
 using namespace std;
 
@@ -109,7 +116,18 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     assgen.newline();
                 } else if (Variable * variable = dynamic_cast<Variable *>(bodyPart)) {
                     assgen.variable(variable->getName());
+                } else if (Display * display = dynamic_cast<Display *>(bodyPart)) {
+                    LOG_DEBUG << display->to_string();
+                } else if (Visited * visited = dynamic_cast<Visited *>(bodyPart)) {
+                    LOG_DEBUG << visited->to_string();
+                } else if (Previous * previous = dynamic_cast<Previous *>(bodyPart)) {
+                    LOG_DEBUG << previous->to_string();
+                } else if (Turns * turns = dynamic_cast<Turns *>(bodyPart)) {
+                    LOG_DEBUG << turns->to_string();
+                } else if (Random * random = dynamic_cast<Random *>(bodyPart)) {
+                    LOG_DEBUG << random->to_string();
                 }
+
             }
 
             assgen.newline();

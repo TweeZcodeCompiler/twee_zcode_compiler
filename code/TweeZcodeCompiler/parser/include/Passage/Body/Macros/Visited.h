@@ -1,9 +1,6 @@
-//
-// Created by lars on 24.06.15.
-//
 
-#ifndef DISPLAY_H
-#define DISPLAY_H
+#ifndef VISITED_H
+#define VISITED_H
 
 #include "Macro.h"
 #include "../Expressions/Expression.h"
@@ -11,16 +8,16 @@
 #include <string>
 #include <memory>
 
-class Display : public Macro {
+class Visited : public Macro {
 
 private:
     std::string passage;
 
 public:
 
-    Display(std::string);
+    Visited(std::string);
 
-    Display(const Display &display) {
+    Visited(const Visited &display) {
         this->passage = display.getPassage();
     }
 
@@ -28,10 +25,10 @@ public:
 
     std::string to_string() const;
 
-    virtual Display *clone() const {
-        return new Display(*this);
+    virtual Visited *clone() const {
+        return new Visited(*this);
     }
 
 };
 
-#endif //DISPLAY_H
+#endif //VISITED_H
