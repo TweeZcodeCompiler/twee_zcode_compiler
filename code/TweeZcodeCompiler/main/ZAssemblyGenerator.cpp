@@ -220,3 +220,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::println(string str) {
 ZAssemblyGenerator &ZAssemblyGenerator::variable(string variable) {
     return addInstruction(instruction::NOTHING, variable.substr(1), nullopt, nullopt);
 }
+
+ZAssemblyGenerator &ZAssemblyGenerator::store(std::string variableName, int value) {
+    return addInstruction(instruction::STORE,makeArgs({variableName, to_string(value)}) ,nullopt,nullopt);
+}

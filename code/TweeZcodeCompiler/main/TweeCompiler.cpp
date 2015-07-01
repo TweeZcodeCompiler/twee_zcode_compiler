@@ -96,67 +96,111 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         assgen.quit();
     }
 
-    // toggle text formatting
+    .Func format type, i, value
+    LOOP_TYPE:
+    je type i ?~CONTINUE
+            add TEXT_FORMAT_ITALIC i -> i
+    je i 1 ?TOGGLE_OFF
+         store i 1
+    jump PRINT_MACRO
+
+    TOGGLE_OFF:
+    store i 0
+    jump PRINT_MACRO
+
+    CONTINUE:
+    add i 1 -> i
+    jl i 5 ?LOOP_TYPE
+         ret 0			//Fail
+
+    PRINT_MACRO:
+    store i TEXT_FORMAT_ITALIC
+    LOOP_PRINT:
+    mul value 10 -> value
+    je i 0 ?CONTINUE_PRINT
+         add value 1
+
+    CONTINUE_PRINT:
+    add i 1
+    jl i 5 ?LOOP_PRINT
+
+         set_text_style value
+    ret 0
+
+
+    // print appropriate text formatting args
     {
         assgen.addGlobal(TEXT_FORMAT_ITALIC)
                 .addGlobal(TEXT_FORMAT_BOLD)
                 .addGlobal(TEXT_FORMAT_FIXED_PITCH)
                 .addGlobal(TEXT_FORMAT_REVERSED_VIDEO);
 
-        string formatType = "formatType";
-        string labelNot1 = "~not1";
-        string labelNot2 = "~not2";
-        string labelNot3 = "~not3";
-        string labelItalicOff = "italicOff";
-        string labelBoldOff = "boldOff";
-        string labelFixedPitchOff = "fixedPitchOff";
-        string labelReversedVideoOff = "reversedVideoOff";
+        string varFormatType = "formatType";
+        string varCounter = "i";
+        string varResult = "result";
+        string labelLoopType = "LOOP_TYPE";
+        string labelLoopPrint = "LOOP_PRINT";
+        string labelContinue = "CONTINUE";
+        string labelContinuePrint = "CONTINUE_PRINT";
+        string labelToggleOff = "TOGGLE_OFF";
+        string labelPrintMacro = "PRINT_MACRO";
 
         vector<ZRoutineArgument> args;
-        args.push_back(ZRoutineArgument(formatType));
+        args.push_back(ZRoutineArgument(varFormatType));
+        args.push_back(ZRoutineArgument(varCounter));
+        args.push_back(ZRoutineArgument(varResult));
         assgen.addRoutine(TEXT_FORMAT_ROUTINE, args);
 
-        assgen.jumpEquals(string(formatType + " " + to_string(1)), labelNot1);
+        assgen.addLabel(labelLoopType);
+        assgen.jumpEquals(string(varFormatType + " " + varCounter), string("~" + labelContinue));
+        assgen.
+
+
         assgen.jumpEquals(string(TEXT_FORMAT_ITALIC + " " + to_string(1)), labelItalicOff);
         assgen.setTextStyle();
-        assgen.set(TEXT_FORMAT_ITALIC, 1);
+        assgen.store(TEXT_FORMAT_ITALIC, 1);
         assgen.ret("0");
         assgen.addLabel(labelItalicOff);
         assgen.setTextStyle();
-        assgen.set(TEXT_FORMAT_ITALIC, 0);
+        assgen.store(TEXT_FORMAT_ITALIC, 0);
         assgen.ret("0");
 
         assgen.addLabel(labelNot1);
-        assgen.jumpEquals(string(formatType + " " + to_string(2)), labelNot2);
+        assgen.jumpEquals(string(varFormatType + " " + to_string(2)), labelNot2);
         assgen.jumpEquals(string(TEXT_FORMAT_BOLD + " " + to_string(1)), labelBoldOff);
         assgen.setTextStyle();
-        assgen.set(TEXT_FORMAT_BOLD, 1);
+        assgen.store(TEXT_FORMAT_BOLD, 1);
         assgen.ret("0");
         assgen.addLabel(labelBoldOff);
         assgen.setTextStyle();
-        assgen.set(TEXT_FORMAT_BOLD, 0);
+        assgen.store(TEXT_FORMAT_BOLD, 0);
         assgen.ret("0");
 
         assgen.addLabel(labelNot2);
-        assgen.jumpEquals(string(formatType + " " + to_string(3)), labelNot3);
+        assgen.jumpEquals(string(varFormatType + " " + to_string(3)), labelNot3);
         assgen.jumpEquals(string(TEXT_FORMAT_FIXED_PITCH + " " + to_string(1)), labelFixedPitchOff);
         assgen.setTextStyle();
-        assgen.set(TEXT_FORMAT_FIXED_PITCH, 1);
+        assgen.store(TEXT_FORMAT_FIXED_PITCH, 1);
         assgen.ret("0");
         assgen.addLabel(labelFixedPitchOff);
         assgen.setTextStyle();
-        assgen.set(TEXT_FORMAT_FIXED_PITCH, 0);
+        assgen.store(TEXT_FORMAT_FIXED_PITCH, 0);
         assgen.ret("0");
 
         assgen.addLabel(labelNot3);
         assgen.jumpEquals(string(TEXT_FORMAT_REVERSED_VIDEO + " " + to_string(1)), labelReversedVideoOff);
         assgen.setTextStyle();
-        assgen.set(TEXT_FORMAT_REVERSED_VIDEO, 1);
+        assgen.store(TEXT_FORMAT_REVERSED_VIDEO, 1);
         assgen.ret("0");
         assgen.addLabel(labelReversedVideoOff);
         assgen.setTextStyle();
-        assgen.set(TEXT_FORMAT_REVERSED_VIDEO, 0);
+        assgen.store(TEXT_FORMAT_REVERSED_VIDEO, 0);
         assgen.ret("0");
+    }
+
+    // toggle Italic
+    {
+
     }
 
     // passage routines
