@@ -39,16 +39,16 @@ public:
 
     ZAssemblyGenerator &addLabel(std::string labelName);
 
+    ZAssemblyGenerator &addByteArray(std::string name, unsigned size);
+
+    ZAssemblyGenerator &call_vs(std::string routineName, std::experimental::optional<std::string> args, std::string storeTarget);
+
     ZAssemblyGenerator &markStart();
 
     ZAssemblyGenerator &addRoutine(std::string routineName,
                                    std::vector<ZRoutineArgument> args = std::vector<ZRoutineArgument>());
 
     ZAssemblyGenerator &addGlobal(std::string globalName);
-
-    ZAssemblyGenerator &call(std::string routineName);
-
-    ZAssemblyGenerator &call(std::string routineName, std::string storeTarget);
 
     ZAssemblyGenerator &jump(std::string label);
 
@@ -83,7 +83,10 @@ public:
     ZAssemblyGenerator &push(std::string value);
 
     ZAssemblyGenerator &variable(std::string variable);
-    ZAssemblyGenerator &store(std::string variableName, int value);
+
+    ZAssemblyGenerator &loadb(std::string arrayName, unsigned int index, std::string storeTarget);
+
+    ZAssemblyGenerator &storeb(std::string arrayName, unsigned int index, int value);
 
     ZAssemblyGenerator &load(std::string source, std::string target);
 
@@ -114,6 +117,7 @@ private:
                                        std::experimental::optional<std::string> args,
                                        std::experimental::optional<std::pair<std::string, bool>> targetLabelAndNeg,
                                        std::experimental::optional<std::string> storeTarget);
+
 
     ZAssemblyGenerator &addDirective(std::string directiveName, std::experimental::optional<std::string> args);
 

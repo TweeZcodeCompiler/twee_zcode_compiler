@@ -12,6 +12,7 @@
 #include <sstream>
 #include <iostream>
 #include <set>
+#include <array>
 
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
@@ -37,15 +38,21 @@
 
 
 using namespace std;
+using namespace std::experimental;
 
-static const string PASSAGE_GLOB = "PASSAGE_PTR",
-        JUMP_TABLE_LABEL = "JUMP_TABLE_START",
-        JUMP_TABLE_END_LABEL = "JUMP_TABLE_END",
-        MAIN_ROUTINE = "main",
-        USER_INPUT = "USER_INPUT",
-        READ_BEGIN = "READ_BEGIN",
+static const string GLOB_PASSAGE = "PASSAGE_PTR",
+        GLOB_PASSAGES_COUNT = "PASSAGES_COUNT",
+        LABEL_MAIN_LOOP = "MAIN_LOOP",
+        ROUTINE_MAIN = "main",
+        GLOBAL_USER_INPUT = "USER_INPUT",
+        TABLE_LINKED_PASSAGES = "LINKED_PASSAGES",
+        TABLE_USERINPUT_LOOKUP = "USERINPUT_LOOKUP",
+        ROUTINE_PASSAGE_BY_ID = "passage_by_id",
+        ROUTINE_NAME_FOR_PASSAGE = "print_name_for_passage",
+        ROUTINE_DISPLAY_LINKS = "display_links",
         IF_JUMP_LABEL = "IFJUMP",
-        IF_JUMP_END_LABEL = "IFJUMPEND";
+        IF_JUMP_END_LABEL = "IFJUMPEND",
+        ROUTINE_CLEAR_TABLES = "reset_tables";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -79,6 +86,47 @@ string labelForPassage(Passage &passage) {
     return ss.str();
 }
 
+
+string makeUserInputRoutine() {
+    return ".FUNCT display_links i, selectcount\n"
+            "loop_start:\n"
+            "loadb PASSAGES i -> sp\n"
+            "jz sp ?passage_not_set\n"
+            "storeb USERINPUT_LOOKUP selectcount i\n"
+            "add selectcount 1 -> sp\n"
+            "add selectcount 49 -> sp\n"
+            "print_char sp\n"
+            "print \": \"\n"
+            "call_vs print_name_for_passage_id i -> sp\n"
+            "new_line\n"
+            "add selectcount 1 -> selectcount\n"
+            "\n"
+            "passage_not_set:\n"
+            "\n"
+            "add i 1 -> i\n"
+            "jl i PASSAGES_COUNT ?loop_start\n"
+            "\n"
+            "read_char 1 -> USER_INPUT\n"
+            "sub USER_INPUT 48 -> sp\n"
+            "sub sp 1 -> sp\n"
+            "loadb USERINPUT_LOOKUP sp -> sp \n"
+            "\n"
+            "ret sp"
+            "\n";
+}
+
+string makeClearTablesRoutine() {
+    return ".FUNCT reset_tables i\n"
+            "loop_start:\n"
+            "storeb PASSAGES i 0\n"
+            "storeb USERINPUT_LOOKUP i 0\n"
+            "add i 1 -> i\n"
+            "jl i PASSAGES_COUNT ?loop_start\n"
+            "ret 0"
+            "\n";
+}
+
+
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
 
@@ -87,13 +135,14 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     globalVariables = std::set<std::string>();
 
     labelCount = 0;
-    
+
     int ifDepth = -1;
     int ifJumpLabelID = 0;
     int ifEndJumpLabelID = 0;
     int possibleIfDepth = 255;
     std::array<std::string,12> nextJumpLabels;
     std::array<std::string,12> endJumpLabels;
+
     {
         int i = 0;
         for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
@@ -102,34 +151,75 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         }
     }
 
+    // tables needed for routine linking
+    ASSGEN.addByteArray(TABLE_LINKED_PASSAGES, (unsigned)passages.size());
+    ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned)passages.size());
+
+
+    // globals
+    ASSGEN.addGlobal(GLOB_PASSAGE)
+            .addGlobal(GLOBAL_USER_INPUT)
+            .addGlobal(GLOB_PASSAGES_COUNT);
+
+
     // main routine
     {
-        // globals
-        ASSGEN.addGlobal(PASSAGE_GLOB)
-                .addGlobal(USER_INPUT);
-
         // call start routine first
-        ASSGEN.addRoutine(MAIN_ROUTINE)
+        ASSGEN.addRoutine(ROUTINE_MAIN)
                 .markStart()
-                .call(routineNameForPassageName("start"), PASSAGE_GLOB)
-                .addLabel(JUMP_TABLE_LABEL);
+                .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string("Start"))), "sp");
 
-        for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
-            int passageId = passageName2id.at(passage->getHead().getName());
+        // initialize globals
+        ASSGEN.store(GLOB_PASSAGES_COUNT, to_string(passages.size()));
 
-            ASSGEN.jumpEquals(ZAssemblyGenerator::makeArgs({std::to_string(passageId), PASSAGE_GLOB}),
-                              labelForPassage(*passage));
-        }
-
-        for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
-            ASSGEN.addLabel(labelForPassage(*passage))
-                    .call(routineNameForPassage(*passage), PASSAGE_GLOB)
-                    .jump(JUMP_TABLE_LABEL);
-        }
-
-        ASSGEN.addLabel(JUMP_TABLE_END_LABEL);
+        ASSGEN.addLabel(LABEL_MAIN_LOOP)
+                .call_vs(ROUTINE_DISPLAY_LINKS, string("sp"), "sp")
+                .call_vs(ROUTINE_CLEAR_TABLES, nullopt, "sp")
+                .call_vs(ROUTINE_PASSAGE_BY_ID, string("sp"), "sp")
+                .jump(LABEL_MAIN_LOOP);
 
         ASSGEN.quit();
+    }
+
+    out << makeUserInputRoutine() << makeClearTablesRoutine();
+
+    // call passage by id routine
+    {
+        const string idLocal = "id";
+        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal)}));
+        for(auto it = passages.begin(); it != passages.end(); ++it) {
+            string passageName = it->getHead().getName();
+            unsigned id = passageName2id.at(passageName);
+            ASSGEN.jumpEquals(ASSGEN.makeArgs({idLocal, to_string(id)}), labelForPassage(*it));
+        }
+
+        // error case
+        ASSGEN.print("invalid id for passage "); // TODO: print offending argument as soon as print_num is available
+        ASSGEN.quit();
+
+        for(auto it = passages.begin(); it != passages.end(); ++it) {
+            ASSGEN.addLabel(labelForPassage(*it)).call_vs(routineNameForPassage(*it), nullopt, "sp").ret("0");
+        }
+    }
+
+
+    // print passage name by id routine
+    {
+        const string idLocal = "id";
+        ASSGEN.addRoutine(ROUTINE_NAME_FOR_PASSAGE, vector<ZRoutineArgument>({ZRoutineArgument(idLocal)}));
+        for(auto it = passages.begin(); it != passages.end(); ++it) {
+            string passageName = it->getHead().getName();
+            unsigned id = passageName2id.at(passageName);
+            ASSGEN.jumpEquals(ASSGEN.makeArgs({idLocal, to_string(id)}), labelForPassage(*it));
+        }
+
+        // error case
+        ASSGEN.print("invalid id for passage "); // TODO: print offending argument as soon as print_num is available
+        ASSGEN.quit();
+
+        for(auto it = passages.begin(); it != passages.end(); ++it) {
+            ASSGEN.addLabel(labelForPassage(*it)).print(it->getHead().getName()).ret("0");
+        }
     }
 
     // passage routines
@@ -143,17 +233,20 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             ASSGEN.println(string("***** ") + passage->getHead().getName() + string(" *****"));
 
             //  print passage contents
-            for (auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
-                BodyPart *bodyPart = it->get();
-                if (Text *text = dynamic_cast<Text *>(bodyPart)) {
+            for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
+                BodyPart* bodyPart = it->get();
+                if(Text* text = dynamic_cast<Text*>(bodyPart)) {
                     ASSGEN.print(text->getContent());
-                } else if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
+                } else if (Variable* variable = dynamic_cast<Variable*>(bodyPart)) {
+                    ASSGEN.variable(variable->getName());
+                } else if (Link* link = dynamic_cast<Link*>(bodyPart)) {
+                    // TODO: catch invalid link
+                    ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
+                } else if (Newline* text = dynamic_cast<Newline*>(bodyPart)) {
                     ASSGEN.newline();
                 } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
                     evalExpression(print->getExpression().get());
                     ASSGEN.print_num("sp");
-                } else if (SetMacro *setMacro = dynamic_cast<SetMacro *>(bodyPart)) {
-                    evalExpression(setMacro->getExpression().get());
                 } else if (IfMacro * ifmacro = dynamic_cast<IfMacro *>(bodyPart)) {
                     //depth++,
                     //check preceding ifmacro
@@ -161,29 +254,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     //evaluate expression
                     //make jump to set label if expression is true
                     ifDepth++;
-                    /*
-                    if (precedingIfMacros[ifDepth] != 0) {
-
-                        std::string errorMessage = "unexpected IfMacro after ";
-
-                        switch(precedingIfMacros[ifDepth]) {
-                            case 1:
-                                errorMessage += "another if IfMacro: ";
-                                errorMessage += "check your code for an <<[ ]*if.*>> not followed by an <<endif>> before another <<[ ]*if.*>>";
-                                break;
-                            case 2:
-                                errorMessage += "an ElseIfMacro: ";
-                                errorMessage += "check your code for an <<[ ]*else[ ]*if.*>> not followed by an <<endif>> before another <<[ ]*if.*>>";
-                                break;
-                            case 3:
-                                errorMessage += "an ElseIfMacro: ";
-                                errorMessage += "check your code for an <<[ ]*else[ ]*>> not followed by an <<endif>> before another <<[ ]*if.*>>";
-                                break;
-                        }
-                        LOG_ERROR << errorMessage;
-                        throw TweeDocumentException();
-                    }
-                    */
                     nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
                     endJumpLabels[ifDepth] = IF_JUMP_END_LABEL + std::to_string(++ifEndJumpLabelID);
                     //TODO: evaluate expression IfMacro
@@ -198,24 +268,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     //evaluate expression
                     //make jump to set label if expression is true
                     //else part
-                    /*
-                     * if (precedingIfMacros[ifDepth] != 1 || precedingIfMacros[ifDepth] != 2){
-                        std::string errorMessage = "unexpected ElseIfMacro ";
-
-                        switch(precedingIfMacros[ifDepth]) {
-                            case 0:
-                                errorMessage += "without a starting ifMacro: ";
-                                errorMessage += "check your code for an <<[ ]*else[ ]*if.*>> without an associated <<if.*>>";
-                                break;
-                            case 3:
-                                errorMessage += "after an ElseMacro";
-                                errorMessage += "check your code for an <<[ ]*else[ ]*if.*>> after an <<[ ]*else[ ]*>>";
-                                break;
-                        }
-                        LOG_ERROR << errorMessage;
-                        throw TweeDocumentException();
-                    }
-                     */
                     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"1", "1"}) , endJumpLabels[ifDepth]);
                     ASSGEN.addLabel(nextJumpLabels[ifDepth]);
                     nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
@@ -227,24 +279,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     //check preceding ifmacro
                     //save label for jump to after if/else if block , in this case else
                     //make jump to set label if expression is true
-                    /*
-                    if (precedingIfMacros[ifDepth] != 1 || precedingIfMacros[ifDepth] != 2) {
-                        std::string errorMessage = "unexpected ElseMacro ";
-
-                        switch(precedingIfMacros[ifDepth]) {
-                            case 0:
-                                errorMessage += "without a starting ifMacro: ";
-                                errorMessage += "check your code for an <<[ ]*else[ ]*>> without an associated <<if.*>>";
-                                break;
-                            case 3:
-                                errorMessage += "after an ElseMacro";
-                                errorMessage += "check your code for an <<[ ]*else[ ]*>> after an <<[ ]*else[ ]*>>";
-                                break;
-                        }
-                        LOG_ERROR << errorMessage;
-                        throw TweeDocumentException();
-                    }
-                    */
                     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"1", "1"}) , endJumpLabels[ifDepth]);
                     ASSGEN.addLabel(nextJumpLabels[ifDepth]);
                     //precedingIfMacros[ifDepth] = 3;
@@ -252,76 +286,34 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     //check preceding ifmacro
                     //make jump to set label if expression is trueJumpLabels[ifDepth];
                     //decrease depth
-                    /*
-                    if (precedingIfMacros[ifDepth] == 0) {
-                        std::string errorMessage = "unexpected EndIfMacro without an if macro, look for an orphaned <<[ ]*endif[ ]*>> ";
-                        LOG_ERROR << errorMessage;
-                        throw TweeDocumentException();
-                    } else {
-                        std::string errorMessage = "unexpected EndIfMacro without an if macro, look for an orphaned <<[ ]*endif[ ]*>> ";
-                        LOG_ERROR << errorMessage;
-                    }
-                     */
                     ASSGEN.addLabel(endJumpLabels[ifDepth]);
                     ifDepth--;
                     //precedingIfMacros[ifDepth] = 0;
+                } else if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
+                    LOG_DEBUG << "generate SetMacro assembly code";
+
+                    if (BinaryOperation *binaryOperation = (BinaryOperation *) (op->getExpression().get())) {
+                        if (Variable *variable = (Variable *) (binaryOperation->getLeftSide().get())) {
+                            std::string variableName = variable->getName();
+                            variableName = variableName.erase(0, 1); //remove the $ symbol
+
+                            // TODO: merge this with evalExpression
+                            if (Utils::contains<std::string>(globalVariables, variableName)) {
+                                ASSGEN.push(variableName);
+                            } else {
+                                globalVariables.insert(variableName);
+                                ASSGEN.addGlobal(variableName);
+                                ASSGEN.push(variableName);
+                            }
+
+                            evalExpression(binaryOperation->getRightSide().get());
+
+                            ASSGEN.load("sp", variableName);
+                        }
+                    }
                 }
             }
-
-            ASSGEN.newline();
-
-            vector<Link *> links;
-            // get links from passage
-            for (auto it = bodyParts.begin(); it != bodyParts.end(); ++it) {
-                BodyPart *bodyPart = it->get();
-                if (Link *link = dynamic_cast<Link *>(bodyPart)) {
-                    links.push_back(link);
-                }
-            }
-
-            // present choices to user
-            ASSGEN.println("Select one of the following options");
-            int i = 1;
-            for (auto link = links.begin(); link != links.end(); link++) {
-                ASSGEN.println(string("    ") + to_string(i) + string(") ") + (*link)->getTarget());
-                i++;
-            }
-
-            ASSGEN.addLabel(READ_BEGIN);
-
-            // read user input
-            ASSGEN.read_char(USER_INPUT);
-
-            // jump to according link selection
-            i = 0;
-            for (auto link = links.begin(); link != links.end(); link++) {
-                string label = string("L") + to_string(i);
-                ASSGEN.jumpEquals(ZAssemblyGenerator::makeArgs({to_string(ZSCII_NUM_OFFSET + i), USER_INPUT}), label);
-
-                i++;
-            }
-
-            ASSGEN.addGlobal()
-
-            // no proper selection was made
-            ASSGEN.jump(READ_BEGIN);
-
-            i = 0;
-            for (auto link = links.begin(); link != links.end(); link++) {
-                string label = string("L") + to_string(i);
-                try {
-                    int targetPassageId = passageName2id.at((*link)->getTarget());
-                    ASSGEN.addLabel(label);
-#ifdef ZAS_DEBUG
-                    ASSGEN.print(string("selected ") + to_string(targetPassageId) );
-                    #endif
-                    ASSGEN.ret(to_string(targetPassageId));
-                } catch (const out_of_range &err) {
-                    cerr << "could not find passage for link target \"" << (*link)->getTarget() << "\"" << endl;
-                    throw TweeDocumentException();
-                }
-                i++;
-            }
+            ASSGEN.ret("0");
         }
     }
 }
@@ -329,13 +321,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 void TweeCompiler::evalExpression(Expression *expression) {
 
     if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
-
         ASSGEN.push(std::to_string(constant->getValue()));
-
     } else if (Const<bool> *constant = dynamic_cast<Const<bool> *>(expression)) {
-
         ASSGEN.push(std::to_string(constant->getValue()));
-
     } else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
 
         std::string prunedVarName = variable->getName().substr(1);
@@ -377,7 +365,8 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.lor("sp", "sp", "sp");
                 break;
             case BinOps::TO:
-                ASSGEN.store("sp", "sp");
+                // TODO: check if this is right
+                ASSGEN.load("sp", "sp");
                 break;
             case BinOps::LT:
                 labels = labelCreator("lower");
