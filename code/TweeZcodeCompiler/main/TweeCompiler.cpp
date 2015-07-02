@@ -106,7 +106,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .addGlobal(TEXT_FORMAT_FIXED_PITCH);
 
         string varFormatType = "formatType";
-        string varCounter = "i";
+        string varCounter = "counter";
         string varTypeValue = "typeValue";
         string varResult = "result";
         string labelLoopType = "LOOP_TYPE";

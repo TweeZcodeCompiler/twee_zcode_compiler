@@ -17,7 +17,7 @@ static const string INST_JUMP_NEG_MARKER = "~";
 static const string INST_STORE_TARGET_MARKER = "->";
 static const string INST_SEPARATOR = " ";
 static const string ARGS_EQ = "=";
-static const string ARGS_SEPARATOR = ",";
+static const string ARGS_SEPARATOR = ", ";
 static const string LABEL_MARKER = ":";
 
 static const string DIRECTIVE_START = ".";
@@ -180,7 +180,11 @@ ZAssemblyGenerator &ZAssemblyGenerator::call(string routineName) {
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::call_vs(string routineName, optional<string> args, string storeTarget) {
-    return addInstruction(instruction::CALL_VS, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, storeTarget);
+    return addInstruction(instruction::CALL_VS_COMMAND, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, storeTarget);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::call(string routineName, string storeTarget) {
+    return addInstruction(instruction::CALL_VS_COMMAND, routineName, nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jumpEquals(string args, string targetLabel) {
@@ -232,7 +236,8 @@ ZAssemblyGenerator &ZAssemblyGenerator::load(std::string source, std::string tar
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::store(std::string target, std::string value) {
-    return addInstruction(instruction::STORE_COMMAND, value, nullopt, target);
+    // Do not change this!
+    return addInstruction(instruction::STORE_COMMAND, target + " " + value, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::add(std::string left, std::string right, std::string storeTarget) {

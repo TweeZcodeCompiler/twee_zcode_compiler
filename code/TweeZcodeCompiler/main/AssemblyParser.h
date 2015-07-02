@@ -82,8 +82,6 @@ private:
 
     void executePRINTCommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
 
-    void executeSETTEXTSTYLECommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
-
     void executeREADCommand(const std::string &readCommand, RoutineGenerator &routineGenerator);
 
     void executeJECommand(const std::string &jeCommand, RoutineGenerator &routineGenerator);
