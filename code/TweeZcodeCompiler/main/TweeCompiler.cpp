@@ -362,7 +362,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.load("sp", "sp");
                 break;
             case BinOps::LT:
-                labels = labelCreator("lower");
+                labels = makeLabels("lower");
                 ASSGEN.jumpLower(std::string("sp") + " " + std::string("sp"), labels.first);
                 ASSGEN.push("0");
                 ASSGEN.jump(labels.second);
@@ -371,7 +371,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.addLabel(labels.second);
                 break;
             case BinOps::LTE:
-                labels = labelCreator("lowerEquals");
+                labels = makeLabels("lowerEquals");
                 ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.first);
                 ASSGEN.push("0");
                 ASSGEN.jump(labels.second);
@@ -380,7 +380,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.addLabel(labels.second);
                 break;
             case BinOps::GT:
-                labels = labelCreator("greater");
+                labels = makeLabels("greater");
                 ASSGEN.jumpGreater(std::string("sp") + " " + std::string("sp"), labels.first);
                 ASSGEN.push("0");
                 ASSGEN.jump(labels.second);
@@ -389,7 +389,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.addLabel(labels.second);
                 break;
             case BinOps::GTE:
-                labels = labelCreator("greaterEquals");
+                labels = makeLabels("greaterEquals");
                 ASSGEN.jumpGreaterEquals(std::string("sp") + " " + std::string("sp"), labels.first);
                 ASSGEN.push("0");
                 ASSGEN.jump(labels.second);
@@ -398,6 +398,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.addLabel(labels.second);
                 break;
             case BinOps::IS:
+                labels = makeLabels("is");
                 ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.first);
                 ASSGEN.push("0");
                 ASSGEN.jump(labels.second);
@@ -406,6 +407,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.addLabel(labels.second);
                 break;
             case BinOps::NEQ:
+                labels = makeLabels("neq");
                 ASSGEN.jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first);
                 ASSGEN.push("0");
                 ASSGEN.jump(labels.second);
@@ -435,9 +437,9 @@ void TweeCompiler::evalExpression(Expression *expression) {
     }
 }
 
-std::pair<std::string, std::string> TweeCompiler::labelCreator(std::string labelName) {
+std::pair<std::string, std::string> TweeCompiler::makeLabels(std::string prefix) {
 
-    std::string resultLabel = labelName.append("_");
+    std::string resultLabel = prefix.append("_");
     std::string afterLabel = "after_";
     resultLabel.append(std::to_string(labelCount));
     afterLabel.append(std::to_string(labelCount));
