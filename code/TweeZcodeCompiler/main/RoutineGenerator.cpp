@@ -489,9 +489,15 @@ void RoutineGenerator::conditionalJump(unsigned int opcode, string toLabel, bool
 void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
     debug("store");
     checkParamCount(params, 2);
-    checkParamType(params, VARIABLE_OR_VALUE, VALUE);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
 
     unique_ptr<ZParam> address(new ZValueParam((*params.at(0)).getZCodeValue()));
+
+    // store var var is not possible -> use load
+    if ((*params.at(1)).getParamType() == VARIABLE) {
+        load(*params.at(1), *params.at(0));
+        return;
+    }
 
     vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(STORE, *address, *params.at(1));
     addBitset(instructions);
@@ -550,6 +556,13 @@ void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {
 
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, *params.at(0));
     instructions.push_back(numberToBitset((*params.at(1)).getZCodeValue()));
+    addBitset(instructions);
+}
+
+void RoutineGenerator::load(ZParam &param1, ZParam &param2) {
+    debug("load");
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, param1);
+    instructions.push_back(numberToBitset(param2.getZCodeValue()));
     addBitset(instructions);
 }
 
