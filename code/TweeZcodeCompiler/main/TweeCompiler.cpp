@@ -143,6 +143,25 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             .addGlobal(GLOB_PASSAGES_COUNT);
 
 
+    // main routine
+    {
+        // call start routine first
+        ASSGEN.addRoutine(ROUTINE_MAIN)
+                .markStart()
+                .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string("Start"))), "sp");
+
+        // initialize globals
+        ASSGEN.store(GLOB_PASSAGES_COUNT, to_string(passages.size()));
+
+        ASSGEN.addLabel(LABEL_MAIN_LOOP)
+                .call_vs(ROUTINE_DISPLAY_LINKS, string("sp"), "sp")
+                .call_vs(ROUTINE_CLEAR_TABLES, nullopt, "sp")
+                .call_vs(ROUTINE_PASSAGE_BY_ID, string("sp"), "sp")
+                .jump(LABEL_MAIN_LOOP);
+
+        ASSGEN.quit();
+    }
+
     out << makeUserInputRoutine() << makeClearTablesRoutine();
 
     // call passage by id routine
@@ -182,27 +201,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         for(auto it = passages.begin(); it != passages.end(); ++it) {
             ASSGEN.addLabel(labelForPassage(*it)).print(it->getHead().getName()).ret("0");
         }
-    }
-
-
-    // main routine
-    {
-        // initialize globals
-        ASSGEN.store(GLOB_PASSAGES_COUNT, to_string(passages.size()));
-
-        // call start routine first
-        ASSGEN.addRoutine(ROUTINE_MAIN)
-                .markStart()
-                .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string("Start"))), "sp");
-
-
-        ASSGEN.addLabel(LABEL_MAIN_LOOP)
-                .call_vs(ROUTINE_DISPLAY_LINKS, string("sp"), "sp")
-                .call_vs(ROUTINE_CLEAR_TABLES, nullopt, "sp")
-                .call_vs(ROUTINE_PASSAGE_BY_ID, string("sp"), "sp")
-                .jump(LABEL_MAIN_LOOP);
-
-        ASSGEN.quit();
     }
 
     // passage routines
