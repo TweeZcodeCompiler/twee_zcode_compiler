@@ -214,7 +214,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::quit() {
 }
 
 ZAssemblyGenerator& ZAssemblyGenerator::random() {
-    return addInstruction(instruction::RANDOM_COMMAND, "sp")
+
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::ret(string arg) {

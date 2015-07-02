@@ -355,7 +355,7 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string &paramString) {
     // not catching exception on purpose so we always return a proper value
     auto paramId = getAddressForId(paramString);
 
-    if (paramId) {
+    if (paramId != NULL) {
         ZVariableParam *variableParam = new ZVariableParam((uint16_t) *paramId);
         param.reset(variableParam);
     } else {
@@ -626,7 +626,7 @@ bool AssemblyParser::checkIfCommandRoutineStart(const string &command) {
 
 unique_ptr<uint8_t> AssemblyParser::getAddressForId(const string &id) {
     if (id.compare("sp") == 0) {
-        return 0;
+        return unique_ptr<uint8_t>(new uint8_t(0));
     }
 
     // check global variables
