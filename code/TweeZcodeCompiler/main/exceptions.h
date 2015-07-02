@@ -28,7 +28,7 @@ public:
     };
 
 
-    AssemblyException(ErrorType error) : errorType(error) {}
+    AssemblyException(ErrorType error) : errorType(error), lineNumber(0) {}
 
     ErrorType errorType;
     unsigned lineNumber;

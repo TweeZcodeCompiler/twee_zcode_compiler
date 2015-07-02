@@ -163,7 +163,7 @@ void AssemblyParser::readAssembly(istream &input, shared_ptr<ZCodeContainer> dyn
     string line;
     currentLineNumber = 1;
     try {
-        for (string line; getline(input, line);) {
+        for (;getline(input, line);) {
 
             line = trim(line);
             vector<string> lineComps;
@@ -370,7 +370,7 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string &paramString) {
         param.reset(variableParam);
     } else {
         LOG_ERROR << "Could not parse parameter: " << paramString;
-        //throw AssemblyException(AssemblyException::ErrorType::INVALID_VARIABLE);
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_VARIABLE);
     }
 
 
@@ -632,8 +632,8 @@ bool AssemblyParser::checkIfCommandRoutineStart(const string &command) {
 
 
 unique_ptr<uint8_t> AssemblyParser::getAddressForId(const string &id) {
-    if (id.compare("sp") == 0) {
-        return unique_ptr<uint8_t>(new uint8_t( 0 ));
+    if (id == "sp") {
+        return unique_ptr<uint8_t>(new uint8_t(0));
     }
 
     // check global variables
