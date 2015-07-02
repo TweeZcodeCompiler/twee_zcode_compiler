@@ -405,6 +405,7 @@ void RoutineGenerator::jump(vector<unique_ptr<ZParam>> params) {
     string label;
     bool jumpIfTrue;
     setLabelValues(*params.at(0), label, jumpIfTrue);
+
     vector<bitset<8>> instructions = vector<bitset<8>>();
     instructions.push_back(numberToBitset(JUMP));
     auto instruction = shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions));
