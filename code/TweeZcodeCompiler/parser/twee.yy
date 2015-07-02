@@ -510,6 +510,13 @@ print:
     $$ = new Print($3);
     delete $3;
     }
+    |
+    MACRO_OPEN MACRO_PRINT expressionAssignment MACRO_CLOSE
+    {
+    LOG_DEBUG << "print -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--Print--) with 3:expression";
+    $$ = new Print($3);
+    delete $3;
+    }
     |MACRO_OPEN expression MACRO_CLOSE
     {
     //TODO:check if we need error handling here
@@ -537,7 +544,7 @@ ifmacro:
     MACRO_OPEN MACRO_IF expression MACRO_CLOSE
     {
     LOG_DEBUG << "Parser: ifmacro -> MACRO_OPEN MACRO_IF expression MACRO_CLOSE: "<< "matched, make a dummy if";
-    $$ = new IfMacro(new Variable("VAR"));
+    $$ = new IfMacro($3);
     }
   ;
 
@@ -545,7 +552,7 @@ elseifmacro:
     MACRO_OPEN MACRO_ELSE_IF expression MACRO_CLOSE
     {
     LOG_DEBUG << "Parser: elseifmacro -> MACRO_OPEN MACRO_ELSE_IF expression MACRO_CLOSE: "<< "matched, make a dummy elseif";
-    $$ = new ElseIfMacro(new Variable("VAR"));
+    $$ = new ElseIfMacro($3);
     }
   ;
 
@@ -603,6 +610,13 @@ operatorUnary:
 
 expressionAssignment:
     variable operatorAssignment expression
+    {
+    LOG_DEBUG << "expression -> variable EXPR_TO expressionCompare: created $$ = new BinaryOperation(BinOps::"+ getBinOp($2) +", $1, $3)";
+    $$ = new BinaryOperation(static_cast<BinOps>($2), $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |variable operatorAssignment expressionAssignment
     {
     LOG_DEBUG << "expression -> variable EXPR_TO expressionCompare: created $$ = new BinaryOperation(BinOps::"+ getBinOp($2) +", $1, $3)";
     $$ = new BinaryOperation(static_cast<BinOps>($2), $1, $3);
@@ -737,12 +751,12 @@ integer:
 boolean:
     EXPR_TRUE
     {
-    LOG_DEBUG << "intconst-> EXPR_TRUE: create new Const<bool> (true)";
+    LOG_DEBUG << "boolean-> EXPR_TRUE: create new Const<bool> (true)";
     $$ = new Const<bool> (true);
     }
     |EXPR_FALSE
     {
-    LOG_DEBUG << "intconst-> EXPR_FALSE: create new Const<bool> (false)";
+    LOG_DEBUG << "boolean-> EXPR_FALSE: create new Const<bool> (false)";
     $$ = new Const<bool> (false);
     }
    ;

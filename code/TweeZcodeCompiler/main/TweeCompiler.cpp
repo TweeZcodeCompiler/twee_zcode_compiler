@@ -5,17 +5,25 @@
 #include "TweeCompiler.h"
 #include "ZAssemblyGenerator.h"
 #include "exceptions.h"
+#include "Utils.h"
+
+#include <plog/Log.h>
+#include <algorithm>
 #include <sstream>
 #include <iostream>
+#include <set>
+
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
-#include <Passage/Body/Macros/SetMacro.h>
+
 #include <Passage/Body/Expressions/BinaryOperation.h>
-#include <plog/Log.h>
-#include <algorithm>
-#include <Passage/Body/Expressions/Variable.h>
+#include <Passage/Body/Expressions/UnaryOperation.h>
 #include <Passage/Body/Expressions/Const.h>
+#include <Passage/Body/Expressions/Variable.h>
+
+#include <Passage/Body/Macros/Print.h>
+#include <Passage/Body/Macros/SetMacro.h>
 
 
 
@@ -39,7 +47,6 @@ static const unsigned int ZSCII_NUM_OFFSET = 49;
 #ifndef ASSGEN
 #define ASSGEN (*_assgen)
 #endif
-
 
 void maskString(std::string &string) {
     std::replace(string.begin(), string.end(), ' ', '_');
@@ -68,9 +75,13 @@ string labelForPassage(Passage &passage) {
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
 
+    std::map<std::string, int> symbolTable;
+
     vector<Passage> passages = tweeFile.getPassages();
 
-    std::map<std::string, int> symbolTable;
+    globalVariables = std::set<std::string>();
+
+    labelCount = 0;
 
     {
         int i = 0;
@@ -145,7 +156,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.quit();
     }
 
-
     // passage routines
     {
         for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
@@ -155,8 +165,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             ASSGEN.addRoutine(routineNameForPassage(*passage));
 
             ASSGEN.println(string("***** ") + passage->getHead().getName() + string(" *****"));
-
-
 
             //  print passage contents
             for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
@@ -168,15 +176,30 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 } else if (Link* link = dynamic_cast<Link*>(bodyPart)) {
                     // TODO: catch invalid link
                     ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
-                }
-
-                if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
+                } else if (Newline* text = dynamic_cast<Newline*>(bodyPart)) {
+                    ASSGEN.newline();
+                } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
+                    evalExpression(print->getExpression().get());
+                    ASSGEN.print_num("sp");
+                } else if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
                     LOG_DEBUG << "generate SetMacro assembly code";
 
                     if (BinaryOperation *binaryOperation = (BinaryOperation *) (op->getExpression().get())) {
                         if (Variable *variable = (Variable *) (binaryOperation->getLeftSide().get())) {
                             std::string variableName = variable->getName();
                             variableName = variableName.erase(0, 1); //remove the $ symbol
+
+                            if(symbolTable.find(variableName) == symbolTable.end()) {
+                                // need to declare var
+                                symbolTable[variableName] = 1; // todo: is a map really needed?
+                                ASSGEN.addGlobal(variableName);
+                            }
+
+
+                            evalExpression(binaryOperation->getRightSide().get());
+
+                            ASSGEN.load("sp", variableName);
+
                             Const<int> *constant = dynamic_cast<Const<int> *>(binaryOperation->getRightSide().get());
                             if (constant) {
                                 int constantValue = (int) constant->getValue();
@@ -190,7 +213,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                                 }
                                 else {
                                     //new variable needs to be decleared as well
-                                    ASSGEN.addGlobal(variableName);
+
                                     symbolTable[variableName.c_str()] = constantValue;
                                     ASSGEN.store(variableName, std::to_string(constantValue));
                                     LOG_DEBUG << "global var added";
@@ -204,4 +227,139 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             }
         }
     }
+}
+
+void TweeCompiler::evalExpression(Expression *expression) {
+
+    if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
+
+        ASSGEN.push(std::to_string(constant->getValue()));
+
+    } else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
+
+        std::string prunedVarName = variable->getName().substr(1);
+
+        if (Utils::contains<std::string>(globalVariables, prunedVarName)) {
+            ASSGEN.push(prunedVarName);
+        } else {
+            globalVariables.insert(prunedVarName);
+            ASSGEN.addGlobal(prunedVarName);
+            ASSGEN.push(prunedVarName);
+        }
+
+    } else if (BinaryOperation *binOp = dynamic_cast<BinaryOperation *>(expression)) {
+        std::pair<std::string, std::string> labels;
+
+        TweeCompiler::evalExpression(binOp->getLeftSide().get());
+        TweeCompiler::evalExpression(binOp->getRightSide().get());
+
+        switch (binOp->getOperator()) {
+            case BinOps::ADD:
+                ASSGEN.add("sp", "sp", "sp");
+                break;
+            case BinOps::SUB:
+                ASSGEN.sub("sp", "sp", "sp");
+                break;
+            case BinOps::MUL:
+                ASSGEN.mul("sp", "sp", "sp");
+                break;
+            case BinOps::DIV:
+                ASSGEN.div("sp", "sp", "sp");
+                break;
+            case BinOps::MOD:
+                ASSGEN.mod("sp", "sp", "sp");
+                break;
+            case BinOps::AND:
+                ASSGEN.land("sp", "sp", "sp");
+                break;
+            case BinOps::OR:
+                ASSGEN.lor("sp", "sp", "sp");
+                break;
+            case BinOps::TO:
+                ASSGEN.store("sp", "sp");
+                break;
+            case BinOps::LT:
+                labels = labelCreator("lower");
+                ASSGEN.jumpLower(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
+                break;
+            case BinOps::LTE:
+                labels = labelCreator("lowerEquals");
+                ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
+                break;
+            case BinOps::GT:
+                labels = labelCreator("greater");
+                ASSGEN.jumpGreater(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
+                break;
+            case BinOps::GTE:
+                labels = labelCreator("greaterEquals");
+                ASSGEN.jumpGreaterEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
+                break;
+            case BinOps::IS:
+                ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
+                break;
+            case BinOps::NEQ:
+                ASSGEN.jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                ASSGEN.push("0");
+                ASSGEN.jump(labels.second);
+                ASSGEN.addLabel(labels.first);
+                ASSGEN.push("1");
+                ASSGEN.addLabel(labels.second);
+                break;
+
+        }
+    } else if (UnaryOperation *unOp = dynamic_cast<UnaryOperation *>(expression)) {
+        TweeCompiler::evalExpression(unOp->getExpression().get());
+        switch (unOp->getOperator()) {
+            case UnOps::NOT:
+                ASSGEN.lnot("sp", "sp");
+                break;
+            case UnOps::PLUS:
+                ASSGEN.push("0");
+                ASSGEN.add("sp", "sp", "sp");
+                break;
+            case UnOps::MINUS:
+                ASSGEN.push("0");
+                ASSGEN.sub("sp", "sp", "sp");
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+std::pair<std::string, std::string> TweeCompiler::labelCreator(std::string labelName) {
+
+    std::string resultLabel = labelName.append("_");
+    std::string afterLabel = "after_";
+    resultLabel.append(std::to_string(labelCount));
+    afterLabel.append(std::to_string(labelCount));
+    ++labelCount;
+
+    return std::make_pair(resultLabel, afterLabel);
+
 }
