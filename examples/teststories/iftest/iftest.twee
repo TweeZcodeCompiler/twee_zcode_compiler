@@ -1,0 +1,37 @@
+::Start
+<<set $var to 3>>
+
+!!!FULL IF!!!
+<<if $var is 2>> hello! <<else if $var is 3>> world! <<else>> not <<endif>>
+
+
+
+
+
+
+
+!!!SIMPLE IF!!!
+<<if $var is 2>> hello! <<endif>>
+
+
+
+
+
+
+
+!!!IF WITH ELSE!!!
+<<if $var is 3>> hello! <<else>> world! <<endif>>
+
+
+
+
+
+
+!!!IF WITH ELSE IF!!!
+<<if $var is 3>> hello! <<else if $var is 2>> world! <<endif>>
+
+
+
+
+!!!NESTED IF!!!
+<<if $var is 3>> <<if $var is 2>>never happens<<else>>this always happens<<endif>><<endif>>
