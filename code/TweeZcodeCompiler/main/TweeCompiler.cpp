@@ -152,35 +152,54 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         args.push_back(ZRoutineArgument(varResult));
         ASSGEN.addRoutine(TEXT_FORMAT_ROUTINE, args);
 
+        ASSGEN.println("Text format routine");    // TODO: REMOVE
+
         ASSGEN.addLabel(labelLoopType)
+                .print("1")    // TODO: REMOVE
                 .jumpEquals(string(varFormatType + " " + varCounter), string("~" + labelContinue))
+                .print("3")    // TODO: REMOVE
                 .add(TEXT_FORMAT_ITALIC, varCounter, varCounter)
                 .jumpEquals(varCounter + " " + to_string(1), labelToggleOff)
+                .print("4")    // TODO: REMOVE
                 .store(varCounter, to_string(1))
-                .jump(labelPrintMacro);
+                .print("6")    // TODO: REMOVE
+                .jumpEquals("1 1", labelPrintMacro);    //TODO: replace with jump
 
         ASSGEN.addLabel(labelToggleOff)
+                .print("5")    // TODO: REMOVE
                 .store(varCounter, to_string(0))
-                .jump(labelPrintMacro);
+                .jumpEquals("1 1", labelPrintMacro);    //TODO: replace with jump
 
         ASSGEN.addLabel(labelContinue)
+                .print("2")    // TODO: REMOVE
                 .add(varCounter, to_string(1), varCounter)
                 .jumpLess(varCounter + " " + to_string(5), labelLoopType)
                 .ret("0");
 
         ASSGEN.addLabel(labelPrintMacro)
+                .print("7")    // TODO: REMOVE
                 .store(varCounter, TEXT_FORMAT_ITALIC);
 
         ASSGEN.addLabel(labelLoopPrint)
+                .print("8")    // TODO: REMOVE
                 .jumpEquals(varCounter + " " + to_string(0), labelContinuePrint)
+                .print("9")    // TODO: REMOVE
                 .add(varResult, varTypeValue, varResult);
 
         ASSGEN.addLabel(labelContinuePrint)
+                .print("1_")    // TODO: REMOVE
                 .add(varCounter, to_string(1), varCounter)
+                .print("2_")    // TODO: REMOVE
                 .mul(varTypeValue, to_string(2), varTypeValue)
+                .print("3_")    // TODO: REMOVE
                 .jumpLess(varCounter + " " + to_string(5), labelLoopPrint);
 
-        ASSGEN.setTextStyle(varResult)
+        ASSGEN.println("4_");    // TODO: REMOVE
+        ASSGEN.print_num(varResult);        // TODO: REMOVE
+
+        ASSGEN.setTextStyle("4")    //TODO: replace with varResult
+                .println("Fertig")        // TODO: REMOVE
+                .println("Test")        // TODO: REMOVE
                 .ret("0");
     }
 
@@ -219,6 +238,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                             LOG_DEBUG << "Unknown text formatting";
                             throw;
                     }
+
+                    ASSGEN.print("Nach call");
                 } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
                     evalExpression(print->getExpression().get());
                     ASSGEN.print_num("sp");

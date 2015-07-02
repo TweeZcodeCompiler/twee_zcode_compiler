@@ -45,7 +45,7 @@ private:
 
 public:
 
-    bool debugmode = false;
+    bool debugmode = true;
 
     std::shared_ptr<ZCodeLabel> getOrCreateLabel(std::string name);
 

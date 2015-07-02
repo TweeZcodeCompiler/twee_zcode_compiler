@@ -95,7 +95,7 @@ void RoutineGenerator::setTextStyle(vector<unique_ptr<ZParam>> params) {
     checkParamType(params, VARIABLE_OR_VALUE);
 
     vector<bitset<8>> command = opcodeGenerator.generateVarOPInstruction(SET_TEXT_STYLE, params);
-    addBitset(command, "text style");
+    addBitset(command, "set_text_style");
 }
 
 // params: stringToPrint
@@ -495,7 +495,8 @@ void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
 
     // store var var is not possible -> use load
     if ((*params.at(1)).getParamType() == VARIABLE) {
-        load(*params.at(1), *params.at(0));
+        //load(*params.at(1), *params.at(0));
+        load(*params.at(0), *params.at(1));
         return;
     }
 
