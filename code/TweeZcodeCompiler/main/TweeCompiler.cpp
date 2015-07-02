@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <Passage/Body/Expressions/Variable.h>
 #include <plog/Log.h>
+#include <Passage/Body/Expressions/Const.h>
 
 using namespace std;
 
