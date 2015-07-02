@@ -370,7 +370,7 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string &paramString) {
         param.reset(variableParam);
     } else {
         LOG_ERROR << "Could not parse parameter: " << paramString;
-        //throw AssemblyException(AssemblyException::ErrorType::INVALID_VARIABLE);
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_VARIABLE);
     }
 
 

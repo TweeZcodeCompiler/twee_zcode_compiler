@@ -31,6 +31,7 @@ using namespace std;
 using namespace std::experimental;
 
 static const string GLOB_PASSAGE = "PASSAGE_PTR",
+        GLOB_PASSAGES_COUNT = "PASSAGES_COUNT",
         LABEL_MAIN_LOOP = "MAIN_LOOP",
         ROUTINE_MAIN = "main",
         GLOBAL_USER_INPUT = "USER_INPUT",
@@ -38,7 +39,8 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         TABLE_USERINPUT_LOOKUP = "USERINPUT_LOOKUP",
         ROUTINE_PASSAGE_BY_ID = "passage_by_id",
         ROUTINE_NAME_FOR_PASSAGE = "print_name_for_passage",
-        ROUTINE_DISPLAY_LINKS = "display_links";
+        ROUTINE_DISPLAY_LINKS = "display_links",
+        ROUTINE_CLEAR_TABLES = "reset_tables";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -72,6 +74,47 @@ string labelForPassage(Passage &passage) {
     return ss.str();
 }
 
+
+string makeUserInputRoutine() {
+    return ".FUNCT display_links i, selectcount\n"
+            "loop_start:\n"
+            "loadb PASSAGES i -> sp\n"
+            "jz sp ?passage_not_set\n"
+            "storeb USERINPUT_LOOKUP selectcount i\n"
+            "add selectcount 1 -> sp\n"
+            "add selectcount 49 -> sp\n"
+            "print_char sp\n"
+            "print \": \"\n"
+            "call_vs print_name_for_passage_id i -> sp\n"
+            "new_line\n"
+            "add selectcount 1 -> selectcount\n"
+            "\n"
+            "passage_not_set:\n"
+            "\n"
+            "add i 1 -> i\n"
+            "jl i PASSAGES_COUNT ?loop_start\n"
+            "\n"
+            "read_char 1 -> USER_INPUT\n"
+            "sub USER_INPUT 48 -> sp\n"
+            "sub sp 1 -> sp\n"
+            "loadb USERINPUT_LOOKUP sp -> sp \n"
+            "\n"
+            "ret sp"
+            "\n";
+}
+
+string makeClearTablesRoutine() {
+    return ".FUNCT reset_tables i\n"
+            "loop_start:\n"
+            "storeb PASSAGES i 0\n"
+            "storeb USERINPUT_LOOKUP i 0\n"
+            "add i 1 -> i\n"
+            "jl i PASSAGES_COUNT ?loop_start\n"
+            "ret 0"
+            "\n";
+}
+
+
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
 
@@ -96,8 +139,11 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
     // globals
     ASSGEN.addGlobal(GLOB_PASSAGE)
-            .addGlobal(GLOBAL_USER_INPUT);
+            .addGlobal(GLOBAL_USER_INPUT)
+            .addGlobal(GLOB_PASSAGES_COUNT);
 
+
+    out << makeUserInputRoutine() << makeClearTablesRoutine();
 
     // call passage by id routine
     {
@@ -141,6 +187,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
     // main routine
     {
+        // initialize globals
+        ASSGEN.store(GLOB_PASSAGES_COUNT, to_string(passages.size()));
+
         // call start routine first
         ASSGEN.addRoutine(ROUTINE_MAIN)
                 .markStart()
@@ -149,7 +198,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
                 .call_vs(ROUTINE_DISPLAY_LINKS, string("sp"), "sp")
-                .call_vs(ROUTINE_PASSAGE_BY_ID, string("sp"), "sp");
+                .call_vs(ROUTINE_CLEAR_TABLES, nullopt, "sp")
+                .call_vs(ROUTINE_PASSAGE_BY_ID, string("sp"), "sp")
+                .jump(LABEL_MAIN_LOOP);
 
         ASSGEN.quit();
     }
@@ -203,6 +254,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     }
                 }
             }
+
+            ASSGEN.ret("0");
         }
     }
 }
@@ -254,7 +307,8 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.lor("sp", "sp", "sp");
                 break;
             case BinOps::TO:
-                ASSGEN.store("sp", "sp");
+                // TODO: check if this is right
+                ASSGEN.load("sp", "sp");
                 break;
             case BinOps::LT:
                 labels = labelCreator("lower");
