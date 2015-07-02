@@ -17,7 +17,7 @@ public:
 
     void evalExpression(Expression *);
 
-    std::pair<std::string, std::string> labelCreator(std::string);
+    std::pair<std::string, std::string> makeLabels(std::string);
 
 private:
     std::map<std::string, int> passageName2id;
