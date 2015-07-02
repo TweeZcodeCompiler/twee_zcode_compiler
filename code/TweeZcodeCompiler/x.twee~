@@ -1,8 +1,0 @@
-::Start
-Welcome in my Twee Story
-<<set $var=1>>
-<<print $var>>
-
-::Garten
-<<set $var=2>>	
-	
