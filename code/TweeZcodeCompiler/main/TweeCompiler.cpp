@@ -151,7 +151,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     LOG_DEBUG << turns->to_string();
                 } else if (Random * random = dynamic_cast<Random *>(bodyPart)) {
                     LOG_DEBUG << random->to_string();
-                    ASSGEN.newline();
+                        evalExpression(random->getStart().get());
+                        evalExpression(random->getStart().get());
+                        ASSGEN.add("sp", "sp", "sp");
+                        ASSGEN.random();
                 } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
                     evalExpression(print->getExpression().get());
                     ASSGEN.print_num("sp");

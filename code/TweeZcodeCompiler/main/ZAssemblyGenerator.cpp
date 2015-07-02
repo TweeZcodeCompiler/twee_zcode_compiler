@@ -213,6 +213,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::quit() {
     return addInstruction(instruction::QUIT_COMMAND, nullopt, nullopt, nullopt);
 }
 
+ZAssemblyGenerator& ZAssemblyGenerator::random() {
+    return addInstruction(instruction::RANDOM_COMMAND, "sp")
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::ret(string arg) {
     return addInstruction(instruction::RET_COMMAND, arg, nullopt, nullopt);
 }

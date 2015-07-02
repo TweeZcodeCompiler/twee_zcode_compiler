@@ -68,6 +68,8 @@ public:
 
     ZAssemblyGenerator &quit();
 
+    ZAssemblyGenerator &random();
+
     ZAssemblyGenerator &ret(std::string arg);
 
     ZAssemblyGenerator &newline();
