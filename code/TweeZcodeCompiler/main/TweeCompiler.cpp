@@ -75,8 +75,6 @@ string labelForPassage(Passage &passage) {
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
 
-    std::map<std::string, int> symbolTable;
-
     vector<Passage> passages = tweeFile.getPassages();
 
     globalVariables = std::set<std::string>();
@@ -189,38 +187,18 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                             std::string variableName = variable->getName();
                             variableName = variableName.erase(0, 1); //remove the $ symbol
 
-                            if(symbolTable.find(variableName) == symbolTable.end()) {
-                                // need to declare var
-                                symbolTable[variableName] = 1; // todo: is a map really needed?
+                            // TODO: merge this with evalExpression
+                            if (Utils::contains<std::string>(globalVariables, variableName)) {
+                                ASSGEN.push(variableName);
+                            } else {
+                                globalVariables.insert(variableName);
                                 ASSGEN.addGlobal(variableName);
+                                ASSGEN.push(variableName);
                             }
-
 
                             evalExpression(binaryOperation->getRightSide().get());
 
                             ASSGEN.load("sp", variableName);
-
-                            Const<int> *constant = dynamic_cast<Const<int> *>(binaryOperation->getRightSide().get());
-                            if (constant) {
-                                int constantValue = (int) constant->getValue();
-
-
-                                if (symbolTable.find(variableName.c_str()) != symbolTable.end()) {
-                                    symbolTable[variableName.c_str()] = constantValue;
-                                    ASSGEN.store(variableName, std::to_string(constantValue));
-
-
-                                }
-                                else {
-                                    //new variable needs to be decleared as well
-
-                                    symbolTable[variableName.c_str()] = constantValue;
-                                    ASSGEN.store(variableName, std::to_string(constantValue));
-                                    LOG_DEBUG << "global var added";
-
-                                }
-                                LOG_DEBUG << variableName << "=" << constantValue << "assembly added";
-                            }
                         }
                     }
                 }
