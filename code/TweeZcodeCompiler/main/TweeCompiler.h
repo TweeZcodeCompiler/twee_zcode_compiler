@@ -10,6 +10,12 @@
 #include <map>
 #include <set>
 #include <Passage/Body/Expressions/Expression.h>
+#include <stack>
+
+struct IfContext {
+    unsigned caseCount = 0;
+    unsigned number = 0;
+};
 
 class TweeCompiler : public ITweeCompiler {
 public:
@@ -26,6 +32,10 @@ private:
 
     std::set<std::string> globalVariables;
     int labelCount;
+    std::stack<IfContext> ifContexts;
+    unsigned ifCount = 0;
+
+    IfContext makeNextIfContext();
 };
 
 

@@ -71,6 +71,7 @@ namespace instruction {
     INST_TYPE PRINT_RET_COMMAND = "print_ret";
     INST_TYPE RESTART_COMMAND = "restart";
     INST_TYPE RET_POPPED_COMMAND = "ret_popped";
+    INST_TYPE POP_COMMAND = "pop";
     INST_TYPE VERIFY_COMMAND = "verify";
     INST_TYPE NOTHING = "";
 }
@@ -320,4 +321,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::lor(std::string left, std::string right,
 
 ZAssemblyGenerator &ZAssemblyGenerator::lnot(std::string variable, std::string storeTarget) {
     return addInstruction(instruction::NOT_COMMAND, variable, nullopt, storeTarget);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::nop() {
+    // TODO: better use the official nop instruction...
+    return addInstruction(instruction::PUSH_COMMAND, string("0"), nullopt, nullopt)
+            .addInstruction(instruction::POP_COMMAND, nullopt, nullopt, nullopt);
 }

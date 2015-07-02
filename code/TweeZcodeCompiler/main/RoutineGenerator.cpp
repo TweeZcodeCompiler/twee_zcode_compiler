@@ -642,6 +642,11 @@ void RoutineGenerator::retPopped() {
     routine->add(instruction);;
 }
 
+void RoutineGenerator::pop() {
+    auto instruction = shared_ptr<ZCodeObject>(new ZCodeInstruction(POP));
+    routine->add(instruction);
+}
+
 void RoutineGenerator::push(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1, 2, 3, 4);
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
@@ -687,3 +692,5 @@ void RoutineGenerator::debug(std::string message) {
     auto zinstruction = shared_ptr<ZCodeObject>(new ZCodeInstruction(instruction, "**debug message**"));
     routine->add(zinstruction);
 }
+
+

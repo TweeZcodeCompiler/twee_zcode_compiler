@@ -40,6 +40,7 @@
 using namespace std;
 using namespace std::experimental;
 
+
 static const string GLOB_PASSAGE = "PASSAGE_PTR",
         GLOB_PASSAGES_COUNT = "PASSAGES_COUNT",
         LABEL_MAIN_LOOP = "MAIN_LOOP",
@@ -50,8 +51,8 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         ROUTINE_PASSAGE_BY_ID = "passage_by_id",
         ROUTINE_NAME_FOR_PASSAGE = "print_name_for_passage",
         ROUTINE_DISPLAY_LINKS = "display_links",
-        IF_JUMP_LABEL = "IFJUMP",
-        IF_JUMP_END_LABEL = "IFJUMPEND",
+        ELSE_LABEL_PREFIX = "ELSE",
+        ENDIF_LABEL_PREFIX = "ENDIF",
         ROUTINE_CLEAR_TABLES = "reset_tables";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
@@ -84,6 +85,14 @@ string labelForPassage(Passage &passage) {
     maskString(passageName);
     ss << "L_" << passageName;
     return ss.str();
+}
+
+string makeIfCaseLabel(const IfContext& context) {
+    return ELSE_LABEL_PREFIX + to_string(context.number) + "_" + to_string(context.caseCount);
+}
+
+string makeIfEndLabel(const IfContext& context) {
+    return ENDIF_LABEL_PREFIX + to_string(context.number);
 }
 
 
@@ -129,19 +138,10 @@ string makeClearTablesRoutine() {
 
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
-
     vector<Passage> passages = tweeFile.getPassages();
-
     globalVariables = std::set<std::string>();
-
     labelCount = 0;
-
-    int ifDepth = -1;
-    int ifJumpLabelID = 0;
-    int ifEndJumpLabelID = 0;
-    int possibleIfDepth = 255;
-    std::array<std::string,12> nextJumpLabels;
-    std::array<std::string,12> endJumpLabels;
+    ifContexts = stack<IfContext>();
 
     {
         int i = 0;
@@ -234,6 +234,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
             //  print passage contents
             for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
+                size_t ifDepth = ifContexts.size();
+
                 BodyPart* bodyPart = it->get();
                 if(Text* text = dynamic_cast<Text*>(bodyPart)) {
                     ASSGEN.print(text->getContent());
@@ -249,39 +251,50 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     ASSGEN.print_num("sp");
                 } else if (IfMacro * ifmacro = dynamic_cast<IfMacro *>(bodyPart)) {
                     //check preceding ifmacro
+                    ifContexts.push(makeNextIfContext());
                     //set label for jump to after if block (else, else if, endif)
                     //evaluate expression
                     //make jump to set label if expression is true
-                    ifDepth++;
-                    nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
-                    endJumpLabels[ifDepth] = IF_JUMP_END_LABEL + std::to_string(++ifEndJumpLabelID);
                     evalExpression(ifmacro->getExpression().get());
-                    ASSGEN.jump(nextJumpLabels[ifDepth]);
+                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
                 } else if (ElseIfMacro * elseifmacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
                     //check preceding ifmacro
+                    if(ifContexts.empty()) {
+                        throw TweeDocumentException("else if macro encountered without preceding if macro");
+                    }
+
                     //save label for jump to after if/else if block , in this case else
                     //make jump to set label if expression is true
                     //set label for jump to after if block (else, else if, endif)
                     //evaluate expression
                     //make jump to set label if expression is true
                     //else part
-                    ASSGEN.jump(endJumpLabels[ifDepth]);
-                    ASSGEN.addLabel(nextJumpLabels[ifDepth]);
-                    nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
+                    ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
+                    ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
+                    ifContexts.top().caseCount++;
                     evalExpression(elseifmacro->getExpression().get());
-                    ASSGEN.jump(nextJumpLabels[ifDepth]);
+                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
                 } else if (ElseMacro * elsemacro = dynamic_cast<ElseMacro *>(bodyPart)) {
                     //check preceding ifmacro
+                    if(ifContexts.empty()) {
+                        throw TweeDocumentException("else macro encountered without preceding if macro");
+                    }
                     //save label for jump to after if/else if block , in this case else
                     //make jump to set label if expression is true
-                    ASSGEN.jump(endJumpLabels[ifDepth]);
-                    ASSGEN.addLabel(nextJumpLabels[ifDepth]);
+                    ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
+                    ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
+                    ifContexts.top().caseCount++;
                 } else if (EndIfMacro * endifemacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
                     //check preceding ifmacro
+                    if(ifContexts.empty()) {
+                        throw TweeDocumentException("endif macro encountered without preceding if macro");
+                    }
                     //make jump to set label if expression is trueJumpLabels[ifDepth];
-                    //decrease depth
-                    ASSGEN.addLabel(endJumpLabels[ifDepth]);
-                    ifDepth--;
+
+                    ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
+                    ASSGEN.addLabel(makeIfEndLabel(ifContexts.top()));
+
+                    ifContexts.pop();
                 } else if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
                     LOG_DEBUG << "generate SetMacro assembly code";
 
@@ -302,14 +315,31 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                             evalExpression(binaryOperation->getRightSide().get());
 
                             ASSGEN.load("sp", variableName);
+                        } else {
+                            throw TweeDocumentException("left side of set assignment was not a variable");
                         }
+                    } else {
+                        throw TweeDocumentException("set macro didn't contain an assignment");
                     }
                 }
             }
+
+            // unclosed if-macro
+            if(ifContexts.size() > 0) {
+                throw TweeDocumentException("unclosed if macro");
+            }
+
             ASSGEN.ret("0");
         }
     }
 }
+
+IfContext TweeCompiler::makeNextIfContext() {
+    IfContext context;
+    context.number = ifCount++;
+    return context;
+}
+
 
 void TweeCompiler::evalExpression(Expression *expression) {
 

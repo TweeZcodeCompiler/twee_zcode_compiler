@@ -108,6 +108,8 @@ public:
 
     ZAssemblyGenerator &lnot(std::string variable, std::string storeTarget);
 
+    ZAssemblyGenerator &nop();
+
 
 private:
     std::ostream &out;
