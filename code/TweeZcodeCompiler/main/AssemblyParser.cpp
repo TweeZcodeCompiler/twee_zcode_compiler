@@ -57,8 +57,8 @@ const string AssemblyParser::STOREB_COMMAND = "storeb";
 const string AssemblyParser::STOREW_COMMAND = "storew";
 const string AssemblyParser::LOADB_COMMAND = "loadb";
 const string AssemblyParser::LOADW_COMMAND = "loadw";
-
 const string AssemblyParser::PUSH_COMMAND = "push";
+const string AssemblyParser::PULL_COMMAND = "pull";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -592,6 +592,12 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new verify";
         routineGenerator.verify(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::PUSH_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new push";
+        routineGenerator.push(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::PULL_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new pull";
+        routineGenerator.pull(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label;

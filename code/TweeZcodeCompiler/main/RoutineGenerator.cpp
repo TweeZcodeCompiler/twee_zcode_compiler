@@ -386,6 +386,14 @@ void RoutineGenerator::verify(vector<unique_ptr<ZParam>> params) {
     routine->add(jump);
 }
 
+void RoutineGenerator::pull(std::vector<std::unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1);
+    checkParamType(params, VARIABLE_OR_VALUE);
+    auto instructions = opcodeGenerator.generateVarOPInstruction(PULL, params);
+    auto zcode = shared_ptr<ZCodeInstruction>(new ZCodeInstruction(instructions, "pull"));
+    routine->add(zcode);
+}
+
 // params: label
 void RoutineGenerator::jump(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1);
