@@ -129,7 +129,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
     // print appropriate text formatting args
     {
-        assgen.addGlobal(TEXT_FORMAT_REVERSE_VIDEO)
+        ASSGEN.addGlobal(TEXT_FORMAT_REVERSE_VIDEO)
                 .addGlobal(TEXT_FORMAT_BOLD)
                 .addGlobal(TEXT_FORMAT_ITALIC)
                 .addGlobal(TEXT_FORMAT_FIXED_PITCH);
@@ -150,37 +150,37 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         args.push_back(ZRoutineArgument(varCounter));
         args.push_back(ZRoutineArgument(varTypeValue, to_string(1)));
         args.push_back(ZRoutineArgument(varResult));
-        assgen.addRoutine(TEXT_FORMAT_ROUTINE, args);
+        ASSGEN.addRoutine(TEXT_FORMAT_ROUTINE, args);
 
-        assgen.addLabel(labelLoopType)
+        ASSGEN.addLabel(labelLoopType)
                 .jumpEquals(string(varFormatType + " " + varCounter), string("~" + labelContinue))
                 .add(TEXT_FORMAT_ITALIC, varCounter, varCounter)
                 .jumpEquals(varCounter + " " + to_string(1), labelToggleOff)
                 .store(varCounter, to_string(1))
                 .jump(labelPrintMacro);
 
-        assgen.addLabel(labelToggleOff)
+        ASSGEN.addLabel(labelToggleOff)
                 .store(varCounter, to_string(0))
                 .jump(labelPrintMacro);
 
-        assgen.addLabel(labelContinue)
+        ASSGEN.addLabel(labelContinue)
                 .add(varCounter, to_string(1), varCounter)
                 .jumpLess(varCounter + " " + to_string(5), labelLoopType)
                 .ret("0");
 
-        assgen.addLabel(labelPrintMacro)
+        ASSGEN.addLabel(labelPrintMacro)
                 .store(varCounter, TEXT_FORMAT_ITALIC);
 
-        assgen.addLabel(labelLoopPrint)
+        ASSGEN.addLabel(labelLoopPrint)
                 .jumpEquals(varCounter + " " + to_string(0), labelContinuePrint)
                 .add(varResult, varTypeValue, varResult);
 
-        assgen.addLabel(labelContinuePrint)
+        ASSGEN.addLabel(labelContinuePrint)
                 .add(varCounter, to_string(1), varCounter)
                 .mul(varTypeValue, to_string(2), varTypeValue)
                 .jumpLess(varCounter + " " + to_string(5), labelLoopPrint);
 
-        assgen.setTextStyle(varResult)
+        ASSGEN.setTextStyle(varResult)
                 .ret("0");
     }
 
@@ -199,118 +199,32 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 BodyPart *bodyPart = it->get();
                 if (Text *text = dynamic_cast<Text *>(bodyPart)) {
                     ASSGEN.print(text->getContent());
-                } else if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
-                    assgen.newline();
-                } else if (FormattedText* format = dynamic_cast<FormattedText*>(bodyPart)) {
+                } else if (Newline *text = dynamic_cast<Newline *>(bodyPart)) {
+                    ASSGEN.newline();
+                } else if (FormattedText *format = dynamic_cast<FormattedText *>(bodyPart)) {
                     switch (format->getFormat()) {
                         case Format::UNDERLINED:
-                            assgen.call_vs(TEXT_FORMAT_ROUTINE, string("0"), "sp");
+                            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, string("0"), "sp");
                             break;
                         case Format::BOLD:
-                            assgen.call_vs(TEXT_FORMAT_ROUTINE, string("1"), "sp");
+                            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, string("1"), "sp");
                             break;
                         case Format::ITALIC:
-                            assgen.call_vs(TEXT_FORMAT_ROUTINE, string("2"), "sp");
+                            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, string("2"), "sp");
                             break;
                         case Format::MONOSPACE:
-                            assgen.call_vs(TEXT_FORMAT_ROUTINE, string("3"), "sp");
+                            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, string("3"), "sp");
                             break;
                         default:
                             LOG_DEBUG << "Unknown text formatting";
                             throw;
                     }
-                } else if (Variable * variable = dynamic_cast<Variable *>(bodyPart)) {
-                    assgen.variable(variable->getName());
-                } else if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
-                    LOG_DEBUG << "generate SetMacro assembly code";
-
-                    if (BinaryOperation *binaryOperation = (BinaryOperation *) (op->getExpression().get())) {
-                        if (Variable *variable = (Variable *) (binaryOperation->getLeftSide().get())) {
-                            std::string variableName = variable->getName();
-                            variableName = variableName.erase(0, 1); //remove the $ symbol
-                            Const<int> *constant = dynamic_cast<Const<int> *>(binaryOperation->getRightSide().get());
-                            if (constant) {
-                                int constantValue = (int) constant->getValue();
-
-
-                                if (symbolTable.find(variableName.c_str()) != symbolTable.end()) {
-                                    symbolTable[variableName.c_str()] = constantValue;
-                                    assgen.store(variableName, std::to_string(constantValue));
-
-
-                                }
-                                else {
-                                    //new variable needs to be decleared as well
-                                    assgen.addGlobal(variableName);
-                                    symbolTable[variableName.c_str()] = constantValue;
-                                    assgen.store(variableName, std::to_string(constantValue));
-                                    LOG_DEBUG << "global var added";
-
-                                }
-                                LOG_DEBUG << variableName << "=" << constantValue << "assembly added";
-
-
-                            }
-                        }
-
-
-                    }
-
-
+                } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
+                    evalExpression(print->getExpression().get());
+                    ASSGEN.print_num("sp");
+                } else if (SetMacro *setMacro = dynamic_cast<SetMacro *>(bodyPart)) {
+                    evalExpression(setMacro->getExpression().get());
                 }
-            }
-
-            ASSGEN.newline();
-
-            vector<Link *> links;
-            // get links from passage
-            for (auto it = bodyParts.begin(); it != bodyParts.end(); ++it) {
-                BodyPart *bodyPart = it->get();
-                if (Link *link = dynamic_cast<Link *>(bodyPart)) {
-                    links.push_back(link);
-                }
-            }
-
-            // present choices to user
-            ASSGEN.println("Select one of the following options");
-            int i = 1;
-            for (auto link = links.begin(); link != links.end(); link++) {
-                ASSGEN.println(string("    ") + to_string(i) + string(") ") + (*link)->getTarget());
-                i++;
-            }
-
-            ASSGEN.addLabel(READ_BEGIN);
-
-            // read user input
-            ASSGEN.read_char(USER_INPUT);
-
-            // jump to according link selection
-            i = 0;
-            for (auto link = links.begin(); link != links.end(); link++) {
-                string label = string("L") + to_string(i);
-                ASSGEN.jumpEquals(ZAssemblyGenerator::makeArgs({to_string(ZSCII_NUM_OFFSET + i), USER_INPUT}), label);
-
-                i++;
-            }
-
-            // no proper selection was made
-            ASSGEN.jump(READ_BEGIN);
-
-            i = 0;
-            for (auto link = links.begin(); link != links.end(); link++) {
-                string label = string("L") + to_string(i);
-                try {
-                    int targetPassageId = passageName2id.at((*link)->getTarget());
-                    ASSGEN.addLabel(label);
-#ifdef ZAS_DEBUG
-                    ASSGEN.print(string("selected ") + to_string(targetPassageId) );
-                    #endif
-                    ASSGEN.ret(to_string(targetPassageId));
-                } catch (const out_of_range &err) {
-                    cerr << "could not find passage for link target \"" << (*link)->getTarget() << "\"" << endl;
-                    throw TweeDocumentException();
-                }
-                i++;
             }
         }
     }
