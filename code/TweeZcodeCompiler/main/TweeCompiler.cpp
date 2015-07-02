@@ -10,12 +10,19 @@
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
+#include <Passage/Body/Macros/SetMacro.h>
+#include <Passage/Body/Expressions/BinaryOperation.h>
+#include <plog/Log.h>
+#include <algorithm>
 #include <Passage/Body/Expressions/Variable.h>
 #include <Passage/Body/Macros/IfMacro.h>
 #include <Passage/Body/Macros/ElseIfMacro.h>
 #include <Passage/Body/Macros/ElseMacro.h>
 #include <Passage/Body/Macros/EndIfMacro.h>
 #include <plog/Log.h>
+#include <Passage/Body/Expressions/Const.h>
+
+
 
 using namespace std;
 
@@ -32,8 +39,8 @@ static const unsigned int ZSCII_NUM_OFFSET = 49;
 
 //#define ZAS_DEBUG
 
-void maskString(std::string& string) {
-    std::replace( string.begin(), string.end(), ' ', '_');
+void maskString(std::string &string) {
+    std::replace(string.begin(), string.end(), ' ', '_');
 }
 
 string routineNameForPassageName(std::string passageName) {
@@ -44,11 +51,11 @@ string routineNameForPassageName(std::string passageName) {
 }
 
 
-string routineNameForPassage(Passage& passage) {
+string routineNameForPassage(Passage &passage) {
     return routineNameForPassageName(passage.getHead().getName());
 }
 
-string labelForPassage(Passage& passage) {
+string labelForPassage(Passage &passage) {
     stringstream ss;
     string passageName = passage.getHead().getName();
     maskString(passageName);
@@ -58,8 +65,10 @@ string labelForPassage(Passage& passage) {
 
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ZAssemblyGenerator assgen(out);
-    vector<Passage> passages = tweeFile.getPassages();
 
+    std::map<std::string, int> symbolTable;
+
+    vector<Passage> passages = tweeFile.getPassages();
     int ifDepth = -1;
     int ifJumpLabelID = 0;
     int ifEndJumpLabelID = 0;
@@ -86,13 +95,14 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .call(routineNameForPassageName("start"), PASSAGE_GLOB)
                 .addLabel(JUMP_TABLE_LABEL);
 
-        for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
+        for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
             int passageId = passageName2id.at(passage->getHead().getName());
 
-            assgen.jumpEquals(ZAssemblyGenerator::makeArgs({std::to_string(passageId), PASSAGE_GLOB}), labelForPassage(*passage));
+            assgen.jumpEquals(ZAssemblyGenerator::makeArgs({std::to_string(passageId), PASSAGE_GLOB}),
+                              labelForPassage(*passage));
         }
 
-        for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
+        for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
             assgen.addLabel(labelForPassage(*passage))
                     .call(routineNameForPassage(*passage), PASSAGE_GLOB)
                     .jump(JUMP_TABLE_LABEL);
@@ -103,21 +113,26 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         assgen.quit();
     }
 
+
     // passage routines
     {
-        for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
-            const vector<unique_ptr<BodyPart>>& bodyParts = passage->getBody().getBodyParts();
+        for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
+            const vector<unique_ptr<BodyPart>> &bodyParts = passage->getBody().getBodyParts();
 
             // declare passage routine
             assgen.addRoutine(routineNameForPassage(*passage));
 
             assgen.println(string("***** ") + passage->getHead().getName() + string(" *****"));
 
+
+
             //  print passage contents
-            for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
-                BodyPart* bodyPart = it->get();
-                if(Text* text = dynamic_cast<Text*>(bodyPart)) {
+            for (auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
+
+                BodyPart *bodyPart = it->get();
+                if (Text *text = dynamic_cast<Text *>(bodyPart)) {
                     assgen.print(text->getContent());
+
                 } else if(Newline* text = dynamic_cast<Newline*>(bodyPart)) {
                     assgen.newline();
                 } else if (Variable * variable = dynamic_cast<Variable *>(bodyPart)) {
@@ -249,16 +264,53 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                         //precedingIfMacros[ifDepth] = 0;
                     }
                 }
+
+                if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
+                    LOG_DEBUG << "generate SetMacro assembly code";
+
+                    if (BinaryOperation *binaryOperation = (BinaryOperation *) (op->getExpression().get())) {
+                        if (Variable *variable = (Variable *) (binaryOperation->getLeftSide().get())) {
+                            std::string variableName = variable->getName();
+                            variableName = variableName.erase(0, 1); //remove the $ symbol
+                            Const<int> *constant = dynamic_cast<Const<int> *>(binaryOperation->getRightSide().get());
+                            if (constant) {
+                                int constantValue = (int) constant->getValue();
+
+
+                                if (symbolTable.find(variableName.c_str()) != symbolTable.end()) {
+                                    symbolTable[variableName.c_str()] = constantValue;
+                                    assgen.store(variableName, std::to_string(constantValue));
+
+
+                                }
+                                else {
+                                    //new variable needs to be decleared as well
+                                    assgen.addGlobal(variableName);
+                                    symbolTable[variableName.c_str()] = constantValue;
+                                    assgen.store(variableName, std::to_string(constantValue));
+                                    LOG_DEBUG << "global var added";
+
+                                }
+                                LOG_DEBUG << variableName << "=" << constantValue << "assembly added";
+
+
+                            }
+                        }
+
+
+                    }
+
+
+                }
             }
 
             assgen.newline();
 
-            vector<Link*> links;
+            vector<Link *> links;
             // get links from passage
-            for(auto it = bodyParts.begin(); it != bodyParts.end(); ++it)
-            {
-                BodyPart* bodyPart = it->get();
-                if(Link* link = dynamic_cast<Link*>(bodyPart)) {
+            for (auto it = bodyParts.begin(); it != bodyParts.end(); ++it) {
+                BodyPart *bodyPart = it->get();
+                if (Link *link = dynamic_cast<Link *>(bodyPart)) {
                     links.push_back(link);
                 }
             }
@@ -267,7 +319,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             assgen.println("Select one of the following options");
             int i = 1;
             for (auto link = links.begin(); link != links.end(); link++) {
-                assgen.println(string("    ") + to_string(i) + string(") ") + (*link)->getTarget() );
+                assgen.println(string("    ") + to_string(i) + string(") ") + (*link)->getTarget());
                 i++;
             }
 
@@ -294,7 +346,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 try {
                     int targetPassageId = passageName2id.at((*link)->getTarget());
                     assgen.addLabel(label);
-                    #ifdef ZAS_DEBUG
+#ifdef ZAS_DEBUG
                     assgen.print(string("selected ") + to_string(targetPassageId) );
                     #endif
                     assgen.ret(to_string(targetPassageId));
