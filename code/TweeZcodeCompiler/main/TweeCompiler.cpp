@@ -21,12 +21,12 @@
 #include <Passage/Body/Expressions/UnaryOperation.h>
 #include <Passage/Body/Expressions/Const.h>
 #include <Passage/Body/Expressions/Variable.h>
+#include "Passage/Body/Expressions/Random.h"
 #include <plog/Log.h>
 #include "Passage/Body/Macros/Display.h"
 #include "Passage/Body/Macros/Visited.h"
 #include "Passage/Body/Macros/Previous.h"
 #include "Passage/Body/Macros/Turns.h"
-#include "Passage/Body/Macros/Random.h"
 #include "Passage/Body/Macros/Print.h"
 
 #include <Passage/Body/Macros/Print.h>

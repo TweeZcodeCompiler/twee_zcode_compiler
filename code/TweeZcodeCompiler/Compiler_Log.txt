@@ -1,107 +1,88 @@
-﻿2015-07-01 19:31:03.124 DEBUG [11576] [main@66] CMD-Args Summary
-2015-07-01 19:31:03.125 DEBUG [11576] [main@67] Console-DEBUG-Output: 0
-2015-07-01 19:31:03.125 DEBUG [11576] [main@68] Input-File:macro_set_test.twee
-2015-07-01 19:31:03.125 DEBUG [11576] [main@69] Twee File:1
-2015-07-01 19:31:03.125 DEBUG [11576] [main@70] Assembly File:0
-2015-07-01 19:31:03.125 DEBUG [11576] [main@71] Output-file:la.zap
-2015-07-01 19:31:03.125 DEBUG [11576] [main@73] Compiler started
-2015-07-01 19:31:03.125 ERROR [11576] [main@74] test
-2015-07-01 19:31:03.125 DEBUG [11576] [TweeZCodeCompilerPipeline::log@171] Compiler: Simple Compiler Pipeline started . . .
+﻿2015-07-02 00:53:12.433 DEBUG [41811] [main@66] CMD-Args Summary
+2015-07-02 00:53:12.433 DEBUG [41811] [main@67] Console-DEBUG-Output: 0
+2015-07-02 00:53:12.433 DEBUG [41811] [main@68] Input-File:hello_world.twee
+2015-07-02 00:53:12.433 DEBUG [41811] [main@69] Twee File:1
+2015-07-02 00:53:12.433 DEBUG [41811] [main@70] Assembly File:0
+2015-07-02 00:53:12.433 DEBUG [41811] [main@71] Output-file:hello_world.z8
+2015-07-02 00:53:12.433 DEBUG [41811] [main@73] Compiler started
+2015-07-02 00:53:12.433 ERROR [41811] [main@74] test
+2015-07-02 00:53:12.433 DEBUG [41811] [TweeZCodeCompilerPipeline::log@171] Compiler: Simple Compiler Pipeline started . . .
 
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@174] Lexer: line: 1 Condition: INITIAL matched Token  PASSAGE_START
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@192] Lexer: line: 1 Condition:  HeaderTitle matched Token TITLE
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@207] Lexer: line: 2 Condition: HeaderTitle matched TokenNEWLINE
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@323] Parser: title -> TITLE NEWLINE: create title:type(Head) out of token:TITLE
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@315] Parser: head -> PASSAGE_START title: pass title:type(Head) to head:type(Head)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@384] Lexer: line: 2 Condition: Body matched Token TEXT_TOKEN with value Welcome in my Twee Story
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@393] Parser: text -> TEXT_TOKEN: create top:text:type(Text)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@369] Parser: bodypart -> text: pass text:type(text) to bodypart:type(BodyPart)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@352] Parser: body -> bodypart: create top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@364] Lexer: line: 3 Condition: Body matched Token NEWLINE
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@437] Parser: newline -> NEWLINE: create top:newline:type(Newline)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@374] Parser: bodypart -> newline: pass newline:type(Newline) to bodypart:type(BodyPart)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@359] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@287] Lexer: line: 3 Condition: Body matched Token MACRO_OPEN
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@633] Lexer: line: 3 Condition: BodyMacro matched Token MACRO_SET with value set
-2015-07-01 19:31:03.125 ERROR [11576] [Twee::TweeScanner::yylex@783] ERROR in Lexer: line: 3 Condition: BodyMacro when matching Token . with value  
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@651] Lexer: line: 3 Condition: BodyMacro matched Token EXPR_VAR with value $var
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@723] variable-> EXPR_VAR: create new Variable(*$1)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@749] Lexer: line: 3 Condition: BodyMacro matched Token EXPR_TO with value =
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@755] Lexer: line: 3 Condition: BodyMacro matched Token EXPR_INT with value 1
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@732] intconst-> EXPR_INT: create $$ = new Const<int> ($1)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@710] expressionTop-> integer: pass integer up)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@692] expressionMulDivMod-> expressionTop: pass expressionTop up)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@677] expressionMulDivMod-> expressionUnary: pass expressionUnary up)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@775] Lexer: line: 3 Condition: BodyMacro matched Token MACRO_CLOSE with value >>
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@662] expressionAddSub-> expressionMulDivMod: pass expressionMulDivMod up)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@647] expressionLogic-> expressionAddSub: pass expressionAddSub up)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@632] expressionCompare-> expressionLogic: pass expressionLogic up)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@617] expression-> expressionCompare: pass expressionCompare up)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@607] expression -> variable EXPR_TO expressionCompare: created $$ = new BinaryOperation(BinOps::TO, $1, $3)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@525] setmacro -> MACRO_OPEN MACRO_SET expression MACRO_CLOSE :
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@481] macro -> setmacro: pass setmacro:type(SetMacro) to macro:type(Macro)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@384] Parser: bodypart -> macro: pass macro:type(--Text--) to bodypart:type(BodyPart)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@359] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@364] Lexer: line: 4 Condition: Body matched Token NEWLINE
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@437] Parser: newline -> NEWLINE: create top:newline:type(Newline)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@374] Parser: bodypart -> newline: pass newline:type(Newline) to bodypart:type(BodyPart)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@359] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::TweeScanner::yylex@364] Lexer: line: 5 Condition: Body matched Token NEWLINE
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@437] Parser: newline -> NEWLINE: create top:newline:type(Newline)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@374] Parser: bodypart -> newline: pass newline:type(Newline) to bodypart:type(BodyPart)
-2015-07-01 19:31:03.125 DEBUG [11576] [Twee::BisonParser::parse@359] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::TweeScanner::yylex@271] Lexer: line: 5 Condition: Body matched Token PASSAGE_START
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@305] Parser: passage -> head body: create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@296] Parser: passages -> passage: create a passages:type(TweeFile)add passage:type(Passage) to passages:type(TweeFile)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::TweeScanner::yylex@192] Lexer: line: 5 Condition:  HeaderTitle matched Token TITLE
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::TweeScanner::yylex@207] Lexer: line: 6 Condition: HeaderTitle matched TokenNEWLINE
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@323] Parser: title -> TITLE NEWLINE: create title:type(Head) out of token:TITLE
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@315] Parser: head -> PASSAGE_START title: pass title:type(Head) to head:type(Head)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::TweeScanner::yylex@287] Lexer: line: 6 Condition: Body matched Token MACRO_OPEN
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::TweeScanner::yylex@633] Lexer: line: 6 Condition: BodyMacro matched Token MACRO_SET with value set
-2015-07-01 19:31:03.126 ERROR [11576] [Twee::TweeScanner::yylex@783] ERROR in Lexer: line: 6 Condition: BodyMacro when matching Token . with value  
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::TweeScanner::yylex@651] Lexer: line: 6 Condition: BodyMacro matched Token EXPR_VAR with value $var
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@723] variable-> EXPR_VAR: create new Variable(*$1)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::TweeScanner::yylex@749] Lexer: line: 6 Condition: BodyMacro matched Token EXPR_TO with value =
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::TweeScanner::yylex@755] Lexer: line: 6 Condition: BodyMacro matched Token EXPR_INT with value 2
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@732] intconst-> EXPR_INT: create $$ = new Const<int> ($1)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@710] expressionTop-> integer: pass integer up)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@692] expressionMulDivMod-> expressionTop: pass expressionTop up)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@677] expressionMulDivMod-> expressionUnary: pass expressionUnary up)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::TweeScanner::yylex@775] Lexer: line: 6 Condition: BodyMacro matched Token MACRO_CLOSE with value >>
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@662] expressionAddSub-> expressionMulDivMod: pass expressionMulDivMod up)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@647] expressionLogic-> expressionAddSub: pass expressionAddSub up)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@632] expressionCompare-> expressionLogic: pass expressionLogic up)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@617] expression-> expressionCompare: pass expressionCompare up)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@607] expression -> variable EXPR_TO expressionCompare: created $$ = new BinaryOperation(BinOps::TO, $1, $3)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@525] setmacro -> MACRO_OPEN MACRO_SET expression MACRO_CLOSE :
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@481] macro -> setmacro: pass setmacro:type(SetMacro) to macro:type(Macro)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@384] Parser: bodypart -> macro: pass macro:type(--Text--) to bodypart:type(BodyPart)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@352] Parser: body -> bodypart: create top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::TweeScanner::yylex@384] Lexer: line: 6 Condition: Body matched Token TEXT_TOKEN with value 	
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@393] Parser: text -> TEXT_TOKEN: create top:text:type(Text)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@369] Parser: bodypart -> text: pass text:type(text) to bodypart:type(BodyPart)
-2015-07-01 19:31:03.126 DEBUG [11576] [Twee::BisonParser::parse@359] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
-2015-07-01 19:31:03.133 DEBUG [11576] [Twee::TweeScanner::yylex@364] Lexer: line: 7 Condition: Body matched Token NEWLINE
-2015-07-01 19:31:03.133 DEBUG [11576] [Twee::BisonParser::parse@437] Parser: newline -> NEWLINE: create top:newline:type(Newline)
-2015-07-01 19:31:03.133 DEBUG [11576] [Twee::BisonParser::parse@374] Parser: bodypart -> newline: pass newline:type(Newline) to bodypart:type(BodyPart)
-2015-07-01 19:31:03.133 DEBUG [11576] [Twee::BisonParser::parse@359] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
-2015-07-01 19:31:03.134 DEBUG [11576] [Twee::TweeScanner::yylex@384] Lexer: line: 7 Condition: Body matched Token TEXT_TOKEN with value 	
-2015-07-01 19:31:03.134 DEBUG [11576] [Twee::BisonParser::parse@393] Parser: text -> TEXT_TOKEN: create top:text:type(Text)
-2015-07-01 19:31:03.134 DEBUG [11576] [Twee::BisonParser::parse@369] Parser: bodypart -> text: pass text:type(text) to bodypart:type(BodyPart)
-2015-07-01 19:31:03.134 DEBUG [11576] [Twee::BisonParser::parse@359] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
-2015-07-01 19:31:03.134 DEBUG [11576] [Twee::TweeScanner::yylex@364] Lexer: line: 8 Condition: Body matched Token NEWLINE
-2015-07-01 19:31:03.134 DEBUG [11576] [Twee::BisonParser::parse@437] Parser: newline -> NEWLINE: create top:newline:type(Newline)
-2015-07-01 19:31:03.134 DEBUG [11576] [Twee::BisonParser::parse@374] Parser: bodypart -> newline: pass newline:type(Newline) to bodypart:type(BodyPart)
-2015-07-01 19:31:03.134 DEBUG [11576] [Twee::BisonParser::parse@359] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
-2015-07-01 19:31:03.134 DEBUG [11576] [Twee::BisonParser::parse@305] Parser: passage -> head body: create a passage:type(Passage) out of the head:type(Head) and body::type(Body) objects
-2015-07-01 19:31:03.134 DEBUG [11576] [Twee::BisonParser::parse@289] Parser: passages -> passages passage: pass passages:type(TweeFile) to top:passages:type(TweeFile)
-add the passage:type(Passage) to the passages:type(TweeFile)
-2015-07-01 19:31:03.134 DEBUG [11576] [Twee::BisonParser::parse@281] Parser: TweeDocument -> passages
-2015-07-01 19:31:03.134 DEBUG [11576] [TweeZCodeCompilerPipeline::log@171] Compiler: Parsed twee file . . .
-
-2015-07-01 19:31:03.135 DEBUG [11576] [TweeCompiler::compile@130] generate SetMacro assembly code
-2015-07-01 19:31:03.135 DEBUG [11576] [TweeCompiler::compile@152] global var added
-2015-07-01 19:31:03.135 DEBUG [11576] [TweeCompiler::compile@155] var=1assembly added
-2015-07-01 19:31:03.135 DEBUG [11576] [TweeCompiler::compile@130] generate SetMacro assembly code
-2015-07-01 19:31:03.135 DEBUG [11576] [TweeCompiler::compile@155] var=2assembly added
+2015-07-02 00:53:12.433 DEBUG [41811] [Twee::TweeScanner::yylex@175] Lexer: line: 1 Condition: INITIAL matched Token  PASSAGE_START
+2015-07-02 00:53:12.440 DEBUG [41811] [Twee::TweeScanner::yylex@193] Lexer: line: 1 Condition:  HeaderTitle matched Token TITLE
+2015-07-02 00:53:12.440 DEBUG [41811] [Twee::TweeScanner::yylex@208] Lexer: line: 2 Condition: HeaderTitle matched TokenNEWLINE
+2015-07-02 00:53:12.440 DEBUG [41811] [Twee::BisonParser::parse@350] Parser: title -> TITLE NEWLINE: create title:type(Head) out of token:TITLE
+2015-07-02 00:53:12.440 DEBUG [41811] [Twee::BisonParser::parse@342] Parser: head -> PASSAGE_START title: pass title:type(Head) to head:type(Head)
+2015-07-02 00:53:12.440 DEBUG [41811] [Twee::TweeScanner::yylex@365] Lexer: line: 3 Condition: Body matched Token NEWLINE
+2015-07-02 00:53:12.440 DEBUG [41811] [Twee::BisonParser::parse@464] Parser: newline -> NEWLINE: create top:newline:type(Newline)
+2015-07-02 00:53:12.440 DEBUG [41811] [Twee::BisonParser::parse@401] Parser: bodypart -> newline: pass newline:type(Newline) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.440 DEBUG [41811] [Twee::BisonParser::parse@379] Parser: body -> bodypart: create top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.440 DEBUG [41811] [Twee::TweeScanner::yylex@385] Lexer: line: 3 Condition: Body matched Token TEXT_TOKEN with value Next Up
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@420] Parser: text -> TEXT_TOKEN: create top:text:type(Text)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@396] Parser: bodypart -> text: pass text:type(text) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::TweeScanner::yylex@372] Lexer: line: 3 Condition: Body matched Token TEXT_TOKEN with value :
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@420] Parser: text -> TEXT_TOKEN: create top:text:type(Text)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@396] Parser: bodypart -> text: pass text:type(text) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::TweeScanner::yylex@365] Lexer: line: 4 Condition: Body matched Token NEWLINE
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@464] Parser: newline -> NEWLINE: create top:newline:type(Newline)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@401] Parser: bodypart -> newline: pass newline:type(Newline) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::TweeScanner::yylex@385] Lexer: line: 4 Condition: Body matched Token TEXT_TOKEN with value Expected
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@420] Parser: text -> TEXT_TOKEN: create top:text:type(Text)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@396] Parser: bodypart -> text: pass text:type(text) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::TweeScanner::yylex@372] Lexer: line: 4 Condition: Body matched Token TEXT_TOKEN with value :
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@420] Parser: text -> TEXT_TOKEN: create top:text:type(Text)
+2015-07-02 00:53:12.441 DEBUG [41811] [Twee::BisonParser::parse@396] Parser: bodypart -> text: pass text:type(text) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.443 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::TweeScanner::yylex@385] Lexer: line: 4 Condition: Body matched Token TEXT_TOKEN with value  true
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@420] Parser: text -> TEXT_TOKEN: create top:text:type(Text)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@396] Parser: bodypart -> text: pass text:type(text) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::TweeScanner::yylex@365] Lexer: line: 5 Condition: Body matched Token NEWLINE
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@464] Parser: newline -> NEWLINE: create top:newline:type(Newline)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@401] Parser: bodypart -> newline: pass newline:type(Newline) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::TweeScanner::yylex@288] Lexer: line: 5 Condition: Body matched Token MACRO_OPEN
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::TweeScanner::yylex@617] Lexer: line: 5 Condition: BodyMacro matched Token MACRO_IF with value if
+2015-07-02 00:53:12.444 ERROR [41811] [Twee::TweeScanner::yylex@791] ERROR in Lexer: line: 5 Condition: BodyMacro when matching Token . with value  
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::TweeScanner::yylex@769] Lexer: line: 5 Condition: BodyMacro matched Token EXPR_TRUE with value true
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@854] boolean-> EXPR_TRUE: create new Const<bool> (true)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@815] expressionTop-> boolean: pass boolean up)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@792] expressionMulDivMod-> expressionTop: pass expressionTop up)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@777] expressionMulDivMod-> expressionUnary: pass expressionUnary up)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::TweeScanner::yylex@783] Lexer: line: 5 Condition: BodyMacro matched Token MACRO_CLOSE with value >>
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@762] expressionAddSub-> expressionMulDivMod: pass expressionMulDivMod up)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@747] expressionLogic-> expressionAddSub: pass expressionAddSub up)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@732] expressionCompare-> expressionLogic: pass expressionLogic up)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@717] expression-> expressionCompare: pass expressionCompare up)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@632] Parser: ifmacro -> MACRO_OPEN MACRO_IF expression MACRO_CLOSE: matched, make a dummy if
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@513] macro -> ifmacro: pass ifmacro:type(IfMacro) to macro:type(Macro)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@411] Parser: bodypart -> macro: pass macro:type(--Text--) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::TweeScanner::yylex@365] Lexer: line: 6 Condition: Body matched Token NEWLINE
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@464] Parser: newline -> NEWLINE: create top:newline:type(Newline)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@401] Parser: bodypart -> newline: pass newline:type(Newline) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::TweeScanner::yylex@385] Lexer: line: 6 Condition: Body matched Token TEXT_TOKEN with value Actual  
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@420] Parser: text -> TEXT_TOKEN: create top:text:type(Text)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@396] Parser: bodypart -> text: pass text:type(text) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::TweeScanner::yylex@372] Lexer: line: 6 Condition: Body matched Token TEXT_TOKEN with value :
+2015-07-02 00:53:12.444 DEBUG [41811] [Twee::BisonParser::parse@420] Parser: text -> TEXT_TOKEN: create top:text:type(Text)
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::BisonParser::parse@396] Parser: bodypart -> text: pass text:type(text) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::TweeScanner::yylex@385] Lexer: line: 6 Condition: Body matched Token TEXT_TOKEN with value  true
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::BisonParser::parse@420] Parser: text -> TEXT_TOKEN: create top:text:type(Text)
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::BisonParser::parse@396] Parser: bodypart -> text: pass text:type(text) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::TweeScanner::yylex@365] Lexer: line: 7 Condition: Body matched Token NEWLINE
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::BisonParser::parse@464] Parser: newline -> NEWLINE: create top:newline:type(Newline)
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::BisonParser::parse@401] Parser: bodypart -> newline: pass newline:type(Newline) to bodypart:type(BodyPart)
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::BisonParser::parse@386] Parser: body -> body bodypart: pass body:type(Body) to top:body:type(Body)add bodypart:type(BodyPart) to top:body:type(Body)
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::TweeScanner::yylex@288] Lexer: line: 7 Condition: Body matched Token MACRO_OPEN
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::TweeScanner::yylex@622] Lexer: line: 7 Condition: BodyMacro matched Token MACRO_ELSE with value else
+2015-07-02 00:53:12.445 DEBUG [41811] [Twee::TweeScanner::yylex@617] Lexer: line: 7 Condition: BodyMacro matched Token MACRO_IF with value if
+2015-07-02 00:53:12.445 ERROR [41811] [Twee::BisonParser::error@869] Error: syntax error, unexpected MACRO_IF, expecting MACRO_CLOSE

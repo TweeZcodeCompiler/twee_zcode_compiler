@@ -2,13 +2,12 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
-#include "Macro.h"
-#include "../Expressions/Expression.h"
+#include "Expression.h"
 
 #include <string>
 #include <memory>
 
-class Random : public Macro {
+class Random : public Expression {
 
 private:
     std::unique_ptr<Expression> start;

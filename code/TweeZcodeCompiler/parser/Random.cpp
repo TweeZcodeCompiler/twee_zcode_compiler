@@ -1,4 +1,4 @@
-#include "include/Passage/Body/Macros/Random.h"
+#include "include/Passage/Body/Expressions/Random.h"
 
 Random::Random(const Expression &start, const Expression &end) {
     this->start = std::unique_ptr<Expression>(start.clone());

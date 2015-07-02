@@ -23,7 +23,6 @@
     #include "include/Passage/Body/Macros/Visited.h"
     #include "include/Passage/Body/Macros/Previous.h"
     #include "include/Passage/Body/Macros/Turns.h"
-    #include "include/Passage/Body/Macros/Random.h"
     #include "include/Passage/Body/Macros/Print.h"
     #include "include/Passage/Body/Macros/IfMacro.h"
     #include "include/Passage/Body/Macros/ElseIfMacro.h"
@@ -35,6 +34,7 @@
     #include "include/Passage/Body/Expressions/UnaryOperation.h"
     #include "include/Passage/Body/Expressions/BinaryOperation.h"
     #include "include/Passage/Body/Expressions/Variable.h"
+    #include "include/Passage/Body/Expressions/Random.h"
 
     #include <plog/Log.h>
     #include <plog/Appenders/ConsoleAppender.h>
@@ -275,7 +275,6 @@
 %type <visited> visited
 %type <previous> previous
 %type <turns> turns
-%type <random> random
 
 %type <expression> expression
 %type <expression> expressionAssignment
@@ -285,6 +284,8 @@
 %type <expression> expressionMulDivMod
 %type <expression> expressionUnary
 %type <expression> expressionTop
+
+%type <expression> random
 
 %type <integer> operatorAssignment
 %type <integer> operatorCompare
@@ -547,11 +548,6 @@ macro :
     LOG_DEBUG << "macro -> previous: pass turns:type(Turns) to macro:type(Macro)";
     $$ = $1;
     }
-    |random
-    {
-    LOG_DEBUG << "macro -> previous: pass random:type(Random) to macro:type(Macro)";
-    $$ = $1;
-    }
   ;
 
 print:
@@ -615,15 +611,6 @@ turns:
     $$ = new Turns();
     }
   ;
-
-random:
-    MACRO_OPEN EXPR_RANDOM expression expression EXPR_CLOSE MACRO_CLOSE
-    {
-    LOG_DEBUG << "random -> MACRO_OPEN EXPR_RANDOM expression expression EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
-    $$ = new Random($3, $4);
-    }
-  ;
-
 
 setmacro:
     MACRO_OPEN MACRO_SET expressionAssignment MACRO_CLOSE
@@ -827,6 +814,20 @@ expressionTop:
     {
     LOG_DEBUG << "expressionTop-> boolean: pass boolean up)";
     $$ = $1;
+    }
+   |random
+    {
+    LOG_DEBUG << "expressionTop-> random: pass random function up)";
+    $$ = $1;
+    }
+  ;
+
+
+random:
+    MACRO_OPEN EXPR_RANDOM expression expression EXPR_CLOSE MACRO_CLOSE
+    {
+    LOG_DEBUG << "random -> MACRO_OPEN EXPR_RANDOM expression expression EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
+    $$ = new Random($3, $4);
     }
   ;
 
