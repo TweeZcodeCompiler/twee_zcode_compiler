@@ -188,7 +188,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     endJumpLabels[ifDepth] = IF_JUMP_END_LABEL + std::to_string(++ifEndJumpLabelID);
                     //TODO: evaluate expression IfMacro
                     evalExpression(ifmacro->getExpression().get());
-                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
+                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}) , nextJumpLabels[ifDepth]);
                     //precedingIfMacros[ifDepth] = 1;
                 } else if (ElseIfMacro * elseifmacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
                     //check preceding ifmacro
@@ -216,18 +216,12 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                         throw TweeDocumentException();
                     }
                      */
-                    ASSGEN.jump(endJumpLabels[ifDepth]);
+                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"1", "1"}) , endJumpLabels[ifDepth]);
                     ASSGEN.addLabel(nextJumpLabels[ifDepth]);
                     nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
                     //TODO: evaluate expression ElseIfMacro
-                    std::string ifExprVal = elseifmacro->getExpression()->to_string();
-                    LOG_DEBUG << ifExprVal;
-                    if(ifExprVal.compare("Const: 1")) {
-                        ASSGEN.push("1");
-                    } else if (ifExprVal.compare("Const: 0")) {
-                        ASSGEN.push("0");
-                    }
-                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
+                    evalExpression(elseifmacro->getExpression().get());
+                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}) , nextJumpLabels[ifDepth]);
                     // precedingIfMacros[ifDepth] = 2;
                 } else if (ElseMacro * elsemacro = dynamic_cast<ElseMacro *>(bodyPart)) {
                     //check preceding ifmacro
@@ -251,7 +245,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                         throw TweeDocumentException();
                     }
                     */
-                    ASSGEN.jump(endJumpLabels[ifDepth]);
+                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"1", "1"}) , endJumpLabels[ifDepth]);
                     ASSGEN.addLabel(nextJumpLabels[ifDepth]);
                     //precedingIfMacros[ifDepth] = 3;
                 } else if (EndIfMacro * endifemacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
@@ -337,7 +331,9 @@ void TweeCompiler::evalExpression(Expression *expression) {
         ASSGEN.push(std::to_string(constant->getValue()));
 
     } else if (Const<bool> *constant = dynamic_cast<Const<bool> *>(expression)) {
+
         ASSGEN.push(std::to_string(constant->getValue()));
+
     } else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
 
         std::string prunedVarName = variable->getName().substr(1);
