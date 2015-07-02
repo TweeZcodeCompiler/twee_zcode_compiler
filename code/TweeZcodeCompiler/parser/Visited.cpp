@@ -1,5 +1,5 @@
 
-#include "include/Passage/Body/Macros/Visited.h"
+#include "include/Passage/Body/Expressions/Visited.h"
 
 Visited::Visited(const std::string passage) {
     this->passage = passage;

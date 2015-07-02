@@ -2,13 +2,12 @@
 #ifndef TURNS_H
 #define TURNS_H
 
-#include "Macro.h"
-#include "../Expressions/Expression.h"
+#include "Expression.h"
 
 #include <string>
 #include <memory>
 
-class Turns : public Macro {
+class Turns : public Expression {
 
 public:
 

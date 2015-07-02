@@ -2,13 +2,12 @@
 #ifndef VISITED_H
 #define VISITED_H
 
-#include "Macro.h"
-#include "../Expressions/Expression.h"
+#include "Expression.h"
 
 #include <string>
 #include <memory>
 
-class Visited : public Macro {
+class Visited : public Expression {
 
 private:
     std::string passage;

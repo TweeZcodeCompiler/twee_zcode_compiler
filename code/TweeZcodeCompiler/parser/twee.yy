@@ -20,9 +20,7 @@
     #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
     #include "include/Passage/Body/Macros/Display.h"
-    #include "include/Passage/Body/Macros/Visited.h"
     #include "include/Passage/Body/Macros/Previous.h"
-    #include "include/Passage/Body/Macros/Turns.h"
     #include "include/Passage/Body/Macros/Print.h"
     #include "include/Passage/Body/Macros/IfMacro.h"
     #include "include/Passage/Body/Macros/ElseIfMacro.h"
@@ -34,6 +32,8 @@
     #include "include/Passage/Body/Expressions/UnaryOperation.h"
     #include "include/Passage/Body/Expressions/BinaryOperation.h"
     #include "include/Passage/Body/Expressions/Variable.h"
+    #include "include/Passage/Body/Expressions/Turns.h"
+    #include "include/Passage/Body/Expressions/Visited.h"
     #include "include/Passage/Body/Expressions/Random.h"
 
     #include <plog/Log.h>
@@ -272,9 +272,7 @@
 %type <setmacro> setmacro
 
 %type <display> display
-%type <visited> visited
 %type <previous> previous
-%type <turns> turns
 
 %type <expression> expression
 %type <expression> expressionAssignment
@@ -285,7 +283,9 @@
 %type <expression> expressionUnary
 %type <expression> expressionTop
 
-%type <expression> random
+%type <visited> visited
+%type <turns> turns
+%type <random> random
 
 %type <integer> operatorAssignment
 %type <integer> operatorCompare
@@ -533,19 +533,9 @@ macro :
     LOG_DEBUG << "macro -> display: pass display:type(Display) to macro:type(Macro)";
     $$ = $1;
     }
-    |visited
-    {
-    LOG_DEBUG << "macro -> visited: pass visited:type(Visited) to macro:type(Macro)";
-    $$ = $1;
-    }
     |previous
     {
     LOG_DEBUG << "macro -> previous: pass previous:type(Previous) to macro:type(Macro)";
-    $$ = $1;
-    }
-    |turns
-    {
-    LOG_DEBUG << "macro -> previous: pass turns:type(Turns) to macro:type(Macro)";
     $$ = $1;
     }
   ;
@@ -582,20 +572,6 @@ display:
     }
   ;
 
-visited:
-    MACRO_OPEN EXPR_VISITED EXPR_STR EXPR_CLOSE MACRO_CLOSE
-    {
-    LOG_DEBUG << "visited -> MACRO_OPEN EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
-    $$ = new Visited(*$3);
-    delete $3;
-    }
-    |MACRO_OPEN EXPR_VISITED EXPR_CLOSE MACRO_CLOSE
-    {
-    LOG_DEBUG << "visited -> MACRO_OPEN EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
-    $$ = new Visited("");
-    }
-  ;
-
 previous:
     MACRO_OPEN EXPR_PREVIOUS EXPR_CLOSE MACRO_CLOSE
     {
@@ -604,13 +580,6 @@ previous:
     }
   ;
 
-turns:
-    MACRO_OPEN EXPR_TURNS EXPR_CLOSE MACRO_CLOSE
-    {
-    LOG_DEBUG << "turns -> MACRO_OPEN EXPR_PREVIOUS EXPR_CLOSE MACRO_CLOSE: create $$ = new Turns()";
-    $$ = new Turns();
-    }
-  ;
 
 setmacro:
     MACRO_OPEN MACRO_SET expressionAssignment MACRO_CLOSE
@@ -820,14 +789,45 @@ expressionTop:
     LOG_DEBUG << "expressionTop-> random: pass random function up)";
     $$ = $1;
     }
+   |visited
+    {
+    LOG_DEBUG << "expressionTop-> visited: pass visited function up)";
+    $$ = $1;
+    }
+   |turns
+    {
+    LOG_DEBUG << "expressionTop-> turns: pass turns function up)";
+    $$ = $1;
+    }
   ;
 
+visited:
+    EXPR_VISITED EXPR_STR EXPR_CLOSE
+    {
+    LOG_DEBUG << "visited -> MACRO_OPEN EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
+    $$ = new Visited(*$2);
+    delete $2;
+    }
+    |EXPR_VISITED EXPR_CLOSE
+    {
+    LOG_DEBUG << "visited -> MACRO_OPEN EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
+    $$ = new Visited("");
+    }
+  ;
+
+turns:
+    EXPR_TURNS EXPR_CLOSE
+    {
+    LOG_DEBUG << "turns -> MACRO_OPEN EXPR_PREVIOUS EXPR_CLOSE MACRO_CLOSE: create $$ = new Turns()";
+    $$ = new Turns();
+    }
+  ;
 
 random:
-    MACRO_OPEN EXPR_RANDOM expression expression EXPR_CLOSE MACRO_CLOSE
+    EXPR_RANDOM expression expression EXPR_CLOSE
     {
     LOG_DEBUG << "random -> MACRO_OPEN EXPR_RANDOM expression expression EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
-    $$ = new Random($3, $4);
+    $$ = new Random($2, $3);
     }
   ;
 
