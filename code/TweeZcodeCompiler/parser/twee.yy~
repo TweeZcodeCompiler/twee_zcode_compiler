@@ -20,16 +20,11 @@
     #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
     #include "include/Passage/Body/Macros/Display.h"
-    #include "include/Passage/Body/Macros/Visited.h"
-    #include "include/Passage/Body/Macros/Previous.h"
-    #include "include/Passage/Body/Macros/Turns.h"
-    #include "include/Passage/Body/Macros/Random.h"
     #include "include/Passage/Body/Macros/Print.h"
     #include "include/Passage/Body/Macros/IfMacro.h"
     #include "include/Passage/Body/Macros/ElseIfMacro.h"
     #include "include/Passage/Body/Macros/ElseMacro.h"
-    #include "include/Passage/Body/Macros/EndIfMacro.h"
-    #include "include/Passage/Body/Macros/SetMacro.h"
+    #include "include/Passage/Body/Macros/EndIf.h"
     #include "include/Passage/Body/Expressions/Expression.h"
     #include "include/Passage/Body/Expressions/Const.h"
     #include "include/Passage/Body/Expressions/UnaryOperation.h"
@@ -67,50 +62,6 @@
     * and FORMATTING_CLOSE tokens
     */
 
-    std::string getBinOp(int i){
-        switch (static_cast<BinOps>(i)) {
-            case (BinOps::ADD):
-                return "ADD";
-            case (BinOps::MUL):
-                return "MUL";
-            case (BinOps::SUB):
-                return "SUB";
-            case (BinOps::DIV):
-                return "DIV";
-            case (BinOps::MOD):
-                return "MOD";
-            case (BinOps::AND):
-                return "AND";
-            case (BinOps::OR):
-                return "OR";
-            case (BinOps::LT):
-                return "LT";
-            case (BinOps::LTE):
-                return "LTE";
-            case (BinOps::GT):
-                return "GT";
-            case (BinOps::GTE):
-                return "GTE";
-            case (BinOps::IS):
-                return "IS";
-            case (BinOps::NEQ):
-                return "NEQ";
-            case (BinOps::TO):
-                return "TO";
-        }
-    }
-
-    std::string getUnOp(int i){
-        switch (static_cast<UnOps>(i)) {
-            case (UnOps::MINUS):
-                return "MINUS";
-            case (UnOps::PLUS):
-                return "PLUS";
-            case (UnOps::NOT):
-                return "NOT";
-        }
-    }
-
 }
 
 
@@ -118,7 +69,6 @@
 	std::string *string;
 	int token;
 	int integer;
-	bool boolean;
 
 	TweeFile *tweefile;
 
@@ -131,27 +81,13 @@
 	Body *body;
 
 	Macro *macro;
-	Print *print;
-	SetMacro *setmacro;
-
-	Display *display;
-    Visited *visited;
-    Previous *previous;
-    Turns *turns;
-    Random *random;
-
-
     IfMacro *ifmacro;
     ElseIfMacro *elseifmacro;
     ElseMacro *elsemacro;
-    EndIfMacro *endifmacro;
-
-
+    EndIf *endif;
 	Expression *expression;
 	Variable *variable;
 	Const<int> *intconst;
-	Const<bool> *boolconst;
-	Const<std::string> *strconst;
 
 	BodyPart *bodypart;
 	Text *text;
@@ -174,11 +110,7 @@
 
     <integer> EXPR_INT
     <string> EXPR_VAR
-    <string> EXPR_STR
 
-    <token> EXPR_TRUE
-    <token> EXPR_FALSE
-    <token> EXPR_STR_LIMITER
     <token> LINK_OPEN
     <token> LINK_CLOSE
     <token> LINK_SEPARATOR
@@ -192,18 +124,20 @@
 	<token> MACRO_ELSE
 	<token> MACRO_ELSE_IF
 	<token> MACRO_ENDIF
-	
 	<token> MACRO_PRINT
 	<token> MACRO_SET
 	<token> MACRO_DISPLAY
+
     <token> EXPR_RANDOM
     <token> EXPR_VISITED
     <token> EXPR_PREVIOUS
     <token> EXPR_TURNS
-    <token> FUNC_SEPARATOR
+
 
     <token> EXPR_OPEN
     <token> EXPR_CLOSE
+
+
 
     <token> EXPR_ADD
     <token> EXPR_SUB
@@ -261,41 +195,15 @@
 %type <link> link
 %type <newline> newline
 
-%type <macro> macro
-
 %type <ifmacro> ifmacro
+%type <setmacro> setmacro
 %type <elseifmacro> elseifmacro
 %type <elsemacro> elsemacro
-%type <endifmacro> endifmacro
-
-%type <print> print
-%type <setmacro> setmacro
-
-%type <display> display
-%type <visited> visited
-%type <previous> previous
-%type <turns> turns
-%type <random> random
-
+%type <endif> endif
+%type <macro> macro
 %type <expression> expression
-%type <expression> expressionAssignment
-%type <expression> expressionCompare
-%type <expression> expressionLogic
-%type <expression> expressionAddSub
-%type <expression> expressionMulDivMod
-%type <expression> expressionUnary
-%type <expression> expressionTop
-
-%type <integer> operatorAssignment
-%type <integer> operatorCompare
-%type <integer> operatorLogic
-%type <integer> operatorAddSub
-%type <integer> operatorMulDivMod
-%type <integer> operatorUnary
 %type <variable> variable
-%type <intconst> integer
-%type <boolconst> boolean
-
+%type <intconst> intconst
 
 %start TweeDocument
 
@@ -409,7 +317,7 @@ bodypart :
     {
     LOG_DEBUG << "Parser: bodypart -> macro: "<< "pass macro:type(--Text--) to bodypart:type(BodyPart)";
     //TODO: implement Macro:BodyType
-    $$ = $1;
+    $$ = new Text($1->to_string());
     }
   ;
 
@@ -497,15 +405,10 @@ link :
   ;
 
 macro :
-    print
+    MACRO_OPEN expression MACRO_CLOSE
     {
-    LOG_DEBUG << "macro -> print: pass print:type(Print) to macro:type(Macro)";
-    $$ = $1;
-    }
-    |setmacro
-    {
-    LOG_DEBUG << "macro -> setmacro: pass setmacro:type(SetMacro) to macro:type(Macro)";
-    $$ = $1;
+    LOG_DEBUG << "macro -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
+    $$ = new Print($2);
     }
     |ifmacro
     {
@@ -522,128 +425,31 @@ macro :
     LOG_DEBUG << "macro -> else: pass else:type(ElseMacro) to macro:type(Macro)";
     $$ = $1;
     }
-    |endifmacro
+    |setmacro
     {
-    LOG_DEBUG << "macro -> endifmacro: pass endifmacro:type(EndIfMacro) to macro:type(Macro)";
+    LOG_DEBUG << "set macro found";
     $$ = $1;
     }
-    |display
+    |endif
     {
-    LOG_DEBUG << "macro -> display: pass display:type(Display) to macro:type(Macro)";
+    LOG_DEBUG << "macro -> endif: pass endif:type(EndIf) to macro:type(Macro)";
     $$ = $1;
     }
-    |visited
-    {
-    LOG_DEBUG << "macro -> visited: pass visited:type(Visited) to macro:type(Macro)";
-    $$ = $1;
-    }
-    |previous
-    {
-    LOG_DEBUG << "macro -> previous: pass previous:type(Previous) to macro:type(Macro)";
-    $$ = $1;
-    }
-    |turns
-    {
-    LOG_DEBUG << "macro -> previous: pass turns:type(Turns) to macro:type(Macro)";
-    $$ = $1;
-    }
-    |random
-    {
-    LOG_DEBUG << "macro -> previous: pass random:type(Random) to macro:type(Macro)";
-    $$ = $1;
-    }
-  ;
 
-print:
-    MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE
-    {
-    LOG_DEBUG << "print -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--Print--) with 3:expression";
-    $$ = new Print($3);
-    delete $3;
-    }
-    |
-    MACRO_OPEN MACRO_PRINT expressionAssignment MACRO_CLOSE
-    {
-    LOG_DEBUG << "print -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--Print--) with 3:expression";
-    $$ = new Print($3);
-    delete $3;
-    }
-    |MACRO_OPEN expression MACRO_CLOSE
-    {
-    //TODO:check if we need error handling here
-    LOG_DEBUG << "print -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
-    $$ = new Print($2);
-    delete $2;
-    }
-  ;
-
-display:
-    MACRO_OPEN MACRO_DISPLAY EXPR_STR EXPR_CLOSE MACRO_CLOSE
-    {
-    LOG_DEBUG << "display -> MACRO_OPEN MACRO_DISPLAY EXPR_OPEN strconst MACRO_CLOSE MACRO_CLOSE: create new Display($4);";
-    $$ = new Display(*$3);
-    delete $3;
-    }
-  ;
-
-visited:
-    MACRO_OPEN EXPR_VISITED EXPR_STR EXPR_CLOSE MACRO_CLOSE
-    {
-    LOG_DEBUG << "visited -> MACRO_OPEN EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
-    $$ = new Visited(*$3);
-    delete $3;
-    }
-    |MACRO_OPEN EXPR_VISITED EXPR_CLOSE MACRO_CLOSE
-    {
-    LOG_DEBUG << "visited -> MACRO_OPEN EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
-    $$ = new Visited("");
-    }
-  ;
-
-previous:
-    MACRO_OPEN EXPR_PREVIOUS EXPR_CLOSE MACRO_CLOSE
-    {
-    LOG_DEBUG << "previous -> MACRO_OPEN EXPR_PREVIOUS EXPR_CLOSE MACRO_CLOSE: create $$ = new Previous()";
-    $$ = new Previous();
-    }
-  ;
-
-turns:
-    MACRO_OPEN EXPR_TURNS EXPR_CLOSE MACRO_CLOSE
-    {
-    LOG_DEBUG << "turns -> MACRO_OPEN EXPR_PREVIOUS EXPR_CLOSE MACRO_CLOSE: create $$ = new Turns()";
-    $$ = new Turns();
-    }
-  ;
-
-random:
-    MACRO_OPEN EXPR_RANDOM expression expression EXPR_CLOSE MACRO_CLOSE
-    {
-    LOG_DEBUG << "random -> MACRO_OPEN EXPR_RANDOM expression expression EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
-    $$ = new Random($3, $4);
-    }
   ;
 
 
 setmacro:
-    MACRO_OPEN MACRO_SET expressionAssignment MACRO_CLOSE
-    {
-    LOG_DEBUG << "setmacro -> MACRO_OPEN MACRO_SET expression MACRO_CLOSE :";
-    $$ = new SetMacro($3);
-    }
-    |MACRO_OPEN expressionAssignment MACRO_CLOSE
-    {
-    //TODO:check if we need error handling here
-    LOG_DEBUG << "setmacro -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE :";
-    $$ = new SetMacro($2);
-    }
-  ;
+	MACRO_OPEN MACRO_SET EXPR_VAR EXPR_TO EXPR_INT MACRO_CLOSE
+	{
+	LOG_DEBUG << "set macro structure found";
+	} 
 
 ifmacro:
     MACRO_OPEN MACRO_IF expression MACRO_CLOSE
     {
     LOG_DEBUG << "Parser: ifmacro -> MACRO_OPEN MACRO_IF expression MACRO_CLOSE: "<< "matched, make a dummy if";
-    $$ = new IfMacro($3);
+    $$ = new IfMacro(new Variable("VAR"));
     }
   ;
 
@@ -651,7 +457,7 @@ elseifmacro:
     MACRO_OPEN MACRO_ELSE_IF expression MACRO_CLOSE
     {
     LOG_DEBUG << "Parser: elseifmacro -> MACRO_OPEN MACRO_ELSE_IF expression MACRO_CLOSE: "<< "matched, make a dummy elseif";
-    $$ = new ElseIfMacro($3);
+    $$ = new ElseIfMacro(new Variable("VAR"));
     }
   ;
 
@@ -663,202 +469,176 @@ elsemacro:
     }
   ;
 
-endifmacro:
+endif:
     MACRO_OPEN MACRO_ENDIF MACRO_CLOSE
     {
-    LOG_DEBUG << "Parser: endifmacro -> MACRO_OPEN MACRO_ENDIF MACRO_CLOSE: "<< "matched, make a dummy endifmacro";
-    $$ = new EndIfMacro();
+    LOG_DEBUG << "Parser: endif -> MACRO_OPEN MACRO_ENDIF MACRO_CLOSE: "<< "matched, make a dummy endif";
+    $$ = new EndIf();
     }
   ;
 
-    /*Operators in precedence*/
-operatorAssignment:
-    EXPR_TO{$$ = 13;}
-  ;
 
-operatorCompare:
-     EXPR_LT{$$ = 7;}
-    |EXPR_LTE{$$ = 8;}
-    |EXPR_GT{$$ = 9;}
-    |EXPR_GTE{$$ = 10;}
-    |EXPR_IS{$$ = 11;}
-    |EXPR_NEQ{$$ = 12;}
-  ;
-
-operatorLogic:
-     EXPR_AND{$$ = 5;}
-    |EXPR_OR{$$ = 6;}
-  ;
-
-operatorAddSub:
-     EXPR_ADD{$$ = 0;}
-    |EXPR_SUB{$$ = 2;}
-  ;
-
-operatorMulDivMod:
-     EXPR_MUL{$$ = 1;}
-    |EXPR_DIV{$$ = 3;}
-    |EXPR_MOD{$$ = 4;}
-  ;
-
-operatorUnary:
-     EXPR_SUB{$$ = 0;}
-    |EXPR_ADD{$$ = 1;}
-    |EXPR_NOT{$$ = 2;}
-  ;
-
-expressionAssignment:
-    variable operatorAssignment expression
+expression :
+    EXPR_OPEN expression EXPR_CLOSE
     {
-    LOG_DEBUG << "expression -> variable EXPR_TO expressionCompare: created $$ = new BinaryOperation(BinOps::"+ getBinOp($2) +", $1, $3)";
-    $$ = new BinaryOperation(static_cast<BinOps>($2), $1, $3);
-    delete $1;
-    delete $3;
-    }
-    |variable operatorAssignment expressionAssignment
-    {
-    LOG_DEBUG << "expression -> variable EXPR_TO expressionCompare: created $$ = new BinaryOperation(BinOps::"+ getBinOp($2) +", $1, $3)";
-    $$ = new BinaryOperation(static_cast<BinOps>($2), $1, $3);
-    delete $1;
-    delete $3;
-    }
-  ;
-
-expression:
-   expressionCompare
-    {
-    LOG_DEBUG << "expression-> expressionCompare: pass expressionCompare up)";
-    $$ = $1;
-    }
-  ;
-
-expressionCompare:
-    expressionCompare operatorCompare expressionLogic
-    {
-    LOG_DEBUG << "expressionCompare -> expressionCompare EXPR_"+ getBinOp($2) +" expressionLogic: created $$ = new BinaryOperation(BinOps::"+ getBinOp($2) +", $1, $3)";
-    $$ = new BinaryOperation(static_cast<BinOps>($2), $1, $3);
-    delete $1;
-    delete $3;
-    }
-   |expressionLogic
-    {
-    LOG_DEBUG << "expressionCompare-> expressionLogic: pass expressionLogic up)";
-    $$ = $1;
-    }
-  ;
-
-expressionLogic:
-    expressionLogic operatorLogic expressionAddSub
-    {
-    LOG_DEBUG << "expressionLogic -> expressionLogic EXPR_"+ getBinOp($2) +" expressionAddSub: created $$ = new BinaryOperation(BinOps::"+ getBinOp($2) +", $1, $3)";
-    $$ = new BinaryOperation(static_cast<BinOps>($2), $1, $3);
-    delete $1;
-    delete $3;
-    }
-   |expressionAddSub
-    {
-    LOG_DEBUG << "expressionLogic-> expressionAddSub: pass expressionAddSub up)";
-    $$ = $1;
-    }
-  ;
-
-expressionAddSub:
-    expressionAddSub operatorAddSub expressionMulDivMod
-    {
-    LOG_DEBUG << "expressionAddSub -> expressionAddSub EXPR_"+ getBinOp($2) +" expressionMulDivMod: created $$ = new BinaryOperation(BinOps::"+ getBinOp($2) +", $1, $3)";
-    $$ = new BinaryOperation(static_cast<BinOps>($2), $1, $3);
-    delete $1;
-    delete $3;
-    }
-   |expressionMulDivMod
-    {
-    LOG_DEBUG << "expressionAddSub-> expressionMulDivMod: pass expressionMulDivMod up)";
-    $$ = $1;
-    }
-  ;
-
-expressionMulDivMod:
-    expressionMulDivMod operatorMulDivMod expressionUnary
-    {
-    LOG_DEBUG << "expressionMulDivMod -> expressionMulDivMod EXPR_"+ getBinOp($2) +" expressionUnary: created $$ = new BinaryOperation(BinOps::"+ getBinOp($2) +", $1, $3)";
-    $$ = new BinaryOperation(static_cast<BinOps>($2), $1, $3);
-    delete $1;
-    delete $3;
-    }
-   |expressionUnary
-    {
-    LOG_DEBUG << "expressionMulDivMod-> expressionUnary: pass expressionUnary up)";
-    $$ = $1;
-    }
-  ;
-
-expressionUnary:
-    operatorUnary expressionTop
-    {
-    //TODO: check for not int without (), it leads to an error in twee
-    LOG_DEBUG << "expressionUnary -> "+getUnOp($1)+" expressionTop: created $$ = new UnaryOperation(UnOps::"+getUnOp($1)+", $2)";
-    $$ = new UnaryOperation(static_cast<UnOps>($1), $2);
+    LOG_DEBUG << "expression -> EXPR_OPEN expression EXPR_CLOSE: passed expression upwards";
+    $$ = $2;
     delete $2;
     }
-   |expressionTop
+    |EXPR_NOT expression
     {
-    LOG_DEBUG << "expressionMulDivMod-> expressionTop: pass expressionTop up)";
+    LOG_DEBUG << "expression -> EXPR_NOT expression: created $$ = new UnaryOperation(UnOps::NOT, $1, $3)";
+    $$ = new UnaryOperation(UnOps::NOT, $2);
+    delete $2;
+    }
+    |EXPR_SUB expression %prec UMINUS
+    {
+    LOG_DEBUG << "expression -> EXPR_SUB expression %prec UMINUS: created $$ = new UnaryOperation(UnOps::MINUS, $1, $3)";
+    $$ = new UnaryOperation(UnOps::MINUS, $2);
+    delete $2;
+    }
+    |EXPR_ADD expression %prec UPLUS
+    {
+    LOG_DEBUG << "expression -> EXPR_ADD expression %prec UPLUS: created $$ = new UnaryOperation(UnOps::PLUS, $1, $3)";
+    $$ = new UnaryOperation(UnOps::PLUS, $2);
+    delete $2;
+    }
+    |expression EXPR_MUL expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_MUL expression: created $$ = new BinaryOperation(BinOps::MUL, $1, $3)";
+    $$ = new BinaryOperation(BinOps::MUL, *$1, *$3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_DIV expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_DIV expression: created $$ = new BinaryOperation(BinOps::DIV, $1, $3)";
+    $$ = new BinaryOperation(BinOps::DIV, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_MOD expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_MOD expression: created $$ = new BinaryOperation(BinOps::MOD, $1, $3)";
+    $$ = new BinaryOperation(BinOps::MOD, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_ADD expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_ADD expression: created $$ = new BinaryOperation(BinOps::ADD, $1, $3)";
+    $$ = new BinaryOperation(BinOps::ADD, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_SUB expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_SUB expression: created $$ = new BinaryOperation(BinOps::SUB, $1, $3)";
+    $$ = new BinaryOperation(BinOps::SUB, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_GTE expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_GTE expression: created $$ = new BinaryOperation(BinOps::GTE, $1, $3)";
+    $$ = new BinaryOperation(BinOps::GTE, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_GT expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_GT expression: created $$ = new BinaryOperation(BinOps::GT, $1, $3)";
+    $$ = new BinaryOperation(BinOps::GT, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_LTE expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_LTE expression: $$ = new BinaryOperation(BinOps::LTE, $1, $3)";
+    $$ = new BinaryOperation(BinOps::LTE, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_LT expression
+    {
+    LOG_DEBUG << "expression -> expression EXPR_LT expression: created $$ = new BinaryOperation(BinOps::LT, $1, $3)";
+    $$ = new BinaryOperation(BinOps::LT, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_NEQ expression
+    {
+    LOG_DEBUG << "expression-> expression EXPR_NEQ expression: created $$ = new BinaryOperation(BinOps::NEQ, $1, $3)";
+    $$ = new BinaryOperation(BinOps::NEQ, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_AND expression
+    {
+    LOG_DEBUG << "expression-> expression EXPR_AND expression: created $$ = new BinaryOperation(BinOps::AND, $1, $3)";
+    $$ = new BinaryOperation(BinOps::AND, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_OR expression
+    {
+    LOG_DEBUG << "expression-> expression EXPR_OF expression: created $$ = new BinaryOperation(BinOps::OR, $1, $3)";
+    $$ = new BinaryOperation(BinOps::OR, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_TO expression
+    {
+    LOG_DEBUG << "expression-> expression EXPR_TO expression: created $$ = new BinaryOperation(BinOps::TO, $1, $3)";
+    $$ = new BinaryOperation(BinOps::TO, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |variable EXPR_TO expression
+    {
+    LOG_DEBUG << "expression-> variable EXPR_TO expression: created $$ = new BinaryOperation(BinOps::TO, $1, $3)";
+    //TODO: implement
+    $$ = new BinaryOperation(BinOps::TO, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |variable EXPR_IS expression
+    {
+    LOG_DEBUG << "expression-> variable EXPR_IS expression: created $$ = new BinaryOperation(BinOps::IS, $1, $3)";
+    $$ = new BinaryOperation(BinOps::IS, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |expression EXPR_IS expression
+    {
+    LOG_DEBUG << "expression-> expression EXPR_IS expression: created new BinaryOperation(BinOps::IS, $1, $3)";
+    $$ = new BinaryOperation(BinOps::IS, $1, $3);
+    delete $1;
+    delete $3;
+    }
+    |intconst
+    {
     $$ = $1;
     }
-  ;
-
-expressionTop:
-    EXPR_OPEN expressionCompare EXPR_CLOSE
-    {
-    LOG_DEBUG << "expressionTop-> EXPR_OPEN expressionCompare EXPR_CLOSE: pass expressionCompare up)";
-    $$ = $2;
-    }
-   |variable
-    {
-    LOG_DEBUG << "expressionTop-> variable: pass variable up)";
-    $$ = $1;
-    }
-   |integer
-    {
-    LOG_DEBUG << "expressionTop-> integer: pass integer up)";
-    $$ = $1;
-    }
-   |boolean
-    {
-    LOG_DEBUG << "expressionTop-> boolean: pass boolean up)";
-    $$ = $1;
-    }
-  ;
+ ;
 
 variable:
     EXPR_VAR
     {
-    LOG_DEBUG << "variable-> EXPR_VAR: create new Variable(*$1)";
+    LOG_DEBUG << "variable-> EXPR_VAR: L";
     $$ = new Variable(*$1);
     delete $1;
     }
    ;
 
-integer:
+intconst:
     EXPR_INT
     {
-    LOG_DEBUG << "intconst-> EXPR_INT: create $$ = new Const<int> ($1)";
+    LOG_DEBUG << "intconst-> EXPR_INT: L";
     $$ = new Const<int> ($1);
     }
    ;
 
-boolean:
-    EXPR_TRUE
-    {
-    LOG_DEBUG << "boolean-> EXPR_TRUE: create new Const<bool> (true)";
-    $$ = new Const<bool> (true);
-    }
-    |EXPR_FALSE
-    {
-    LOG_DEBUG << "boolean-> EXPR_FALSE: create new Const<bool> (false)";
-    $$ = new Const<bool> (false);
-    }
-   ;
 
 %%
 
