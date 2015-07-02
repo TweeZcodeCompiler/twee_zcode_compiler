@@ -154,7 +154,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     ASSGEN.print_num("sp");
                 } else if (SetMacro *setMacro = dynamic_cast<SetMacro *>(bodyPart)) {
                     evalExpression(setMacro->getExpression().get());
-                } else if (IfMacro * ifmacro = dynamic_cast<IfMacro *>(macro)) {
+                } else if (IfMacro * ifmacro = dynamic_cast<IfMacro *>(bodyPart)) {
                     //depth++,
                     //check preceding ifmacro
                     //set label for jump to after if block (else, else if, endif)
@@ -187,13 +187,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
                     endJumpLabels[ifDepth] = IF_JUMP_END_LABEL + std::to_string(++ifEndJumpLabelID);
                     //TODO: evaluate expression IfMacro
-                    std::string ifExprVal = ifmacro->getExpression()->to_string();
-                    LOG_DEBUG << ifExprVal;
-                    if(ifExprVal.compare("Const: 1")) {
-                        ASSGEN.push("1");
-                    } else if (ifExprVal.compare("Const: 0")) {
-                        ASSGEN.push("0");
-                    }
+                    evalExpression(ifmacro->getExpression().get());
                     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
                     //precedingIfMacros[ifDepth] = 1;
                 } else if (ElseIfMacro * elseifmacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
@@ -342,6 +336,8 @@ void TweeCompiler::evalExpression(Expression *expression) {
 
         ASSGEN.push(std::to_string(constant->getValue()));
 
+    } else if (Const<bool> *constant = dynamic_cast<Const<bool> *>(expression)) {
+        ASSGEN.push(std::to_string(constant->getValue()));
     } else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
 
         std::string prunedVarName = variable->getName().substr(1);
