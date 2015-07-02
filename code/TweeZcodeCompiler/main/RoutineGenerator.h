@@ -37,17 +37,20 @@ private:
 
     std::bitset<8> numberToBitset(unsigned int number);
 
-    void addBitset(std::vector<std::bitset<8>> bitsets,std::string name);
+    void addBitset(std::vector<std::bitset<8>> bitsets, std::string name);
 
     void conditionalJump(unsigned int opcode, std::string toLabel, bool jumpIfTrue, ZParam &param1, ZParam &param2);
+
     void debug(std::string);
+
 public:
 
-    bool debugmode= false;
+    bool debugmode = false;
+
     std::shared_ptr<ZCodeLabel> getOrCreateLabel(std::string name);
 
     // this constructor padding zCode to the next package adress and initialize this routine with the name 'name'
-    RoutineGenerator(std::string name, unsigned int locVar) :routine(ZCodeRoutine::getOrCreateRoutine(name,locVar)) {
+    RoutineGenerator(std::string name, unsigned int locVar) : routine(ZCodeRoutine::getOrCreateRoutine(name, locVar)) {
 
         maxLocalVariables = locVar;
         if (locVar > 15) {
@@ -56,7 +59,7 @@ public:
         }
     }
 
-    ~RoutineGenerator(){
+    ~RoutineGenerator() {
     }
 
     // returns complete zcode of Routine as a bitset vector
@@ -133,9 +136,13 @@ public:
 
     void div(std::vector<std::unique_ptr<ZParam>> params);
 
+    void mod(std::vector<std::unique_ptr<ZParam>> params);
+
     void doAND(std::vector<std::unique_ptr<ZParam>> params);
 
     void doOR(std::vector<std::unique_ptr<ZParam>> params);
+
+    void doNOT(std::vector<std::unique_ptr<ZParam>> params);
 
     void returnTrue();
 
@@ -150,9 +157,13 @@ public:
     void verify(std::vector<std::unique_ptr<ZParam>> params);
 
     void loadb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+
     void loadw(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+
     void storeb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+
     void storew(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+
     void push(std::vector<std::unique_ptr<ZParam>> params);
 
 
@@ -200,10 +211,14 @@ public:
                 MUL = 22,
         // Opcode : 2OP:23 17 div a b -> (result)
                 DIV = 23,
+        // Opcode : 2OP:24 18 mod a b -> (result)
+                MOD = 24,
         // Opcode : 2OP:9 9 and a b -> (result)
                 AND = 9,
         // Opcode : 2OP:8 8 or a b -> (result)
                 OR = 8,
+        // Opcode : VAR:248 18 not value -> (result)
+                NOT = 248,
         // Opcode: return true
                 RETURN_TRUE = 176,
         // Opcode: return false

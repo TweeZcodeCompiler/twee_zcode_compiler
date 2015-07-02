@@ -9,8 +9,15 @@
 #include <iostream>
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
-#include <Passage/Body/FormattedText.h>
-#include <Passage/Body/Variable.h>
+#include <Passage/Body/Newline.h>
+#include <Passage/Body/Macros/SetMacro.h>
+#include <Passage/Body/Expressions/BinaryOperation.h>
+#include <plog/Log.h>
+#include <algorithm>
+#include <Passage/Body/Expressions/Variable.h>
+#include <Passage/Body/Expressions/Const.h>
+
+
 
 using namespace std;
 using namespace std::experimental;
@@ -33,8 +40,9 @@ static const unsigned int ZSCII_NUM_OFFSET = 49;
 #define ASSGEN (*_assgen)
 #endif
 
-void maskString(std::string& string) {
-    std::replace( string.begin(), string.end(), ' ', '_');
+
+void maskString(std::string &string) {
+    std::replace(string.begin(), string.end(), ' ', '_');
 }
 
 string routineNameForPassageName(std::string passageName) {
@@ -45,11 +53,11 @@ string routineNameForPassageName(std::string passageName) {
 }
 
 
-string routineNameForPassage(Passage& passage) {
+string routineNameForPassage(Passage &passage) {
     return routineNameForPassageName(passage.getHead().getName());
 }
 
-string labelForPassage(Passage& passage) {
+string labelForPassage(Passage &passage) {
     stringstream ss;
     string passageName = passage.getHead().getName();
     maskString(passageName);
@@ -61,6 +69,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
 
     vector<Passage> passages = tweeFile.getPassages();
+
+    std::map<std::string, int> symbolTable;
 
     {
         int i = 0;
@@ -136,35 +146,62 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     }
 
 
-
     // passage routines
     {
-        for(auto passage = passages.begin(); passage != passages.end(); ++passage) {
-            const vector<unique_ptr<BodyPart>>& bodyParts = passage->getBody().getBodyParts();
+        for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
+            const vector<unique_ptr<BodyPart>> &bodyParts = passage->getBody().getBodyParts();
 
             // declare passage routine
             ASSGEN.addRoutine(routineNameForPassage(*passage));
 
             ASSGEN.println(string("***** ") + passage->getHead().getName() + string(" *****"));
 
+
+
             //  print passage contents
             for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
                 BodyPart* bodyPart = it->get();
                 if(Text* text = dynamic_cast<Text*>(bodyPart)) {
                     ASSGEN.print(text->getContent());
-                } else if(FormattedText* formText = dynamic_cast<FormattedText*>(bodyPart)) {
-                    ASSGEN.setTextStyle(formText->isItalic(), formText->isBold(), formText->isUnderlined());
-                    ASSGEN.print(formText->getContent());
-                    ASSGEN.setTextStyle(false, false, false);
                 } else if (Variable* variable = dynamic_cast<Variable*>(bodyPart)) {
                     ASSGEN.variable(variable->getName());
                 } else if (Link* link = dynamic_cast<Link*>(bodyPart)) {
                     // TODO: catch invalid link
                     ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
                 }
-            }
 
-            ASSGEN.newline();
+                if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
+                    LOG_DEBUG << "generate SetMacro assembly code";
+
+                    if (BinaryOperation *binaryOperation = (BinaryOperation *) (op->getExpression().get())) {
+                        if (Variable *variable = (Variable *) (binaryOperation->getLeftSide().get())) {
+                            std::string variableName = variable->getName();
+                            variableName = variableName.erase(0, 1); //remove the $ symbol
+                            Const<int> *constant = dynamic_cast<Const<int> *>(binaryOperation->getRightSide().get());
+                            if (constant) {
+                                int constantValue = (int) constant->getValue();
+
+
+                                if (symbolTable.find(variableName.c_str()) != symbolTable.end()) {
+                                    symbolTable[variableName.c_str()] = constantValue;
+                                    ASSGEN.store(variableName, std::to_string(constantValue));
+
+
+                                }
+                                else {
+                                    //new variable needs to be decleared as well
+                                    ASSGEN.addGlobal(variableName);
+                                    symbolTable[variableName.c_str()] = constantValue;
+                                    ASSGEN.store(variableName, std::to_string(constantValue));
+                                    LOG_DEBUG << "global var added";
+
+                                }
+                                LOG_DEBUG << variableName << "=" << constantValue << "assembly added";
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -43,8 +43,10 @@ const string AssemblyParser::ADD_COMMAND = "add";
 const string AssemblyParser::SUB_COMMAND = "sub";
 const string AssemblyParser::MUL_COMMAND = "mul";
 const string AssemblyParser::DIV_COMMAND = "div";
+const string AssemblyParser::MOD_COMMAND = "mod";
 const string AssemblyParser::AND_COMMAND = "and";
 const string AssemblyParser::OR_COMMAND = "or";
+const string AssemblyParser::NOT_COMMAND = "not";
 const string AssemblyParser::RET_TRUE_COMMAND = "rtrue";
 const string AssemblyParser::RET_FALSE_COMMAND = "rfalse";
 const string AssemblyParser::PRINT_RET_COMMAND = "print_ret";
@@ -161,7 +163,7 @@ void AssemblyParser::readAssembly(istream &input, shared_ptr<ZCodeContainer> dyn
     string line;
     currentLineNumber = 1;
     try {
-        for (string line; getline(input, line);) {
+        for (;getline(input, line);) {
 
             line = trim(line);
             vector<string> lineComps;
@@ -463,6 +465,7 @@ void AssemblyParser::executeJZCommand(const string &jumpCommand, RoutineGenerato
 void AssemblyParser::executeCALL_VSCommand(const string &callCommand, RoutineGenerator &routineGenerator) {
     routineGenerator.callVS(parseArguments(callCommand));
 }
+
 void AssemblyParser::executeCALL1nCommand(const string &callCommand, RoutineGenerator &routineGenerator) {
     routineGenerator.call1n(parseArguments(callCommand));
 }
@@ -551,20 +554,26 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         LOG_DEBUG << ":::::: new add ";
         routineGenerator.add(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::SUB_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new sub ";
         routineGenerator.sub(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::MUL_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new mul ";
         routineGenerator.mul(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::DIV_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new div ";
         routineGenerator.div(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::MOD_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new mod ";
+        routineGenerator.mod(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::AND_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new and ";
         routineGenerator.doAND(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::OR_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new add ";
+        LOG_DEBUG << ":::::: new or ";
         routineGenerator.doOR(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::NOT_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new not ";
+        routineGenerator.doNOT(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::RET_TRUE_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new rtrue";
         routineGenerator.returnTrue();
@@ -610,8 +619,8 @@ bool AssemblyParser::checkIfCommandRoutineStart(const string &command) {
 
 
 unique_ptr<uint8_t> AssemblyParser::getAddressForId(const string &id) {
-    if (id.compare("sp") == 0) {
-        return 0;
+    if (id == "sp") {
+        return unique_ptr<uint8_t>(new uint8_t(0));
     }
 
     // check global variables
@@ -658,23 +667,23 @@ vector<string> AssemblyParser::split(const string &s, const string &delim) {
 
 
 void AssemblyParser::performByteArrayDirective(string command, shared_ptr<ZCodeContainer> dynamicMemory) {
-    try{
-    vector<string> param = this->split(command, ' ');
-    string name = param.at(1);
-    string sSize = param.at(2).substr(1, param.at(2).size() - 2);
-    int size = std::stoi(sSize.c_str());
-    auto initialSize = shared_ptr<ZCodeObject>(new ZCodeInstruction(size));
-    auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size, "ARRAY : " + name));
-    auto label = dynamicMemory->getOrCreateLabel(name);
+    try {
+        vector<string> param = this->split(command, ' ');
+        string name = param.at(1);
+        string sSize = param.at(2).substr(1, param.at(2).size() - 2);
+        int size = std::stoi(sSize.c_str());
+        auto initialSize = shared_ptr<ZCodeObject>(new ZCodeInstruction(size));
+        auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size, "ARRAY : " + name));
+        auto label = dynamicMemory->getOrCreateLabel(name);
 
-    dynamicMemory->add(label);
-    dynamicMemory->add(initialSize);
-    dynamicMemory->add(table);
-    }catch(std::invalid_argument ){
-        LOG_ERROR << "'.BYTEARRAY <name> [<size>]' expected. '"<<command << "' found instead";
+        dynamicMemory->add(label);
+        dynamicMemory->add(initialSize);
+        dynamicMemory->add(table);
+    } catch (std::invalid_argument) {
+        LOG_ERROR << "'.BYTEARRAY <name> [<size>]' expected. '" << command << "' found instead";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
-    }catch(std::out_of_range){
-        LOG_ERROR << "'.BYTEARRAY <name> [<size>]' expected. '"<<command << "' found instead";
+    } catch (std::out_of_range) {
+        LOG_ERROR << "'.BYTEARRAY <name> [<size>]' expected. '" << command << "' found instead";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
     }
 }
@@ -689,11 +698,11 @@ void AssemblyParser::performWordArrayDirective(string command, shared_ptr<ZCodeC
         dynamicMemory->add(label);
         auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size * 2, "ARRAY : " + name));
         dynamicMemory->add(table);
-    }catch(std::invalid_argument ){
-        LOG_ERROR << "'.WORDARRAY <name> [<size>]' expected. '"<<command << "' found instead";
+    } catch (std::invalid_argument) {
+        LOG_ERROR << "'.WORDARRAY <name> [<size>]' expected. '" << command << "' found instead";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
-    }catch(std::out_of_range){
-        LOG_ERROR << "'.WORDARRAY <name> [<size>]' expected. '"<<command << "' found instead";
+    } catch (std::out_of_range) {
+        LOG_ERROR << "'.WORDARRAY <name> [<size>]' expected. '" << command << "' found instead";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
     }
 }
