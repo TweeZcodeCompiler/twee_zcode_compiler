@@ -267,7 +267,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::load(std::string source, std::string tar
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::store(std::string target, std::string value) {
-    return addInstruction(instruction::STORE_COMMAND, value, nullopt, target);
+    return addInstruction(instruction::STORE_COMMAND,makeArgs({target, value}) ,nullopt,nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::add(std::string left, std::string right, std::string storeTarget) {
