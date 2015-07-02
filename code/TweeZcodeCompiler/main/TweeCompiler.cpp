@@ -66,10 +66,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     int possibleIfDepth = 255;
     std::array<std::string,12> nextJumpLabels;
     std::array<std::string,12> endJumpLabels;
-    std::array<int,12> precedingIfMacros= {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    for(auto precedingIfMacro = precedingIfMacros.begin(); precedingIfMacro != precedingIfMacros.end(); ++precedingIfMacro) {
-        LOG_DEBUG << precedingIfMacro;
-    }
     {
         int i = 0;
         for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
@@ -169,7 +165,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                             assgen.push("0");
                         }
                         assgen.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
-                        precedingIfMacros[ifDepth] = 1;
+                        //precedingIfMacros[ifDepth] = 1;
                     } else if (ElseIfMacro * elseifmacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
                         //check preceding ifmacro
                         //save label for jump to after if/else if block , in this case else
@@ -208,7 +204,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                             assgen.push("0");
                         }
                         assgen.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
-                        precedingIfMacros[ifDepth] = 2;
+                       // precedingIfMacros[ifDepth] = 2;
                     } else if (ElseMacro * elsemacro = dynamic_cast<ElseMacro *>(bodyPart)) {
                         //check preceding ifmacro
                         //save label for jump to after if/else if block , in this case else
@@ -233,7 +229,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                         */
                         assgen.jump(endJumpLabels[ifDepth]);
                         assgen.addLabel(nextJumpLabels[ifDepth]);
-                        precedingIfMacros[ifDepth] = 3;
+                        //precedingIfMacros[ifDepth] = 3;
                     } else if (EndIfMacro * endifemacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
                         //check preceding ifmacro
                         //make jump to set label if expression is trueJumpLabels[ifDepth];
@@ -250,7 +246,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                          */
                         assgen.addLabel(endJumpLabels[ifDepth]);
                         ifDepth--;
-                        precedingIfMacros[ifDepth] = 0;
+                        //precedingIfMacros[ifDepth] = 0;
                     }
                 }
             }
