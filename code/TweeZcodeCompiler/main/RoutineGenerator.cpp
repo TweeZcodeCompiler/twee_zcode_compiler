@@ -107,6 +107,8 @@ void RoutineGenerator::printString(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1);
     checkParamType(params, NAME);
 
+    string b = (*params.at(0)).name;
+
     ZCodeConverter converter = ZCodeConverter();
     vector<bitset<8>> zsciiString = converter.convertStringToZSCII((*params.at(0)).name);
     vector<bitset<8>> instruction = vector<bitset<8>>();
