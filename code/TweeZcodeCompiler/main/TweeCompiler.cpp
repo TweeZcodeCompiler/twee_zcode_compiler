@@ -130,10 +130,31 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                     LOG_DEBUG << "Found a Macro";
                     if (IfMacro * ifmacro = dynamic_cast<IfMacro *>(macro)) {
                         //depth++,
+                        //check preceding ifmacro
                         //set label for jump to after if block (else, else if, endif)
                         //evaluate expression
                         //make jump to set label if expression is true
                         ifDepth++;
+                        if (precedingIfMacros[ifDepth] != 0) {
+                            std::string errorMessage = "unexpected IfMacro after ";
+
+                            switch(precedingIfMacros[ifDepth]) {
+                                case 1:
+                                    errorMessage += "another if IfMacro: ";
+                                    errorMessage += "check your code for an <<[ ]*if.*>> not followed by an <<endif>> before another <<[ ]*if.*>>";
+                                    break;
+                                case 2:
+                                    errorMessage += "an ElseIfMacro: ";
+                                    errorMessage += "check your code for an <<[ ]*else[ ]*if.*>> not followed by an <<endif>> before another <<[ ]*if.*>>";
+                                    break;
+                                case 3:
+                                    errorMessage += "an ElseIfMacro: ";
+                                    errorMessage += "check your code for an <<[ ]*else[ ]*>> not followed by an <<endif>> before another <<[ ]*if.*>>";
+                                    break;
+                            }
+                            cerr << errorMessage;
+                            throw TweeDocumentException();
+                        }
                         nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
                         endJumpLabels[ifDepth] = IF_JUMP_END_LABEL + std::to_string(++ifEndJumpLabelID);
                         //TODO: evaluate expression IfMacro
@@ -147,12 +168,29 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                         assgen.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
                         precedingIfMacros[ifDepth] = 1;
                     } else if (ElseIfMacro * elseifmacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
+                        //check preceding ifmacro
                         //save label for jump to after if/else if block , in this case else
                         //make jump to set label if expression is true
                         //set label for jump to after if block (else, else if, endif)
                         //evaluate expression
                         //make jump to set label if expression is true
                         //else part
+                        if (precedingIfMacros[ifDepth] != 1 || precedingIfMacros[ifDepth] != 2) {
+                            std::string errorMessage = "unexpected ElseIfMacro ";
+
+                            switch(precedingIfMacros[ifDepth]) {
+                                case 0:
+                                    errorMessage += "without a starting ifMacro: ";
+                                    errorMessage += "check your code for an <<[ ]*else[ ]*if.*>> without an associated <<if.*>>";
+                                    break;
+                                case 3:
+                                    errorMessage += "after an ElseMacro";
+                                    errorMessage += "check your code for an <<[ ]*else[ ]*if.*>> after an <<[ ]*else[ ]*>>";
+                                    break;
+                            }
+                            cerr << errorMessage;
+                            throw TweeDocumentException();
+                        }
                         assgen.jump(endJumpLabels[ifDepth]);
                         assgen.addLabel(nextJumpLabels[ifDepth]);
                         nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
@@ -167,14 +205,37 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                         assgen.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "0"}) , nextJumpLabels[ifDepth]);
                         precedingIfMacros[ifDepth] = 2;
                     } else if (ElseMacro * elsemacro = dynamic_cast<ElseMacro *>(bodyPart)) {
+                        //check preceding ifmacro
                         //save label for jump to after if/else if block , in this case else
                         //make jump to set label if expression is true
+                        if (precedingIfMacros[ifDepth] != 1 || precedingIfMacros[ifDepth] != 2) {
+                            std::string errorMessage = "unexpected ElseMacro ";
+
+                            switch(precedingIfMacros[ifDepth]) {
+                                case 0:
+                                    errorMessage += "without a starting ifMacro: ";
+                                    errorMessage += "check your code for an <<[ ]*else[ ]*>> without an associated <<if.*>>";
+                                    break;
+                                case 3:
+                                    errorMessage += "after an ElseMacro";
+                                    errorMessage += "check your code for an <<[ ]*else[ ]*>> after an <<[ ]*else[ ]*>>";
+                                    break;
+                            }
+                            cerr << errorMessage;
+                            throw TweeDocumentException();
+                        }
                         assgen.jump(endJumpLabels[ifDepth]);
                         assgen.addLabel(nextJumpLabels[ifDepth]);
                         precedingIfMacros[ifDepth] = 3;
                     } else if (EndIfMacro * endifemacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
+                        //check preceding ifmacro
                         //make jump to set label if expression is trueJumpLabels[ifDepth];
                         //decrease depth
+                        if (precedingIfMacros[ifDepth] == 0) {
+                            std::string errorMessage = "unexpected EndIfMacro without an if macro, look for an orphaned <<[ ]*endif[ ]*>> ";
+                            cerr << errorMessage;
+                            throw TweeDocumentException();
+                        }
                         assgen.addLabel(endJumpLabels[ifDepth]);
                         ifDepth--;
                         precedingIfMacros[ifDepth] = 0;
