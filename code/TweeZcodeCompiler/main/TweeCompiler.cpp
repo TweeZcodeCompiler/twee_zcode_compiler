@@ -216,7 +216,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                         throw TweeDocumentException();
                     }
                      */
-                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"1", "1"}) , endJumpLabels[ifDepth]);
+                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"0", "1"}) , endJumpLabels[ifDepth]);
                     ASSGEN.addLabel(nextJumpLabels[ifDepth]);
                     nextJumpLabels[ifDepth] = IF_JUMP_LABEL + std::to_string(++ifJumpLabelID);
                     //TODO: evaluate expression ElseIfMacro
@@ -245,7 +245,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                         throw TweeDocumentException();
                     }
                     */
-                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"1", "1"}) , endJumpLabels[ifDepth]);
+                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"0", "1"}) , endJumpLabels[ifDepth]);
                     ASSGEN.addLabel(nextJumpLabels[ifDepth]);
                     //precedingIfMacros[ifDepth] = 3;
                 } else if (EndIfMacro * endifemacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
