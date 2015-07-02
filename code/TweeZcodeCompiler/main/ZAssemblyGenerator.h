@@ -58,6 +58,12 @@ public:
     
     ZAssemblyGenerator &jumpGreater(std::string args, std::string targetLabel);
 
+    ZAssemblyGenerator &jumpGreaterEquals(std::string args, std::string targetLabel);
+
+    ZAssemblyGenerator &jumpLower(std::string args, std::string targetLabel);
+
+    ZAssemblyGenerator &jumpLowerEquals(std::string args, std::string targetLabel);
+
     ZAssemblyGenerator &read_char(std::string storeTarget);
 
     ZAssemblyGenerator &quit();
@@ -69,10 +75,12 @@ public:
     ZAssemblyGenerator &setTextStyle(bool, bool, bool);
 
     ZAssemblyGenerator &print(std::string str);
-
-    ZAssemblyGenerator &push(std::string arg);
     
     ZAssemblyGenerator &println(std::string str);
+
+    ZAssemblyGenerator &print_num(std::string value);
+
+    ZAssemblyGenerator &push(std::string value);
 
     ZAssemblyGenerator &variable(std::string variable);
     ZAssemblyGenerator &store(std::string variableName, int value);
