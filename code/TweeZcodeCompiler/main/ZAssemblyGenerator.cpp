@@ -255,7 +255,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::print_num(string source) {
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::push(string value) {
-    return addInstruction(instruction::PUSH_COMMAND, value, nullopt, STACK_POINTER);
+    return addInstruction(instruction::PUSH_COMMAND, value, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::variable(string variable) {
