@@ -61,14 +61,11 @@ some stated 'goals':
 PASSAGE_START           ::
 BODY_PASSAGE_START      ::
 NEWLINE                 \n
+WINDOWS_NEWLINE         \n\r
 WHITESPACE              [ \t]
-
- /*TITLE_CHAR              [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}] */
-TITLE                   [a-zA-Z0-9_\-="+\\/?.,\t ]
 
 TAGS_OPEN               \[
 TAGS_CLOSE              \]
- /*TAG_CHAR                [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}]*/
 TAG                     [a-zA-Z0-9\-_="'!+\\/?.,]+
 
 MATCH_REST                  .*
@@ -188,7 +185,7 @@ EXPR_TO                to|=
     /*To:   HeaderTags, Body    */
 
     /* Title of the Passage */
-<HeaderTitle>[^{TAGS_OPEN}{NEWLINE}]+{
+<HeaderTitle>[^\[\n]+           {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << " HeaderTitle" << " matched Token" << " TITLE";
                                 SAVE_STRING;
                                 return BisonParser::token::TITLE;
@@ -256,8 +253,16 @@ EXPR_TO                to|=
 
     /* End of HeaderTags */
 <HeaderTagsClose>{NEWLINE}      {
+                                yyless(1);
                                 BEGIN(Body);
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "HeaderTagsClose" << " matched Token " << "NEWLINE";
+                                return BisonParser::token::NEWLINE;
+                                }
+
+<HeaderTagsClose>{WINDOWS_NEWLINE}  {
+                                yyless(2);
+                                BEGIN(Body);
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "HeaderTagsClose" << " matched Token" << "WINDOWS_NEWLINE";
                                 return BisonParser::token::NEWLINE;
                                 }
 
