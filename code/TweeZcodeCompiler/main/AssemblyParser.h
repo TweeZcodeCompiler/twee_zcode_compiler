@@ -57,6 +57,7 @@ private:
     static const std::string RET_FALSE_COMMAND;
     static const std::string PRINT_RET_COMMAND;
     static const std::string RESTART_COMMAND;
+    static const std::string POP_COMMAND;
     static const std::string RET_POPPED_COMMAND;
     static const std::string VERIFY_COMMAND;
     static const std::string STOREB_COMMAND;

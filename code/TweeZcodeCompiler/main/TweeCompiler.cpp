@@ -12,6 +12,7 @@
 #include <sstream>
 #include <iostream>
 #include <set>
+#include <array>
 
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
@@ -19,16 +20,26 @@
 
 #include <Passage/Body/Expressions/BinaryOperation.h>
 #include <Passage/Body/Expressions/UnaryOperation.h>
+#include <algorithm>
+
+#include <plog/Log.h>
 #include <Passage/Body/Expressions/Const.h>
 #include <Passage/Body/Expressions/Variable.h>
 
 #include <Passage/Body/Macros/Print.h>
 #include <Passage/Body/Macros/SetMacro.h>
 
+#include <Passage/Body/Expressions/Variable.h>
+#include <Passage/Body/Macros/IfMacro.h>
+#include <Passage/Body/Macros/ElseIfMacro.h>
+#include <Passage/Body/Macros/ElseMacro.h>
+#include <Passage/Body/Macros/EndIfMacro.h>
+
 
 
 using namespace std;
 using namespace std::experimental;
+
 
 static const string GLOB_PASSAGE = "PASSAGE_PTR",
         GLOB_PASSAGES_COUNT = "PASSAGES_COUNT",
@@ -40,6 +51,8 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         ROUTINE_PASSAGE_BY_ID = "passage_by_id",
         ROUTINE_NAME_FOR_PASSAGE = "print_name_for_passage",
         ROUTINE_DISPLAY_LINKS = "display_links",
+        ELSE_LABEL_PREFIX = "ELSE",
+        ENDIF_LABEL_PREFIX = "ENDIF",
         ROUTINE_CLEAR_TABLES = "reset_tables";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
@@ -72,6 +85,14 @@ string labelForPassage(Passage &passage) {
     maskString(passageName);
     ss << "L_" << passageName;
     return ss.str();
+}
+
+string makeIfCaseLabel(const IfContext& context) {
+    return ELSE_LABEL_PREFIX + to_string(context.number) + "_" + to_string(context.caseCount);
+}
+
+string makeIfEndLabel(const IfContext& context) {
+    return ENDIF_LABEL_PREFIX + to_string(context.number);
 }
 
 
@@ -117,12 +138,10 @@ string makeClearTablesRoutine() {
 
 void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     _assgen = unique_ptr<ZAssemblyGenerator>(new ZAssemblyGenerator(out));
-
     vector<Passage> passages = tweeFile.getPassages();
-
     globalVariables = std::set<std::string>();
-
     labelCount = 0;
+    ifContexts = stack<IfContext>();
 
     {
         int i = 0;
@@ -215,6 +234,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
             //  print passage contents
             for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
+                size_t ifDepth = ifContexts.size();
+
                 BodyPart* bodyPart = it->get();
                 if(Text* text = dynamic_cast<Text*>(bodyPart)) {
                     ASSGEN.print(text->getContent());
@@ -228,29 +249,70 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
                     evalExpression(print->getExpression().get());
                     ASSGEN.print_num("sp");
+                } else if (IfMacro * ifmacro = dynamic_cast<IfMacro *>(bodyPart)) {
+                    //check preceding ifmacro
+                    ifContexts.push(makeNextIfContext());
+                    //set label for jump to after if block (else, else if, endif)
+                    //evaluate expression
+                    //make jump to set label if expression is true
+                    evalExpression(ifmacro->getExpression().get());
+                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
+                } else if (ElseIfMacro * elseifmacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
+                    //check preceding ifmacro
+                    if(ifContexts.empty()) {
+                        throw TweeDocumentException("else if macro encountered without preceding if macro");
+                    }
+
+                    //save label for jump to after if/else if block , in this case else
+                    //make jump to set label if expression is true
+                    //set label for jump to after if block (else, else if, endif)
+                    //evaluate expression
+                    //make jump to set label if expression is true
+                    //else part
+                    ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
+                    ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
+                    ifContexts.top().caseCount++;
+                    evalExpression(elseifmacro->getExpression().get());
+                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
+                } else if (ElseMacro * elsemacro = dynamic_cast<ElseMacro *>(bodyPart)) {
+                    //check preceding ifmacro
+                    if(ifContexts.empty()) {
+                        throw TweeDocumentException("else macro encountered without preceding if macro");
+                    }
+                    //save label for jump to after if/else if block , in this case else
+                    //make jump to set label if expression is true
+                    ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
+                    ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
+                    ifContexts.top().caseCount++;
+                } else if (EndIfMacro * endifemacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
+                    //check preceding ifmacro
+                    if(ifContexts.empty()) {
+                        throw TweeDocumentException("endif macro encountered without preceding if macro");
+                    }
+                    //make jump to set label if expression is trueJumpLabels[ifDepth];
+
+                    ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
+                    ASSGEN.addLabel(makeIfEndLabel(ifContexts.top()));
+
+                    ifContexts.pop();
                 } else if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
                     LOG_DEBUG << "generate SetMacro assembly code";
 
-                    if (BinaryOperation *binaryOperation = (BinaryOperation *) (op->getExpression().get())) {
-                        if (Variable *variable = (Variable *) (binaryOperation->getLeftSide().get())) {
-                            std::string variableName = variable->getName();
-                            variableName = variableName.erase(0, 1); //remove the $ symbol
-
-                            // TODO: merge this with evalExpression
-                            if (Utils::contains<std::string>(globalVariables, variableName)) {
-                                ASSGEN.push(variableName);
-                            } else {
-                                globalVariables.insert(variableName);
-                                ASSGEN.addGlobal(variableName);
-                                ASSGEN.push(variableName);
-                            }
-
-                            evalExpression(binaryOperation->getRightSide().get());
-
-                            ASSGEN.load("sp", variableName);
+                    if ( BinaryOperation *binaryOperation = (BinaryOperation *) (op->getExpression().get()) ) {
+                        bool isAssignment = binaryOperation->getOperator() == BinOps::TO;
+                        if (isAssignment) {
+                            evalAssignment(binaryOperation);
+                            ASSGEN.pop();
                         }
+                    } else {
+                        throw TweeDocumentException("set macro didn't contain an assignment");
                     }
                 }
+            }
+
+            // unclosed if-macro
+            if(ifContexts.size() > 0) {
+                throw TweeDocumentException("unclosed if macro");
             }
 
             ASSGEN.ret("0");
@@ -258,12 +320,39 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     }
 }
 
+IfContext TweeCompiler::makeNextIfContext() {
+    IfContext context;
+    context.number = ifCount++;
+    return context;
+}
+
+void TweeCompiler::evalAssignment(BinaryOperation *expression) {
+    if (expression->getOperator() == BinOps::TO) {
+        if (Variable *variable = (Variable *) (expression->getLeftSide().get())) {
+            std::string variableName = variable->getName();
+            variableName = variableName.erase(0, 1); //remove the $ symbol
+
+            if (!Utils::contains<std::string>(globalVariables, variableName)) {
+                globalVariables.insert(variableName);
+                ASSGEN.addGlobal(variableName);
+            }
+
+            evalExpression(expression->getRightSide().get());
+
+            ASSGEN.load("sp", variableName);
+            ASSGEN.push(variableName);
+        } else {
+            throw TweeDocumentException("left side of set assignment was not a variable");
+        }
+    }
+}
+
 void TweeCompiler::evalExpression(Expression *expression) {
 
     if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
-
         ASSGEN.push(std::to_string(constant->getValue()));
-
+    } else if (Const<bool> *constant = dynamic_cast<Const<bool> *>(expression)) {
+        ASSGEN.push(std::to_string(constant->getValue()));
     } else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
 
         std::string prunedVarName = variable->getName().substr(1);
@@ -276,13 +365,17 @@ void TweeCompiler::evalExpression(Expression *expression) {
             ASSGEN.push(prunedVarName);
         }
 
-    } else if (BinaryOperation *binOp = dynamic_cast<BinaryOperation *>(expression)) {
+    } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
         std::pair<std::string, std::string> labels;
 
-        TweeCompiler::evalExpression(binOp->getLeftSide().get());
-        TweeCompiler::evalExpression(binOp->getRightSide().get());
+        if (binaryOperation->getOperator() == BinOps::TO) {
+            evalAssignment(binaryOperation);
+        }
 
-        switch (binOp->getOperator()) {
+        TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
+        TweeCompiler::evalExpression(binaryOperation->getRightSide().get());
+
+        switch (binaryOperation->getOperator()) {
             case BinOps::ADD:
                 ASSGEN.add("sp", "sp", "sp");
                 break;

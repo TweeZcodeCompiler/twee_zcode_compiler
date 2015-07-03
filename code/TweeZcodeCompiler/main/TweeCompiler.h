@@ -10,12 +10,20 @@
 #include <map>
 #include <set>
 #include <Passage/Body/Expressions/Expression.h>
+#include <stack>
+#include <Passage/Body/Expressions/BinaryOperation.h>
+
+struct IfContext {
+    unsigned caseCount = 0;
+    unsigned number = 0;
+};
 
 class TweeCompiler : public ITweeCompiler {
 public:
     void compile(TweeFile& tweeDoc, std::ostream& out);
 
     void evalExpression(Expression *);
+    void evalAssignment(BinaryOperation * expression);
 
     std::pair<std::string, std::string> makeLabels(std::string);
 
@@ -26,6 +34,11 @@ private:
 
     std::set<std::string> globalVariables;
     int labelCount;
+    std::stack<IfContext> ifContexts;
+    unsigned ifCount = 0;
+
+    IfContext makeNextIfContext();
+
 };
 
 
