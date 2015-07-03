@@ -47,9 +47,6 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
         log("Parsed twee file");
         tweeCompiler.compile(*tweeFile, buffer);
 
-        //ofstream file(outputFileName+".zas", ios::out);
-        //file << buffer.rdbuf();
-
         if(outputAssembly) {
             ofstream file(outputFileName, ios::out);
             file << buffer.rdbuf();
