@@ -173,7 +173,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
                 .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, "sp")
-                .call_vs(ROUTINE_CLEAR_TABLES, nullopt, "sp")
+                .call_1n(ROUTINE_CLEAR_TABLES)
                 .call_vs(ROUTINE_PASSAGE_BY_ID, string("sp"), "sp")
                 .jump(LABEL_MAIN_LOOP);
 
