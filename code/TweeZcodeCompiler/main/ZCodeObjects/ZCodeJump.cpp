@@ -36,7 +36,7 @@ void ZCodeJump::addCondBranchOffset() {
     }
     bool useOneByte = false;
     if(!isCondJump){
-        bitset<16> bitsetOffset(offset);
+        bitset<16> bitsetOffset(--offset);
 
         for (size_t i = 0; i < 8; i++) {
             secondHalf.set(i, bitsetOffset[i]);
@@ -49,21 +49,21 @@ void ZCodeJump::addCondBranchOffset() {
         this->adress.push_back(secondHalf);
         this->size = 2;
         return;
-    }else {
-
-        // Offset needs to be between 0 and 63 to fit into 6 bits
-        useOneByte = offset > 0 && (offset - 1) < 64;
-
-        firstHalf.set(RoutineGenerator::JUMP_COND_TRUE, jumpIfCondTrue);
-        firstHalf.set(RoutineGenerator::JUMP_OFFSET_5_BIT, useOneByte);
     }
+
+    // Offset needs to be between 0 and 63 to fit into 6 bits
+    useOneByte = offset > 0 && (offset - 1) < 64;
+
+    firstHalf.set(RoutineGenerator::JUMP_COND_TRUE, jumpIfCondTrue);
+    firstHalf.set(RoutineGenerator::JUMP_OFFSET_5_BIT, useOneByte);
+
     if (useOneByte) {
         bitset<6> bitsetOffset(offset);
 
         for (size_t i = 0; i < 6; i++) {
             firstHalf.set(i, bitsetOffset[i]);
         }
-    this->adress.push_back(firstHalf);
+        this->adress.push_back(firstHalf);
         this->size = 1;
     } else {
         bitset<14> bitsetOffset(offset);
