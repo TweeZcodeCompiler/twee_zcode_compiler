@@ -1,0 +1,14 @@
+::Start 
+Die glorreiche Addition von zwei Zahlen über Set, Print, Display und If Else
+
+$a = <<set $a = 10>><<print $a>>
+$b = <<set $b = 22>><<print $b>>
+<<display ADD>>
+::ADD
+<<if $a >= 0>>
+$a = <<print $a>> <<set $a = $a-1>>
+$b = <<print $b>> <<set $b = $b+1>>
+<<display ADD>>
+<<else if $a is 0>>
+FERITG!
+<<endif>>

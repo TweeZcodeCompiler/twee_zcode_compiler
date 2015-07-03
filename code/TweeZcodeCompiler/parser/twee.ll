@@ -619,7 +619,7 @@ EXPR_TO                to|=
                                 return BisonParser::token::MACRO_ELSE;
                                 }
 
-<BodyMacro>{MACRO_IF}{WHITESPACE}+{MACRO_ELSE} 		    {
+<BodyMacro>{MACRO_ELSE}{WHITESPACE}*{MACRO_IF} 		    {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"MACRO_ELSE_IF" << " with value " << YYText();
                                 return BisonParser::token::MACRO_ELSE_IF;
                                 }

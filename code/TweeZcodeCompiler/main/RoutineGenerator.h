@@ -136,15 +136,21 @@ public:
 
     void div(std::vector<std::unique_ptr<ZParam>> params);
 
+    void mod(std::vector<std::unique_ptr<ZParam>> params);
+
     void doAND(std::vector<std::unique_ptr<ZParam>> params);
 
     void doOR(std::vector<std::unique_ptr<ZParam>> params);
+
+    void doNOT(std::vector<std::unique_ptr<ZParam>> params);
 
     void returnTrue();
 
     void returnFalse();
 
     void retPopped();
+
+    void pop();
 
     void printRet(std::vector<std::unique_ptr<ZParam>> params);
 
@@ -207,10 +213,14 @@ public:
                 MUL = 22,
         // Opcode : 2OP:23 17 div a b -> (result)
                 DIV = 23,
+        // Opcode : 2OP:24 18 mod a b -> (result)
+                MOD = 24,
         // Opcode : 2OP:9 9 and a b -> (result)
                 AND = 9,
         // Opcode : 2OP:8 8 or a b -> (result)
                 OR = 8,
+        // Opcode : VAR:248 18 not value -> (result)
+                NOT = 248,
         // Opcode: return true
                 RETURN_TRUE = 176,
         // Opcode: return false
@@ -221,6 +231,8 @@ public:
                 RESTART = 183,
         // Opcode: Pops top of stack and returns that. (This is equivalent to ret sp, but is one byte cheaper.)
                 RET_POPPED = 184,
+        //Throws away the top item on the stack. (This was useful to lose unwanted routine call results in early Versions.)
+                POP = 185,
         // Opcode: Verification
                 VERIFY = 189,
         // Opcode: VAR:226 2 storeb array byte-index value

@@ -8,7 +8,9 @@
 #include <bitset>
 #include <vector>
 #include <cstdint>
+#include <algorithm>
 #include <map>
+#include <set>
 
 class Utils {
 
@@ -25,6 +27,11 @@ public:
     static void append(std::vector<std::bitset<8>> &head, std::vector<std::bitset<8>> &tail);
 
     static void insertPaddingToNextRoutine(std::vector<std::bitset<8>> &bitsets, size_t routineOffset);
+
+    template<typename T>
+    static bool contains(std::set<T> set, T elem) {
+        return (std::find(set.begin(), set.end(), elem) != set.end());
+    }
 };
 
 
