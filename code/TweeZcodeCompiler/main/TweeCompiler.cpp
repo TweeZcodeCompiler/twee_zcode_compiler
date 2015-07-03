@@ -298,25 +298,11 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 } else if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
                     LOG_DEBUG << "generate SetMacro assembly code";
 
-                    if (BinaryOperation *binaryOperation = (BinaryOperation *) (op->getExpression().get())) {
-                        if (Variable *variable = (Variable *) (binaryOperation->getLeftSide().get())) {
-                            std::string variableName = variable->getName();
-                            variableName = variableName.erase(0, 1); //remove the $ symbol
-
-                            // TODO: merge this with evalExpression
-                            if (Utils::contains<std::string>(globalVariables, variableName)) {
-                                ASSGEN.push(variableName);
-                            } else {
-                                globalVariables.insert(variableName);
-                                ASSGEN.addGlobal(variableName);
-                                ASSGEN.push(variableName);
-                            }
-
-                            evalExpression(binaryOperation->getRightSide().get());
-
-                            ASSGEN.load("sp", variableName);
-                        } else {
-                            throw TweeDocumentException("left side of set assignment was not a variable");
+                    if ( BinaryOperation *binaryOperation = (BinaryOperation *) (op->getExpression().get()) ) {
+                        bool isAssignment = binaryOperation->getOperator() == BinOps::TO;
+                        if (isAssignment) {
+                            evalAssignment(binaryOperation);
+                            ASSGEN.pop();
                         }
                     } else {
                         throw TweeDocumentException("set macro didn't contain an assignment");
@@ -340,6 +326,26 @@ IfContext TweeCompiler::makeNextIfContext() {
     return context;
 }
 
+void TweeCompiler::evalAssignment(BinaryOperation *expression) {
+    if (expression->getOperator() == BinOps::TO) {
+        if (Variable *variable = (Variable *) (expression->getLeftSide().get())) {
+            std::string variableName = variable->getName();
+            variableName = variableName.erase(0, 1); //remove the $ symbol
+
+            if (!Utils::contains<std::string>(globalVariables, variableName)) {
+                globalVariables.insert(variableName);
+                ASSGEN.addGlobal(variableName);
+            }
+
+            evalExpression(expression->getRightSide().get());
+
+            ASSGEN.load("sp", variableName);
+            ASSGEN.push(variableName);
+        } else {
+            throw TweeDocumentException("left side of set assignment was not a variable");
+        }
+    }
+}
 
 void TweeCompiler::evalExpression(Expression *expression) {
 
@@ -359,13 +365,17 @@ void TweeCompiler::evalExpression(Expression *expression) {
             ASSGEN.push(prunedVarName);
         }
 
-    } else if (BinaryOperation *binOp = dynamic_cast<BinaryOperation *>(expression)) {
+    } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
         std::pair<std::string, std::string> labels;
 
-        TweeCompiler::evalExpression(binOp->getLeftSide().get());
-        TweeCompiler::evalExpression(binOp->getRightSide().get());
+        if (binaryOperation->getOperator() == BinOps::TO) {
+            evalAssignment(binaryOperation);
+        }
 
-        switch (binOp->getOperator()) {
+        TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
+        TweeCompiler::evalExpression(binaryOperation->getRightSide().get());
+
+        switch (binaryOperation->getOperator()) {
             case BinOps::ADD:
                 ASSGEN.add("sp", "sp", "sp");
                 break;

@@ -82,6 +82,8 @@ public:
 
     ZAssemblyGenerator &push(std::string value);
 
+    ZAssemblyGenerator &pop();
+
     ZAssemblyGenerator &variable(std::string variable);
 
     ZAssemblyGenerator &loadb(std::string arrayName, unsigned int index, std::string storeTarget);

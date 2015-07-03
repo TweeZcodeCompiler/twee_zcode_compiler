@@ -279,6 +279,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::push(string value) {
     return addInstruction(instruction::PUSH_COMMAND, value, nullopt, nullopt);
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::pop() {
+    return addInstruction(instruction::POP_COMMAND, nullopt, nullopt, nullopt);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::variable(string variable) {
     return addInstruction(instruction::NOTHING, variable.substr(1), nullopt, nullopt);
 }
@@ -328,3 +332,4 @@ ZAssemblyGenerator &ZAssemblyGenerator::nop() {
     return addInstruction(instruction::PUSH_COMMAND, string("0"), nullopt, nullopt)
             .addInstruction(instruction::POP_COMMAND, nullopt, nullopt, nullopt);
 }
+
