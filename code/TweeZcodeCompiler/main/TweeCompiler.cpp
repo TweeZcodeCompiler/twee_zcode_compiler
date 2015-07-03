@@ -99,14 +99,14 @@ string makeIfEndLabel(const IfContext& context) {
 string makeUserInputRoutine() {
     return ".FUNCT display_links i, selectcount\n"
             "loop_start:\n"
-            "loadb PASSAGES i -> sp\n"
+            "loadb LINKED_PASSAGES i -> sp\n"
             "jz sp ?passage_not_set\n"
             "storeb USERINPUT_LOOKUP selectcount i\n"
             "add selectcount 1 -> sp\n"
             "add selectcount 49 -> sp\n"
             "print_char sp\n"
             "print \": \"\n"
-            "call_vs print_name_for_passage_id i -> sp\n"
+            "call_vs print_name_for_passage i -> sp\n"
             "new_line\n"
             "add selectcount 1 -> selectcount\n"
             "\n"
@@ -127,7 +127,7 @@ string makeUserInputRoutine() {
 string makeClearTablesRoutine() {
     return ".FUNCT reset_tables i\n"
             "loop_start:\n"
-            "storeb PASSAGES i 0\n"
+            "storeb LINKED_PASSAGES i 0\n"
             "storeb USERINPUT_LOOKUP i 0\n"
             "add i 1 -> i\n"
             "jl i PASSAGES_COUNT ?loop_start\n"
@@ -167,14 +167,13 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         // call start routine first
         ASSGEN.addRoutine(ROUTINE_MAIN)
                 .markStart()
+                .store(GLOB_PASSAGES_COUNT, to_string(passages.size()))
+                .call_1n(ROUTINE_CLEAR_TABLES)
                 .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string("Start"))), "sp");
 
-        // initialize globals
-        ASSGEN.store(GLOB_PASSAGES_COUNT, to_string(passages.size()));
-
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
-                .call_vs(ROUTINE_DISPLAY_LINKS, string("sp"), "sp")
-                .call_vs(ROUTINE_CLEAR_TABLES, nullopt, "sp")
+                .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, "sp")
+                .call_1n(ROUTINE_CLEAR_TABLES)
                 .call_vs(ROUTINE_PASSAGE_BY_ID, string("sp"), "sp")
                 .jump(LABEL_MAIN_LOOP);
 
