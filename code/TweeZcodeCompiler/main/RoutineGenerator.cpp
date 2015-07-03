@@ -594,11 +594,12 @@ void RoutineGenerator::setLocalVariable(string name, int16_t value) {
     size_t size = locVariables.size() + 1;
     locVariables[name] = size;   // first local variable is at address 1 in stack
 
-    vector<unique_ptr<ZParam>> params;
-    params.push_back(unique_ptr<ZParam>(new ZVariableParam(locVariables[name])));
-    params.push_back(unique_ptr<ZParam>(new ZValueParam(value)));
-
-    store(move(params));
+    if (value != 0) {   // local parameter are always initialized with 0
+        vector<unique_ptr<ZParam>> params2;
+        params2.push_back(unique_ptr<ZParam>(new ZVariableParam(locVariables[name])));
+        params2.push_back(unique_ptr<ZParam>(new ZValueParam(value)));
+        store(move(params2));
+    }
 }
 
 // params: address
