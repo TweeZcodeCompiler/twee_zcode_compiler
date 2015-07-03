@@ -562,7 +562,12 @@ void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {
 
     // TODO: Test again
 
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, *params.at(0));
+    // convert variable to small constant
+    ZVariableParam* varParam = (ZVariableParam *) params.at(0).get();
+
+    ZValueParam valParam(varParam->getZCodeValue());
+
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, valParam);
     instructions.push_back(numberToBitset((*params.at(1)).getZCodeValue()));
     addBitset(instructions);
 }
