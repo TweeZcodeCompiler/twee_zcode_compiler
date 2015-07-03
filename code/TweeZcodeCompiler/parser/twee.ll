@@ -188,7 +188,7 @@ EXPR_TO                to|=
     /*To:   HeaderTags, Body    */
 
     /* Title of the Passage */
-<HeaderTitle>{TITLE}+            {
+<HeaderTitle>[^{TAGS_OPEN}{NEWLINE}]+{
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << " HeaderTitle" << " matched Token" << " TITLE";
                                 SAVE_STRING;
                                 return BisonParser::token::TITLE;
@@ -203,8 +203,16 @@ EXPR_TO                to|=
 
     /* Everything except :: */
 <HeaderTitle>{NEWLINE}          {
+                                yyless(1);
                                 BEGIN(Body);
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "HeaderTitle" << " matched Token" << "NEWLINE";
+                                return BisonParser::token::NEWLINE;
+                                }
+
+<HeaderTitle>{WINDOWS_NEWLINE}  {
+                                yyless(2);
+                                BEGIN(Body);
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "HeaderTitle" << " matched Token" << "WINDOWS_NEWLINE";
                                 return BisonParser::token::NEWLINE;
                                 }
 
