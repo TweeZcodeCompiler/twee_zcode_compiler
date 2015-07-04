@@ -75,7 +75,7 @@ string routineNameForPassageName(std::string passageName) {
 }
 
 
-string routineNameForPassage(Passage &passage) {
+string routineNameForPassage(const Passage &passage) {
     return routineNameForPassageName(passage.getHead().getName());
 }
 
@@ -142,6 +142,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     globalVariables = std::set<std::string>();
     labelCount = 0;
     ifContexts = stack<IfContext>();
+    ifCount = 0;
 
     {
         int i = 0;
@@ -222,101 +223,88 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     }
 
     // passage routines
-    {
-        for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
-            const vector<unique_ptr<BodyPart>> &bodyParts = passage->getBody().getBodyParts();
+    for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
+        makePassageRoutine(*passage);
+    }
+}
 
-            // declare passage routine
-            ASSGEN.addRoutine(routineNameForPassage(*passage));
+void TweeCompiler::makePassageRoutine(const Passage &passage) {
+    auto& bodyParts = passage.getBody().getBodyParts();
 
-            ASSGEN.println(string("***** ") + passage->getHead().getName() + string(" *****"));
+    // declare passage routine
+    ASSGEN.addRoutine(routineNameForPassage(passage));
 
-            //  print passage contents
-            for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
-                size_t ifDepth = ifContexts.size();
+    ASSGEN.println(string("***** ") + passage.getHead().getName() + string(" *****"));
 
-                BodyPart* bodyPart = it->get();
-                if(Text* text = dynamic_cast<Text*>(bodyPart)) {
-                    ASSGEN.print(text->getContent());
-                } else if (Variable* variable = dynamic_cast<Variable*>(bodyPart)) {
-                    ASSGEN.variable(variable->getName());
-                } else if (Link* link = dynamic_cast<Link*>(bodyPart)) {
-                    // TODO: catch invalid link
-                    ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
-                } else if (Newline* text = dynamic_cast<Newline*>(bodyPart)) {
-                    ASSGEN.newline();
-                } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
-                    evalExpression(print->getExpression().get());
-                    ASSGEN.print_num("sp");
-                } else if (IfMacro * ifmacro = dynamic_cast<IfMacro *>(bodyPart)) {
-                    //check preceding ifmacro
-                    ifContexts.push(makeNextIfContext());
-                    //set label for jump to after if block (else, else if, endif)
-                    //evaluate expression
-                    //make jump to set label if expression is true
-                    evalExpression(ifmacro->getExpression().get());
-                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
-                } else if (ElseIfMacro * elseifmacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
-                    //check preceding ifmacro
-                    if(ifContexts.empty()) {
-                        throw TweeDocumentException("else if macro encountered without preceding if macro");
-                    }
+    //  print passage contents
+    for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
+        BodyPart* bodyPart = it->get();
+        if(Text* text = dynamic_cast<Text*>(bodyPart)) {
+            ASSGEN.print(text->getContent());
+        } else if (Variable* variable = dynamic_cast<Variable*>(bodyPart)) {
+            ASSGEN.variable(variable->getName());
+        } else if (Link* link = dynamic_cast<Link*>(bodyPart)) {
+            // TODO: catch invalid link
+            ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
+        } else if (Newline* newLine = dynamic_cast<Newline*>(bodyPart)) {
+            ASSGEN.newline();
+        } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
+            evalExpression(print->getExpression().get());
+            ASSGEN.print_num("sp");
+        } else if (IfMacro * ifMacro = dynamic_cast<IfMacro *>(bodyPart)) {
+            ifContexts.push(makeNextIfContext());
 
-                    //save label for jump to after if/else if block , in this case else
-                    //make jump to set label if expression is true
-                    //set label for jump to after if block (else, else if, endif)
-                    //evaluate expression
-                    //make jump to set label if expression is true
-                    //else part
-                    ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
-                    ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
-                    ifContexts.top().caseCount++;
-                    evalExpression(elseifmacro->getExpression().get());
-                    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
-                } else if (ElseMacro * elsemacro = dynamic_cast<ElseMacro *>(bodyPart)) {
-                    //check preceding ifmacro
-                    if(ifContexts.empty()) {
-                        throw TweeDocumentException("else macro encountered without preceding if macro");
-                    }
-                    //save label for jump to after if/else if block , in this case else
-                    //make jump to set label if expression is true
-                    ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
-                    ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
-                    ifContexts.top().caseCount++;
-                } else if (EndIfMacro * endifemacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
-                    //check preceding ifmacro
-                    if(ifContexts.empty()) {
-                        throw TweeDocumentException("endif macro encountered without preceding if macro");
-                    }
-                    //make jump to set label if expression is trueJumpLabels[ifDepth];
+            evalExpression(ifMacro->getExpression().get());
+            ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
+        } else if (ElseIfMacro * elseIfMacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
+            if(ifContexts.empty()) {
+                throw TweeDocumentException("else if macro encountered without preceding if macro");
+            }
+            ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
+            ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
+            ifContexts.top().caseCount++;
+            evalExpression(elseIfMacro->getExpression().get());
+            ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
+        } else if (ElseMacro * elseMacro = dynamic_cast<ElseMacro *>(bodyPart)) {
+            if(ifContexts.empty()) {
+                throw TweeDocumentException("else macro encountered without preceding if macro");
+            }
+            ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
+            ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
+            ifContexts.top().caseCount++;
+        } else if (EndIfMacro * endifMacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
+            if(ifContexts.empty()) {
+                throw TweeDocumentException("endif macro encountered without preceding if macro");
+            }
 
-                    ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
-                    ASSGEN.addLabel(makeIfEndLabel(ifContexts.top()));
+            ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
+            ASSGEN.addLabel(makeIfEndLabel(ifContexts.top()));
 
-                    ifContexts.pop();
-                } else if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
-                    LOG_DEBUG << "generate SetMacro assembly code";
+            ifContexts.pop();
+        } else if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
+            LOG_DEBUG << "generate SetMacro assembly code";
 
-                    if ( BinaryOperation *binaryOperation = (BinaryOperation *) (op->getExpression().get()) ) {
-                        bool isAssignment = binaryOperation->getOperator() == BinOps::TO;
-                        if (isAssignment) {
-                            evalAssignment(binaryOperation);
-                            ASSGEN.pop();
-                        }
-                    } else {
-                        throw TweeDocumentException("set macro didn't contain an assignment");
-                    }
+            BinaryOperation* binaryOperation = nullptr;
+            if ( (binaryOperation = dynamic_cast<BinaryOperation*>(op->getExpression().get()))
+                 && binaryOperation->getOperator() == BinOps::TO) {
+                if(const Variable* var = dynamic_cast<const Variable*>(binaryOperation->getLeftSide().get())) {
+                    evalAssignment(binaryOperation);
+                    ASSGEN.pop();
+                } else {
+                    throw TweeDocumentException("lhs of set macro is not a variable");
                 }
+            } else {
+                throw TweeDocumentException("set macro didn't contain an assignment");
             }
-
-            // unclosed if-macro
-            if(ifContexts.size() > 0) {
-                throw TweeDocumentException("unclosed if macro");
-            }
-
-            ASSGEN.ret("0");
         }
     }
+
+    // unclosed if-macro
+    if(ifContexts.size() > 0) {
+        throw TweeDocumentException("unclosed if macro");
+    }
+
+    ASSGEN.ret("0");
 }
 
 IfContext TweeCompiler::makeNextIfContext() {
@@ -471,6 +459,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.sub("sp", "sp", "sp");
                 break;
             default:
+                // TODO: handle this
                 break;
         }
     }
