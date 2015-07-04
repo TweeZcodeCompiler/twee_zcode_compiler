@@ -53,8 +53,7 @@ int main(int argc, char **argv) {
     plog::ConsoleAppender<plog::TxtFormatter> consoleAppender; // Console Appender for user friendly output
 
     std::string logFile = "Compiler_Log.txt";
-    if(argsCommand.isDebugInConsole() == true)
-    {
+    if(argsCommand.isDebugInConsole()) {
         std::cout << "Console log";
         plog::init(plog::debug,  &consoleAppender);
     } else {
@@ -118,6 +117,9 @@ int main(int argc, char **argv) {
     } catch (const Twee::ParseException& parseException) {
         // TODO: display more info if possible
         std::cerr << "Failed parsing Twee File";
+    } catch (const TweeDocumentException& tweeDocumentException) {
+        std::cerr << "Error while compiling Twee document:" << std::endl <<
+                std::string(tweeDocumentException.what());
     }
 
     return 0;

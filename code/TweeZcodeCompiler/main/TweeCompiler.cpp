@@ -53,7 +53,8 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         ROUTINE_DISPLAY_LINKS = "display_links",
         ELSE_LABEL_PREFIX = "ELSE",
         ENDIF_LABEL_PREFIX = "ENDIF",
-        ROUTINE_CLEAR_TABLES = "reset_tables";
+        ROUTINE_CLEAR_TABLES = "reset_tables",
+        START_PASSAGE_NAME = "Start";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -144,12 +145,20 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ifContexts = stack<IfContext>();
     ifCount = 0;
 
+
     {
         int i = 0;
         for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
             passageName2id[passage->getHead().getName()] = i;
             i++;
         }
+    }
+
+    // check if start passage is contained
+    try {
+        passageName2id.at("Start");
+    } catch(const out_of_range& outOfRange) {
+        throw TweeDocumentException("Twee document doesn't contain a start passage");
     }
 
     // tables needed for routine linking
@@ -170,7 +179,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .markStart()
                 .store(GLOB_PASSAGES_COUNT, to_string(passages.size()))
                 .call_1n(ROUTINE_CLEAR_TABLES)
-                .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string("Start"))), "sp");
+                .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))), "sp");
 
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
                 .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, "sp")

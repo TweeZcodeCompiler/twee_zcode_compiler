@@ -53,7 +53,7 @@ private:
 class TweeDocumentException : public TweeCompilerException {
 public:
     TweeDocumentException(const std::string what) : _what(what) {}
-    const char* what() {return _what.c_str();}
+    const char* what() const noexcept {return _what.c_str();}
 private:
     std::string _what;
 };
