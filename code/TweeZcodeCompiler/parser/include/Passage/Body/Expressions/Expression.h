@@ -37,6 +37,8 @@ class Expression {
 
 public:
 
+    virtual ~Expression() {};
+
     virtual std::string to_string() const = 0;
 
     virtual Expression *clone() const = 0;

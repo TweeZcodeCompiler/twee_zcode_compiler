@@ -35,6 +35,8 @@ private:
     Jumps jumps;
     OpcodeParameterGenerator opcodeGenerator;
 
+    size_t nextLocVarInitLabelNumber = 0;
+
     std::bitset<8> numberToBitset(unsigned int number);
 
     void addBitset(std::vector<std::bitset<8>> bitsets, std::string name);
@@ -152,6 +154,8 @@ public:
 
     void retPopped();
 
+    void pop();
+
     void printRet(std::vector<std::unique_ptr<ZParam>> params);
 
     void restart();
@@ -231,6 +235,8 @@ public:
                 RESTART = 183,
         // Opcode: Pops top of stack and returns that. (This is equivalent to ret sp, but is one byte cheaper.)
                 RET_POPPED = 184,
+        //Throws away the top item on the stack. (This was useful to lose unwanted routine call results in early Versions.)
+                POP = 185,
         // Opcode: Verification
                 VERIFY = 189,
         // Opcode: VAR:226 2 storeb array byte-index value

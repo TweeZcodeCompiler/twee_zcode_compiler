@@ -51,7 +51,7 @@ public:
 
     Body& operator+=(BodyPart&);
 
-    std::string to_string();
+    std::string to_string() const;
 };
 
 #endif //BODY_H

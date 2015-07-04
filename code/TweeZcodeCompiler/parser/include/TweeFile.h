@@ -19,12 +19,11 @@ public:
     TweeFile();
     ~TweeFile();
 
-    std::vector<Passage> getPassages();
+    const std::vector<Passage> &getPassages() const;
 
     TweeFile &operator+=(const Passage &);
 
-    std::string to_string();
-
+    std::string to_string() const;
 };
 
 #endif //TWEEFILE_H

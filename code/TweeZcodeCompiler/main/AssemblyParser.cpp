@@ -52,6 +52,7 @@ const string AssemblyParser::RET_FALSE_COMMAND = "rfalse";
 const string AssemblyParser::PRINT_RET_COMMAND = "print_ret";
 const string AssemblyParser::RESTART_COMMAND = "restart";
 const string AssemblyParser::RET_POPPED_COMMAND = "ret_popped";
+const string AssemblyParser::POP_COMMAND = "pop";
 const string AssemblyParser::VERIFY_COMMAND = "verify";
 const string AssemblyParser::STOREB_COMMAND = "storeb";
 const string AssemblyParser::STOREW_COMMAND = "storew";
@@ -163,7 +164,7 @@ void AssemblyParser::readAssembly(istream &input, shared_ptr<ZCodeContainer> dyn
     string line;
     currentLineNumber = 1;
     try {
-        for (string line; getline(input, line);) {
+        for (;getline(input, line);) {
 
             line = trim(line);
             vector<string> lineComps;
@@ -370,7 +371,7 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string &paramString) {
         param.reset(variableParam);
     } else {
         LOG_ERROR << "Could not parse parameter: " << paramString;
-        //throw AssemblyException(AssemblyException::ErrorType::INVALID_VARIABLE);
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_VARIABLE);
     }
 
 
@@ -568,7 +569,10 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::RET_POPPED_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new ret_popped";
         routineGenerator.retPopped();
-    } else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::POP_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new pop";
+        routineGenerator.pop();
+    }else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new verify";
         routineGenerator.verify(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
@@ -598,8 +602,8 @@ bool AssemblyParser::checkIfCommandRoutineStart(const string &command) {
 
 
 unique_ptr<uint8_t> AssemblyParser::getAddressForId(const string &id) {
-    if (id.compare("sp") == 0) {
-        return unique_ptr<uint8_t>(new uint8_t( 0 ));
+    if (id == "sp") {
+        return unique_ptr<uint8_t>(new uint8_t(0));
     }
 
     // check global variables

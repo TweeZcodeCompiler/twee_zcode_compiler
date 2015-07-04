@@ -40,7 +40,13 @@ public:
 
     ZAssemblyGenerator &addLabel(std::string labelName);
 
-    ZAssemblyGenerator& markStart();
+    ZAssemblyGenerator &addByteArray(std::string name, unsigned size);
+
+    ZAssemblyGenerator &call_vs(std::string routineName, std::experimental::optional<std::string> args, std::string storeTarget);
+
+    ZAssemblyGenerator &call_1n(std::string routineName);
+
+    ZAssemblyGenerator &markStart();
 
     ZAssemblyGenerator& addByteArray(std::string name, unsigned size);
 
@@ -59,7 +65,7 @@ public:
     ZAssemblyGenerator &jumpEquals(std::string args, std::string targetLabel);
 
     ZAssemblyGenerator &jumpNotEquals(std::string args, std::string targetLabel);
-
+    
     ZAssemblyGenerator &jumpGreater(std::string args, std::string targetLabel);
 
     ZAssemblyGenerator &jumpLess(std::string args, std::string targetLabel);
@@ -81,15 +87,21 @@ public:
     ZAssemblyGenerator &setTextStyle(std::string values);
 
     ZAssemblyGenerator &print(std::string str);
-
+    
     ZAssemblyGenerator &println(std::string str);
 
     ZAssemblyGenerator &print_num(std::string value);
 
     ZAssemblyGenerator &push(std::string value);
 
+    ZAssemblyGenerator &pop();
+
     ZAssemblyGenerator &variable(std::string variable);
     ZAssemblyGenerator &store(std::string variableName, int value);
+
+    ZAssemblyGenerator &loadb(std::string arrayName, unsigned int index, std::string storeTarget);
+
+    ZAssemblyGenerator &storeb(std::string arrayName, unsigned int index, int value);
 
     ZAssemblyGenerator &load(std::string source, std::string target);
 
@@ -110,6 +122,8 @@ public:
     ZAssemblyGenerator &lor(std::string left, std::string right, std::string storeTarget);
 
     ZAssemblyGenerator &lnot(std::string variable, std::string storeTarget);
+
+    ZAssemblyGenerator &nop();
 
 
 private:
