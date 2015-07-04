@@ -46,19 +46,14 @@ public:
 
     ZAssemblyGenerator &call_1n(std::string routineName);
 
-    ZAssemblyGenerator &markStart();
+    ZAssemblyGenerator &call(std::string routineName, std::string storeTarget);
 
-    ZAssemblyGenerator& addByteArray(std::string name, unsigned size);
+    ZAssemblyGenerator &markStart();
 
     ZAssemblyGenerator &addRoutine(std::string routineName,
                                    std::vector<ZRoutineArgument> args = std::vector<ZRoutineArgument>());
 
     ZAssemblyGenerator &addGlobal(std::string globalName);
-
-    ZAssemblyGenerator &call(std::string routineName);
-    ZAssemblyGenerator &call_vs(std::string routineName, std::experimental::optional<std::string> args, std::string storeTarget);
-
-    ZAssemblyGenerator &call(std::string routineName, std::string storeTarget);
 
     ZAssemblyGenerator &jump(std::string label);
 

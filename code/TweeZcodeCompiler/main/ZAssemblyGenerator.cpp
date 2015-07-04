@@ -55,7 +55,6 @@ namespace instruction {
     INST_TYPE PUSH_COMMAND = "push";
     INST_TYPE JUMP_COMMAND = "jump";
     INST_TYPE RET_COMMAND = "ret";
-    INST_TYPE SET_TEXT_STYLE = "set_text_style";
     INST_TYPE CALL_VS_COMMAND = "call_vs";
     INST_TYPE CALL_1N_COMMAND = "call_1n";
     INST_TYPE STORE_COMMAND = "store";
@@ -208,12 +207,12 @@ ZAssemblyGenerator &ZAssemblyGenerator::call_vs(string routineName, optional<str
     return addInstruction(instruction::CALL_VS, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, storeTarget);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::call_vs(string routineName, optional<string> args, string storeTarget) {
-    return addInstruction(instruction::CALL_VS_COMMAND, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, storeTarget);
-}
-
 ZAssemblyGenerator &ZAssemblyGenerator::call(string routineName, string storeTarget) {
     return addInstruction(instruction::CALL_VS_COMMAND, routineName, nullopt, storeTarget);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::call_1n(string routineName) {
+    return addInstruction(instruction::CALL_1N_COMMAND, routineName, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jumpEquals(string args, string targetLabel) {

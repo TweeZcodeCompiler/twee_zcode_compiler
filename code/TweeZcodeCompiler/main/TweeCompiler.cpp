@@ -16,18 +16,13 @@
 
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
-#include <Passage/Body/Newline.h>
-#include <algorithm>
 #include <Passage/Body/FormattedText.h>
+#include <Passage/Body/Newline.h>
 #include <Passage/Body/Macros/SetMacro.h>
 
 #include <Passage/Body/Expressions/BinaryOperation.h>
-#include <plog/Log.h>
-#include <algorithm>
 #include <Passage/Body/Expressions/Variable.h>
-#include <plog/Log.h>
 #include <Passage/Body/Expressions/UnaryOperation.h>
-#include <algorithm>
 
 #include <plog/Log.h>
 #include <Passage/Body/Expressions/Const.h>
