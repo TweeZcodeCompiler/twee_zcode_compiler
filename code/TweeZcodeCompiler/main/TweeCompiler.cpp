@@ -116,6 +116,9 @@ string makeUserInputRoutine() {
             "add i 1 -> i\n"
             "jl i PASSAGES_COUNT ?loop_start\n"
             "\n"
+            "jz selectcount ?~links_available\n"
+            "ret -1\n"
+            "links_available:\n"
             "read_char 1 -> USER_INPUT\n"
             "sub USER_INPUT 48 -> sp\n"
             "sub sp 1 -> sp\n"
@@ -183,10 +186,13 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
                 .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, "sp")
+                .push("sp")
+                .jumpLower(ASSGEN.makeArgs({"sp", "0"}), "end_program")
                 .call_1n(ROUTINE_CLEAR_TABLES)
                 .call_vs(ROUTINE_PASSAGE_BY_ID, string("sp"), "sp")
                 .jump(LABEL_MAIN_LOOP);
 
+        ASSGEN.addLabel("end_program");
         ASSGEN.quit();
     }
 
