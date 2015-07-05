@@ -207,10 +207,6 @@ ZAssemblyGenerator &ZAssemblyGenerator::call_vs(string routineName, optional<str
     return addInstruction(instruction::CALL_VS, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, storeTarget);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::call(string routineName, string storeTarget) {
-    return addInstruction(instruction::CALL_VS_COMMAND, routineName, nullopt, storeTarget);
-}
-
 ZAssemblyGenerator &ZAssemblyGenerator::call_1n(string routineName) {
     return addInstruction(instruction::CALL_1N_COMMAND, routineName, nullopt, nullopt);
 }

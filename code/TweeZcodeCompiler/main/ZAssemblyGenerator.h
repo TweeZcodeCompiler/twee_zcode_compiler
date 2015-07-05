@@ -46,8 +46,6 @@ public:
 
     ZAssemblyGenerator &call_1n(std::string routineName);
 
-    ZAssemblyGenerator &call(std::string routineName, std::string storeTarget);
-
     ZAssemblyGenerator &markStart();
 
     ZAssemblyGenerator &addRoutine(std::string routineName,

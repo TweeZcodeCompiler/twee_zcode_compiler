@@ -42,18 +42,6 @@
 using namespace std;
 using namespace std::experimental;
 
-static const string PASSAGE_GLOB = "PASSAGE_PTR",
-        TEXT_FORMAT_ITALIC = "ITALIC",
-        TEXT_FORMAT_BOLD = "BOLD",
-        TEXT_FORMAT_REVERSE_VIDEO = "REVERSED_VIDEO",
-        TEXT_FORMAT_FIXED_PITCH = "FIXED_PITCH",
-        JUMP_TABLE_LABEL = "JUMP_TABLE_START",
-        JUMP_TABLE_END_LABEL = "JUMP_TABLE_END",
-        MAIN_ROUTINE = "main",
-        TEXT_FORMAT_ROUTINE = "toggleTextFormat",
-        USER_INPUT = "USER_INPUT",
-        READ_BEGIN = "READ_BEGIN";
-
 static const string GLOB_PASSAGE = "PASSAGE_PTR",
         GLOB_PASSAGES_COUNT = "PASSAGES_COUNT",
         LABEL_MAIN_LOOP = "MAIN_LOOP",
@@ -66,7 +54,13 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         ROUTINE_DISPLAY_LINKS = "display_links",
         ELSE_LABEL_PREFIX = "ELSE",
         ENDIF_LABEL_PREFIX = "ENDIF",
-        ROUTINE_CLEAR_TABLES = "reset_tables";
+        ROUTINE_CLEAR_TABLES = "reset_tables",
+        TEXT_FORMAT_ROUTINE = "toggleTextFormat",
+        TEXT_FORMAT_ITALIC = "ITALIC",
+        TEXT_FORMAT_BOLD = "BOLD",
+        TEXT_FORMAT_REVERSE_VIDEO = "REVERSED_VIDEO",
+        TEXT_FORMAT_FIXED_PITCH = "FIXED_PITCH",
+        START_PASSAGE_NAME = "Start";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -165,6 +159,13 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         }
     }
 
+    // check if start passage is contained
+    try {
+        passageName2id.at("Start");
+    } catch(const out_of_range& outOfRange) {
+        throw TweeDocumentException("Twee document doesn't contain a start passage");
+    }
+
     // tables needed for routine linking
     ASSGEN.addByteArray(TABLE_LINKED_PASSAGES, (unsigned)passages.size());
     ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned)passages.size());
@@ -183,7 +184,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .markStart()
                 .store(GLOB_PASSAGES_COUNT, to_string(passages.size()))
                 .call_1n(ROUTINE_CLEAR_TABLES)
-                .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string("Start"))), "sp");
+                .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))), "sp");
 
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
                 .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, "sp")
@@ -260,54 +261,35 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         args.push_back(ZRoutineArgument(varResult));
         ASSGEN.addRoutine(TEXT_FORMAT_ROUTINE, args);
 
-        ASSGEN.println("Text format routine");    // TODO: REMOVE
-
         ASSGEN.addLabel(labelLoopType)
-                .print("1")    // TODO: REMOVE
                 .jumpEquals(string(varFormatType + " " + varCounter), string("~" + labelContinue))
-                .print("3")    // TODO: REMOVE
                 .add(TEXT_FORMAT_ITALIC, varCounter, varCounter)
                 .jumpEquals(varCounter + " " + to_string(1), labelToggleOff)
-                .print("4")    // TODO: REMOVE
                 .store(varCounter, to_string(1))
-                .print("6")    // TODO: REMOVE
-                .jumpEquals("1 1", labelPrintMacro);    //TODO: replace with jump
+                .jump(labelPrintMacro);
 
         ASSGEN.addLabel(labelToggleOff)
-                .print("5")    // TODO: REMOVE
                 .store(varCounter, to_string(0))
-                .jumpEquals("1 1", labelPrintMacro);    //TODO: replace with jump
+                .jump(labelPrintMacro);
 
         ASSGEN.addLabel(labelContinue)
-                .print("2")    // TODO: REMOVE
                 .add(varCounter, to_string(1), varCounter)
                 .jumpLess(varCounter + " " + to_string(5), labelLoopType)
                 .ret("0");
 
         ASSGEN.addLabel(labelPrintMacro)
-                .print("7")    // TODO: REMOVE
                 .store(varCounter, TEXT_FORMAT_ITALIC);
 
         ASSGEN.addLabel(labelLoopPrint)
-                .print("8")    // TODO: REMOVE
                 .jumpEquals(varCounter + " " + to_string(0), labelContinuePrint)
-                .print("9")    // TODO: REMOVE
                 .add(varResult, varTypeValue, varResult);
 
         ASSGEN.addLabel(labelContinuePrint)
-                .print("1_")    // TODO: REMOVE
                 .add(varCounter, to_string(1), varCounter)
-                .print("2_")    // TODO: REMOVE
                 .mul(varTypeValue, to_string(2), varTypeValue)
-                .print("3_")    // TODO: REMOVE
                 .jumpLess(varCounter + " " + to_string(5), labelLoopPrint);
 
-        ASSGEN.println("4_");    // TODO: REMOVE
-        ASSGEN.print_num(varResult);        // TODO: REMOVE
-
-        ASSGEN.setTextStyle("4")    //TODO: replace with varResult
-                .println("Fertig")        // TODO: REMOVE
-                .println("Test")        // TODO: REMOVE
+        ASSGEN.setTextStyle("8")
                 .ret("0");
     }
     
@@ -316,8 +298,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         makePassageRoutine(*passage);
     }
 }
-
-
 
 void TweeCompiler::makePassageRoutine(const Passage &passage) {
     auto& bodyParts = passage.getBody().getBodyParts();
@@ -329,26 +309,26 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
 
     //  print passage contents
     for(auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
-        BodyPart *bodyPart = it->get();
-        if (Text *text = dynamic_cast<Text *>(bodyPart)) {
+        BodyPart* bodyPart = it->get();
+        if(Text* text = dynamic_cast<Text*>(bodyPart)) {
             ASSGEN.print(text->getContent());
-        } else if (Variable *variable = dynamic_cast<Variable *>(bodyPart)) {
+        } else if (Variable* variable = dynamic_cast<Variable*>(bodyPart)) {
             ASSGEN.variable(variable->getName());
-        } else if (Link *link = dynamic_cast<Link *>(bodyPart)) {
+        } else if (Link* link = dynamic_cast<Link*>(bodyPart)) {
             // TODO: catch invalid link
             ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
-        } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
+        } else if (Newline* newLine = dynamic_cast<Newline*>(bodyPart)) {
             ASSGEN.newline();
         } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
             evalExpression(print->getExpression().get());
             ASSGEN.print_num("sp");
-        } else if (IfMacro *ifMacro = dynamic_cast<IfMacro *>(bodyPart)) {
+        } else if (IfMacro * ifMacro = dynamic_cast<IfMacro *>(bodyPart)) {
             ifContexts.push(makeNextIfContext());
 
             evalExpression(ifMacro->getExpression().get());
             ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
-        } else if (ElseIfMacro *elseIfMacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
-            if (ifContexts.empty()) {
+        } else if (ElseIfMacro * elseIfMacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
+            if(ifContexts.empty()) {
                 throw TweeDocumentException("else if macro encountered without preceding if macro");
             }
             ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
@@ -356,15 +336,15 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
             ifContexts.top().caseCount++;
             evalExpression(elseIfMacro->getExpression().get());
             ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
-        } else if (ElseMacro *elseMacro = dynamic_cast<ElseMacro *>(bodyPart)) {
-            if (ifContexts.empty()) {
+        } else if (ElseMacro * elseMacro = dynamic_cast<ElseMacro *>(bodyPart)) {
+            if(ifContexts.empty()) {
                 throw TweeDocumentException("else macro encountered without preceding if macro");
             }
             ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
             ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
             ifContexts.top().caseCount++;
-        } else if (EndIfMacro *endifMacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
-            if (ifContexts.empty()) {
+        } else if (EndIfMacro * endifMacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
+            if(ifContexts.empty()) {
                 throw TweeDocumentException("endif macro encountered without preceding if macro");
             }
 
@@ -375,10 +355,10 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
         } else if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
             LOG_DEBUG << "generate SetMacro assembly code";
 
-            BinaryOperation *binaryOperation = nullptr;
-            if ((binaryOperation = dynamic_cast<BinaryOperation *>(op->getExpression().get()))
-                && binaryOperation->getOperator() == BinOps::TO) {
-                if (const Variable *var = dynamic_cast<const Variable *>(binaryOperation->getLeftSide().get())) {
+            BinaryOperation* binaryOperation = nullptr;
+            if ( (binaryOperation = dynamic_cast<BinaryOperation*>(op->getExpression().get()))
+                 && binaryOperation->getOperator() == BinOps::TO) {
+                if(const Variable* var = dynamic_cast<const Variable*>(binaryOperation->getLeftSide().get())) {
                     evalAssignment(binaryOperation);
                     ASSGEN.pop();
                 } else {
@@ -405,8 +385,6 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                     LOG_DEBUG << "Unknown text formatting";
                     throw;
             }
-
-            ASSGEN.print("Nach call");
         }
     }
 
