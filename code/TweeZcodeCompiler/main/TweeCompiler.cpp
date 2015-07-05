@@ -255,41 +255,76 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         string labelPrintMacro = "PRINT_MACRO";
 
         vector<ZRoutineArgument> args;
-        args.push_back(ZRoutineArgument(varFormatType));
         args.push_back(ZRoutineArgument(varCounter));
         args.push_back(ZRoutineArgument(varTypeValue, to_string(1)));
         args.push_back(ZRoutineArgument(varResult));
+        args.push_back(ZRoutineArgument(varFormatType));    // This value will be set via call_vs TEXT_FORMAT_ROUTINE 1 -> sp
         ASSGEN.addRoutine(TEXT_FORMAT_ROUTINE, args);
 
         ASSGEN.addLabel(labelLoopType)
+              //  .println("1")     //TODO: Remove
                 .jumpEquals(string(varFormatType + " " + varCounter), string("~" + labelContinue))
+                .println("2")     //TODO: Remove
+
+                .print_num(varCounter)     //TODO: Remove
+                .newline()     //TODO: Remove
+                .print_num(TEXT_FORMAT_ITALIC)     //TODO: Remove
                 .add(TEXT_FORMAT_ITALIC, varCounter, varCounter)
+                .newline()     //TODO: Remove
+                .print_num(varCounter)     //TODO: Remove
+                .newline()     //TODO: Remove
+                .print_num(TEXT_FORMAT_ITALIC)     //TODO: Remove
+
+                .println("3")     //TODO: Remove
                 .jumpEquals(varCounter + " " + to_string(1), labelToggleOff)
+                .println("4")     //TODO: Remove
                 .store(varCounter, to_string(1))
+                .println("5")     //TODO: Remove
                 .jump(labelPrintMacro);
 
         ASSGEN.addLabel(labelToggleOff)
+                .println("6")     //TODO: Remove
                 .store(varCounter, to_string(0))
+                .println("7")     //TODO: Remove
                 .jump(labelPrintMacro);
 
         ASSGEN.addLabel(labelContinue)
+           //     .println("8")     //TODO: Remove
                 .add(varCounter, to_string(1), varCounter)
+                .print_num(varCounter)     //TODO: Remove
+           //     .println("9")     //TODO: Remove
                 .jumpLess(varCounter + " " + to_string(5), labelLoopType)
+            //    .println("10")     //TODO: Remove
                 .ret("0");
 
         ASSGEN.addLabel(labelPrintMacro)
+                .println("11")     //TODO: Remove
                 .store(varCounter, TEXT_FORMAT_ITALIC);
 
         ASSGEN.addLabel(labelLoopPrint)
+                .println("12")     //TODO: Remove
                 .jumpEquals(varCounter + " " + to_string(0), labelContinuePrint)
+                .println("13")     //TODO: Remove
                 .add(varResult, varTypeValue, varResult);
 
         ASSGEN.addLabel(labelContinuePrint)
+                .println("14")     //TODO: Remove
                 .add(varCounter, to_string(1), varCounter)
+                .println("15")     //TODO: Remove
                 .mul(varTypeValue, to_string(2), varTypeValue)
+                .println("16")     //TODO: Remove
                 .jumpLess(varCounter + " " + to_string(5), labelLoopPrint);
 
-        ASSGEN.setTextStyle("8")
+        ASSGEN.newline();
+        ASSGEN.print_num(varResult);    //TODO: Remove
+        ASSGEN.newline();
+        ASSGEN.print_num(varFormatType);    //TODO: Remove
+        ASSGEN.newline();
+        ASSGEN.print_num(varCounter);    //TODO: Remove
+        ASSGEN.newline();
+        ASSGEN.print_num(varTypeValue);    //TODO: Remove
+
+        ASSGEN.setTextStyle(varResult)
                 .ret("0");
     }
     
