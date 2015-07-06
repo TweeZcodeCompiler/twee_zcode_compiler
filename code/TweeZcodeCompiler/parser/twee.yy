@@ -19,14 +19,15 @@
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
+
     #include "include/Passage/Body/Macros/Display.h"
-    #include "include/Passage/Body/Macros/Previous.h"
     #include "include/Passage/Body/Macros/Print.h"
     #include "include/Passage/Body/Macros/IfMacro.h"
     #include "include/Passage/Body/Macros/ElseIfMacro.h"
     #include "include/Passage/Body/Macros/ElseMacro.h"
     #include "include/Passage/Body/Macros/EndIfMacro.h"
     #include "include/Passage/Body/Macros/SetMacro.h"
+
     #include "include/Passage/Body/Expressions/Expression.h"
     #include "include/Passage/Body/Expressions/Const.h"
     #include "include/Passage/Body/Expressions/UnaryOperation.h"
@@ -35,6 +36,8 @@
     #include "include/Passage/Body/Expressions/Turns.h"
     #include "include/Passage/Body/Expressions/Visited.h"
     #include "include/Passage/Body/Expressions/Random.h"
+    #include "include/Passage/Body/Expressions/Previous.h"
+
 
     #include <plog/Log.h>
     #include <plog/Appenders/ConsoleAppender.h>
@@ -133,8 +136,8 @@
 	Macro *macro;
 	Print *print;
 	SetMacro *setmacro;
-
 	Display *display;
+
     Visited *visited;
     Previous *previous;
     Turns *turns;
@@ -533,11 +536,6 @@ macro :
     LOG_DEBUG << "macro -> display: pass display:type(Display) to macro:type(Macro)";
     $$ = $1;
     }
-    |previous
-    {
-    LOG_DEBUG << "macro -> previous: pass previous:type(Previous) to macro:type(Macro)";
-    $$ = $1;
-    }
   ;
 
 print:
@@ -571,15 +569,6 @@ display:
     delete $3;
     }
   ;
-
-previous:
-    MACRO_OPEN EXPR_PREVIOUS EXPR_CLOSE MACRO_CLOSE
-    {
-    LOG_DEBUG << "previous -> MACRO_OPEN EXPR_PREVIOUS EXPR_CLOSE MACRO_CLOSE: create $$ = new Previous()";
-    $$ = new Previous();
-    }
-  ;
-
 
 setmacro:
     MACRO_OPEN MACRO_SET expressionAssignment MACRO_CLOSE
@@ -799,18 +788,32 @@ expressionTop:
     LOG_DEBUG << "expressionTop-> turns: pass turns function up)";
     $$ = $1;
     }
+   |previous
+    {
+    LOG_DEBUG << "expressionTop-> previous: pass previous function up)";
+    $$ = $1;
+    }
+
+  ;
+
+random:
+    EXPR_RANDOM expression expression EXPR_CLOSE
+    {
+    LOG_DEBUG << "random -> EXPR_RANDOM expression expression EXPR_CLOSE: create new Random($2, $3)";
+    $$ = new Random($2, $3);
+    }
   ;
 
 visited:
     EXPR_VISITED EXPR_STR EXPR_CLOSE
     {
-    LOG_DEBUG << "visited -> MACRO_OPEN EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
+    LOG_DEBUG << "visited -> EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE: create new Visited($2)";
     $$ = new Visited(*$2);
     delete $2;
     }
     |EXPR_VISITED EXPR_CLOSE
     {
-    LOG_DEBUG << "visited -> MACRO_OPEN EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
+    LOG_DEBUG << "visited -> EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE: create new Visited()";
     $$ = new Visited("");
     }
   ;
@@ -818,16 +821,16 @@ visited:
 turns:
     EXPR_TURNS EXPR_CLOSE
     {
-    LOG_DEBUG << "turns -> MACRO_OPEN EXPR_PREVIOUS EXPR_CLOSE MACRO_CLOSE: create $$ = new Turns()";
+    LOG_DEBUG << "turns -> EXPR_TURNS EXPR_CLOSE: create $$ = new Turns()";
     $$ = new Turns();
     }
   ;
 
-random:
-    EXPR_RANDOM expression expression EXPR_CLOSE
+previous:
+    EXPR_PREVIOUS EXPR_CLOSE
     {
-    LOG_DEBUG << "random -> MACRO_OPEN EXPR_RANDOM expression expression EXPR_CLOSE MACRO_CLOSE: create new Visited($4)";
-    $$ = new Random($2, $3);
+    LOG_DEBUG << "previous -> EXPR_PREVIOUS EXPR_CLOSE: create new Previous()";
+    $$ = new Previous();
     }
   ;
 

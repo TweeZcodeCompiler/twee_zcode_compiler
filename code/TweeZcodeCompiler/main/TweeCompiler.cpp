@@ -8,11 +8,12 @@
 #include "Utils.h"
 
 #include <plog/Log.h>
-#include <algorithm>
 #include <sstream>
 #include <iostream>
 #include <set>
 #include <array>
+#include <algorithm>
+
 
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
@@ -20,7 +21,8 @@
 
 #include <Passage/Body/Expressions/BinaryOperation.h>
 #include <Passage/Body/Expressions/UnaryOperation.h>
-#include <algorithm>
+#include "Passage/Body/Expressions/Previous.h"
+
 
 #include <plog/Log.h>
 #include <Passage/Body/Expressions/Const.h>
@@ -31,7 +33,6 @@
 #include "Passage/Body/Expressions/Random.h"
 
 #include "Passage/Body/Macros/Display.h"
-#include "Passage/Body/Macros/Previous.h"
 #include "Passage/Body/Macros/Print.h"
 
 #include <Passage/Body/Macros/Print.h>
