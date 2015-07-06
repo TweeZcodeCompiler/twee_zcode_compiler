@@ -245,87 +245,70 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         string varFormatType = "formatType";
         string varCounter = "counter";
-        string varTypeValue = "typeValue";
         string varResult = "result";
-        string labelLoopType = "LOOP_TYPE";
-        string labelLoopPrint = "LOOP_PRINT";
-        string labelContinue = "CONTINUE";
-        string labelContinuePrint = "CONTINUE_PRINT";
-        string labelToggleOff = "TOGGLE_OFF";
-        string labelPrintMacro = "PRINT_MACRO";
+        string labelTextStyle = "CALC_TEXT_STYLE";
+        string labelNotZero = "NOT_ZERO";
+        string labelZeroOn = "ZERO_ON";
+        string labelNotOne = "NOT_ONE";
+        string labelOneOn = "One_ON";
+        string labelNotTwo = "NOT_Two";
+        string labelTwoOn = "Two_ON";
+        string labelThreeOn = "THREE_ON";
 
         vector<ZRoutineArgument> args;
         args.push_back(ZRoutineArgument(varCounter));
-        args.push_back(ZRoutineArgument(varTypeValue, to_string(1)));
         args.push_back(ZRoutineArgument(varResult));
         args.push_back(ZRoutineArgument(varFormatType));    // This value will be set via call_vs TEXT_FORMAT_ROUTINE 1 -> sp
         ASSGEN.addRoutine(TEXT_FORMAT_ROUTINE, args);
 
-        ASSGEN.addLabel(labelLoopType)
-              //  .println("1")     //TODO: Remove
-                .jumpEquals(string(varFormatType + " " + varCounter), string("~" + labelContinue))
-                .println("2")     //TODO: Remove
+        ASSGEN.jumpEquals(string(varFormatType + " 0"), string("~" + labelNotZero))
+                .jumpEquals(string(TEXT_FORMAT_REVERSE_VIDEO) + " 0", labelZeroOn)
+                .store(TEXT_FORMAT_REVERSE_VIDEO, "0")
+                .jump(labelTextStyle);
 
-                .print_num(varCounter)     //TODO: Remove
-                .newline()     //TODO: Remove
-                .print_num(TEXT_FORMAT_ITALIC)     //TODO: Remove
-                .add(TEXT_FORMAT_ITALIC, varCounter, varCounter)
-                .newline()     //TODO: Remove
-                .print_num(varCounter)     //TODO: Remove
-                .newline()     //TODO: Remove
-                .print_num(TEXT_FORMAT_ITALIC)     //TODO: Remove
+        ASSGEN.addLabel(labelZeroOn)
+                .store(TEXT_FORMAT_REVERSE_VIDEO, "1")
+                .jump(labelTextStyle);
 
-                .println("3")     //TODO: Remove
-                .jumpEquals(varCounter + " " + to_string(1), labelToggleOff)
-                .println("4")     //TODO: Remove
-                .store(varCounter, to_string(1))
-                .println("5")     //TODO: Remove
-                .jump(labelPrintMacro);
+        ASSGEN.addLabel(labelNotZero)
+                .jumpEquals(string(varFormatType + " 1"), string("~" + labelNotOne))
+                .jumpEquals(string(TEXT_FORMAT_BOLD) + " 0", labelOneOn)
+                .store(TEXT_FORMAT_BOLD, "0")
+                .jump(labelTextStyle);
 
-        ASSGEN.addLabel(labelToggleOff)
-                .println("6")     //TODO: Remove
-                .store(varCounter, to_string(0))
-                .println("7")     //TODO: Remove
-                .jump(labelPrintMacro);
+        ASSGEN.addLabel(labelOneOn)
+                .store(TEXT_FORMAT_BOLD, "1")
+                .jump(labelTextStyle);
 
-        ASSGEN.addLabel(labelContinue)
-           //     .println("8")     //TODO: Remove
-                .add(varCounter, to_string(1), varCounter)
-                .print_num(varCounter)     //TODO: Remove
-           //     .println("9")     //TODO: Remove
-                .jumpLess(varCounter + " " + to_string(5), labelLoopType)
-            //    .println("10")     //TODO: Remove
+        ASSGEN.addLabel(labelNotOne)
+                .jumpEquals(string(varFormatType + " 2"), string("~" + labelNotTwo))
+                .jumpEquals(string(TEXT_FORMAT_ITALIC) + " 0", labelTwoOn)
+                .store(TEXT_FORMAT_ITALIC, "0")
+                .jump(labelTextStyle);
+
+        ASSGEN.addLabel(labelTwoOn)
+                .store(TEXT_FORMAT_ITALIC, "1")
+                .jump(labelTextStyle);
+
+        ASSGEN.addLabel(labelNotTwo)
+                .jumpEquals(string(TEXT_FORMAT_FIXED_PITCH) + " 0", labelThreeOn)
+                .store(TEXT_FORMAT_FIXED_PITCH, "0")
+                .jump(labelTextStyle);
+
+        ASSGEN.addLabel(labelThreeOn)
+                .store(TEXT_FORMAT_FIXED_PITCH, "1");
+
+        ASSGEN.addLabel(labelTextStyle)
+                .mul(TEXT_FORMAT_REVERSE_VIDEO, "1", varResult)
+                .mul(TEXT_FORMAT_BOLD, "2", varCounter)
+                .add(varCounter, varResult, varResult)
+                .mul(TEXT_FORMAT_ITALIC, "4", varCounter)
+                .add(varCounter, varResult, varResult)
+                .mul(TEXT_FORMAT_FIXED_PITCH, "8", varCounter)
+                .add(varCounter, varResult, varResult)
+                .setTextStyle(varResult)
                 .ret("0");
 
-        ASSGEN.addLabel(labelPrintMacro)
-                .println("11")     //TODO: Remove
-                .store(varCounter, TEXT_FORMAT_ITALIC);
-
-        ASSGEN.addLabel(labelLoopPrint)
-                .println("12")     //TODO: Remove
-                .jumpEquals(varCounter + " " + to_string(0), labelContinuePrint)
-                .println("13")     //TODO: Remove
-                .add(varResult, varTypeValue, varResult);
-
-        ASSGEN.addLabel(labelContinuePrint)
-                .println("14")     //TODO: Remove
-                .add(varCounter, to_string(1), varCounter)
-                .println("15")     //TODO: Remove
-                .mul(varTypeValue, to_string(2), varTypeValue)
-                .println("16")     //TODO: Remove
-                .jumpLess(varCounter + " " + to_string(5), labelLoopPrint);
-
-        ASSGEN.newline();
-        ASSGEN.print_num(varResult);    //TODO: Remove
-        ASSGEN.newline();
-        ASSGEN.print_num(varFormatType);    //TODO: Remove
-        ASSGEN.newline();
-        ASSGEN.print_num(varCounter);    //TODO: Remove
-        ASSGEN.newline();
-        ASSGEN.print_num(varTypeValue);    //TODO: Remove
-
-        ASSGEN.setTextStyle(varResult)
-                .ret("0");
     }
     
     // passage routines
