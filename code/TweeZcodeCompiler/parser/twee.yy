@@ -407,7 +407,7 @@ text :
 formattedText:
     FORMATTING
     {
-    LOG_DEBUG << "Parser: formatted -> FORMATTING TEXT_TOKEN FORMATTING: ";
+    LOG_DEBUG << "Parser: formatted -> FORMATTING: ";
     $$ = new FormattedText(*$1);
     }
   ;

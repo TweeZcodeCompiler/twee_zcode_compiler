@@ -76,7 +76,7 @@ BODY_SYMBOL                 [\{\[<\|\/_=~\^@\{\}:]
 QUOTATION_MARK              \"
 
 FORMATTING_ITALICS          \/{2}
-FORMATTING_BOLDFACE         \"{2}
+FORMATTING_BOLDFACE         \"
 FORMATTING_UNDERLINE        _{2}
 FORMATTING_STRIKETHROUGH    ={2}
 FORMATTING_SUBSCRIPT        ~{2}
@@ -296,7 +296,7 @@ EXPR_TO                to|=
                                 }
 
 <Body>{FORMATTING_BOLDFACE}{MATCH_REST}      {
-                                yyless(2); //TODO: enable correct matching, BODY_TEXT
+                                yyless(1); //TODO: enable correct matching, BODY_TEXT
                                 SAVE_STRING;
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING" << " with value " << YYText();
                                 return BisonParser::token::FORMATTING;
