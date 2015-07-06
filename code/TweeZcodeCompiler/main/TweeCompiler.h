@@ -39,6 +39,7 @@ private:
 
     IfContext makeNextIfContext();
 
+    void makePassageRoutine(const Passage &passage);
 };
 
 

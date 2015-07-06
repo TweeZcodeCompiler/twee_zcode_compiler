@@ -35,6 +35,8 @@ private:
     Jumps jumps;
     OpcodeParameterGenerator opcodeGenerator;
 
+    size_t nextLocVarInitLabelNumber = 0;
+
     std::bitset<8> numberToBitset(unsigned int number);
 
     void addBitset(std::vector<std::bitset<8>> bitsets, std::string name);

@@ -16,7 +16,7 @@ Body &Body::operator+=(BodyPart& bodyPart) {
     return *this;
 }
 
-std::string Body::to_string() {
+std::string Body::to_string() const {
     std::string result = "  Body \n";
 
     for (auto iter = bodyparts.begin(); iter != bodyparts.end(); ++iter)

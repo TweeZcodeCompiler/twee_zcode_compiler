@@ -43,6 +43,8 @@ public:
 
     ZAssemblyGenerator &call_vs(std::string routineName, std::experimental::optional<std::string> args, std::string storeTarget);
 
+    ZAssemblyGenerator &call_1n(std::string routineName);
+
     ZAssemblyGenerator &markStart();
 
     ZAssemblyGenerator &addRoutine(std::string routineName,
@@ -126,6 +128,7 @@ private:
 
 
     ZAssemblyGenerator &addDirective(std::string directiveName, std::experimental::optional<std::string> args);
+
 
 };
 
