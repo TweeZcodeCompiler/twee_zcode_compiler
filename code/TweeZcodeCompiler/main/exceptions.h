@@ -28,7 +28,7 @@ public:
     };
 
 
-    AssemblyException(ErrorType error) : errorType(error) {}
+    AssemblyException(ErrorType error) : errorType(error), lineNumber(0) {}
 
     ErrorType errorType;
     unsigned lineNumber;
@@ -51,7 +51,11 @@ private:
 // Other exceptions
 
 class TweeDocumentException : public TweeCompilerException {
-
+public:
+    TweeDocumentException(const std::string what) : _what(what) {}
+    const char* what() {return _what.c_str();}
+private:
+    std::string _what;
 };
 
 

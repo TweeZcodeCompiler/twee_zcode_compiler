@@ -24,9 +24,22 @@ static const string DIRECTIVE_START = ".";
 namespace directive {
     INST_TYPE ROUTINE = "FUNCT";
     INST_TYPE GLOBAL_VAR = "GVAR";
+    INST_TYPE BYTE_ARRAY = "BYTEARRAY";
+    INST_TYPE WORD_ARRAY = "WORDARRAY";
 }
 
 namespace instruction {
+    INST_TYPE CALL_VS = "call_vs";
+    INST_TYPE JUMP_EQUALS = ZAssemblyGenerator::ZAPF_MODE ? "jeq" : "je";
+    INST_TYPE JUMP = "jump";
+    INST_TYPE QUIT = "quit";
+    INST_TYPE RETURN = "ret";
+    INST_TYPE NEWLINE = "new_line";
+    INST_TYPE PRINT = "print";
+    INST_TYPE READ_CHAR = "read_char";
+    INST_TYPE JUMP_GREATER = "jg";
+    INST_TYPE SET_TEXT_STYLE = "set_text_style";
+    INST_TYPE STOREBYTE = "storeb";
     INST_TYPE NEW_LINE_COMMAND = "new_line";
     INST_TYPE PRINT_COMMAND = "print";
     INST_TYPE JE_COMMAND = "je";
@@ -41,7 +54,6 @@ namespace instruction {
     INST_TYPE PUSH_COMMAND = "push";
     INST_TYPE JUMP_COMMAND = "jump";
     INST_TYPE RET_COMMAND = "ret";
-    INST_TYPE SET_TEXT_STYLE = "set_text_style";
     INST_TYPE CALL_VS_COMMAND = "call_vs";
     INST_TYPE CALL_1N_COMMAND = "call_1n";
     INST_TYPE STORE_COMMAND = "store";
@@ -59,6 +71,7 @@ namespace instruction {
     INST_TYPE PRINT_RET_COMMAND = "print_ret";
     INST_TYPE RESTART_COMMAND = "restart";
     INST_TYPE RET_POPPED_COMMAND = "ret_popped";
+    INST_TYPE POP_COMMAND = "pop";
     INST_TYPE VERIFY_COMMAND = "verify";
     INST_TYPE NOTHING = "";
 }
@@ -119,6 +132,11 @@ ZAssemblyGenerator &ZAssemblyGenerator::addRoutine(string routineName,
     return *this;
 }
 
+
+ZAssemblyGenerator &ZAssemblyGenerator::addByteArray(std::string name, unsigned size) {
+    return addDirective(directive::BYTE_ARRAY, makeArgs({name, string("[") + to_string(size) + string("]")}));
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::addGlobal(string globalName) {
     addDirective(directive::GLOBAL_VAR, globalName);
     return *this;
@@ -161,6 +179,14 @@ ZAssemblyGenerator &ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
     return *this;
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, unsigned index, int value) {
+    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, to_string(index), to_string(value)}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, unsigned index, string storeTarget) {
+    return addInstruction(instruction::STOREBYTE, to_string(index), nullopt, storeTarget);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::jump(string targetLabel) {
     if (ZAPF_MODE)
         return addInstruction(instruction::JUMP_COMMAND, targetLabel, nullopt, nullopt);
@@ -176,12 +202,8 @@ ZAssemblyGenerator &ZAssemblyGenerator::markStart() {
     return *this;
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::call(string routineName) {
-    return addInstruction(instruction::CALL_VS_COMMAND, routineName, nullopt, nullopt);
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::call(string routineName, string storeTarget) {
-    return addInstruction(instruction::CALL_VS_COMMAND, routineName, nullopt, storeTarget);
+ZAssemblyGenerator &ZAssemblyGenerator::call_vs(string routineName, optional<string> args, string storeTarget) {
+    return addInstruction(instruction::CALL_VS, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jumpEquals(string args, string targetLabel) {
@@ -191,7 +213,6 @@ ZAssemblyGenerator &ZAssemblyGenerator::jumpEquals(string args, string targetLab
 ZAssemblyGenerator &ZAssemblyGenerator::jumpNotEquals(string args, string targetLabel) {
     return addInstruction(instruction::JE_COMMAND, args, make_pair(targetLabel, true), nullopt);
 }
-
 
 ZAssemblyGenerator &ZAssemblyGenerator::jumpGreater(string args, string targetLabel) {
     return addInstruction(instruction::JG_COMMAND, args, make_pair(targetLabel, false), nullopt);
@@ -259,7 +280,11 @@ ZAssemblyGenerator &ZAssemblyGenerator::print_num(string source) {
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::push(string value) {
-    return addInstruction(instruction::PUSH_COMMAND, value, nullopt, STACK_POINTER);
+    return addInstruction(instruction::PUSH_COMMAND, value, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::pop() {
+    return addInstruction(instruction::POP_COMMAND, nullopt, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::variable(string variable) {
@@ -271,7 +296,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::load(std::string source, std::string tar
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::store(std::string target, std::string value) {
-    return addInstruction(instruction::STORE_COMMAND, value, nullopt, target);
+    return addInstruction(instruction::STORE_COMMAND,makeArgs({target, value}) ,nullopt,nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::add(std::string left, std::string right, std::string storeTarget) {
@@ -305,3 +330,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::lor(std::string left, std::string right,
 ZAssemblyGenerator &ZAssemblyGenerator::lnot(std::string variable, std::string storeTarget) {
     return addInstruction(instruction::NOT_COMMAND, variable, nullopt, storeTarget);
 }
+
+ZAssemblyGenerator &ZAssemblyGenerator::nop() {
+    // TODO: better use the official nop instruction...
+    return addInstruction(instruction::PUSH_COMMAND, string("0"), nullopt, nullopt)
+            .addInstruction(instruction::POP_COMMAND, nullopt, nullopt, nullopt);
+}
+

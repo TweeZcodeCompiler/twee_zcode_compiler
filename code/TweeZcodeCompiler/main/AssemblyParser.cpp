@@ -52,6 +52,7 @@ const string AssemblyParser::RET_FALSE_COMMAND = "rfalse";
 const string AssemblyParser::PRINT_RET_COMMAND = "print_ret";
 const string AssemblyParser::RESTART_COMMAND = "restart";
 const string AssemblyParser::RET_POPPED_COMMAND = "ret_popped";
+const string AssemblyParser::POP_COMMAND = "pop";
 const string AssemblyParser::VERIFY_COMMAND = "verify";
 const string AssemblyParser::STOREB_COMMAND = "storeb";
 const string AssemblyParser::STOREW_COMMAND = "storew";
@@ -163,7 +164,7 @@ void AssemblyParser::readAssembly(istream &input, shared_ptr<ZCodeContainer> dyn
     string line;
     currentLineNumber = 1;
     try {
-        for (string line; getline(input, line);) {
+        for (;getline(input, line);) {
 
             line = trim(line);
             vector<string> lineComps;
@@ -213,8 +214,18 @@ void AssemblyParser::finishRoutine(shared_ptr<ZCodeContainer> highMemoryZcode) {
     bool labelFound;
     for (auto jump = registeredJumpsAtLines.begin(); jump != registeredJumpsAtLines.end(); ++jump) {
         labelFound = false;
+        string jumpFirst = jump->first;
+
         for (auto label = registeredLabels.begin(); label != registeredLabels.end(); ++label) {
-            if (label->compare(jump->first) == 0) {
+            if (label->compare(jumpFirst) == 0) {
+                labelFound = true;
+                break;
+            }
+            //set labelFound true when label is x but jump->first is ~x for jump not equals
+            string jumpSubString = jumpFirst.substr(1, jumpFirst.size()-1);
+            bool beginsWithTilde = (jumpFirst.at(0) == '~' );
+            bool restIsSame = (label->compare( jumpSubString) == 0 ) ;
+            if ( beginsWithTilde && restIsSame ) {
                 labelFound = true;
                 break;
             }
@@ -360,7 +371,7 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string &paramString) {
         param.reset(variableParam);
     } else {
         LOG_ERROR << "Could not parse parameter: " << paramString;
-        //throw AssemblyException(AssemblyException::ErrorType::INVALID_VARIABLE);
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_VARIABLE);
     }
 
 
@@ -589,7 +600,10 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::RET_POPPED_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new ret_popped";
         routineGenerator.retPopped();
-    } else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::POP_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new pop";
+        routineGenerator.pop();
+    }else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new verify";
         routineGenerator.verify(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::PUSH_COMMAND) == 0) {
