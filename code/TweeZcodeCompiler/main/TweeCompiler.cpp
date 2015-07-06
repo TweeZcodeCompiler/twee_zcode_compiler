@@ -151,6 +151,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ifContexts = stack<IfContext>();
     ifCount = 0;
 
+
     {
         int i = 0;
         for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
