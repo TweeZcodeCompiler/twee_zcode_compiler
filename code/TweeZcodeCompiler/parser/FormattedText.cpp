@@ -6,7 +6,6 @@
 #include "include/Passage/Body/FormattedText.h"
 
 FormattedText::FormattedText(std::string type) {
-    LOG_DEBUG << "HHHHHHHHHHHHHHHHHHHH" << type << "\n";
     if (type.compare("//") == 0) {
         this->format = ITALIC;
     } else if (type.compare("\"") == 0) {

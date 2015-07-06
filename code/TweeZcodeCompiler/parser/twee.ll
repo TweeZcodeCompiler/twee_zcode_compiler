@@ -335,14 +335,14 @@ EXPR_TO                to|=
                                 //TODO: new condition for monospace open&close lexing
                                 SAVE_STRING;
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING" << " with value " << YYText();
-                                return BisonParser::token::FORMATTING_COMMENT_OPEN;
+                                return BisonParser::token::FORMATTING;
                                 }
 
 <Body>{FORMATTING_MONOSPACE_CLOSE}{MATCH_REST}      {
                                 yyless(3); //TODO: new condition for monospace open&close lexing: delete this
                                 SAVE_STRING;
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING" << " with value " << YYText();
-                                return BisonParser::token::FORMATTING_COMMENT_CLOSE;
+                                return BisonParser::token::FORMATTING;
                                 }
 
 <Body>{FORMATTING_COMMENT_OPEN}{MATCH_REST} {
