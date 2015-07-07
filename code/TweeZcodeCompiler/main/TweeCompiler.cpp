@@ -373,10 +373,6 @@ void TweeCompiler::evalExpression(Expression *expression) {
         LOG_DEBUG << turns->to_string();
     } else if (Random *random = dynamic_cast<Random *>(expression)) {
         LOG_DEBUG << random->to_string();
-        evalExpression(random->getStart().get());
-        evalExpression(random->getEnd().get());
-        ASSGEN.add("sp", "sp", "sp");
-        //ASSGEN.random();
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
         std::pair<std::string, std::string> labels;
 
