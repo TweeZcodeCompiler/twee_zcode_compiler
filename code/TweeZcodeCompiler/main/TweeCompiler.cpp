@@ -270,7 +270,7 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                 evalExpression(random->getStart().get());
                 evalExpression(random->getStart().get());
                 ASSGEN.add("sp", "sp", "sp");
-                ASSGEN.random();
+                //ASSGEN.random();
             } else if (Display *display = dynamic_cast<Display *>(bodyPart)) {
                 LOG_DEBUG << display->to_string();
             } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {

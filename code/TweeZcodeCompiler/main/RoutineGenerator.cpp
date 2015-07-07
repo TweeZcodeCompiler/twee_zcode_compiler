@@ -562,6 +562,13 @@ void RoutineGenerator::doNOT(vector<unique_ptr<ZParam>> params) {
     opcodeGenerator.generateVarOPInstruction(NOT, params);
 }
 
+void RoutineGenerator::random(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 2);
+    checkParamType(params, VARIABLE_OR_VALUE, STORE_ADDRESS);
+    opcodeGenerator.generateVarOPInstruction(RANDOM, params);
+}
+
+
 // params: address, resultAddress
 void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {
     debug("load");

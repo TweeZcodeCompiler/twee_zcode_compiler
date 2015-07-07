@@ -60,6 +60,7 @@ const string AssemblyParser::LOADB_COMMAND = "loadb";
 const string AssemblyParser::LOADW_COMMAND = "loadw";
 const string AssemblyParser::PUSH_COMMAND = "push";
 const string AssemblyParser::PULL_COMMAND = "pull";
+const string AssemblyParser::RANDOM_COMMAND = "random";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';

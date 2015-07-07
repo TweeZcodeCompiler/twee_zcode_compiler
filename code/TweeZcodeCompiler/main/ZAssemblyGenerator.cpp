@@ -73,6 +73,7 @@ namespace instruction {
     INST_TYPE RET_POPPED_COMMAND = "ret_popped";
     INST_TYPE POP_COMMAND = "pop";
     INST_TYPE VERIFY_COMMAND = "verify";
+    INST_TYPE RANDOM_COMMAND = "random";
     INST_TYPE NOTHING = "";
 }
 
@@ -238,8 +239,8 @@ ZAssemblyGenerator &ZAssemblyGenerator::quit() {
     return addInstruction(instruction::QUIT_COMMAND, nullopt, nullopt, nullopt);
 }
 
-ZAssemblyGenerator& ZAssemblyGenerator::random() {
-
+ZAssemblyGenerator &ZAssemblyGenerator::random(std::string range, std::string storeTarget) {
+    return addInstruction(instruction::RANDOM_COMMAND, range, nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::ret(string arg) {

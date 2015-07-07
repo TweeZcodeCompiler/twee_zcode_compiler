@@ -116,6 +116,8 @@ public:
 
     ZAssemblyGenerator &nop();
 
+    ZAssemblyGenerator &random(std::string range, std::string storeTarget);
+
 
 private:
     std::ostream &out;

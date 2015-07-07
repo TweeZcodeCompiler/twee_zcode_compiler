@@ -66,6 +66,7 @@ private:
     static const std::string LOADW_COMMAND;
     static const std::string PUSH_COMMAND;
     static const std::string PULL_COMMAND;
+    static const std::string RANDOM_COMMAND;
 
 
     unsigned currentLineNumber;
