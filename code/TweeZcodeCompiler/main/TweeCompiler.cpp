@@ -274,8 +274,12 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
         } else if (Display *display = dynamic_cast<Display *>(bodyPart)) {
             LOG_DEBUG << display->to_string();
         } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
-            evalExpression(print->getExpression().get());
-            ASSGEN.print_num("sp");
+            if (Previous *previous = dynamic_cast<Previous *>(print->getExpression().get())) {
+                ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
+            } else {
+                evalExpression(print->getExpression().get());
+                ASSGEN.print_num("sp");
+            }
         } else if (IfMacro *ifMacro = dynamic_cast<IfMacro *>(bodyPart)) {
             ifContexts.push(makeNextIfContext());
             evalExpression(ifMacro->getExpression().get());
@@ -320,19 +324,14 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
             } else {
                 throw TweeDocumentException("set macro didn't contain an assignment");
             }
-        } else if (Expression *expr = dynamic_cast<Expression *>(bodyPart)) {
-            if (Previous *prev = dynamic_cast<Previous *>(bodyPart)) {
-                ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
-            }
         }
 
         // unclosed if-macro
         if (ifContexts.size() > 0) {
             throw TweeDocumentException("unclosed if macro");
         }
-
-        ASSGEN.ret("0");
     }
+    ASSGEN.ret("0");
 }
 
 IfContext TweeCompiler::makeNextIfContext() {
@@ -382,8 +381,6 @@ void TweeCompiler::evalExpression(Expression *expression) {
 
     } else if (Visited *visited = dynamic_cast<Visited *>(expression)) {
         LOG_DEBUG << visited->to_string();
-    } else if (Previous *previous = dynamic_cast<Previous *>(expression)) {
-        LOG_DEBUG << previous->to_string();
     } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
         LOG_DEBUG << turns->to_string();
     } else if (Random *random = dynamic_cast<Random *>(expression)) {
