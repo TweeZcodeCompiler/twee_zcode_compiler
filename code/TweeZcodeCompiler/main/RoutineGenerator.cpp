@@ -89,16 +89,13 @@ void RoutineGenerator::addBitset(vector<bitset<8>> bitsets, std::string name = "
     routine->add(instruction);
 }
 
-void RoutineGenerator::setTextStyle(bool roman, bool reverseVideo, bool bold, bool italic, bool fixedPitch) {
+void RoutineGenerator::setTextStyle(vector<unique_ptr<ZParam>> params) {
     debug("textStyle");
-    vector<uint16_t> param;
-    param.push_back(roman ? 0 : (reverseVideo * 1) + (bold * 2) + (italic * 4) + (fixedPitch * 8));
+    checkParamCount(params, 1);
+    checkParamType(params, VARIABLE_OR_VALUE);
 
-    vector<bool> paramBools;
-    paramBools.push_back(false);
-
-    vector<bitset<8>> command = opcodeGenerator.generateVarOPInstruction(SET_TEXT_STYLE, param, paramBools);
-    addBitset(command, "text style");
+    vector<bitset<8>> command = opcodeGenerator.generateVarOPInstruction(SET_TEXT_STYLE, params);
+    addBitset(command, "set_text_style");
 }
 
 // params: stringToPrint
@@ -503,9 +500,16 @@ void RoutineGenerator::conditionalJump(unsigned int opcode, string toLabel, bool
 void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
     debug("store");
     checkParamCount(params, 2);
-    checkParamType(params, VARIABLE_OR_VALUE, VALUE);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
 
     unique_ptr<ZParam> address(new ZValueParam((*params.at(0)).getZCodeValue()));
+
+    // store var var is not possible -> use load
+    if ((*params.at(1)).getParamType() == VARIABLE) {
+        //load(*params.at(1), *params.at(0));
+        load(*params.at(0), *params.at(1));
+        return;
+    }
 
     vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(STORE, *address, *params.at(1));
     addBitset(instructions);
@@ -569,6 +573,13 @@ void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {
 
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, valParam);
     instructions.push_back(numberToBitset((*params.at(1)).getZCodeValue()));
+    addBitset(instructions);
+}
+
+void RoutineGenerator::load(ZParam &param1, ZParam &param2) {
+    debug("load");
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, param1);
+    instructions.push_back(numberToBitset(param2.getZCodeValue()));
     addBitset(instructions);
 }
 
