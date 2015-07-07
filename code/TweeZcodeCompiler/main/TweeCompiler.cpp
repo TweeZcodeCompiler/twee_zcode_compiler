@@ -57,7 +57,8 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         ENDIF_LABEL_PREFIX = "ENDIF",
         ROUTINE_CLEAR_TABLES = "reset_tables",
         START_PASSAGE_NAME = "Start",
-        GLOB_PREVIOUS = "PREVIOUS_PASSAGE_ID";
+        GLOB_PREVIOUS_PASSAGE_ID = "PREVIOUS_PASSAGE_ID",
+        GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -102,40 +103,40 @@ string makeIfEndLabel(const IfContext &context) {
 
 string makeUserInputRoutine() {
     return ".FUNCT display_links i, selectcount\n"
-            "loop_start:\n"
-            "loadb LINKED_PASSAGES i -> sp\n"
-            "jz sp ?passage_not_set\n"
-            "storeb USERINPUT_LOOKUP selectcount i\n"
-            "add selectcount 1 -> sp\n"
-            "add selectcount 49 -> sp\n"
-            "print_char sp\n"
-            "print \": \"\n"
-            "call_vs print_name_for_passage i -> sp\n"
-            "new_line\n"
-            "add selectcount 1 -> selectcount\n"
+            "   loop_start:\n"
+            "   loadb LINKED_PASSAGES i -> sp\n"
+            "   jz sp ?passage_not_set\n"
+            "   storeb USERINPUT_LOOKUP selectcount i\n"
+            "   add selectcount 1 -> sp\n"
+            "   add selectcount 49 -> sp\n"
+            "   print_char sp\n"
+            "   print \": \"\n"
+            "   call_vs print_name_for_passage i -> sp\n"
+            "   new_line\n"
+            "   add selectcount 1 -> selectcount\n"
             "\n"
-            "passage_not_set:\n"
+            "   passage_not_set:\n"
             "\n"
-            "add i 1 -> i\n"
-            "jl i PASSAGES_COUNT ?loop_start\n"
+            "   add i 1 -> i\n"
+            "   jl i PASSAGES_COUNT ?loop_start\n"
             "\n"
-            "read_char 1 -> USER_INPUT\n"
-            "sub USER_INPUT 48 -> sp\n"
-            "sub sp 1 -> sp\n"
-            "loadb USERINPUT_LOOKUP sp -> sp \n"
+            "   read_char 1 -> USER_INPUT\n"
+            "   sub USER_INPUT 48 -> sp\n"
+            "   sub sp 1 -> sp\n"
+            "   loadb USERINPUT_LOOKUP sp -> sp \n"
             "\n"
-            "ret sp"
+            "   ret sp"
             "\n";
 }
 
 string makeClearTablesRoutine() {
     return ".FUNCT reset_tables i\n"
-            "loop_start:\n"
-            "storeb LINKED_PASSAGES i 0\n"
-            "storeb USERINPUT_LOOKUP i 0\n"
-            "add i 1 -> i\n"
-            "jl i PASSAGES_COUNT ?loop_start\n"
-            "ret 0"
+            "   loop_start:\n"
+            "   storeb LINKED_PASSAGES i 0\n"
+            "   storeb USERINPUT_LOOKUP i 0\n"
+            "   add i 1 -> i\n"
+            "   jl i PASSAGES_COUNT ?loop_start\n"
+            "   ret 0"
             "\n";
 }
 
@@ -171,7 +172,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // globals
     ASSGEN.addGlobal(GLOB_PASSAGE)
             .addGlobal(GLOBAL_USER_INPUT)
-            .addGlobal(GLOB_PASSAGES_COUNT);
+            .addGlobal(GLOB_PASSAGES_COUNT)
+            .addGlobal(GLOB_PREVIOUS_PASSAGE_ID)
+            .addGlobal(GLOB_CURRENT_PASSAGE_ID);
 
 
     // main routine
@@ -180,6 +183,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.addRoutine(ROUTINE_MAIN)
                 .markStart()
                 .store(GLOB_PASSAGES_COUNT, to_string(passages.size()))
+                .store(GLOB_PREVIOUS_PASSAGE_ID, "0")
+                .store(GLOB_CURRENT_PASSAGE_ID, "0")
                 .call_1n(ROUTINE_CLEAR_TABLES)
                 .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))), "sp");
 
@@ -197,7 +202,13 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // call passage by id routine
     {
         const string idLocal = "id";
-        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal)}));
+        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal)}))
+                .println("Test")
+                .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
+                .println("bla")
+                .store(GLOB_CURRENT_PASSAGE_ID, idLocal)
+                .println("blu");
+
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             string passageName = it->getHead().getName();
             unsigned id = passageName2id.at(passageName);
@@ -205,8 +216,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         }
 
         // error case
-        ASSGEN.print("invalid id for passage "); // TODO: print offending argument as soon as print_num is available
-        ASSGEN.quit();
+        ASSGEN.print("invalid id for passage: ")
+                .print_num(idLocal)
+                .quit();
+
 
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             ASSGEN.addLabel(labelForPassage(*it)).call_vs(routineNameForPassage(*it), nullopt, "sp").ret("0");
@@ -225,8 +238,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         }
 
         // error case
-        ASSGEN.print("invalid id for passage "); // TODO: print offending argument as soon as print_num is available
-        ASSGEN.quit();
+        ASSGEN.print("invalid id for passage: ")
+                .print_num(idLocal)
+                .quit();
 
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             ASSGEN.addLabel(labelForPassage(*it)).print(it->getHead().getName()).ret("0");
@@ -249,8 +263,6 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
 
     //  print passage contents
     for (auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
-        size_t ifDepth = ifContexts.size();
-
         BodyPart *bodyPart = it->get();
         if (Text *text = dynamic_cast<Text *>(bodyPart)) {
             ASSGEN.print(text->getContent());
@@ -307,6 +319,10 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                 }
             } else {
                 throw TweeDocumentException("set macro didn't contain an assignment");
+            }
+        } else if (Expression *expr = dynamic_cast<Expression *>(bodyPart)) {
+            if (Previous *prev = dynamic_cast<Previous *>(bodyPart)) {
+                ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
             }
         }
 

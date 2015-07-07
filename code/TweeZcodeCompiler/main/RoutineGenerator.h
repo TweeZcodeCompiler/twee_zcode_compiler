@@ -124,6 +124,8 @@ public:
 
     void load(std::vector<std::unique_ptr<ZParam>> params);
 
+    void load(ZParam &param1, ZParam &param2);
+
     void quitRoutine();
 
     void returnValue(std::vector<std::unique_ptr<ZParam>> params);
