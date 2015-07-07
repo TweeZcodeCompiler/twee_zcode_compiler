@@ -259,18 +259,6 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                 ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
             } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
                 ASSGEN.newline();
-            } else if (Visited *visited = dynamic_cast<Visited *>(bodyPart)) {
-                LOG_DEBUG << visited->to_string();
-            } else if (Previous *previous = dynamic_cast<Previous *>(bodyPart)) {
-                LOG_DEBUG << previous->to_string();
-            } else if (Turns *turns = dynamic_cast<Turns *>(bodyPart)) {
-                LOG_DEBUG << turns->to_string();
-            } else if (Random *random = dynamic_cast<Random *>(bodyPart)) {
-                LOG_DEBUG << random->to_string();
-                evalExpression(random->getStart().get());
-                evalExpression(random->getStart().get());
-                ASSGEN.add("sp", "sp", "sp");
-                //ASSGEN.random();
             } else if (Display *display = dynamic_cast<Display *>(bodyPart)) {
                 LOG_DEBUG << display->to_string();
             } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
@@ -377,6 +365,18 @@ void TweeCompiler::evalExpression(Expression *expression) {
             ASSGEN.push(prunedVarName);
         }
 
+    } else if (Visited *visited = dynamic_cast<Visited *>(expression)) {
+        LOG_DEBUG << visited->to_string();
+    } else if (Previous *previous = dynamic_cast<Previous *>(expression)) {
+        LOG_DEBUG << previous->to_string();
+    } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
+        LOG_DEBUG << turns->to_string();
+    } else if (Random *random = dynamic_cast<Random *>(expression)) {
+        LOG_DEBUG << random->to_string();
+        evalExpression(random->getStart().get());
+        evalExpression(random->getEnd().get());
+        ASSGEN.add("sp", "sp", "sp");
+        //ASSGEN.random();
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
         std::pair<std::string, std::string> labels;
 
@@ -466,6 +466,9 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.addLabel(labels.first);
                 ASSGEN.push("1");
                 ASSGEN.addLabel(labels.second);
+                break;
+            default:
+                //TODO: handle this
                 break;
 
         }
