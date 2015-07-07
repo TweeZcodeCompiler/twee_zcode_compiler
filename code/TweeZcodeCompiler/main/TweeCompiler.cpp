@@ -254,15 +254,11 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
             BodyPart *bodyPart = it->get();
             if (Text *text = dynamic_cast<Text *>(bodyPart)) {
                 ASSGEN.print(text->getContent());
-            } else if (Variable *variable = dynamic_cast<Variable *>(bodyPart)) {
-                ASSGEN.variable(variable->getName());
             } else if (Link *link = dynamic_cast<Link *>(bodyPart)) {
                 // TODO: catch invalid link
                 ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
             } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
                 ASSGEN.newline();
-            } else if (Display *display = dynamic_cast<Display *>(bodyPart)) {
-                LOG_DEBUG << display->to_string();
             } else if (Visited *visited = dynamic_cast<Visited *>(bodyPart)) {
                 LOG_DEBUG << visited->to_string();
             } else if (Previous *previous = dynamic_cast<Previous *>(bodyPart)) {
@@ -275,6 +271,8 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                 evalExpression(random->getStart().get());
                 ASSGEN.add("sp", "sp", "sp");
                 ASSGEN.random();
+            } else if (Display *display = dynamic_cast<Display *>(bodyPart)) {
+                LOG_DEBUG << display->to_string();
             } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
                 evalExpression(print->getExpression().get());
                 ASSGEN.print_num("sp");
