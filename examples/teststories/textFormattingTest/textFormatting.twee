@@ -1,0 +1,11 @@
+::Start
+
+This text is //italic//.
+
+This text is "bold".
+
+This text is __underlined__.
+
+This text is __"//underlined & bold & italic"//__.
+
+This text is {{{monospaced <<print 5>>}}}.

@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
     } catch (const Twee::ParseException& parseException) {
         // TODO: display more info if possible
         std::cerr << "Failed parsing Twee File";
-    } catch (const TweeDocumentException& tweeDocumentException) {
+    } catch (TweeDocumentException& tweeDocumentException) {
         std::cerr << "Error while compiling Twee document:" << std::endl <<
                 std::string(tweeDocumentException.what());
     }

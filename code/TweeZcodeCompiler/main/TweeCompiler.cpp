@@ -17,8 +17,10 @@
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
+#include <Passage/Body/Macros/SetMacro.h>
 
 #include <Passage/Body/Expressions/BinaryOperation.h>
+#include <Passage/Body/Expressions/Variable.h>
 #include <Passage/Body/Expressions/UnaryOperation.h>
 
 #include <Passage/Body/Expressions/Const.h>
@@ -42,9 +44,9 @@
 using namespace std;
 using namespace std::experimental;
 
-
 static const string GLOB_PASSAGE = "PASSAGE_PTR",
         GLOB_PASSAGES_COUNT = "PASSAGES_COUNT",
+        GLOB_TURNS_COUNT = "TURNS",
         LABEL_MAIN_LOOP = "MAIN_LOOP",
         ROUTINE_MAIN = "main",
         GLOBAL_USER_INPUT = "USER_INPUT",
@@ -56,7 +58,12 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         ELSE_LABEL_PREFIX = "ELSE",
         ENDIF_LABEL_PREFIX = "ENDIF",
         ROUTINE_CLEAR_TABLES = "reset_tables",
-        START_PASSAGE_NAME = "Start",
+        TEXT_FORMAT_ROUTINE = "toggleTextFormat",
+        TEXT_FORMAT_ITALIC = "ITALIC",
+        TEXT_FORMAT_BOLD = "BOLD",
+        TEXT_FORMAT_REVERSE_VIDEO = "REVERSED_VIDEO",
+        TEXT_FORMAT_FIXED_PITCH = "FIXED_PITCH",
+        START_PASSAGE_NAME = "Start";
         GLOB_PREVIOUS_PASSAGE_ID = "PREVIOUS_PASSAGE_ID",
         GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID";
 
@@ -125,6 +132,7 @@ string makeUserInputRoutine() {
             "   sub sp 1 -> sp\n"
             "   loadb USERINPUT_LOOKUP sp -> sp \n"
             "\n"
+            "\t add TURNS 1 -> TURNS\n"
             "   ret sp"
             "\n";
 }
@@ -174,7 +182,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             .addGlobal(GLOBAL_USER_INPUT)
             .addGlobal(GLOB_PASSAGES_COUNT)
             .addGlobal(GLOB_PREVIOUS_PASSAGE_ID)
-            .addGlobal(GLOB_CURRENT_PASSAGE_ID);
+            .addGlobal(GLOB_CURRENT_PASSAGE_ID)
+            .addGlobal(GLOB_TURNS_COUNT);
 
 
     // main routine
@@ -183,6 +192,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.addRoutine(ROUTINE_MAIN)
                 .markStart()
                 .store(GLOB_PASSAGES_COUNT, to_string(passages.size()))
+                .store(GLOB_TURNS_COUNT, "1")
                 .store(GLOB_PREVIOUS_PASSAGE_ID, "0")
                 .store(GLOB_CURRENT_PASSAGE_ID, "0")
                 .call_1n(ROUTINE_CLEAR_TABLES)
@@ -244,6 +254,81 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         }
     }
 
+    // print appropriate text formatting args
+    {
+        ASSGEN.addGlobal(TEXT_FORMAT_REVERSE_VIDEO)
+                .addGlobal(TEXT_FORMAT_BOLD)
+                .addGlobal(TEXT_FORMAT_ITALIC)
+                .addGlobal(TEXT_FORMAT_FIXED_PITCH);
+
+        string varFormatType = "formatType";
+        string varCounter = "counter";
+        string varResult = "result";
+        string labelTextStyle = "CALC_TEXT_STYLE";
+        string labelNotZero = "NOT_ZERO";
+        string labelZeroOn = "ZERO_ON";
+        string labelNotOne = "NOT_ONE";
+        string labelOneOn = "One_ON";
+        string labelNotTwo = "NOT_Two";
+        string labelTwoOn = "Two_ON";
+        string labelThreeOn = "THREE_ON";
+
+        vector<ZRoutineArgument> args;
+        args.push_back(ZRoutineArgument(varCounter));
+        args.push_back(ZRoutineArgument(varResult));
+        args.push_back(ZRoutineArgument(varFormatType));    // This value will be set via call_vs TEXT_FORMAT_ROUTINE 1 -> sp
+        ASSGEN.addRoutine(TEXT_FORMAT_ROUTINE, args);
+
+        ASSGEN.jumpEquals(string(varFormatType + " 0"), string("~" + labelNotZero))
+                .jumpEquals(string(TEXT_FORMAT_REVERSE_VIDEO) + " 0", labelZeroOn)
+                .store(TEXT_FORMAT_REVERSE_VIDEO, "0")
+                .jump(labelTextStyle);
+
+        ASSGEN.addLabel(labelZeroOn)
+                .store(TEXT_FORMAT_REVERSE_VIDEO, "1")
+                .jump(labelTextStyle);
+
+        ASSGEN.addLabel(labelNotZero)
+                .jumpEquals(string(varFormatType + " 1"), string("~" + labelNotOne))
+                .jumpEquals(string(TEXT_FORMAT_BOLD) + " 0", labelOneOn)
+                .store(TEXT_FORMAT_BOLD, "0")
+                .jump(labelTextStyle);
+
+        ASSGEN.addLabel(labelOneOn)
+                .store(TEXT_FORMAT_BOLD, "1")
+                .jump(labelTextStyle);
+
+        ASSGEN.addLabel(labelNotOne)
+                .jumpEquals(string(varFormatType + " 2"), string("~" + labelNotTwo))
+                .jumpEquals(string(TEXT_FORMAT_ITALIC) + " 0", labelTwoOn)
+                .store(TEXT_FORMAT_ITALIC, "0")
+                .jump(labelTextStyle);
+
+        ASSGEN.addLabel(labelTwoOn)
+                .store(TEXT_FORMAT_ITALIC, "1")
+                .jump(labelTextStyle);
+
+        ASSGEN.addLabel(labelNotTwo)
+                .jumpEquals(string(TEXT_FORMAT_FIXED_PITCH) + " 0", labelThreeOn)
+                .store(TEXT_FORMAT_FIXED_PITCH, "0")
+                .jump(labelTextStyle);
+
+        ASSGEN.addLabel(labelThreeOn)
+                .store(TEXT_FORMAT_FIXED_PITCH, "1");
+
+        ASSGEN.addLabel(labelTextStyle)
+                .mul(TEXT_FORMAT_REVERSE_VIDEO, "1", varResult)
+                .mul(TEXT_FORMAT_BOLD, "2", varCounter)
+                .add(varCounter, varResult, varResult)
+                .mul(TEXT_FORMAT_ITALIC, "4", varCounter)
+                .add(varCounter, varResult, varResult)
+                .mul(TEXT_FORMAT_FIXED_PITCH, "8", varCounter)
+                .add(varCounter, varResult, varResult)
+                .setTextStyle(varResult)
+                .ret("0");
+
+    }
+    
     // passage routines
     for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
         makePassageRoutine(*passage);
@@ -322,13 +407,15 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                 throw TweeDocumentException("set macro didn't contain an assignment");
             }
         }
-
-        // unclosed if-macro
-        if (ifContexts.size() > 0) {
-            throw TweeDocumentException("unclosed if macro");
-        }
     }
+
+    // unclosed if-macro
+    if (ifContexts.size() > 0) {
+        throw TweeDocumentException("unclosed if macro");
+    }
+
     ASSGEN.ret("0");
+
 }
 
 IfContext TweeCompiler::makeNextIfContext() {
@@ -380,6 +467,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
         LOG_DEBUG << visited->to_string();
     } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
         LOG_DEBUG << turns->to_string();
+        ASSGEN.load(GLOB_TURNS_COUNT, "sp");
     } else if (Random *random = dynamic_cast<Random *>(expression)) {
         LOG_DEBUG << random->to_string();
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
