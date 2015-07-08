@@ -3,9 +3,10 @@
 [[help]]
 
 ::help
-<<print previous()>>
+[[Test|previous()]]
 [[next]]
 
 ::next
 <<print previous()>>
+[[Test2|      previous()        ]]
 [[Start]]
