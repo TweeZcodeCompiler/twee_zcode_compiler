@@ -400,7 +400,7 @@ void RoutineGenerator::pull(std::vector<std::unique_ptr<ZParam>> params) {
     // convert variable to small constant
     unique_ptr<ZParam> address(new ZValueParam((*params.at(0)).getZCodeValue()));
     vector<unique_ptr<ZParam>> param;
-    param.push_back(address);
+    param.push_back(move(address));
 
     auto instructions = opcodeGenerator.generateVarOPInstruction(PULL, param);
     auto zcode = shared_ptr<ZCodeInstruction>(new ZCodeInstruction(instructions, "pull"));
