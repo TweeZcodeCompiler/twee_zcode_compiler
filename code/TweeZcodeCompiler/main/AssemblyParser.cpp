@@ -606,7 +606,7 @@ bool AssemblyParser::checkIfCommandRoutineStart(const string &command) {
 
 
 unique_ptr<uint8_t> AssemblyParser::getAddressForId(const string &id) {
-    if (id.compare("sp") == 0) {
+    if (id == "sp") {
         return unique_ptr<uint8_t>(new uint8_t(0));
     }
 
