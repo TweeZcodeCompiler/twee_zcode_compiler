@@ -335,6 +335,19 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     }
 }
 
+bool isPreviousMacro(string link) {
+    string previousFunc = "previous()";
+
+    while (link.size() > previousFunc.size() && link.at(0) == ' ') {
+        link = link.substr(1);
+    }
+    while (link.size() > previousFunc.size() && link.at(link.size() - 1) == ' ') {
+        link = link.substr(0, link.size() - 1);
+    }
+
+    return link == previousFunc;
+}
+
 void TweeCompiler::makePassageRoutine(const Passage &passage) {
     auto &bodyParts = passage.getBody().getBodyParts();
 
@@ -350,7 +363,12 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
             ASSGEN.print(text->getContent());
         } else if (Link *link = dynamic_cast<Link *>(bodyPart)) {
             // TODO: catch invalid link
-            ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
+
+            if (isPreviousMacro(link->getTarget())) {
+                ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, 1);
+            } else {
+                ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
+            }
         } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
             ASSGEN.newline();
         } else if (Display *display = dynamic_cast<Display *>(bodyPart)) {
