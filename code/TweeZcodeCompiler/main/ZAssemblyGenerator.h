@@ -11,7 +11,6 @@
 #include <utility>
 #include <initializer_list>
 #include <vector>
-#include <Passage/Body/FormattedText.h>
 #include "optional.hpp"
 
 typedef const std::string INST_TYPE;

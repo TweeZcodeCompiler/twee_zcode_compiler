@@ -16,7 +16,6 @@
 
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
-#include <Passage/Body/FormattedText.h>
 #include <Passage/Body/Newline.h>
 #include <Passage/Body/Macros/SetMacro.h>
 
@@ -390,24 +389,6 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                 }
             } else {
                 throw TweeDocumentException("set macro didn't contain an assignment");
-            }
-        } else if (FormattedText *format = dynamic_cast<FormattedText *>(bodyPart)) {
-            switch (format->getFormat()) {
-                case Format::UNDERLINED:
-                    ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, string("0"), "sp");
-                    break;
-                case Format::BOLD:
-                    ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, string("1"), "sp");
-                    break;
-                case Format::ITALIC:
-                    ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, string("2"), "sp");
-                    break;
-                case Format::MONOSPACE:
-                    ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, string("3"), "sp");
-                    break;
-                default:
-                    LOG_DEBUG << "Unknown text formatting";
-                    throw;
             }
         }
     }
