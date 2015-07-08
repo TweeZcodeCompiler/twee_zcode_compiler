@@ -45,6 +45,7 @@ using namespace std::experimental;
 
 static const string GLOB_PASSAGE = "PASSAGE_PTR",
         GLOB_PASSAGES_COUNT = "PASSAGES_COUNT",
+        GLOB_TURNS_COUNT = "TURNS",
         LABEL_MAIN_LOOP = "MAIN_LOOP",
         ROUTINE_MAIN = "main",
         GLOBAL_USER_INPUT = "USER_INPUT",
@@ -110,6 +111,7 @@ string makeUserInputRoutine() {
             "print_char sp\n"
             "print \": \"\n"
             "call_vs print_name_for_passage i -> sp\n"
+            "\tadd TURNS 1 -> TURNS\n"
             "new_line\n"
             "add selectcount 1 -> selectcount\n"
             "\n"
@@ -170,7 +172,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // globals
     ASSGEN.addGlobal(GLOB_PASSAGE)
             .addGlobal(GLOBAL_USER_INPUT)
-            .addGlobal(GLOB_PASSAGES_COUNT);
+            .addGlobal(GLOB_PASSAGES_COUNT)
+            .addGlobal(GLOB_TURNS_COUNT);
 
 
     // main routine
@@ -179,6 +182,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.addRoutine(ROUTINE_MAIN)
                 .markStart()
                 .store(GLOB_PASSAGES_COUNT, to_string(passages.size()))
+                .store(GLOB_TURNS_COUNT, "1")
                 .call_1n(ROUTINE_CLEAR_TABLES)
                 .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))), "sp");
 
@@ -368,6 +372,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
         LOG_DEBUG << previous->to_string();
     } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
         LOG_DEBUG << turns->to_string();
+        ASSGEN.load(GLOB_TURNS_COUNT, "sp");
     } else if (Random *random = dynamic_cast<Random *>(expression)) {
         LOG_DEBUG << random->to_string();
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {

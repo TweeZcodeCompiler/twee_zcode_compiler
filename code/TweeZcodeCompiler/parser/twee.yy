@@ -819,7 +819,7 @@ visited:
   ;
 
 turns:
-    EXPR_TURNS EXPR_CLOSE
+    EXPR_TURNS
     {
     LOG_DEBUG << "turns -> EXPR_TURNS EXPR_CLOSE: create $$ = new Turns()";
     $$ = new Turns();

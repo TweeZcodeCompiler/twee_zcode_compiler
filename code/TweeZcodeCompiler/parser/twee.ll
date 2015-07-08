@@ -121,7 +121,7 @@ EXPR_VAR                $[a-zA-z_][a-zA-Z0-9_]*
 EXPR_RANDOM            random[ ]*\(
 EXPR_VISITED           visited[ ]*\(
 EXPR_PREVIOUS          previous[ ]*\(
-EXPR_TURNS             turns[ ]*\(
+EXPR_TURNS             turns[ ]*\([ ]*\)
 
 EXPR_OPEN              \(
 EXPR_CLOSE             \)
@@ -496,8 +496,7 @@ EXPR_TO                to|=
                                 return BisonParser::token::EXPR_PREVIOUS;
                                 }
 
-<LinkExpression>{EXPR_TURNS}		    {
-                                BEGIN(FunctionArgsLink);
+<LinkExpression>{EXPR_TURNS}	{
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: LinkExpression matched Token "<<"EXPR_TURNS" << " with value " << YYText();
                                 return BisonParser::token::EXPR_TURNS;
                                 }
@@ -678,7 +677,6 @@ EXPR_TO                to|=
                                 }
 
 <BodyMacro>{EXPR_TURNS}		    {
-                                BEGIN(FunctionArgsBody);
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"EXPR_TURNS" << " with value " << YYText();
                                 return BisonParser::token::EXPR_TURNS;
                                 }
