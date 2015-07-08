@@ -107,7 +107,7 @@ public:
 
     void printChar(std::vector<std::unique_ptr<ZParam>> params);
 
-    void setTextStyle(bool roman, bool reverseVideo, bool bold, bool italic, bool fixedPitch);
+    void setTextStyle(std::vector<std::unique_ptr<ZParam>> params);
 
     void printString(std::vector<std::unique_ptr<ZParam>> params);
 
@@ -123,6 +123,8 @@ public:
     void store(std::vector<std::unique_ptr<ZParam>> params);
 
     void load(std::vector<std::unique_ptr<ZParam>> params);
+
+    void load(ZParam &param1, ZParam &param2);
 
     void quitRoutine();
 
