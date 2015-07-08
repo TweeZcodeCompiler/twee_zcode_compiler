@@ -1,0 +1,3 @@
+::Start
+
+<<print random(1, 200 + 300)>>
