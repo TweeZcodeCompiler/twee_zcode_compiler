@@ -60,6 +60,8 @@ public:
     
     ZAssemblyGenerator &jumpGreater(std::string args, std::string targetLabel);
 
+    ZAssemblyGenerator &jumpLess(std::string args, std::string targetLabel);
+
     ZAssemblyGenerator &jumpGreaterEquals(std::string args, std::string targetLabel);
 
     ZAssemblyGenerator &jumpLower(std::string args, std::string targetLabel);
@@ -76,7 +78,7 @@ public:
 
     ZAssemblyGenerator &newline();
 
-    ZAssemblyGenerator &setTextStyle(bool, bool, bool);
+    ZAssemblyGenerator &setTextStyle(std::string values);
 
     ZAssemblyGenerator &print(std::string str);
     
@@ -89,6 +91,7 @@ public:
     ZAssemblyGenerator &pop();
 
     ZAssemblyGenerator &variable(std::string variable);
+    ZAssemblyGenerator &store(std::string variableName, int value);
 
     ZAssemblyGenerator &loadb(std::string arrayName, unsigned int index, std::string storeTarget);
 
@@ -128,9 +131,7 @@ private:
                                        std::experimental::optional<std::pair<std::string, bool>> targetLabelAndNeg,
                                        std::experimental::optional<std::string> storeTarget);
 
-
     ZAssemblyGenerator &addDirective(std::string directiveName, std::experimental::optional<std::string> args);
-
 
 };
 
