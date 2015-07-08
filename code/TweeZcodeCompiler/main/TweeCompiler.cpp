@@ -246,8 +246,6 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
 
     ASSGEN.println(string("***** ") + passage.getHead().getName() + string(" *****"));
 
-    size_t ifDepth = ifContexts.size();
-
     //  print passage contents
     for (auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
         BodyPart *bodyPart = it->get();
