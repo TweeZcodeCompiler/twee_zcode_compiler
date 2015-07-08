@@ -393,6 +393,20 @@ void RoutineGenerator::verify(vector<unique_ptr<ZParam>> params) {
     routine->add(jump);
 }
 
+void RoutineGenerator::pull(std::vector<std::unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1);
+    checkParamType(params, VARIABLE_OR_VALUE);
+
+    // convert variable to small constant
+    unique_ptr<ZParam> address(new ZValueParam((*params.at(0)).getZCodeValue()));
+    vector<unique_ptr<ZParam>> param;
+    param.push_back(move(address));
+
+    auto instructions = opcodeGenerator.generateVarOPInstruction(PULL, param);
+    auto zcode = shared_ptr<ZCodeInstruction>(new ZCodeInstruction(instructions, "pull"));
+    routine->add(zcode);
+}
+
 // params: label
 void RoutineGenerator::jump(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1);
@@ -557,6 +571,13 @@ void RoutineGenerator::doNOT(vector<unique_ptr<ZParam>> params) {
     checkParamType(params, VARIABLE_OR_VALUE, STORE_ADDRESS);
     opcodeGenerator.generateVarOPInstruction(NOT, params);
 }
+
+void RoutineGenerator::random(vector<unique_ptr<ZParam>> params) {
+    checkParamCount(params, 2);
+    checkParamType(params, VARIABLE_OR_VALUE, STORE_ADDRESS);
+    opcodeGenerator.generateVarOPInstruction(RANDOM, params);
+}
+
 
 // params: address, resultAddress
 void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {

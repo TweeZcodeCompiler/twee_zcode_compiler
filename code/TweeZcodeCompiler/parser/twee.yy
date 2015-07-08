@@ -19,6 +19,7 @@
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
+    
     #include "include/Passage/Body/Macros/Display.h"
     #include "include/Passage/Body/Macros/Print.h"
     #include "include/Passage/Body/Macros/IfMacro.h"
@@ -26,11 +27,17 @@
     #include "include/Passage/Body/Macros/ElseMacro.h"
     #include "include/Passage/Body/Macros/EndIfMacro.h"
     #include "include/Passage/Body/Macros/SetMacro.h"
+
     #include "include/Passage/Body/Expressions/Expression.h"
     #include "include/Passage/Body/Expressions/Const.h"
     #include "include/Passage/Body/Expressions/UnaryOperation.h"
     #include "include/Passage/Body/Expressions/BinaryOperation.h"
     #include "include/Passage/Body/Expressions/Variable.h"
+    
+    #include "include/Passage/Body/Expressions/Turns.h"
+    #include "include/Passage/Body/Expressions/Visited.h"
+    #include "include/Passage/Body/Expressions/Random.h"
+    #include "include/Passage/Body/Expressions/Previous.h"
 
     #include <plog/Log.h>
     #include <plog/Appenders/ConsoleAppender.h>
@@ -129,6 +136,14 @@
 	Macro *macro;
 	Print *print;
 	SetMacro *setmacro;
+	Display *display;
+
+    Visited *visited;
+    Previous *previous;
+    Turns *turns;
+    Random *random;
+
+
     IfMacro *ifmacro;
     ElseIfMacro *elseifmacro;
     ElseMacro *elsemacro;
@@ -139,6 +154,7 @@
 	Variable *variable;
 	Const<int> *intconst;
 	Const<bool> *boolconst;
+	Const<std::string> *strconst;
 
 	BodyPart *bodypart;
 	Text *text;
@@ -161,9 +177,11 @@
 
     <integer> EXPR_INT
     <string> EXPR_VAR
+    <string> EXPR_STR
+
     <token> EXPR_TRUE
     <token> EXPR_FALSE
-
+    <token> EXPR_STR_LIMITER
     <token> LINK_OPEN
     <token> LINK_CLOSE
     <token> LINK_SEPARATOR
@@ -185,6 +203,7 @@
     <token> EXPR_VISITED
     <token> EXPR_PREVIOUS
     <token> EXPR_TURNS
+    <token> FUNC_SEPARATOR
 
     <token> EXPR_OPEN
     <token> EXPR_CLOSE
@@ -246,12 +265,18 @@
 %type <newline> newline
 
 %type <macro> macro
+
 %type <ifmacro> ifmacro
 %type <elseifmacro> elseifmacro
 %type <elsemacro> elsemacro
 %type <endifmacro> endifmacro
+
 %type <print> print
 %type <setmacro> setmacro
+
+%type <display> display
+%type <previous> previous
+
 %type <expression> expression
 %type <expression> expressionAssignment
 %type <expression> expressionCompare
@@ -260,6 +285,11 @@
 %type <expression> expressionMulDivMod
 %type <expression> expressionUnary
 %type <expression> expressionTop
+
+%type <visited> visited
+%type <turns> turns
+%type <random> random
+
 %type <integer> operatorAssignment
 %type <integer> operatorCompare
 %type <integer> operatorLogic
@@ -394,8 +424,43 @@ text :
     $$ = new Text(*$1);
     delete $1;
     }
+    |FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
+    {
+    //TODO:check if F_OPEN and F_CLOSE are the same
+    //TODO:check if anything needs to be deleted here
+    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE: "<< "create top:formatted:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Text(*$2);
+    delete $1;
+    delete $2;
+    delete $3;
+    }
+    |FORMATTING_OPEN text FORMATTING_CLOSE
+    {
+    //TODO:check if F_OPEN and F_CLOSE are the same
+    //TODO:check if anything needs to be deleted here
+    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN formatted FORMATTING_CLOSE: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
+    delete $1;
+    delete $3;
+    }
+    |FORMATTING TEXT_TOKEN FORMATTING
+    {
+    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
+    LOG_DEBUG << "Parser: formatted -> FORMATTING TEXT_TOKEN FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
+    $$ = new Text(*$2);
+    delete $1;
+    delete $2;
+    delete $3;
+    }
+    |FORMATTING text FORMATTING
+    {
+    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
+    //TODO:check if anything needs to be deleted here
+    LOG_DEBUG << "Parser: formatted -> FORMATTING formatted FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
+    $$ = $2;
+    delete $1;
+    delete $3;
+    }
   ;
-
 
 newline:
     NEWLINE {
@@ -466,6 +531,11 @@ macro :
     LOG_DEBUG << "macro -> endifmacro: pass endifmacro:type(EndIfMacro) to macro:type(Macro)";
     $$ = $1;
     }
+    |display
+    {
+    LOG_DEBUG << "macro -> display: pass display:type(Display) to macro:type(Macro)";
+    $$ = $1;
+    }
   ;
 
 print:
@@ -488,6 +558,15 @@ print:
     LOG_DEBUG << "print -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
     $$ = new Print($2);
     delete $2;
+    }
+  ;
+
+display:
+    MACRO_OPEN MACRO_DISPLAY EXPR_STR EXPR_CLOSE MACRO_CLOSE
+    {
+    LOG_DEBUG << "display -> MACRO_OPEN MACRO_DISPLAY EXPR_OPEN strconst MACRO_CLOSE MACRO_CLOSE: create new Display($4);";
+    $$ = new Display(*$3);
+    delete $3;
     }
   ;
 
@@ -693,6 +772,65 @@ expressionTop:
     {
     LOG_DEBUG << "expressionTop-> boolean: pass boolean up)";
     $$ = $1;
+    }
+   |random
+    {
+    LOG_DEBUG << "expressionTop-> random: pass random function up)";
+    $$ = $1;
+    }
+   |visited
+    {
+    LOG_DEBUG << "expressionTop-> visited: pass visited function up)";
+    $$ = $1;
+    }
+   |turns
+    {
+    LOG_DEBUG << "expressionTop-> turns: pass turns function up)";
+    $$ = $1;
+    }
+   |previous
+    {
+    LOG_DEBUG << "expressionTop-> previous: pass previous function up)";
+    $$ = $1;
+    }
+
+  ;
+
+random:
+    EXPR_RANDOM expression expression EXPR_CLOSE
+    {
+    LOG_DEBUG << "random -> EXPR_RANDOM expression expression EXPR_CLOSE: create new Random($2, $3)";
+    $$ = new Random($2, $3);
+    }
+  ;
+
+visited:
+    EXPR_VISITED EXPR_STR EXPR_CLOSE
+    {
+    LOG_DEBUG << "visited -> EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE: create new Visited($2)";
+    $$ = new Visited(*$2);
+    delete $2;
+    }
+    |EXPR_VISITED EXPR_CLOSE
+    {
+    LOG_DEBUG << "visited -> EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE: create new Visited()";
+    $$ = new Visited("");
+    }
+  ;
+
+turns:
+    EXPR_TURNS
+    {
+    LOG_DEBUG << "turns -> EXPR_TURNS EXPR_CLOSE: create $$ = new Turns()";
+    $$ = new Turns();
+    }
+  ;
+
+previous:
+    EXPR_PREVIOUS EXPR_CLOSE
+    {
+    LOG_DEBUG << "previous -> EXPR_PREVIOUS EXPR_CLOSE: create new Previous()";
+    $$ = new Previous();
     }
   ;
 

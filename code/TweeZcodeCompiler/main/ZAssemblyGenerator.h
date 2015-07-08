@@ -72,6 +72,8 @@ public:
 
     ZAssemblyGenerator &quit();
 
+    ZAssemblyGenerator &random();
+
     ZAssemblyGenerator &ret(std::string arg);
 
     ZAssemblyGenerator &newline();
@@ -116,6 +118,8 @@ public:
     ZAssemblyGenerator &lnot(std::string variable, std::string storeTarget);
 
     ZAssemblyGenerator &nop();
+
+    ZAssemblyGenerator &random(std::string range, std::string storeTarget);
 
 
 private:

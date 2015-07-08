@@ -58,8 +58,9 @@ const string AssemblyParser::STOREB_COMMAND = "storeb";
 const string AssemblyParser::STOREW_COMMAND = "storew";
 const string AssemblyParser::LOADB_COMMAND = "loadb";
 const string AssemblyParser::LOADW_COMMAND = "loadw";
-
 const string AssemblyParser::PUSH_COMMAND = "push";
+const string AssemblyParser::PULL_COMMAND = "pull";
+const string AssemblyParser::RANDOM_COMMAND = "random";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -366,7 +367,7 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string &paramString) {
     // not catching exception on purpose so we always return a proper value
     auto paramId = getAddressForId(paramString);
 
-    if (paramId) {
+    if (paramId != NULL) {
         ZVariableParam *variableParam = new ZVariableParam((uint16_t) *paramId);
         param.reset(variableParam);
     } else {
@@ -548,9 +549,6 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::OR_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new or ";
         routineGenerator.doOR(parseArguments(command));
-    } else if (commandPart.compare(AssemblyParser::PUSH_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new push";
-        routineGenerator.push(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::NOT_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new not ";
         routineGenerator.doNOT(parseArguments(command));
@@ -575,6 +573,12 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     }else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new verify";
         routineGenerator.verify(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::PUSH_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new push";
+        routineGenerator.push(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::PULL_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new pull";
+        routineGenerator.pull(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label;
