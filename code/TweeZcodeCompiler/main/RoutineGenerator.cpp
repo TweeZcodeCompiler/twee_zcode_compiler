@@ -514,13 +514,10 @@ void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
 
     unique_ptr<ZParam> address(new ZValueParam((*params.at(0)).getZCodeValue()));
-    int a = (*params.at(0)).getZCodeValue();
-    int b = (*params.at(1)).getZCodeValue();
 
     // store var var is not possible -> use load
     if ((*params.at(1)).getParamType() == VARIABLE) {
         load(*params.at(1), *params.at(0));
-        //load(*params.at(0), *params.at(1));
         return;
     }
 

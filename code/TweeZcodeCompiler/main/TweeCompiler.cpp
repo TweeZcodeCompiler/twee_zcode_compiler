@@ -203,11 +203,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     {
         const string idLocal = "id";
         ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal)}))
-                .println("Test")
                 .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
-                .println("bla")
-                .store(GLOB_CURRENT_PASSAGE_ID, idLocal)
-                .println("blu");
+                .store(GLOB_CURRENT_PASSAGE_ID, idLocal);
 
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             string passageName = it->getHead().getName();
