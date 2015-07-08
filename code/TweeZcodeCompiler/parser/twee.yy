@@ -19,7 +19,6 @@
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
-    #include "include/Passage/Body/FormattedText.h"
     #include "include/Passage/Body/Macros/Display.h"
     #include "include/Passage/Body/Macros/Print.h"
     #include "include/Passage/Body/Macros/IfMacro.h"
@@ -124,7 +123,6 @@
 	Head *head;
 	Text *tag;
     Newline *newline;
-    FormattedText *formattedText;
 
 	Body *body;
 
@@ -246,7 +244,6 @@
 %type <text> text
 %type <link> link
 %type <newline> newline
-%type <formattedText> formattedText
 
 %type <macro> macro
 %type <ifmacro> ifmacro
@@ -388,11 +385,6 @@ bodypart :
     //TODO: implement Macro:BodyType
     $$ = $1;
     }
-    |formattedText
-    {
-    LOG_DEBUG << "Parser: bodypart -> textFormat: "<< "pass textFormat:type(textFormat) to bodypart:type(BodyPart)";
-    $$ = $1;
-    }
   ;
 
 text :
@@ -404,13 +396,6 @@ text :
     }
   ;
 
-formattedText:
-    FORMATTING
-    {
-    LOG_DEBUG << "Parser: formatted -> FORMATTING: ";
-    $$ = new FormattedText(*$1);
-    }
-  ;
 
 newline:
     NEWLINE {
