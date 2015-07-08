@@ -117,7 +117,6 @@ string makeUserInputRoutine() {
             "print_char sp\n"
             "print \": \"\n"
             "call_vs print_name_for_passage i -> sp\n"
-            "\tadd TURNS 1 -> TURNS\n"
             "new_line\n"
             "add selectcount 1 -> selectcount\n"
             "\n"
@@ -131,6 +130,7 @@ string makeUserInputRoutine() {
             "sub sp 1 -> sp\n"
             "loadb USERINPUT_LOOKUP sp -> sp \n"
             "\n"
+            "\tadd TURNS 1 -> TURNS\n"
             "ret sp"
             "\n";
 }
