@@ -41,6 +41,8 @@ public:
 
     ZAssemblyGenerator &addByteArray(std::string name, unsigned size);
 
+    ZAssemblyGenerator &addString(std::string name, std::string size);
+
     ZAssemblyGenerator &call_vs(std::string routineName, std::experimental::optional<std::string> args, std::string storeTarget);
 
     ZAssemblyGenerator &call_vn(std::string routineName, std::experimental::optional<std::string> args);
@@ -105,6 +107,8 @@ public:
     ZAssemblyGenerator &load(std::string source, std::string target);
 
     ZAssemblyGenerator &store(std::string target, std::string value);
+
+    ZAssemblyGenerator &point(std::string target, std::string address);
 
     ZAssemblyGenerator &add(std::string left, std::string right, std::string storeTarget);
 

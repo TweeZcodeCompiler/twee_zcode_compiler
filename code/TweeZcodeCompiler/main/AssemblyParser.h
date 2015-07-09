@@ -23,8 +23,9 @@ private:
     static const std::string GVAR_DIRECTIVE;
     static const char STRING_DELIMITER;
     static const std::string ASSIGNMENT_OPERATOR;
-    static const std::string BYTEARRAY;
-    static const std::string WORDARRAY;
+    static const std::string BYTEARRAY_DIRECTIVE;
+    static const std::string WORDARRAY_DIRECTIVE;
+    static const std::string STRING_DIRECTIVE;
 
     static const std::string ROUTINE_DIRECTIVE;
     static const std::string NEW_LINE_COMMAND;
@@ -68,6 +69,8 @@ private:
     static const std::string PUSH_COMMAND;
     static const std::string PULL_COMMAND;
     static const std::string RANDOM_COMMAND;
+    static const std::string OUTPUT_STREAM_COMMAND;
+    static const std::string POINT_COMMAND;
 
 
     unsigned currentLineNumber;
@@ -103,9 +106,9 @@ private:
 
     void executeRETCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
-    std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction);
+    std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction, bool namesAllowed = false);
 
-    std::unique_ptr<ZParam> createZParam(const std::string &paramString);
+    std::unique_ptr<ZParam> createZParam(const std::string &paramString, bool namesAllowed = false);
 
     void performRoutineDirectiveCommand(std::vector<std::string> lineComps, std::shared_ptr<ZCodeContainer> highMemory);
 
@@ -148,6 +151,7 @@ public:
     void executeLOADWCOMMAND(const std::string &basic_string, std::shared_ptr<ZCodeContainer> shared_ptr,
                              RoutineGenerator &currentGenerator);
 
+    void performStringDirective(std::string basic_string, std::shared_ptr<ZCodeContainer> dynamicMemory);
 };
 
 
