@@ -41,6 +41,7 @@ namespace instruction {
     INST_TYPE JUMP_GREATER = "jg";
     INST_TYPE SET_TEXT_STYLE = "set_text_style";
     INST_TYPE STOREBYTE = "storeb";
+    INST_TYPE LOADBYTE = "loadb";
     INST_TYPE NEW_LINE_COMMAND = "new_line";
     INST_TYPE PRINT_COMMAND = "print";
     INST_TYPE JE_COMMAND = "je";
@@ -190,11 +191,11 @@ ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, string var, str
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, unsigned index, string storeTarget) {
-    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, to_string(index)}), nullopt, storeTarget);
+    return addInstruction(instruction::LOADBYTE, makeArgs({arrayName, to_string(index)}), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, string varIndex, string storeTarget) {
-    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, varIndex}), nullopt, storeTarget);
+    return addInstruction(instruction::LOADBYTE, makeArgs({arrayName, varIndex}), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jump(string targetLabel) {
