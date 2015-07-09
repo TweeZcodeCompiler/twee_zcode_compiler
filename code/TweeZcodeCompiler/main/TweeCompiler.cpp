@@ -450,9 +450,13 @@ void TweeCompiler::evalExpression(Expression *expression) {
         LOG_DEBUG << turns->to_string();
     } else if (Random *random = dynamic_cast<Random *>(expression)) {
         LOG_DEBUG << random->to_string();
+        evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
-        //TODO: Check which parameter is bigger, start or end and calculate the range correspondingly
+        ASSGEN.add("sp","1","sp");
+        ASSGEN.sub("sp", "sp", "sp");
         ASSGEN.random("sp", "sp");
+        evalExpression(random->getStart().get());
+        ASSGEN.sub("sp", "1", "sp");
         ASSGEN.add("sp", "sp", "sp");
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
         std::pair<std::string, std::string> labels;
@@ -461,8 +465,8 @@ void TweeCompiler::evalExpression(Expression *expression) {
             evalAssignment(binaryOperation);
         }
 
-        TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
         TweeCompiler::evalExpression(binaryOperation->getRightSide().get());
+        TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
 
         switch (binaryOperation->getOperator()) {
             case BinOps::ADD:
