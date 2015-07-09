@@ -260,7 +260,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         vector<ZRoutineArgument> args;
         args.push_back(ZRoutineArgument(varCounter));
         args.push_back(ZRoutineArgument(varResult));
-        args.push_back(ZRoutineArgument(varFormatType));    // This value will be set via call_vs TEXT_FORMAT_ROUTINE 1 -> sp
+        args.push_back(
+                ZRoutineArgument(varFormatType));    // This value will be set via call_vs TEXT_FORMAT_ROUTINE 1 -> sp
         ASSGEN.addRoutine(TEXT_FORMAT_ROUTINE, args);
 
         ASSGEN.jumpEquals(string(varFormatType + " 0"), string("~" + labelNotZero))
@@ -312,7 +313,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .ret("0");
 
     }
-    
+
     // passage routines
     for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
         makePassageRoutine(*passage);
@@ -425,6 +426,7 @@ void TweeCompiler::evalAssignment(BinaryOperation *expression) {
 }
 
 void TweeCompiler::evalExpression(Expression *expression) {
+    std::pair<std::string, std::string> labels;
 
     if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
         ASSGEN.push(std::to_string(constant->getValue()));
@@ -452,14 +454,22 @@ void TweeCompiler::evalExpression(Expression *expression) {
         LOG_DEBUG << random->to_string();
         evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
-        ASSGEN.add("sp","1","sp");
+        labels = makeLabels("randomAB");
+        ASSGEN.jumpGreaterEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+        evalExpression(random->getEnd().get());
+        evalExpression(random->getStart().get());
+        ASSGEN.jump(labels.second);
+        ASSGEN.addLabel(labels.first);
+        evalExpression(random->getStart().get());
+        evalExpression(random->getEnd().get());
+        ASSGEN.addLabel(labels.second);
+        ASSGEN.add("sp", "1", "sp");
         ASSGEN.sub("sp", "sp", "sp");
         ASSGEN.random("sp", "sp");
         evalExpression(random->getStart().get());
         ASSGEN.sub("sp", "1", "sp");
         ASSGEN.add("sp", "sp", "sp");
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
-        std::pair<std::string, std::string> labels;
 
         if (binaryOperation->getOperator() == BinOps::TO) {
             evalAssignment(binaryOperation);
