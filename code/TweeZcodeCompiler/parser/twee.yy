@@ -814,7 +814,7 @@ visited:
     |EXPR_VISITED EXPR_CLOSE
     {
     LOG_DEBUG << "visited -> EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE: create new Visited()";
-    $$ = new Visited("");
+    $$ = new Visited();
     }
   ;
 

@@ -50,6 +50,7 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         GLOBAL_USER_INPUT = "USER_INPUT",
         TABLE_LINKED_PASSAGES = "LINKED_PASSAGES",
         TABLE_USERINPUT_LOOKUP = "USERINPUT_LOOKUP",
+        TABLE_VISITED_PASSAGE_COUNT = "VISITED_PASSAGE_COUNT",
         ROUTINE_PASSAGE_BY_ID = "passage_by_id",
         ROUTINE_NAME_FOR_PASSAGE = "print_name_for_passage",
         ROUTINE_DISPLAY_LINKS = "display_links",
@@ -166,6 +167,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ASSGEN.addByteArray(TABLE_LINKED_PASSAGES, (unsigned) passages.size());
     ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned) passages.size());
 
+    ASSGEN.addByteArray(TABLE_VISITED_PASSAGE_COUNT, (unsigned) passages.size());
 
     // globals
     ASSGEN.addGlobal(GLOB_PASSAGE)
@@ -197,6 +199,12 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     {
         const string idLocal = "id";
         ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal)}));
+
+        // update visited array
+        ASSGEN.loadb(TABLE_VISITED_PASSAGE_COUNT, CURRENT_PASSAGE, "sp")
+                .add("sp", "1", "sp")
+                .storeb(TABLE_VISITED_PASSAGE_COUNT, CURRENT_PASSAGE, "sp");
+
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             string passageName = it->getHead().getName();
             unsigned id = passageName2id.at(passageName);
@@ -363,6 +371,9 @@ void TweeCompiler::evalExpression(Expression *expression) {
 
     } else if (Visited *visited = dynamic_cast<Visited *>(expression)) {
         LOG_DEBUG << visited->to_string();
+        if (visited->getPassage() == "") {
+
+        }
     } else if (Previous *previous = dynamic_cast<Previous *>(expression)) {
         LOG_DEBUG << previous->to_string();
     } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {

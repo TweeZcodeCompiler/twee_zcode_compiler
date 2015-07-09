@@ -14,6 +14,8 @@ private:
 
 public:
 
+    Visited();
+
     Visited(std::string);
 
     Visited(const Visited &display) {
