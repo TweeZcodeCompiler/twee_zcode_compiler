@@ -192,22 +192,22 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
     // main routine
     {
+        static const string LOCAL_NEXT_PASSAGE = "next_passage";
         // call start routine first
-        ASSGEN.addRoutine(ROUTINE_MAIN)
+        ASSGEN.addRoutine(ROUTINE_MAIN, vector<ZRoutineArgument>({ZRoutineArgument(LOCAL_NEXT_PASSAGE)}))
                 .markStart()
                 .store(GLOB_PASSAGES_COUNT, to_string(passages.size()))
                 .store(GLOB_TURNS_COUNT, "1")
                 .store(GLOB_PREVIOUS_PASSAGE_ID, "0")
                 .store(GLOB_CURRENT_PASSAGE_ID, "0")
                 .call_1n(ROUTINE_CLEAR_TABLES)
-                .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))), "sp");
+                .call_vn(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))));
 
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
-                .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, "sp")
-                .push("sp")
-                .jumpLower(ASSGEN.makeArgs({"sp", "0"}), "end_program")
+                .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, LOCAL_NEXT_PASSAGE)
+                .jumpLower(ASSGEN.makeArgs({LOCAL_NEXT_PASSAGE, "0"}), "end_program")
                 .call_1n(ROUTINE_CLEAR_TABLES)
-                .call_vs(ROUTINE_PASSAGE_BY_ID, string("sp"), "sp")
+                .call_vn(ROUTINE_PASSAGE_BY_ID, LOCAL_NEXT_PASSAGE)
                 .jump(LABEL_MAIN_LOOP);
 
         ASSGEN.addLabel("end_program");
