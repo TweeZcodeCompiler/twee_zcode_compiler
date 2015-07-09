@@ -177,7 +177,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ASSGEN.addByteArray(TABLE_LINKED_PASSAGES, (unsigned) passages.size());
     ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned) passages.size());
 
-    ASSGEN.addByteArray(TABLE_VISITED_PASSAGE_COUNT, (unsigned) passages.size());
+    ASSGEN.addWordArray(TABLE_VISITED_PASSAGE_COUNT, (unsigned) passages.size());
 
     // globals
     ASSGEN.addGlobal(GLOB_PASSAGE)
@@ -214,14 +214,21 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // call passage by id routine
     {
         const string idLocal = "id";
-        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal)}))
+        const string passageCount = "passage_count";
+        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal), ZRoutineArgument(passageCount)}))
                 .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
-                .store(GLOB_CURRENT_PASSAGE_ID, idLocal);
+                .store(GLOB_CURRENT_PASSAGE_ID, idLocal)
+                .add(GLOB_CURRENT_PASSAGE_ID, "1", GLOB_CURRENT_PASSAGE_ID);
         
         // update visited array
-        ASSGEN.loadb(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp")
-                .add("sp", "1", "sp")
-                .storeb(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp");
+        ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
+                .print("TEST")
+                .print_num(GLOB_CURRENT_PASSAGE_ID)
+                .print_num(passageCount)
+                .add(passageCount, "1", passageCount)
+                .print_num(passageCount)
+                .print("BLA")
+                .storew(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount);
         
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             string passageName = it->getHead().getName();
@@ -490,7 +497,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
     } else if (Visited *visited = dynamic_cast<Visited *>(expression)) {
         LOG_DEBUG << visited->to_string();
         if (visited->getPassage() == "") {
-            ASSGEN.loadb(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp");
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp");
         } else {
             // TODO: Passage names & multiple passages
         }
