@@ -219,9 +219,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .store(GLOB_CURRENT_PASSAGE_ID, idLocal);
         
         // update visited array
-        ASSGEN.loadb(TABLE_VISITED_PASSAGE_COUNT, CURRENT_PASSAGE, "sp")
+        ASSGEN.loadb(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp")
                 .add("sp", "1", "sp")
-                .storeb(TABLE_VISITED_PASSAGE_COUNT, CURRENT_PASSAGE, "sp");
+                .storeb(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp");
         
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             string passageName = it->getHead().getName();

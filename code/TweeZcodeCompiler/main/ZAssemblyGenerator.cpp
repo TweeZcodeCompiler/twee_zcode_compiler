@@ -193,6 +193,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, unsigned index, 
     return addInstruction(instruction::STOREBYTE, to_string(index), nullopt, storeTarget);
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, string varIndex, string storeTarget) {
+    return addInstruction(instruction::STOREBYTE, varIndex, nullopt, storeTarget);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::jump(string targetLabel) {
     if (ZAPF_MODE)
         return addInstruction(instruction::JUMP_COMMAND, targetLabel, nullopt, nullopt);
