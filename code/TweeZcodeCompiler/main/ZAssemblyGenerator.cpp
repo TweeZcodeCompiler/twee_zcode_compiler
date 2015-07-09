@@ -25,8 +25,8 @@ static const string DIRECTIVE_START = ".";
 namespace directive {
     INST_TYPE ROUTINE = "FUNCT";
     INST_TYPE GLOBAL_VAR = "GVAR";
-    INST_TYPE BYTE_ARRAY = "BYTEARRAY";
-    INST_TYPE WORD_ARRAY = "WORDARRAY";
+    INST_TYPE BYTE_ARRAY = "BYTEARRAY_DIRECTIVE";
+    INST_TYPE WORD_ARRAY = "WORDARRAY_DIRECTIVE";
 }
 
 namespace instruction {
