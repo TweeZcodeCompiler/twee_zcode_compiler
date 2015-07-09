@@ -184,7 +184,11 @@ ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, unsigned index,
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, unsigned index, string storeTarget) {
-    return addInstruction(instruction::STOREBYTE, to_string(index), nullopt, storeTarget);
+    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, to_string(index)}), nullopt, storeTarget);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, string varIndex, string storeTarget) {
+    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, varIndex}), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jump(string targetLabel) {
