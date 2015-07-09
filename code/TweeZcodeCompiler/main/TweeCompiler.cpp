@@ -374,7 +374,15 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
             if (isPreviousMacro(link->getTarget())) {
                 ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, 1);
             } else {
-                ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
+                int id;
+                string target = link->getTarget();
+                try {
+                    id = passageName2id.at(target);
+                } catch(const out_of_range& outOfRange) {
+                    throw TweeDocumentException("invalid link target: " + target);
+                }
+
+                ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, 1);
             }
         } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
             ASSGEN.newline();
