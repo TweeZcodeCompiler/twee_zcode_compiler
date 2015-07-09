@@ -371,9 +371,9 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
             // TODO: catch invalid link
 
             if (isPreviousMacro(link->getTarget())) {
-                ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, 1);
+                ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
             } else {
-                ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
+                ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), "1");
             }
         } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
             ASSGEN.newline();
@@ -490,7 +490,9 @@ void TweeCompiler::evalExpression(Expression *expression) {
     } else if (Visited *visited = dynamic_cast<Visited *>(expression)) {
         LOG_DEBUG << visited->to_string();
         if (visited->getPassage() == "") {
-
+            ASSGEN.loadb(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp");
+        } else {
+            // TODO: Passage names & multiple passages
         }
     } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
         LOG_DEBUG << turns->to_string();

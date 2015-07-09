@@ -181,12 +181,12 @@ ZAssemblyGenerator &ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
     return *this;
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, unsigned index, int value) {
-    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, to_string(index), to_string(value)}), nullopt, nullopt);
+ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, unsigned index, string value) {
+    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, to_string(index), value}), nullopt, nullopt);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, string var, int value) {
-    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, var, to_string(value)}), nullopt, nullopt);
+ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, string var, string value) {
+    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, var, value}), nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, unsigned index, string storeTarget) {
@@ -195,10 +195,6 @@ ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, unsigned index, 
 
 ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, string varIndex, string storeTarget) {
     return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, varIndex}), nullopt, storeTarget);
-}
-
-ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, string varIndex, string storeTarget) {
-    return addInstruction(instruction::STOREBYTE, varIndex, nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jump(string targetLabel) {

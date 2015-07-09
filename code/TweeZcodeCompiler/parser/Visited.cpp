@@ -1,6 +1,9 @@
 
 #include "include/Passage/Body/Expressions/Visited.h"
 
+Visited::Visited() {
+}
+
 Visited::Visited(const std::string passage) {
     this->passage = passage;
 }

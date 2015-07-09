@@ -96,9 +96,9 @@ public:
 
     ZAssemblyGenerator &loadb(std::string arrayName, std::string varIndex, std::string storeTarget);
 
-    ZAssemblyGenerator &storeb(std::string arrayName, unsigned int index, int value);
+    ZAssemblyGenerator &storeb(std::string arrayName, unsigned int index, std::string value);
 
-    ZAssemblyGenerator &storeb(std::string arrayName, std::string var, int value);
+    ZAssemblyGenerator &storeb(std::string arrayName, std::string var, std::string value);
 
     ZAssemblyGenerator &load(std::string source, std::string target);
 
