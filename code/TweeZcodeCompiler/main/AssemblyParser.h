@@ -40,6 +40,7 @@ private:
     static const std::string PRINT_ADDR_COMMAND;
     static const std::string CALL_VS_COMMAND;
     static const std::string CALL_1N_COMMAND;
+    static const std::string CALL_VN_COMMAND;
     static const std::string JUMP_COMMAND;
     static const std::string RET_COMMAND;
     static const std::string SET_TEXT_STYLE;
