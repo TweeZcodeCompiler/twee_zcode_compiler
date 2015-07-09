@@ -72,6 +72,8 @@ public:
 
     ZAssemblyGenerator &quit();
 
+    ZAssemblyGenerator &random();
+
     ZAssemblyGenerator &ret(std::string arg);
 
     ZAssemblyGenerator &newline();
@@ -89,11 +91,14 @@ public:
     ZAssemblyGenerator &pop();
 
     ZAssemblyGenerator &variable(std::string variable);
-    ZAssemblyGenerator &store(std::string variableName, int value);
 
     ZAssemblyGenerator &loadb(std::string arrayName, unsigned int index, std::string storeTarget);
 
+    ZAssemblyGenerator &loadb(std::string arrayName, std::string varIndex, std::string storeTarget);
+
     ZAssemblyGenerator &storeb(std::string arrayName, unsigned int index, int value);
+
+    ZAssemblyGenerator &storeb(std::string arrayName, std::string var, int value);
 
     ZAssemblyGenerator &load(std::string source, std::string target);
 
@@ -116,6 +121,8 @@ public:
     ZAssemblyGenerator &lnot(std::string variable, std::string storeTarget);
 
     ZAssemblyGenerator &nop();
+
+    ZAssemblyGenerator &random(std::string range, std::string storeTarget);
 
 
 private:

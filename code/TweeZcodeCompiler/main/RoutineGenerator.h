@@ -120,6 +120,8 @@ public:
 
     void callVS(std::vector<std::unique_ptr<ZParam>> params);
 
+    void callVN(std::vector<std::unique_ptr<ZParam>> params);
+
     void store(std::vector<std::unique_ptr<ZParam>> params);
 
     void load(std::vector<std::unique_ptr<ZParam>> params);
@@ -148,6 +150,8 @@ public:
 
     void doNOT(std::vector<std::unique_ptr<ZParam>> params);
 
+    void random(std::vector<std::unique_ptr<ZParam>> params);
+
     void returnTrue();
 
     void returnFalse();
@@ -161,6 +165,8 @@ public:
     void restart();
 
     void verify(std::vector<std::unique_ptr<ZParam>> params);
+
+    void pull(std::vector<std::unique_ptr<ZParam>> params);
 
     void loadb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
@@ -184,7 +190,8 @@ public:
                 PRINT_CHAR = 229,
         //Opcode: 1OP:143 F 5 call_1n routine
                 CALL_1N = 143,
-        CALL_VS = 224,
+                CALL_VS = 224,
+                CALL_VN = 249,
         // Print new line
                 NEW_LINE = 187,
         // Opcodes for jump instructions
@@ -248,9 +255,11 @@ public:
         // Opcode: 2OP:15 F loadw array word-index -> (result)
                 LOADW = 15,
         // Opcode: Pushes value onto the game stack
-                PUSH = 232
-
-
+                PUSH = 232,
+        //VAR:233 9 1 pull (variable)
+                PULL = 233,
+        //VAR:231 7 random range -> (result)
+                RANDOM = 231,
 
 
         /*

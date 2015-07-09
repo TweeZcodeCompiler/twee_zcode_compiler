@@ -1,0 +1,12 @@
+::Start
+<<print previous()>>
+[[help]]
+
+::help
+[[Test|previous()]]
+[[next]]
+
+::next
+<<print previous()>>
+[[Test2|      previous()        ]]
+[[Start]]

@@ -4,18 +4,14 @@
 
 #include "include/Passage/Body/Macros/Display.h"
 
-Display::Display(const Expression &expression) {
-    this->expression = std::unique_ptr<Expression>(expression.clone());
+Display::Display(const std::string passage) {
+    this->passage = passage;
 }
 
-Display::Display(const Expression *expression) {
-    this->expression = std::unique_ptr<Expression>(expression->clone());
-}
-
-const std::unique_ptr<Expression> &Display::getExpression() const {
-    return this->expression;
+const std::string &Display::getPassage() const {
+    return this->passage;
 }
 
 std::string Display::to_string() const {
-    return "Display: " + this->getExpression()->to_string();
+    return "Display: " + this->getPassage();
 }

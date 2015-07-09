@@ -41,6 +41,7 @@ namespace instruction {
     INST_TYPE JUMP_GREATER = "jg";
     INST_TYPE SET_TEXT_STYLE = "set_text_style";
     INST_TYPE STOREBYTE = "storeb";
+    INST_TYPE LOADBYTE = "loadb";
     INST_TYPE NEW_LINE_COMMAND = "new_line";
     INST_TYPE PRINT_COMMAND = "print";
     INST_TYPE JE_COMMAND = "je";
@@ -74,6 +75,7 @@ namespace instruction {
     INST_TYPE RET_POPPED_COMMAND = "ret_popped";
     INST_TYPE POP_COMMAND = "pop";
     INST_TYPE VERIFY_COMMAND = "verify";
+    INST_TYPE RANDOM_COMMAND = "random";
     INST_TYPE NOTHING = "";
 }
 
@@ -184,8 +186,16 @@ ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, unsigned index,
     return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, to_string(index), to_string(value)}), nullopt, nullopt);
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, string var, int value) {
+    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, var, to_string(value)}), nullopt, nullopt);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, unsigned index, string storeTarget) {
-    return addInstruction(instruction::STOREBYTE, to_string(index), nullopt, storeTarget);
+    return addInstruction(instruction::LOADBYTE, makeArgs({arrayName, to_string(index)}), nullopt, storeTarget);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, string varIndex, string storeTarget) {
+    return addInstruction(instruction::LOADBYTE, makeArgs({arrayName, varIndex}), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jump(string targetLabel) {
@@ -241,6 +251,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::jumpLowerEquals(string args, string targ
 
 ZAssemblyGenerator &ZAssemblyGenerator::quit() {
     return addInstruction(instruction::QUIT_COMMAND, nullopt, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::random(std::string range, std::string storeTarget) {
+    return addInstruction(instruction::RANDOM_COMMAND, range, nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::ret(string arg) {
