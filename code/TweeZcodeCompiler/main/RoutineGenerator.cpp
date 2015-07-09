@@ -184,11 +184,9 @@ void RoutineGenerator::callVS(vector<unique_ptr<ZParam>> params) {
         checkParamType(params, NAME, STORE_ADDRESS);
     } else if (params.size() == 3) {
         checkParamType(params, NAME, VARIABLE_OR_VALUE, STORE_ADDRESS);
-    }
-    if (params.size() == 4) {
+    } else if (params.size() == 4) {
         checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
-    }
-    if (params.size() == 5) {
+    } else {
         checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
     }
 
@@ -218,6 +216,41 @@ void RoutineGenerator::callVS(vector<unique_ptr<ZParam>> params) {
     instructionsAfterJump.push_back(numberToBitset(storeAddress));
     auto instructionObjectsAfterJump = shared_ptr<ZCodeObject>(new ZCodeInstruction(instructionsAfterJump));
     routine->add(instructionObjectsAfterJump);
+}
+
+// params: routineName, (arg1, (arg2, (arg3)))
+void RoutineGenerator::callVN(std::vector<std::unique_ptr<ZParam>> params) {
+    debug("call_vn");
+    checkParamCount(params, 1, 2, 3, 4);
+    if (params.size() == 1) {
+        checkParamType(params, NAME);
+    } else if (params.size() == 2) {
+        checkParamType(params, NAME, VARIABLE_OR_VALUE);
+    } else if (params.size() == 3){
+        checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+    } else {
+        checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+    }
+
+    string routineName = (*params.at(0)).name;
+
+    params[0] = unique_ptr<ZValueParam>(new ZValueParam(3000));     // placeholder for call offset
+
+    auto generated = opcodeGenerator.generateVarOPInstruction(CALL_VN, params);
+    vector<bitset<8>> zinstructions;
+    zinstructions.push_back(generated.at(0));
+    zinstructions.push_back(generated.at(1));
+    auto instructionObjects = shared_ptr<ZCodeObject>(new ZCodeInstruction(zinstructions, "call_vn"));
+    routine->add(instructionObjects);
+
+    auto callAdress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(ZCodeRoutine::getOrCreateRoutine(routineName, 0)));
+    routine->add(callAdress);
+
+    vector<bitset<8>> parameterV;
+    for(size_t i = 4; i < generated.size();i++){
+        parameterV.push_back(generated.at(i));
+    }
+    routine->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(parameterV)));
 }
 
 // params: variableOrConstant

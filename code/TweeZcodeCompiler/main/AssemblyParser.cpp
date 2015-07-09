@@ -37,6 +37,7 @@ const string AssemblyParser::RET_COMMAND = "ret";
 const string AssemblyParser::SET_TEXT_STYLE = "set_text_style";
 const string AssemblyParser::CALL_VS_COMMAND = "call_vs";
 const string AssemblyParser::CALL_1N_COMMAND = "call_1n";
+const string AssemblyParser::CALL_VN_COMMAND = "call_vn";
 const string AssemblyParser::STORE_COMMAND = "store";
 const string AssemblyParser::LOAD_COMMAND = "load";
 const string AssemblyParser::ADD_COMMAND = "add";
@@ -498,6 +499,8 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
                    0)) {                                // TODO: Generate specific call instruction
         LOG_DEBUG << ":::::: new call_vs ";
         executeCALL_VSCommand(command, routineGenerator);
+    } else if (commandPart.compare(AssemblyParser::CALL_VN_COMMAND) == 0) {
+        routineGenerator.callVN(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::CALL_1N_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new call_1n";
         executeCALL1nCommand(command, routineGenerator);
