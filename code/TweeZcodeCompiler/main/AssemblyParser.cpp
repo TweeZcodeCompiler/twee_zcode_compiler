@@ -406,40 +406,6 @@ void AssemblyParser::executePRINTCommand(const string &printCommand, RoutineGene
     routineGenerator.printString(parseArguments(printCommand));
 }
 
-void AssemblyParser::executeSETTEXTSTYLECommand(const string &printCommand, RoutineGenerator &routineGenerator) {
-
-    vector<string> commandParts = this->split(printCommand, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
-    bool bold = false, italic = false, underlined = false, roman = false;
-
-    for (size_t i = 0; i < commandParts[1].size(); i++) {
-        switch (commandParts[1][i]) {
-            case 'b':
-                bold = true;
-                break;
-            case 'i':
-                italic = true;
-                break;
-            case 'u':
-                underlined = true;
-                break;
-            case 'r':
-                roman = true;
-                break;
-            default:
-                cerr << "problem with set_text_style parameter parsing: " << printCommand;
-        }
-        if (roman) {
-            bold = false;
-            italic = false;
-            underlined = false;
-            break;
-        }
-    }
-
-    routineGenerator.setTextStyle(roman, false, bold, italic, underlined);
-    LOG_DEBUG << commandParts.at(1);
-}
-
 void AssemblyParser::executeREADCommand(const string &readCommand, RoutineGenerator &routineGenerator) {
     routineGenerator.readChar(parseArguments(readCommand));
 }
@@ -561,7 +527,7 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         executeLOADWCOMMAND(command, dynamicMemory, routineGenerator);
     } else if (commandPart.compare(AssemblyParser::SET_TEXT_STYLE) == 0) {
         LOG_DEBUG << ":::::: new set_text_style ";
-        executeSETTEXTSTYLECommand(command, routineGenerator);
+        routineGenerator.setTextStyle(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::ADD_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new add ";
         routineGenerator.add(parseArguments(command));
@@ -640,7 +606,7 @@ bool AssemblyParser::checkIfCommandRoutineStart(const string &command) {
 
 
 unique_ptr<uint8_t> AssemblyParser::getAddressForId(const string &id) {
-    if (id.compare("sp") == 0) {
+    if (id == "sp") {
         return unique_ptr<uint8_t>(new uint8_t(0));
     }
 

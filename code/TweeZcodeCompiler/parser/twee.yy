@@ -19,7 +19,7 @@
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
-
+    
     #include "include/Passage/Body/Macros/Display.h"
     #include "include/Passage/Body/Macros/Print.h"
     #include "include/Passage/Body/Macros/IfMacro.h"
@@ -33,11 +33,11 @@
     #include "include/Passage/Body/Expressions/UnaryOperation.h"
     #include "include/Passage/Body/Expressions/BinaryOperation.h"
     #include "include/Passage/Body/Expressions/Variable.h"
+    
     #include "include/Passage/Body/Expressions/Turns.h"
     #include "include/Passage/Body/Expressions/Visited.h"
     #include "include/Passage/Body/Expressions/Random.h"
     #include "include/Passage/Body/Expressions/Previous.h"
-
 
     #include <plog/Log.h>
     #include <plog/Appenders/ConsoleAppender.h>
@@ -819,7 +819,7 @@ visited:
   ;
 
 turns:
-    EXPR_TURNS EXPR_CLOSE
+    EXPR_TURNS
     {
     LOG_DEBUG << "turns -> EXPR_TURNS EXPR_CLOSE: create $$ = new Turns()";
     $$ = new Turns();
@@ -827,9 +827,9 @@ turns:
   ;
 
 previous:
-    EXPR_PREVIOUS EXPR_CLOSE
+    EXPR_PREVIOUS
     {
-    LOG_DEBUG << "previous -> EXPR_PREVIOUS EXPR_CLOSE: create new Previous()";
+    LOG_DEBUG << "previous -> EXPR_PREVIOUS: create new Previous()";
     $$ = new Previous();
     }
   ;
