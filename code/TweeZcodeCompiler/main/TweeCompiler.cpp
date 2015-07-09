@@ -450,10 +450,10 @@ void TweeCompiler::evalExpression(Expression *expression) {
         LOG_DEBUG << turns->to_string();
     } else if (Random *random = dynamic_cast<Random *>(expression)) {
         LOG_DEBUG << random->to_string();
-        evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
-        //ASSGEN.add("sp", "sp", "sp");
+        //TODO: Check which parameter is bigger, start or end and calculate the range correspondingly
         ASSGEN.random("sp", "sp");
+        ASSGEN.add("sp", "sp", "sp");
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
         std::pair<std::string, std::string> labels;
 

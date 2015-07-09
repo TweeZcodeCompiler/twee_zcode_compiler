@@ -526,7 +526,6 @@ void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
 void RoutineGenerator::base2OpOperation(unsigned int opcode, vector<unique_ptr<ZParam>> &params) {
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
-
     vector<bitset<8>> instructions = opcodeGenerator.generate2OPInstruction(opcode, *params.at(0), *params.at(1));
     instructions.push_back(bitset<8>(params.at(2)->getZCodeValue()));
     addBitset(instructions);
@@ -563,13 +562,21 @@ void RoutineGenerator::doOR(vector<unique_ptr<ZParam>> params) {
 void RoutineGenerator::doNOT(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 2);
     checkParamType(params, VARIABLE_OR_VALUE, STORE_ADDRESS);
-    opcodeGenerator.generateVarOPInstruction(NOT, params);
+    vector<unique_ptr<ZParam>> args;
+    args.push_back(move(params.at(0)));
+    vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(NOT, args);
+    instructions.push_back(bitset<8>(params.at(1)->getZCodeValue()));
+    addBitset(instructions);
 }
 
 void RoutineGenerator::random(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 2);
     checkParamType(params, VARIABLE_OR_VALUE, STORE_ADDRESS);
-    opcodeGenerator.generateVarOPInstruction(RANDOM, params);
+    vector<unique_ptr<ZParam>> args;
+    args.push_back(move(params.at(0)));
+    vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(RANDOM, args);
+    instructions.push_back(bitset<8>(params.at(1)->getZCodeValue()));
+    addBitset(instructions);
 }
 
 
