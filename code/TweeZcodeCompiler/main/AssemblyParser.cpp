@@ -13,8 +13,10 @@
 #include <plog/Log.h>
 #include <bitset>
 #include <cstdint>
+#include "optional.hpp"
 
 using namespace std;
+using namespace std::experimental;
 
 const string AssemblyParser::ROUTINE_DIRECTIVE = ".FUNCT";
 const string AssemblyParser::GVAR_DIRECTIVE = ".GVAR";
@@ -101,6 +103,7 @@ void AssemblyParser::performRoutineDirectiveCommand(vector<string> lineComps, sh
     unsigned locVariablesCount = (unsigned) (lineComps.size() - 2);
     currentGenerator.reset(new RoutineGenerator(routineName, locVariablesCount));
 
+    vector<pair<string, optional<int>>> locals;
     bool withoutComma = true;
     for (; locVariablesCount > 0; locVariablesCount--) {     // parse locale variables
         string var = lineComps[locVariablesCount + 1];
@@ -134,13 +137,20 @@ void AssemblyParser::performRoutineDirectiveCommand(vector<string> lineComps, sh
             }
 
             string name = var.substr(0, nameEnd);
-            currentGenerator->setLocalVariable(name, val);
+            locals.push_back(make_pair(name, val));
         } else {
             string name = var.substr(0, varEnd);
-            currentGenerator->setLocalVariable(name);
+            locals.push_back(make_pair(name, nullopt));
         }
     }
 
+    for(auto localPair = locals.rbegin(); localPair != locals.rend(); ++localPair) {
+        if(localPair->second) {
+            currentGenerator->setLocalVariable(localPair->first, *(localPair->second));
+        } else {
+            currentGenerator->setLocalVariable(localPair->first);
+        }
+    }
 }
 
 void AssemblyParser::performRoutineGlobalVarCommand(string line) {
