@@ -36,7 +36,9 @@ void ZCodeJump::addCondBranchOffset() {
     }
     bool useOneByte = false;
     if(!isCondJump){
-        bitset<16> bitsetOffset(--offset);
+        if (offset > 0) offset--;
+
+        bitset<16> bitsetOffset(offset);
 
         for (size_t i = 0; i < 8; i++) {
             secondHalf.set(i, bitsetOffset[i]);

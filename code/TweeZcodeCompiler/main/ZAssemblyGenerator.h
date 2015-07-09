@@ -43,6 +43,8 @@ public:
 
     ZAssemblyGenerator &call_vs(std::string routineName, std::experimental::optional<std::string> args, std::string storeTarget);
 
+    ZAssemblyGenerator &call_1n(std::string routineName);
+
     ZAssemblyGenerator &markStart();
 
     ZAssemblyGenerator &addRoutine(std::string routineName,
@@ -58,6 +60,8 @@ public:
     
     ZAssemblyGenerator &jumpGreater(std::string args, std::string targetLabel);
 
+    ZAssemblyGenerator &jumpLess(std::string args, std::string targetLabel);
+
     ZAssemblyGenerator &jumpGreaterEquals(std::string args, std::string targetLabel);
 
     ZAssemblyGenerator &jumpLower(std::string args, std::string targetLabel);
@@ -68,11 +72,13 @@ public:
 
     ZAssemblyGenerator &quit();
 
+    ZAssemblyGenerator &random();
+
     ZAssemblyGenerator &ret(std::string arg);
 
     ZAssemblyGenerator &newline();
 
-    ZAssemblyGenerator &setTextStyle(bool, bool, bool);
+    ZAssemblyGenerator &setTextStyle(std::string values);
 
     ZAssemblyGenerator &print(std::string str);
     
@@ -91,6 +97,8 @@ public:
     ZAssemblyGenerator &loadb(std::string arrayName, std::string varIndex, std::string storeTarget);
 
     ZAssemblyGenerator &storeb(std::string arrayName, unsigned int index, int value);
+
+    ZAssemblyGenerator &storeb(std::string arrayName, std::string var, int value);
 
     ZAssemblyGenerator &load(std::string source, std::string target);
 
@@ -114,6 +122,8 @@ public:
 
     ZAssemblyGenerator &nop();
 
+    ZAssemblyGenerator &random(std::string range, std::string storeTarget);
+
 
 private:
     std::ostream &out;
@@ -123,7 +133,6 @@ private:
                                        std::experimental::optional<std::string> args,
                                        std::experimental::optional<std::pair<std::string, bool>> targetLabelAndNeg,
                                        std::experimental::optional<std::string> storeTarget);
-
 
     ZAssemblyGenerator &addDirective(std::string directiveName, std::experimental::optional<std::string> args);
 

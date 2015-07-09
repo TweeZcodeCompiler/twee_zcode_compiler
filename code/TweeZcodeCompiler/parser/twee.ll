@@ -76,7 +76,7 @@ BODY_SYMBOL                 [\{\[<\|\/_=~\^@\{\}:]
 QUOTATION_MARK              \"
 
 FORMATTING_ITALICS          \/{2}
-FORMATTING_BOLDFACE         \"{2}
+FORMATTING_BOLDFACE         \"
 FORMATTING_UNDERLINE        _{2}
 FORMATTING_STRIKETHROUGH    ={2}
 FORMATTING_SUBSCRIPT        ~{2}
@@ -110,7 +110,7 @@ MACRO_SET               set
 
     /*Expression String and Integer Token*/
 EXPR_STR_LIMITER        \"
-EXPR_STR                [a-zA-Z]+
+EXPR_STR                [a-zA-Z][a-zA-Z0-9]*
 EXPR_INT                [0-9]+
 EXPR_TRUE               true
 EXPR_FALSE              false
@@ -118,11 +118,10 @@ EXPR_FALSE              false
     /* initial $ sign -> letter (uppercase or lowercase) or an underscore -> any combination of letters, numbers, or underscores */
 EXPR_VAR                $[a-zA-z_][a-zA-Z0-9_]*
 
-EXPR_RANDOM            random
-
-EXPR_VISITED           visited[]*\([]*\)
-EXPR_PREVIOUS          previous[]*\([]*\)
-EXPR_TURNS             turns[]*\([]*\)
+EXPR_RANDOM            random[ ]*\(
+EXPR_VISITED           visited[ ]*\(
+EXPR_PREVIOUS          previous[ ]*\([ ]*\)
+EXPR_TURNS             turns[ ]*\([ ]*\)
 
 EXPR_OPEN              \(
 EXPR_CLOSE             \)
@@ -157,9 +156,12 @@ EXPR_TO                to|=
 %x Body
 %x FormattingErrorInlineStyling
 %x FormattingComment
+%x MonoSpaceContent
 %x BodyLink
 %x LinkExpression
 %x BodyMacro
+%x FunctionArgsLink
+%x FunctionArgsBody
 
 %%
 
@@ -296,7 +298,7 @@ EXPR_TO                to|=
                                 }
 
 <Body>{FORMATTING_BOLDFACE}{MATCH_REST}      {
-                                yyless(2); //TODO: enable correct matching, BODY_TEXT
+                                yyless(1); //TODO: enable correct matching, BODY_TEXT
                                 SAVE_STRING;
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING" << " with value " << YYText();
                                 return BisonParser::token::FORMATTING;
@@ -330,19 +332,13 @@ EXPR_TO                to|=
                                 return BisonParser::token::FORMATTING;
                                 }
 
-<Body>{FORMATTING_MONOSPACE_OPEN}{MATCH_REST}      {
+<Body>{FORMATTING_MONOSPACE_OPEN}      {
                                 yyless(3);
                                 //TODO: new condition for monospace open&close lexing
                                 SAVE_STRING;
+                                BEGIN(MonoSpaceContent);
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING" << " with value " << YYText();
-                                return BisonParser::token::FORMATTING_COMMENT_OPEN;
-                                }
-
-<Body>{FORMATTING_MONOSPACE_CLOSE}{MATCH_REST}      {
-                                yyless(3); //TODO: new condition for monospace open&close lexing: delete this
-                                SAVE_STRING;
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING" << " with value " << YYText();
-                                return BisonParser::token::FORMATTING_COMMENT_CLOSE;
+                                return BisonParser::token::FORMATTING;
                                 }
 
 <Body>{FORMATTING_COMMENT_OPEN}{MATCH_REST} {
@@ -422,6 +418,25 @@ EXPR_TO                to|=
                                 LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "FormattingComment" << " when matching Token " << "." << " with value " << YYText();
                                 }
 
+<MonoSpaceContent>{FORMATTING_MONOSPACE_CLOSE} {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "MonoSpaceContent" << " matched Token " << "FORMATTING_MONOSPACE_CLOSE" << " with value " << YYText();
+                                BEGIN(Body);
+                                SAVE_STRING;
+                                return BisonParser::token::FORMATTING_CLOSE;
+                                }
+
+<MonoSpaceContent>[^\{\[<\|\n\/\"_=~\^@\{\}:\n]+ {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "MonoSpaceContent" << " matched Token " << "TEXT_TOKEN" << " with value " << YYText();
+                                SAVE_STRING;
+                                return BisonParser::token::TEXT_TOKEN;
+                                }
+<MonoSpaceContent>{BODY_SYMBOL} {
+                                SAVE_STRING;
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "TEXT_TOKEN" << " with value " << YYText();
+                                return BisonParser::token::TEXT_TOKEN;
+                                }
+
+
  /* ___NEW CONDITION___ BodyLink*/
     /*From: Body */
     /*To:   Body */
@@ -478,22 +493,24 @@ EXPR_TO                to|=
 
 
     /* expression functions */
-<LinkExpression>{EXPR_RANDOM}		{
+<LinkExpression>{EXPR_RANDOM}	{
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: LinkExpression matched Token "<<"EXPR_RANDOM" << " with value " << YYText();
                                 return BisonParser::token::EXPR_RANDOM;
                                 }
 
 <LinkExpression>{EXPR_VISITED}		{
+                                BEGIN(FunctionArgsLink);
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: LinkExpression matched Token "<<"EXPR_VISITED" << " with value " << YYText();
                                 return BisonParser::token::EXPR_VISITED;
                                 }
 
 <LinkExpression>{EXPR_PREVIOUS}		{
+                                BEGIN(FunctionArgsLink);
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: LinkExpression matched Token "<<"EXPR_PREVIOUS" << " with value " << YYText();
                                 return BisonParser::token::EXPR_PREVIOUS;
                                 }
 
-<LinkExpression>{EXPR_TURNS}		    {
+<LinkExpression>{EXPR_TURNS}	{
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: LinkExpression matched Token "<<"EXPR_TURNS" << " with value " << YYText();
                                 return BisonParser::token::EXPR_TURNS;
                                 }
@@ -642,6 +659,7 @@ EXPR_TO                to|=
 
     /* macro display */
 <BodyMacro>{MACRO_DISPLAY}      {
+                                BEGIN(FunctionArgsBody);
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"MACRO_DISPLAY" << " with value " << YYText();
                                 return BisonParser::token::MACRO_DISPLAY;
                                 }
@@ -661,11 +679,13 @@ EXPR_TO                to|=
                                 }
 
 <BodyMacro>{EXPR_VISITED}		{
+                                BEGIN(FunctionArgsBody);
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"EXPR_VISITED" << " with value " << YYText();
                                 return BisonParser::token::EXPR_VISITED;
                                 }
 
 <BodyMacro>{EXPR_PREVIOUS}		{
+                                BEGIN(FunctionArgsBody);
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"EXPR_PREVIOUS" << " with value " << YYText();
                                 return BisonParser::token::EXPR_PREVIOUS;
                                 }
@@ -781,6 +801,105 @@ EXPR_TO                to|=
     /* unexpected Token(s) */
 <BodyMacro>.                    {
                                 LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "BodyMacro" << " when matching Token " << "." << " with value " << YYText();
+                                }
+
+
+ /* ___NEW CONDITION___ FunctionArgsLink*/
+    /*From: LinkExpression */
+    /*To:   LinkExpression */
+
+    /* macro if */
+<FunctionArgsLink>{EXPR_CLOSE}	{
+                                BEGIN(LinkExpression);
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: FunctionArgsLink matched Token EXPR_CLOSE" << " with value " << YYText();
+                                return BisonParser::token::EXPR_CLOSE;
+                                }
+
+<FunctionArgsLink>,             {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: FunctionArgsLink matched Token FUNC_SEPARATOR" << " with value " << YYText();
+                                return BisonParser::token::FUNC_SEPARATOR;
+                                }
+
+<FunctionArgsLink>{EXPR_INT}    {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: FunctionArgsLink matched Token EXPR_INT" << " with value " << YYText();
+                                SAVE_INT;
+                                return BisonParser::token::EXPR_INT;
+                                }
+
+<FunctionArgsLink>{EXPR_TRUE}   {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsLink" << " matched Token " << "EXPR_TRUE" << " with value " << YYText();
+                                SAVE_TRUE;
+                                return BisonParser::token::EXPR_TRUE;
+                                }
+
+<FunctionArgsLink>{EXPR_FALSE}  {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsLink" << " matched Token " << "EXPR_FALSE" << " with value " << YYText();
+                                SAVE_FALSE;
+                                return BisonParser::token::EXPR_FALSE;
+                                }
+
+<FunctionArgsLink>{EXPR_STR}    {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsLink" << " matched Token " << "TEXT_TOKEN" << " with value " << YYText();
+                                SAVE_STRING;
+                                return BisonParser::token::EXPR_STR;
+                                }
+
+<FunctionArgsLink>{EXPR_STR_LIMITER}    {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsLink" << " matched Token " << "TEXT_TOKEN" << " with value " << YYText();
+                                return BisonParser::token::EXPR_STR_LIMITER;
+                                }
+    /* unexpected Token(s) */
+<FunctionArgsLink>.             {
+                                LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsLink" << " when matching Token " << "." << " with value " << YYText();
+                                }
+
+ /* ___NEW CONDITION___ FunctionArgsBody*/
+    /*From: BodyMacro */
+    /*To:   BodyMacro */
+
+    /* macro if */
+<FunctionArgsBody>{EXPR_CLOSE}	{
+                                BEGIN(BodyMacro);
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: FunctionArgsBody matched Token EXPR_CLOSE" << " with value " << YYText();
+                                return BisonParser::token::EXPR_CLOSE;
+                                }
+
+<FunctionArgsBody>,             {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: FunctionArgsBody matched Token FUNC_SEPARATOR" << " with value " << YYText();
+                                return BisonParser::token::FUNC_SEPARATOR;
+                                }
+
+<FunctionArgsBody>{EXPR_INT}    {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: FunctionArgsBody matched Token EXPR_INT" << " with value " << YYText();
+                                SAVE_INT;
+                                return BisonParser::token::EXPR_INT;
+                                }
+
+<FunctionArgsBody>{EXPR_TRUE}   {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsBody" << " matched Token " << "EXPR_TRUE" << " with value " << YYText();
+                                SAVE_TRUE;
+                                return BisonParser::token::EXPR_TRUE;
+                                }
+
+<FunctionArgsBody>{EXPR_FALSE}  {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsBody" << " matched Token " << "EXPR_FALSE" << " with value " << YYText();
+                                SAVE_FALSE;
+                                return BisonParser::token::EXPR_FALSE;
+                                }
+
+<FunctionArgsBody>{EXPR_STR}    {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsBody" << " matched Token " << "TEXT_TOKEN" << " with value " << YYText();
+                                SAVE_STRING;
+                                return BisonParser::token::EXPR_STR;
+                                }
+
+<FunctionArgsBody>{EXPR_STR_LIMITER}    {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsBody" << " matched Token " << "TEXT_TOKEN" << " with value " << YYText();
+                                return BisonParser::token::EXPR_STR_LIMITER;
+                                }
+    /* unexpected Token(s) */
+<FunctionArgsBody>.             {
+                                LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsBody" << " when matching Token " << "." << " with value " << YYText();
                                 }
 
 %%

@@ -5,6 +5,7 @@
 #include "ZAssemblyGenerator.h"
 #include <sstream>
 #include <vector>
+#include <plog/Log.h>
 
 using namespace std;
 using namespace experimental;
@@ -16,7 +17,7 @@ static const string INST_JUMP_NEG_MARKER = "~";
 static const string INST_STORE_TARGET_MARKER = "->";
 static const string INST_SEPARATOR = " ";
 static const string ARGS_EQ = "=";
-static const string ARGS_SEPARATOR = ",";
+static const string ARGS_SEPARATOR = ", ";
 static const string LABEL_MARKER = ":";
 
 static const string DIRECTIVE_START = ".";
@@ -73,6 +74,7 @@ namespace instruction {
     INST_TYPE RET_POPPED_COMMAND = "ret_popped";
     INST_TYPE POP_COMMAND = "pop";
     INST_TYPE VERIFY_COMMAND = "verify";
+    INST_TYPE RANDOM_COMMAND = "random";
     INST_TYPE NOTHING = "";
 }
 
@@ -183,6 +185,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, unsigned index,
     return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, to_string(index), to_string(value)}), nullopt, nullopt);
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, string var, int value) {
+    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, var, to_string(value)}), nullopt, nullopt);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, unsigned index, string storeTarget) {
     return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, to_string(index)}), nullopt, storeTarget);
 }
@@ -210,6 +216,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::call_vs(string routineName, optional<str
     return addInstruction(instruction::CALL_VS, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, storeTarget);
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::call_1n(string routineName) {
+    return addInstruction(instruction::CALL_1N_COMMAND, routineName, nullopt, nullopt);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::jumpEquals(string args, string targetLabel) {
     return addInstruction(instruction::JE_COMMAND, args, make_pair(targetLabel, false), nullopt);
 }
@@ -220,6 +230,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::jumpNotEquals(string args, string target
 
 ZAssemblyGenerator &ZAssemblyGenerator::jumpGreater(string args, string targetLabel) {
     return addInstruction(instruction::JG_COMMAND, args, make_pair(targetLabel, false), nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::jumpLess(string args, string targetLabel) {
+    return addInstruction(instruction::JL_COMMAND, args, make_pair(targetLabel, false), nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jumpGreaterEquals(string args, string targetLabel) {
@@ -238,6 +252,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::quit() {
     return addInstruction(instruction::QUIT_COMMAND, nullopt, nullopt, nullopt);
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::random(std::string range, std::string storeTarget) {
+    return addInstruction(instruction::RANDOM_COMMAND, range, nullopt, storeTarget);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::ret(string arg) {
     return addInstruction(instruction::RET_COMMAND, arg, nullopt, nullopt);
 }
@@ -250,21 +268,8 @@ ZAssemblyGenerator &ZAssemblyGenerator::print(string str) {
     return addInstruction(instruction::PRINT_COMMAND, string("\"") + str + string("\""), nullopt, nullopt);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(bool italic, bool bold, bool underlined) {
-    string result;
-    if (italic) {
-        result += "i";
-    }
-    if (bold) {
-        result += "b";
-    }
-    if (underlined) {
-        result += "u";
-    }
-    if (!(italic && bold && underlined)) {
-        result = "r";
-    }
-    return addInstruction(instruction::SET_TEXT_STYLE, result, nullopt, nullopt);
+ZAssemblyGenerator &ZAssemblyGenerator::setTextStyle(std::string values) {
+    return addInstruction(instruction::SET_TEXT_STYLE, values, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::read_char(string storeTarget) {
@@ -296,7 +301,8 @@ ZAssemblyGenerator &ZAssemblyGenerator::load(std::string source, std::string tar
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::store(std::string target, std::string value) {
-    return addInstruction(instruction::STORE_COMMAND,makeArgs({target, value}) ,nullopt,nullopt);
+    // Do not change this!
+    return addInstruction(instruction::STORE_COMMAND, target + " " + value, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::add(std::string left, std::string right, std::string storeTarget) {

@@ -58,8 +58,9 @@ const string AssemblyParser::STOREB_COMMAND = "storeb";
 const string AssemblyParser::STOREW_COMMAND = "storew";
 const string AssemblyParser::LOADB_COMMAND = "loadb";
 const string AssemblyParser::LOADW_COMMAND = "loadw";
-
 const string AssemblyParser::PUSH_COMMAND = "push";
+const string AssemblyParser::PULL_COMMAND = "pull";
+const string AssemblyParser::RANDOM_COMMAND = "random";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -366,7 +367,7 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string &paramString) {
     // not catching exception on purpose so we always return a proper value
     auto paramId = getAddressForId(paramString);
 
-    if (paramId) {
+    if (paramId != NULL) {
         ZVariableParam *variableParam = new ZVariableParam((uint16_t) *paramId);
         param.reset(variableParam);
     } else {
@@ -403,40 +404,6 @@ void AssemblyParser::registerJump(const vector<unique_ptr<ZParam>> &params) {
 
 void AssemblyParser::executePRINTCommand(const string &printCommand, RoutineGenerator &routineGenerator) {
     routineGenerator.printString(parseArguments(printCommand));
-}
-
-void AssemblyParser::executeSETTEXTSTYLECommand(const string &printCommand, RoutineGenerator &routineGenerator) {
-
-    vector<string> commandParts = this->split(printCommand, AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
-    bool bold = false, italic = false, underlined = false, roman = false;
-
-    for (size_t i = 0; i < commandParts[1].size(); i++) {
-        switch (commandParts[1][i]) {
-            case 'b':
-                bold = true;
-                break;
-            case 'i':
-                italic = true;
-                break;
-            case 'u':
-                underlined = true;
-                break;
-            case 'r':
-                roman = true;
-                break;
-            default:
-                cerr << "problem with set_text_style parameter parsing: " << printCommand;
-        }
-        if (roman) {
-            bold = false;
-            italic = false;
-            underlined = false;
-            break;
-        }
-    }
-
-    routineGenerator.setTextStyle(roman, false, bold, italic, underlined);
-    LOG_DEBUG << commandParts.at(1);
 }
 
 void AssemblyParser::executeREADCommand(const string &readCommand, RoutineGenerator &routineGenerator) {
@@ -560,7 +527,7 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         executeLOADWCOMMAND(command, dynamicMemory, routineGenerator);
     } else if (commandPart.compare(AssemblyParser::SET_TEXT_STYLE) == 0) {
         LOG_DEBUG << ":::::: new set_text_style ";
-        executeSETTEXTSTYLECommand(command, routineGenerator);
+        routineGenerator.setTextStyle(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::ADD_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new add ";
         routineGenerator.add(parseArguments(command));
@@ -582,9 +549,6 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::OR_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new or ";
         routineGenerator.doOR(parseArguments(command));
-    } else if (commandPart.compare(AssemblyParser::PUSH_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new push";
-        routineGenerator.push(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::NOT_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new not ";
         routineGenerator.doNOT(parseArguments(command));
@@ -609,6 +573,12 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     }else if (commandPart.compare(AssemblyParser::VERIFY_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new verify";
         routineGenerator.verify(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::PUSH_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new push";
+        routineGenerator.push(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::PULL_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new pull";
+        routineGenerator.pull(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label;

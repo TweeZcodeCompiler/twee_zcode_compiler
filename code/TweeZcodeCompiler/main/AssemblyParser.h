@@ -64,8 +64,9 @@ private:
     static const std::string STOREW_COMMAND;
     static const std::string LOADB_COMMAND;
     static const std::string LOADW_COMMAND;
-
     static const std::string PUSH_COMMAND;
+    static const std::string PULL_COMMAND;
+    static const std::string RANDOM_COMMAND;
 
 
     unsigned currentLineNumber;
@@ -82,8 +83,6 @@ private:
                         std::shared_ptr<ZCodeContainer> dynamicMemory);
 
     void executePRINTCommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
-
-    void executeSETTEXTSTYLECommand(const std::string &printCommand, RoutineGenerator &routineGenerator);
 
     void executeREADCommand(const std::string &readCommand, RoutineGenerator &routineGenerator);
 

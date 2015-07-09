@@ -21,11 +21,11 @@ public:
 
     Head(std::string, std::vector <std::string>);
 
-    std::string getName();
+    std::string getName() const;
 
-    std::vector <std::string> getTags();
+    const std::vector<std::string>& getTags() const;
 
-    std::string to_string();
+    std::string to_string() const;
 
 };
 

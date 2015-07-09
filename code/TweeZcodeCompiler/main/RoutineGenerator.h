@@ -35,6 +35,8 @@ private:
     Jumps jumps;
     OpcodeParameterGenerator opcodeGenerator;
 
+    size_t nextLocVarInitLabelNumber = 0;
+
     std::bitset<8> numberToBitset(unsigned int number);
 
     void addBitset(std::vector<std::bitset<8>> bitsets, std::string name);
@@ -105,7 +107,7 @@ public:
 
     void printChar(std::vector<std::unique_ptr<ZParam>> params);
 
-    void setTextStyle(bool roman, bool reverseVideo, bool bold, bool italic, bool fixedPitch);
+    void setTextStyle(std::vector<std::unique_ptr<ZParam>> params);
 
     void printString(std::vector<std::unique_ptr<ZParam>> params);
 
@@ -121,6 +123,8 @@ public:
     void store(std::vector<std::unique_ptr<ZParam>> params);
 
     void load(std::vector<std::unique_ptr<ZParam>> params);
+
+    void load(ZParam &param1, ZParam &param2);
 
     void quitRoutine();
 
@@ -144,6 +148,8 @@ public:
 
     void doNOT(std::vector<std::unique_ptr<ZParam>> params);
 
+    void random(std::vector<std::unique_ptr<ZParam>> params);
+
     void returnTrue();
 
     void returnFalse();
@@ -157,6 +163,8 @@ public:
     void restart();
 
     void verify(std::vector<std::unique_ptr<ZParam>> params);
+
+    void pull(std::vector<std::unique_ptr<ZParam>> params);
 
     void loadb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
@@ -244,9 +252,11 @@ public:
         // Opcode: 2OP:15 F loadw array word-index -> (result)
                 LOADW = 15,
         // Opcode: Pushes value onto the game stack
-                PUSH = 232
-
-
+                PUSH = 232,
+        //VAR:233 9 1 pull (variable)
+                PULL = 233,
+        //VAR:231 7 random range -> (result)
+                RANDOM = 231,
 
 
         /*

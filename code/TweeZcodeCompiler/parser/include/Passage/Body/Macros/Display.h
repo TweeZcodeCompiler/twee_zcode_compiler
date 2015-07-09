@@ -14,19 +14,17 @@
 class Display : public Macro {
 
 private:
-    std::unique_ptr<Expression> expression;
+    std::string passage;
 
 public:
 
-    Display(const Expression *);
-
-    Display(const Expression &);
+    Display(std::string);
 
     Display(const Display &display) {
-        this->expression.reset(display.getExpression()->clone());
+        this->passage = display.getPassage();
     }
 
-    const std::unique_ptr<Expression> &getExpression() const;
+    const std::string &getPassage() const;
 
     std::string to_string() const;
 
