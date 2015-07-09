@@ -520,8 +520,7 @@ void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
 
     // store var var is not possible -> use load
     if ((*params.at(1)).getParamType() == VARIABLE) {
-        //load(*params.at(1), *params.at(0));
-        load(*params.at(0), *params.at(1));
+        load(*params.at(1), *params.at(0));
         return;
     }
 
@@ -589,7 +588,6 @@ void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {
 
     // convert variable to small constant
     ZVariableParam* varParam = (ZVariableParam *) params.at(0).get();
-
     ZValueParam valParam(varParam->getZCodeValue());
 
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, valParam);
@@ -599,9 +597,13 @@ void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {
 
 void RoutineGenerator::load(ZParam &param1, ZParam &param2) {
     debug("load");
-    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, param1);
+
+    // convert variable to small constant
+    ZValueParam address(param1.getZCodeValue());
+
+    vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(LOAD, address);
     instructions.push_back(numberToBitset(param2.getZCodeValue()));
-    addBitset(instructions);
+    addBitset(instructions, "load");
 }
 
 // params: address
@@ -613,7 +615,7 @@ void RoutineGenerator::printAddress(vector<unique_ptr<ZParam>> params) {
     // TODO: Test this opcode with extra string table
 
     vector<bitset<8>> instructions = opcodeGenerator.generate1OPInstruction(PRINT_ADDR, *params.at(0));
-    addBitset(instructions);
+    addBitset(instructions, "print Address");
 }
 
 void RoutineGenerator::setLocalVariable(string name, int16_t value) {

@@ -120,7 +120,7 @@ EXPR_VAR                $[a-zA-z_][a-zA-Z0-9_]*
 
 EXPR_RANDOM            random[ ]*\(
 EXPR_VISITED           visited[ ]*\(
-EXPR_PREVIOUS          previous[ ]*\(
+EXPR_PREVIOUS          previous[ ]*\([ ]*\)
 EXPR_TURNS             turns[ ]*\([ ]*\)
 
 EXPR_OPEN              \(

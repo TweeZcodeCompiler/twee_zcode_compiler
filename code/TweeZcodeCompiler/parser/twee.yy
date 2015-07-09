@@ -827,9 +827,9 @@ turns:
   ;
 
 previous:
-    EXPR_PREVIOUS EXPR_CLOSE
+    EXPR_PREVIOUS
     {
-    LOG_DEBUG << "previous -> EXPR_PREVIOUS EXPR_CLOSE: create new Previous()";
+    LOG_DEBUG << "previous -> EXPR_PREVIOUS: create new Previous()";
     $$ = new Previous();
     }
   ;
