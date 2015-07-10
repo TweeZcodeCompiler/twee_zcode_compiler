@@ -819,17 +819,19 @@ visited:
   ;
 
 visitedpartl:
-    EXPR_VISITED TEXT_TOKEN
+    EXPR_VISITED EXPR_STR_LIMITER EXPR_STR EXPR_STR_LIMITER
     {
     LOG_DEBUG << "visitedpartl -> EXPR_VISITED TEXT_TOKEN: create new Visited(), add passage name";
     $$ = new Visited();
-    $$ += $1;
-    delete &$1;
+    *$$ += *$3;
+    delete $3;
     }
     |visitedpartl FUNC_SEPARATOR EXPR_STR_LIMITER EXPR_STR EXPR_STR_LIMITER
     {
     LOG_DEBUG << "visitedpartl -> visitedpartl FUNC_SEPARATOR TEXT_TOKEN: add passage name";
-    delete &$2;
+    $$ = $1;
+    *$$ += *$4;
+    delete $4;
     }
    ;
 
