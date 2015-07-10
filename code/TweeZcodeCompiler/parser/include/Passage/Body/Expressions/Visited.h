@@ -21,7 +21,7 @@ public:
 
     const std::vector<std::string>& getPassages() const;
 
-    const std::string getPassage(int) const;
+    const std::string getPassage(size_t) const;
 
     Visited& operator+=(std::string);
 

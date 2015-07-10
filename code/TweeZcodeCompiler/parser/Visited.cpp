@@ -9,7 +9,7 @@ const std::vector<std::string>& Visited::getPassages() const {
     return this->passages;
 }
 
-const std::string Visited::getPassage(int pos) const {
+const std::string Visited::getPassage(size_t pos) const {
     return passages.at(pos);
 }
 

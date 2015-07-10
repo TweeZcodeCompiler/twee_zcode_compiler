@@ -500,12 +500,12 @@ void TweeCompiler::evalExpression(Expression *expression) {
             ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)] + 1), "min");
 
             for (size_t i = 1; i < passageCount; i++) {
-                string label = "~NO_NEW_MIN_FOUND_" + i;
+                string label = "NO_NEW_MIN_FOUND_" + to_string(i);
                 string nextPassageVisitedCount = to_string(passageName2id[visited->getPassage(i)] + 1);
 
-                ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, nextPassageVisitedCount, "min")
-                        .jumpLess("sp min", label)
-                        .store("min", nextPassageVisitedCount)
+                ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, nextPassageVisitedCount, "sp")
+                        .jumpLess("sp min", "~" + label)
+                        .loadw(TABLE_VISITED_PASSAGE_COUNT, nextPassageVisitedCount, "min")
                         .addLabel(label);
             }
 
