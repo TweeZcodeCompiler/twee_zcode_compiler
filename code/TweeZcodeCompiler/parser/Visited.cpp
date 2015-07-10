@@ -1,17 +1,28 @@
 
 #include "include/Passage/Body/Expressions/Visited.h"
 
-Visited::Visited() {
+
+Visited::Visited() { }
+
+
+const std::vector<std::string>& Visited::getPassages() const {
+    return this->passages;
 }
 
-Visited::Visited(const std::string passage) {
-    this->passage = passage;
+const std::string Visited::getPassage(int pos) const {
+    return passages.at(pos);
 }
 
-const std::string &Visited::getPassage() const {
-    return this->passage;
+Visited& Visited::operator+=(std::string passageName) {
+    this->passages.push_back(passageName);
+    return *this;
 }
 
 std::string Visited::to_string() const {
-    return "Visited: " + this->getPassage();
+    std::string result = "Visited: ";
+
+    for (auto iter = this->passages.begin(); iter != this->passages.end(); ++iter)
+        result +=  std::string(*iter) + " ";
+
+    return result;
 }

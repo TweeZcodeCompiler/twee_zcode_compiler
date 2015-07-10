@@ -5,24 +5,23 @@
 #include "Expression.h"
 
 #include <string>
+#include <vector>
 #include <memory>
 
 class Visited : public Expression {
 
 private:
-    std::string passage;
+    std::vector<std::string> passages;
 
 public:
 
     Visited();
 
-    Visited(std::string);
+    const std::vector<std::string>& getPassages() const;
 
-    Visited(const Visited &display) {
-        this->passage = display.getPassage();
-    }
+    const std::string getPassage(int) const;
 
-    const std::string &getPassage() const;
+    Visited& operator+=(std::string);
 
     std::string to_string() const;
 

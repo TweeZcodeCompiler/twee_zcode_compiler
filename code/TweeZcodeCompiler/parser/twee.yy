@@ -287,6 +287,7 @@
 %type <expression> expressionTop
 
 %type <visited> visited
+%type <visited> visitedpartl
 %type <turns> turns
 %type <random> random
 
@@ -805,18 +806,33 @@ random:
   ;
 
 visited:
-    EXPR_VISITED EXPR_STR EXPR_CLOSE
+    EXPR_VISITED EXPR_CLOSE
     {
-    LOG_DEBUG << "visited -> EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE: create new Visited($2)";
-    $$ = new Visited(*$2);
-    delete $2;
-    }
-    |EXPR_VISITED EXPR_CLOSE
-    {
-    LOG_DEBUG << "visited -> EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE: create new Visited()";
+    LOG_DEBUG << "visited -> EXPR_VISITED EXPR_CLOSE: create new Visited()";
     $$ = new Visited();
     }
+    |visitedpartl EXPR_CLOSE
+    {
+    LOG_DEBUG << "visited -> visitedpartl EXPR_CLOSE: create new Visited()";
+    $$ = $1;
+    }
   ;
+
+visitedpartl:
+    EXPR_VISITED TEXT_TOKEN
+    {
+    LOG_DEBUG << "visitedpartl -> EXPR_VISITED TEXT_TOKEN: create new Visited(), add passage name";
+    $$ = new Visited();
+    $$ += $1;
+    delete &$1;
+    }
+    |visitedpartl FUNC_SEPARATOR TEXT_TOKEN
+    {
+    LOG_DEBUG << "visitedpartl -> visitedpartl FUNC_SEPARATOR TEXT_TOKEN: add passage name";
+    $$ += $2;
+    delete &$2;
+    }
+   ;
 
 turns:
     EXPR_TURNS
