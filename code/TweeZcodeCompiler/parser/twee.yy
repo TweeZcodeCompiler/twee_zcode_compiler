@@ -829,7 +829,6 @@ visitedpartl:
     |visitedpartl FUNC_SEPARATOR TEXT_TOKEN
     {
     LOG_DEBUG << "visitedpartl -> visitedpartl FUNC_SEPARATOR TEXT_TOKEN: add passage name";
-    $$ += $2;
     delete &$2;
     }
    ;

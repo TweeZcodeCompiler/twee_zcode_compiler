@@ -496,7 +496,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
 
     } else if (Visited *visited = dynamic_cast<Visited *>(expression)) {
         LOG_DEBUG << visited->to_string();
-        if (visited->getPassage() == "") {
+        if (visited->getPassages().size() != 0) {
             ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp");
         } else {
             // TODO: Passage names & multiple passages
