@@ -365,7 +365,7 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     auto &bodyParts = passage.getBody().getBodyParts();
 
     // declare passage routine
-    ASSGEN.addRoutine(routineNameForPassage(passage));
+    ASSGEN.addRoutine(routineNameForPassage(passage), {ZRoutineArgument("min")});
 
     ASSGEN.println(string("***** ") + passage.getHead().getName() + string(" *****"));
 
@@ -496,10 +496,26 @@ void TweeCompiler::evalExpression(Expression *expression) {
 
     } else if (Visited *visited = dynamic_cast<Visited *>(expression)) {
         LOG_DEBUG << visited->to_string();
-        if (visited->getPassages().size() != 0) {
+        size_t passageCount = visited->getPassageCount();
+        if (passageCount == 0) {
             ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp");
+        } else if (passageCount == 1) {
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)]), "sp");
         } else {
-            // TODO: Passage names & multiple passages
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)]), "min");
+
+            for (size_t i = 1; i < passageCount; i++) {
+                string label = "~NO_NEW_MIN_FOUND_" + i;
+                string nextPassageVisitedCount = to_string(passageName2id[visited->getPassage(i)]);
+
+                ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, nextPassageVisitedCount, "min")
+                        .jumpLess("sp min", label)
+                        .store("min", nextPassageVisitedCount)
+                        .addLabel(label);
+            }
+
+            ASSGEN.push("min");
+
         }
     } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
         LOG_DEBUG << turns->to_string();

@@ -13,6 +13,10 @@ const std::string Visited::getPassage(int pos) const {
     return passages.at(pos);
 }
 
+size_t Visited::getPassageCount() {
+    return passages.size();
+}
+
 Visited& Visited::operator+=(std::string passageName) {
     this->passages.push_back(passageName);
     return *this;
