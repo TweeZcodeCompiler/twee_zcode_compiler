@@ -8,6 +8,8 @@
 
 using namespace std;
 
+static const uint8_t EXT_OPCODE = 190;
+
 vector<bitset<8>> OpcodeParameterGenerator::generate1OPInstruction(unsigned int opcode, ZParam &param) {
     return generate1OPInstruction(opcode, param.getZCodeValue(), param.isVariableArgument());
 }
@@ -119,6 +121,12 @@ vector<bitset<8>> OpcodeParameterGenerator::generateVarOPInstruction(unsigned in
 
 vector<bitset<8>> OpcodeParameterGenerator::generateVarOPInstruction(unsigned int opcode, vector<uint16_t> params,
                                                                      vector<bool> paramIsVariable) {
+    if (params.size() > 4) {
+        LOG_ERROR << "More than 4 operands are not allowed for VAR operand count!";
+        // this is a programming error, so we don't throw a specific exception
+        throw exception();
+    }
+
     bitset<8> opcodeByte = bitset<8>(opcode);
 
     // variable form with 2OP instruction (2OP Opcodes start with 00)
@@ -144,44 +152,76 @@ vector<bitset<8>> OpcodeParameterGenerator::generateVarOPInstruction(unsigned in
     return instructions;
 }
 
+vector<bitset<8>> OpcodeParameterGenerator::generateExtOPInstruction(unsigned int opcode,
+                                                                     const vector<unique_ptr<ZParam>> &params) {
+    vector<uint16_t> paramValues;
+    vector<bool> paramIsVariable;
+
+    for (vector<unique_ptr<ZParam>>::const_iterator param = params.begin(); param != params.end(); ++param) {
+        paramValues.push_back((*param)->getZCodeValue());
+        paramIsVariable.push_back((*param)->isVariableArgument());
+    }
+
+    return generateExtOPInstruction(opcode, paramValues, paramIsVariable);
+}
+
+vector<bitset<8>> OpcodeParameterGenerator::generateExtOPInstruction(unsigned int opcode, vector<uint16_t> params,
+                                                                     vector<bool> paramIsVariable)
+{
+    bitset<8> extOpcodeByte(EXT_OPCODE);
+    bitset<8> opcodeByte(opcode);
+
+    vector<bitset<8>> parameters = generateTypeBitsetAndParameterBitsets(params, paramIsVariable);
+
+    vector<bitset<8>> instructions;
+
+    instructions.push_back(extOpcodeByte);
+    instructions.push_back(opcodeByte);
+
+    for(auto bitset : parameters) {
+       instructions.push_back(bitset);
+    }
+
+    return instructions;
+}
+
+
+
 vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitsets(vector<uint16_t> params,
                                                                                   vector<bool> paramIsVariable) {
     vector<bitset<8>> instructions;
     bitset<8> paramTypes;
 
-    if (params.size() > 4) {
-        LOG_ERROR << "More than 4 operands are not allowed!";
-        // this is a programming error, so we don't throw a specific exception
-        throw exception();
-    }
+    // some instructions can take up to 8 parameters
+    bool extraLongVars = params.size() > 4;
 
-    size_t param = 0;
-    for (int i = 7; i > 0; i -= 2) {
-        if (param >= params.size()) {
-            // if less than 4 parameter types needed set last bits to type omitted
+    size_t paramIndex = 0;
+    for (int i = 7 * (extraLongVars ? 2 : 1); i > 0; i -= 2) {
+        if (paramIndex >= params.size()) {
+            // if less than 4 (or 8), parameter types needed set last bits to type omitted
             paramTypes.set(i, true);
             paramTypes.set(i - 1, true);
-        } else if (paramIsVariable[param]) {
+        } else if (paramIsVariable[paramIndex]) {
             // type variable
             paramTypes.set(i, true);
             paramTypes.set(i - 1, false);
 
-            instructions.push_back(bitset<8>(params[param]));
-        } else if (params[param] < 256) {
+            instructions.push_back(bitset<8>(params[paramIndex]));
+        } else if (params[paramIndex] < 256) {
             // type small constant
             paramTypes.set(i, false);
             paramTypes.set(i - 1, true);
 
-            instructions.push_back(bitset<8>(params[param]));
+            instructions.push_back(bitset<8>(params[paramIndex]));
         } else {
             // type large constant
             paramTypes.set(i, false);
             paramTypes.set(i - 1, false);
 
-            addLargeNumber((int16_t) params[param], instructions);
+            addLargeNumber((int16_t) params[paramIndex], instructions);
         }
 
-        param++;
+        paramIndex++;
     }
 
     instructions.insert(instructions.begin(), paramTypes);
