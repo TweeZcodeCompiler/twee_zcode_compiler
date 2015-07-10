@@ -8,6 +8,7 @@
 
 #include "ZCodeContainer.h"
 #include "ZCodeInstruction.h"
+#include "../ParamStructs.h"
 #include <map>
 
 class ZCodeRoutine : public ZCodeContainer {
@@ -16,7 +17,9 @@ private:
     uint8_t localVariables;
 public:
     void print(std::vector<std::bitset<8>> &code);
-
+    std::vector<std::bitset<8>> generate1OPInstruction(unsigned int opcode, ZParam &param);
+    std::vector<std::bitset<8>> ZCodeRoutine::generate1OPInstruction(unsigned int opcode, uint16_t param,
+                                                           bool paramIsVariable);
     ZCodeRoutine(uint8_t locVariables) {
         containerOffset = 1;
         this->localVariables = locVariables;
