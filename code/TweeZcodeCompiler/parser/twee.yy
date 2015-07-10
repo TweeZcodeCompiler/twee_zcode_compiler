@@ -826,7 +826,7 @@ visitedpartl:
     $$ += $1;
     delete &$1;
     }
-    |visitedpartl FUNC_SEPARATOR EXPR_STR
+    |visitedpartl FUNC_SEPARATOR EXPR_STR_LIMITER EXPR_STR EXPR_STR_LIMITER
     {
     LOG_DEBUG << "visitedpartl -> visitedpartl FUNC_SEPARATOR TEXT_TOKEN: add passage name";
     delete &$2;
