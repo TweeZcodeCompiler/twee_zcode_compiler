@@ -389,7 +389,7 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                     throw TweeDocumentException("invalid link target: " + target);
                 }
 
-                ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, 1);
+                ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
             }
         } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
             ASSGEN.newline();
