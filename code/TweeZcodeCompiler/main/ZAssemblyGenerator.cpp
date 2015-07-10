@@ -31,6 +31,7 @@ namespace directive {
 
 namespace instruction {
     INST_TYPE CALL_VS = "call_vs";
+    INST_TYPE CALL_VN = "call_vn";
     INST_TYPE JUMP_EQUALS = ZAssemblyGenerator::ZAPF_MODE ? "jeq" : "je";
     INST_TYPE JUMP = "jump";
     INST_TYPE QUIT = "quit";
@@ -229,6 +230,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::markStart() {
 
 ZAssemblyGenerator &ZAssemblyGenerator::call_vs(string routineName, optional<string> args, string storeTarget) {
     return addInstruction(instruction::CALL_VS, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, storeTarget);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::call_vn(string routineName, optional<string> args) {
+    return addInstruction(instruction::CALL_VN, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::call_1n(string routineName) {
