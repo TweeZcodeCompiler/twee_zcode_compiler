@@ -222,12 +222,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         
         // update visited array
         ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
-                .print("TEST")
-                .print_num(GLOB_CURRENT_PASSAGE_ID)
-                .print_num(passageCount)
                 .add(passageCount, "1", passageCount)
-                .print_num(passageCount)
-                .print("BLA")
                 .storew(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount);
         
         for (auto it = passages.begin(); it != passages.end(); ++it) {
