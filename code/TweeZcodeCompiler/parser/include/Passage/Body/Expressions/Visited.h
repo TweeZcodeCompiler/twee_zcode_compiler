@@ -17,6 +17,8 @@ public:
 
     Visited();
 
+    size_t getPassageCount();
+
     const std::vector<std::string>& getPassages() const;
 
     const std::string getPassage(int) const;
