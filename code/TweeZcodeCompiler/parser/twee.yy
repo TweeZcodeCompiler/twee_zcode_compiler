@@ -762,10 +762,10 @@ expressionTop:
   ;
 
 random:
-    EXPR_RANDOM expression expression EXPR_CLOSE
+    EXPR_RANDOM expression FUNC_SEPARATOR expression EXPR_CLOSE
     {
-    LOG_DEBUG << "random -> EXPR_RANDOM expression expression EXPR_CLOSE: create new Random($2, $3)";
-    $$ = new Random($2, $3);
+    LOG_DEBUG << "random -> EXPR_RANDOM expression expression EXPR_CLOSE: create new Random($2, $4)";
+    $$ = new Random($2, $4);
     }
   ;
 

@@ -791,6 +791,12 @@ EXPR_TO                to|=
                                 return BisonParser::token::EXPR_FALSE;
                                 }
 
+<BodyMacro>,                    {
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token FUNC_SEPARATOR" << " with value " << YYText();
+                                return BisonParser::token::FUNC_SEPARATOR;
+                                }
+
+
     /* leave the macro */
 <BodyMacro>{MACRO_CLOSE}        {
                                 BEGIN(Body);
