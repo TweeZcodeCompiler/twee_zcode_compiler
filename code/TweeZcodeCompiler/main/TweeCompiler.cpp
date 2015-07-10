@@ -52,6 +52,7 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         GLOBAL_USER_INPUT = "USER_INPUT",
         TABLE_LINKED_PASSAGES = "LINKED_PASSAGES",
         TABLE_USERINPUT_LOOKUP = "USERINPUT_LOOKUP",
+        TABLE_VISITED_PASSAGE_COUNT = "VISITED_PASSAGE_COUNT",
         ROUTINE_PASSAGE_BY_ID = "passage_by_id",
         ROUTINE_NAME_FOR_PASSAGE = "print_name_for_passage",
         ROUTINE_DISPLAY_LINKS = "display_links",
@@ -142,7 +143,6 @@ string makeUserInputRoutine() {
 
 string makeClearTablesRoutine() {
     return ".FUNCT reset_tables i\n"
-
             "   loop_start:\n"
             "   storeb LINKED_PASSAGES i 0\n"
             "   storeb USERINPUT_LOOKUP i 0\n"
@@ -180,6 +180,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ASSGEN.addByteArray(TABLE_LINKED_PASSAGES, (unsigned) passages.size());
     ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned) passages.size());
 
+    ASSGEN.addWordArray(TABLE_VISITED_PASSAGE_COUNT, (unsigned) passages.size());
 
     // globals
     ASSGEN.addGlobal(GLOB_PASSAGE)
@@ -219,10 +220,17 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // call passage by id routine
     {
         const string idLocal = "id";
-        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal)}))
+        const string passageCount = "passage_count";
+        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal), ZRoutineArgument(passageCount)}))
                 .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
-                .store(GLOB_CURRENT_PASSAGE_ID, idLocal);
-
+                .store(GLOB_CURRENT_PASSAGE_ID, idLocal)
+                .add(GLOB_CURRENT_PASSAGE_ID, "1", GLOB_CURRENT_PASSAGE_ID);
+        
+        // update visited array
+        ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
+                .add(passageCount, "1", passageCount)
+                .storew(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount);
+        
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             string passageName = it->getHead().getName();
             unsigned id = passageName2id.at(passageName);
@@ -233,7 +241,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.print("invalid id for passage: ")
                 .print_num(idLocal)
                 .quit();
-
 
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             ASSGEN.addLabel(labelForPassage(*it)).call_vs(routineNameForPassage(*it), nullopt, "sp").ret("0");
@@ -359,7 +366,7 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     auto &bodyParts = passage.getBody().getBodyParts();
 
     // declare passage routine
-    ASSGEN.addRoutine(routineNameForPassage(passage));
+    ASSGEN.addRoutine(routineNameForPassage(passage), {ZRoutineArgument("min")});
 
     ASSGEN.println(string("***** ") + passage.getHead().getName() + string(" *****"));
 
@@ -372,7 +379,7 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
             // TODO: catch invalid link
 
             if (isPreviousMacro(link->getTarget())) {
-                ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, 1);
+                ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
             } else {
                 int id;
                 string target = link->getTarget();
@@ -382,7 +389,7 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                     throw TweeDocumentException("invalid link target: " + target);
                 }
 
-                ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, 1);
+                ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
             }
         } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
             ASSGEN.newline();
@@ -440,7 +447,6 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                 throw TweeDocumentException("set macro didn't contain an assignment");
             }
         }
-
     }
 
     // unclosed if-macro
@@ -499,6 +505,27 @@ void TweeCompiler::evalExpression(Expression *expression) {
 
     } else if (Visited *visited = dynamic_cast<Visited *>(expression)) {
         LOG_DEBUG << visited->to_string();
+        size_t passageCount = visited->getPassageCount();
+        if (passageCount == 0) {
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp");
+        } else if (passageCount == 1) {
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)] + 1), "sp");
+        } else {
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)] + 1), "min");
+
+            for (size_t i = 1; i < passageCount; i++) {
+                string label = "NO_NEW_MIN_FOUND_" + to_string(i);
+                string nextPassageVisitedCount = to_string(passageName2id[visited->getPassage(i)] + 1);
+
+                ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, nextPassageVisitedCount, "sp")
+                        .jumpLess("sp min", "~" + label)
+                        .loadw(TABLE_VISITED_PASSAGE_COUNT, nextPassageVisitedCount, "min")
+                        .addLabel(label);
+            }
+
+            ASSGEN.push("min");
+
+        }
     } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
         LOG_DEBUG << turns->to_string();
         ASSGEN.load(GLOB_TURNS_COUNT, "sp");

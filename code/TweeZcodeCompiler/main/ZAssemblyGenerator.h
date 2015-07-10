@@ -43,6 +43,8 @@ public:
 
     ZAssemblyGenerator &addString(std::string name, std::string size);
 
+    ZAssemblyGenerator &addWordArray(std::string name, unsigned size);
+
     ZAssemblyGenerator &call_vs(std::string routineName, std::experimental::optional<std::string> args, std::string storeTarget);
 
     ZAssemblyGenerator &call_vn(std::string routineName, std::experimental::optional<std::string> args);
@@ -100,9 +102,13 @@ public:
 
     ZAssemblyGenerator &loadb(std::string arrayName, std::string varIndex, std::string storeTarget);
 
-    ZAssemblyGenerator &storeb(std::string arrayName, unsigned int index, int value);
+    ZAssemblyGenerator &loadw(std::string arrayName, std::string varIndex, std::string storeTarget);
 
-    ZAssemblyGenerator &storeb(std::string arrayName, std::string var, int value);
+    ZAssemblyGenerator &storeb(std::string arrayName, unsigned int index, std::string value);
+
+    ZAssemblyGenerator &storeb(std::string arrayName, std::string var, std::string value);
+
+    ZAssemblyGenerator &storew(std::string arrayName, std::string var, std::string value);
 
     ZAssemblyGenerator &load(std::string source, std::string target);
 
