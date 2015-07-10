@@ -124,13 +124,16 @@ string makeUserInputRoutine() {
             "\n"
             "   passage_not_set:\n"
             "\n"
-            "   add i 1 -> i\n"
-            "   jl i PASSAGES_COUNT ?loop_start\n"
+            "    add i 1 -> i\n"
+            "    jl i PASSAGES_COUNT ?loop_start\n"
             "\n"
-            "   read_char 1 -> USER_INPUT\n"
-            "   sub USER_INPUT 48 -> sp\n"
-            "   sub sp 1 -> sp\n"
-            "   loadb USERINPUT_LOOKUP sp -> sp \n"
+            "    jz selectcount ?~links_available\n"
+            "    ret -1\n"
+            "links_available:\n"
+            "    read_char 1 -> USER_INPUT\n"
+            "    sub USER_INPUT 48 -> sp\n"
+            "    sub sp 1 -> sp\n"
+            "    loadb USERINPUT_LOOKUP sp -> sp \n"
             "\n"
             "\t add TURNS 1 -> TURNS\n"
             "   ret sp"
@@ -139,6 +142,7 @@ string makeUserInputRoutine() {
 
 string makeClearTablesRoutine() {
     return ".FUNCT reset_tables i\n"
+
             "   loop_start:\n"
             "   storeb LINKED_PASSAGES i 0\n"
             "   storeb USERINPUT_LOOKUP i 0\n"
@@ -188,22 +192,25 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
     // main routine
     {
+        static const string LOCAL_NEXT_PASSAGE = "next_passage";
         // call start routine first
-        ASSGEN.addRoutine(ROUTINE_MAIN)
+        ASSGEN.addRoutine(ROUTINE_MAIN, vector<ZRoutineArgument>({ZRoutineArgument(LOCAL_NEXT_PASSAGE)}))
                 .markStart()
                 .store(GLOB_PASSAGES_COUNT, to_string(passages.size()))
                 .store(GLOB_TURNS_COUNT, "1")
                 .store(GLOB_PREVIOUS_PASSAGE_ID, "0")
                 .store(GLOB_CURRENT_PASSAGE_ID, "0")
                 .call_1n(ROUTINE_CLEAR_TABLES)
-                .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))), "sp");
+                .call_vn(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))));
 
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
-                .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, "sp")
+                .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, LOCAL_NEXT_PASSAGE)
+                .jumpLower(ASSGEN.makeArgs({LOCAL_NEXT_PASSAGE, "0"}), "end_program")
                 .call_1n(ROUTINE_CLEAR_TABLES)
-                .call_vs(ROUTINE_PASSAGE_BY_ID, string("sp"), "sp")
+                .call_vn(ROUTINE_PASSAGE_BY_ID, LOCAL_NEXT_PASSAGE)
                 .jump(LABEL_MAIN_LOOP);
 
+        ASSGEN.addLabel("end_program");
         ASSGEN.quit();
     }
 
@@ -367,7 +374,15 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
             if (isPreviousMacro(link->getTarget())) {
                 ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, 1);
             } else {
-                ASSGEN.storeb(TABLE_LINKED_PASSAGES, passageName2id.at(link->getTarget()), 1);
+                int id;
+                string target = link->getTarget();
+                try {
+                    id = passageName2id.at(target);
+                } catch(const out_of_range& outOfRange) {
+                    throw TweeDocumentException("invalid link target: " + target);
+                }
+
+                ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, 1);
             }
         } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
             ASSGEN.newline();
@@ -425,6 +440,7 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                 throw TweeDocumentException("set macro didn't contain an assignment");
             }
         }
+
     }
 
     // unclosed if-macro
