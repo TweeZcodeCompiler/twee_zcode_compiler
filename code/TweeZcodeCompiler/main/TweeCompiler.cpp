@@ -467,23 +467,6 @@ void TweeCompiler::evalExpression(Expression *expression) {
         ASSGEN.sub("sp", "sp", "sp");
         ASSGEN.random("sp", "sp");
 
-        UnaryOperation *unEnd = dynamic_cast<UnaryOperation *>(random->getEnd().get());
-        Const<int> *end = dynamic_cast<Const<int> *>(unEnd->getExpression().get());
-
-        UnaryOperation *unStart = dynamic_cast<UnaryOperation *>(random->getStart().get());
-        Const<int> *start = dynamic_cast<Const<int> *>(unStart->getExpression().get());
-
-        labels = makeLabels("lastCalc");
-        ASSGEN.jumpLess(to_string(end->getValue()) + " " + to_string(start->getValue()), "~" + labels.first);
-        ASSGEN.push(to_string(-1 * start->getValue()));     // TODO: Get correct number
-
-        ASSGEN.jump(labels.second)
-                .addLabel(labels.first);
-        ASSGEN.push(to_string(-1 * end->getValue()));     // TODO: Get correct number
-
-        ASSGEN.addLabel(labels.second);
-        ASSGEN.sub("sp", "1", "sp");
-        ASSGEN.add("sp", "sp", "sp");
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
 
         if (binaryOperation->getOperator() == BinOps::TO) {
