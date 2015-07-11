@@ -14,7 +14,7 @@
 
 class ZCodeObject : public std::enable_shared_from_this<ZCodeObject> {
 protected:
-    std::shared_ptr<ZCodeObject> parrent;
+    std::shared_ptr<ZCodeObject> parent;
     std::vector<std::shared_ptr<ZCodeObject>> children;
 
 public:
@@ -55,7 +55,7 @@ public:
             children.at(i)->cleanup();
         }
         children.clear();
-        parrent = NULL;
+        parent = NULL;
     }
 };
 

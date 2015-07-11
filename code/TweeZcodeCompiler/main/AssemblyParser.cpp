@@ -471,7 +471,29 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
 
     string commandPart = commandParts.at(0);
 
-    if (commandPart.compare(AssemblyParser::NEW_LINE_COMMAND) == 0) {
+    if (commandPart.compare("MOUSE_POS") == 0) {
+        vector<unique_ptr<ZParam>> params;
+        params.push_back(unique_ptr<ZParam>(new ZNameParam("HeaderExtTable")));
+        params.push_back(unique_ptr<ZParam>(new ZValueParam(1)));
+        params.push_back(unique_ptr<ZParam>(new ZVariableParam(0))); // sp
+        routineGenerator.loadw(params, dynamicMemory);
+
+        vector<unique_ptr<ZParam>> params2;
+        params2.push_back(unique_ptr<ZParam>(new ZVariableParam(0)));
+        routineGenerator.printNum(move(params2));
+
+        routineGenerator.newLine();
+
+        vector<unique_ptr<ZParam>> params3;
+        params3.push_back(unique_ptr<ZParam>(new ZNameParam("HeaderExtTable")));
+        params3.push_back(unique_ptr<ZParam>(new ZValueParam(2)));
+        params3.push_back(unique_ptr<ZParam>(new ZVariableParam(0))); // sp
+        routineGenerator.loadw(params3, dynamicMemory);
+
+        vector<unique_ptr<ZParam>> params4;
+        params4.push_back(unique_ptr<ZParam>(new ZVariableParam(0)));
+        routineGenerator.printNum(move(params4));
+    } else if (commandPart.compare(AssemblyParser::NEW_LINE_COMMAND) == 0) {
         routineGenerator.newLine();
         LOG_DEBUG << ":::::: new line";
     } else if (commandPart.compare(AssemblyParser::PRINT_COMMAND) == 0) {

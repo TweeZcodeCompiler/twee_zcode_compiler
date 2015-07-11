@@ -14,6 +14,9 @@ class ZCodeContainer : public ZCodeObject {
 private:
     std::map<std::string, std::shared_ptr<ZCodeLabel>> labels;
 public:
+    static unsigned int mouseXClicked;
+    static unsigned int mouseYClicked;
+
     size_t containerOffset = 0;
 
     ZCodeContainer() { }
@@ -28,7 +31,7 @@ public:
 
     bool revalidate();
 
-    ~ZCodeContainer() {
+    virtual ~ZCodeContainer() {
         labels.clear();
     }
 };

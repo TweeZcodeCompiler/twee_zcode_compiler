@@ -60,7 +60,7 @@ public:
     bool requestScreenRedraw = false;
     bool usePictures = false;
     bool useUndoOpcodes = false;
-    bool useMouse = false;
+    bool useMouse = true;
     bool useColors = false;
     bool useSoundEffects = false;
     bool useMenus = false;
