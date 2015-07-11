@@ -537,10 +537,7 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::STORE_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new store";
         routineGenerator.store(parseArguments(command));
-    }else if (commandPart.compare(AssemblyParser::POINT_COMMAND) == 0) {
-        LOG_DEBUG << ":::::: new point";
-        routineGenerator.point(parseArguments(command,true),dynamicMemory);
-    }  else if (commandPart.compare(AssemblyParser::LOAD_COMMAND) == 0) {
+    } else if (commandPart.compare(AssemblyParser::LOAD_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new load";
         routineGenerator.load(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::STOREB_COMMAND) == 0) {

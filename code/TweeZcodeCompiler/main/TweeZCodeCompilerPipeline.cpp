@@ -66,6 +66,7 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
 
     //create dynamicMemory
     shared_ptr<ZCodeContainer> dynamicMemory = shared_ptr<ZCodeContainer>(new ZCodeContainer("dynamic memory"));
+    Utils::dynamicMemory = dynamicMemory;
     shared_ptr<ZCodeObject> globalVariablesTable = shared_ptr<ZCodeObject>(new ZCodeMemorySpace((0xff - 0x0f)*2+1000,"global variables table"));// Global Var Table
     dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodePkgAdrrPadding()));
     dynamicMemory->add(globalVariablesTable);
@@ -117,6 +118,7 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
     binaryFileWriter.write(outputFileName, zCode);
     log("ZCode File '" + outputFileName + "' generated");
     zcode->cleanup();
+    Utils::dynamicMemory = NULL;
 }
 
 std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::addFileSizeToHeader(std::vector<std::bitset<8>> zCode,

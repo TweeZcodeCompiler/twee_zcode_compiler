@@ -144,13 +144,12 @@ ZAssemblyGenerator &ZAssemblyGenerator::addByteArray(std::string name, unsigned 
     return addDirective(directive::BYTE_ARRAY, makeArgs({name, string("[") + to_string(size) + string("]")}));
 }
 
-<<<<<<< HEAD
 ZAssemblyGenerator &ZAssemblyGenerator::addString(std::string name, std::string str) {
     return addDirective(directive::STRING, makeArgs({name, string("\"") + str + string("\"")}));
-=======
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::addWordArray(std::string name, unsigned size) {
     return addDirective(directive::WORD_ARRAY, makeArgs({name, string("[") + to_string(size) + string("]")}));
->>>>>>> 47bbf25b075cadd5528085d0c320b214d5a27cbb
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::addGlobal(string globalName) {

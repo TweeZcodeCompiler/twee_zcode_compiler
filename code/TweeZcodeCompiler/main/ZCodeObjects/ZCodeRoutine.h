@@ -16,10 +16,13 @@ private:
     static std::map<std::string, std::shared_ptr<ZCodeRoutine>> routines;
     uint8_t localVariables;
 public:
+    void generateTypeBitsetAndParameterBitsets(std::vector<std::unique_ptr<ZParam>> &params);
     void print(std::vector<std::bitset<8>> &code);
-    std::vector<std::bitset<8>> generate1OPInstruction(unsigned int opcode, ZParam &param);
-    std::vector<std::bitset<8>> ZCodeRoutine::generate1OPInstruction(unsigned int opcode, uint16_t param,
-                                                           bool paramIsVariable);
+    void generate1OPInstruction(unsigned int opcode, ZParam &param, std::string name);
+    void generate2OPInstruction(unsigned int opcode, ZParam &param1,ZParam &param2, std::string name = "UNKNOWN");
+    void generateVarOPInstruction(unsigned int opcode,std::vector<std::unique_ptr<ZParam>> &params, std::string name = "UNKNOWN");
+    void storeAdress(uint8_t adrr);
+
     ZCodeRoutine(uint8_t locVariables) {
         containerOffset = 1;
         this->localVariables = locVariables;

@@ -11,7 +11,7 @@ enum ZParamType {
     VALUE, VARIABLE, STORE_ADDRESS, NAME,
 
     // needed for special cases in RoutineGenerator:
-    EMPTY, VARIABLE_OR_VALUE
+    EMPTY, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE_OR_NAME
 };
 
 struct ZParam {

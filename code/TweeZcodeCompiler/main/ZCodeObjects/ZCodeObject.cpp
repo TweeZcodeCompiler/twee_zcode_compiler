@@ -23,7 +23,7 @@ void ZCodeObject::setSize(size_t size) {
         return;
     }
     this->size = size;
-    LOG_DEBUG << "size of '"<< displayName<<"' is set to "<< this->size;
+//    LOG_DEBUG << "size of '"<< displayName<<"' is set to "<< this->size;
 }
 
 size_t ZCodeObject::getSize() {

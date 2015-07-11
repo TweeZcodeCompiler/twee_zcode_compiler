@@ -106,9 +106,9 @@ private:
 
     void executeRETCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
-    std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction, bool namesAllowed = false);
+    std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction, bool namesAllowed = true);
 
-    std::unique_ptr<ZParam> createZParam(const std::string &paramString, bool namesAllowed = false);
+    std::unique_ptr<ZParam> createZParam(const std::string &paramString, bool namesAllowed = true);
 
     void performRoutineDirectiveCommand(std::vector<std::string> lineComps, std::shared_ptr<ZCodeContainer> highMemory);
 
