@@ -13,8 +13,10 @@
 #include <plog/Log.h>
 #include <bitset>
 #include <cstdint>
+#include "optional.hpp"
 
 using namespace std;
+using namespace std::experimental;
 
 const string AssemblyParser::ROUTINE_DIRECTIVE = ".FUNCT";
 const string AssemblyParser::GVAR_DIRECTIVE = ".GVAR";
@@ -37,6 +39,7 @@ const string AssemblyParser::RET_COMMAND = "ret";
 const string AssemblyParser::SET_TEXT_STYLE = "set_text_style";
 const string AssemblyParser::CALL_VS_COMMAND = "call_vs";
 const string AssemblyParser::CALL_1N_COMMAND = "call_1n";
+const string AssemblyParser::CALL_VN_COMMAND = "call_vn";
 const string AssemblyParser::STORE_COMMAND = "store";
 const string AssemblyParser::LOAD_COMMAND = "load";
 const string AssemblyParser::ADD_COMMAND = "add";
@@ -100,6 +103,7 @@ void AssemblyParser::performRoutineDirectiveCommand(vector<string> lineComps, sh
     unsigned locVariablesCount = (unsigned) (lineComps.size() - 2);
     currentGenerator.reset(new RoutineGenerator(routineName, locVariablesCount));
 
+    vector<pair<string, optional<int>>> locals;
     bool withoutComma = true;
     for (; locVariablesCount > 0; locVariablesCount--) {     // parse locale variables
         string var = lineComps[locVariablesCount + 1];
@@ -133,13 +137,20 @@ void AssemblyParser::performRoutineDirectiveCommand(vector<string> lineComps, sh
             }
 
             string name = var.substr(0, nameEnd);
-            currentGenerator->setLocalVariable(name, val);
+            locals.push_back(make_pair(name, val));
         } else {
             string name = var.substr(0, varEnd);
-            currentGenerator->setLocalVariable(name);
+            locals.push_back(make_pair(name, nullopt));
         }
     }
 
+    for(auto localPair = locals.rbegin(); localPair != locals.rend(); ++localPair) {
+        if(localPair->second) {
+            currentGenerator->setLocalVariable(localPair->first, *(localPair->second));
+        } else {
+            currentGenerator->setLocalVariable(localPair->first);
+        }
+    }
 }
 
 void AssemblyParser::performRoutineGlobalVarCommand(string line) {
@@ -498,6 +509,8 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
                    0)) {                                // TODO: Generate specific call instruction
         LOG_DEBUG << ":::::: new call_vs ";
         executeCALL_VSCommand(command, routineGenerator);
+    } else if (commandPart.compare(AssemblyParser::CALL_VN_COMMAND) == 0) {
+        routineGenerator.callVN(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::CALL_1N_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new call_1n";
         executeCALL1nCommand(command, routineGenerator);
@@ -609,7 +622,7 @@ bool AssemblyParser::checkIfCommandRoutineStart(const string &command) {
 
 
 unique_ptr<uint8_t> AssemblyParser::getAddressForId(const string &id) {
-    if (id.compare("sp") == 0) {
+    if (id == "sp") {
         return unique_ptr<uint8_t>(new uint8_t(0));
     }
 

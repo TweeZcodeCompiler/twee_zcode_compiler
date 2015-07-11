@@ -31,6 +31,7 @@ namespace directive {
 
 namespace instruction {
     INST_TYPE CALL_VS = "call_vs";
+    INST_TYPE CALL_VN = "call_vn";
     INST_TYPE JUMP_EQUALS = ZAssemblyGenerator::ZAPF_MODE ? "jeq" : "je";
     INST_TYPE JUMP = "jump";
     INST_TYPE QUIT = "quit";
@@ -41,6 +42,9 @@ namespace instruction {
     INST_TYPE JUMP_GREATER = "jg";
     INST_TYPE SET_TEXT_STYLE = "set_text_style";
     INST_TYPE STOREBYTE = "storeb";
+    INST_TYPE STOREWORD = "storew";
+    INST_TYPE LOADBYTE = "loadb";
+    INST_TYPE LOADWORD = "loadw";
     INST_TYPE NEW_LINE_COMMAND = "new_line";
     INST_TYPE PRINT_COMMAND = "print";
     INST_TYPE JE_COMMAND = "je";
@@ -139,6 +143,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::addByteArray(std::string name, unsigned 
     return addDirective(directive::BYTE_ARRAY, makeArgs({name, string("[") + to_string(size) + string("]")}));
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::addWordArray(std::string name, unsigned size) {
+    return addDirective(directive::WORD_ARRAY, makeArgs({name, string("[") + to_string(size) + string("]")}));
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::addGlobal(string globalName) {
     addDirective(directive::GLOBAL_VAR, globalName);
     return *this;
@@ -181,12 +189,28 @@ ZAssemblyGenerator &ZAssemblyGenerator::addInstruction(INST_TYPE instruction,
     return *this;
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, unsigned index, int value) {
-    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, to_string(index), to_string(value)}), nullopt, nullopt);
+ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, unsigned index, string value) {
+    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, to_string(index), value}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::storeb(string arrayName, string var, string value) {
+    return addInstruction(instruction::STOREBYTE, makeArgs({arrayName, var, value}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::storew(string arrayName, string var, string value) {
+    return addInstruction(instruction::STOREWORD, makeArgs({arrayName, var, value}), nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, unsigned index, string storeTarget) {
-    return addInstruction(instruction::STOREBYTE, to_string(index), nullopt, storeTarget);
+    return addInstruction(instruction::LOADBYTE, makeArgs({arrayName, to_string(index)}), nullopt, storeTarget);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::loadb(string arrayName, string varIndex, string storeTarget) {
+    return addInstruction(instruction::LOADBYTE, makeArgs({arrayName, varIndex}), nullopt, storeTarget);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::loadw(string arrayName, string varIndex, string storeTarget) {
+    return addInstruction(instruction::LOADWORD, makeArgs({arrayName, varIndex}), nullopt, storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::jump(string targetLabel) {
@@ -206,6 +230,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::markStart() {
 
 ZAssemblyGenerator &ZAssemblyGenerator::call_vs(string routineName, optional<string> args, string storeTarget) {
     return addInstruction(instruction::CALL_VS, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, storeTarget);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::call_vn(string routineName, optional<string> args) {
+    return addInstruction(instruction::CALL_VN, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::call_1n(string routineName) {

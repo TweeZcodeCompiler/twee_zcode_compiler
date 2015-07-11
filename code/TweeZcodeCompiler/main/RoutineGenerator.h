@@ -120,6 +120,8 @@ public:
 
     void callVS(std::vector<std::unique_ptr<ZParam>> params);
 
+    void callVN(std::vector<std::unique_ptr<ZParam>> params);
+
     void store(std::vector<std::unique_ptr<ZParam>> params);
 
     void load(std::vector<std::unique_ptr<ZParam>> params);
@@ -188,7 +190,8 @@ public:
                 PRINT_CHAR = 229,
         //Opcode: 1OP:143 F 5 call_1n routine
                 CALL_1N = 143,
-        CALL_VS = 224,
+                CALL_VS = 224,
+                CALL_VN = 249,
         // Print new line
                 NEW_LINE = 187,
         // Opcodes for jump instructions

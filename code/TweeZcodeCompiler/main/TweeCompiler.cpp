@@ -46,11 +46,13 @@ using namespace std::experimental;
 
 static const string GLOB_PASSAGE = "PASSAGE_PTR",
         GLOB_PASSAGES_COUNT = "PASSAGES_COUNT",
+        GLOB_TURNS_COUNT = "TURNS",
         LABEL_MAIN_LOOP = "MAIN_LOOP",
         ROUTINE_MAIN = "main",
         GLOBAL_USER_INPUT = "USER_INPUT",
         TABLE_LINKED_PASSAGES = "LINKED_PASSAGES",
         TABLE_USERINPUT_LOOKUP = "USERINPUT_LOOKUP",
+        TABLE_VISITED_PASSAGE_COUNT = "VISITED_PASSAGE_COUNT",
         ROUTINE_PASSAGE_BY_ID = "passage_by_id",
         ROUTINE_NAME_FOR_PASSAGE = "print_name_for_passage",
         ROUTINE_DISPLAY_LINKS = "display_links",
@@ -62,7 +64,9 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         TEXT_FORMAT_BOLD = "BOLD",
         TEXT_FORMAT_REVERSE_VIDEO = "REVERSED_VIDEO",
         TEXT_FORMAT_FIXED_PITCH = "FIXED_PITCH",
-        START_PASSAGE_NAME = "Start";
+        START_PASSAGE_NAME = "Start",
+        GLOB_PREVIOUS_PASSAGE_ID = "PREVIOUS_PASSAGE_ID",
+        GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -107,40 +111,44 @@ string makeIfEndLabel(const IfContext &context) {
 
 string makeUserInputRoutine() {
     return ".FUNCT display_links i, selectcount\n"
-            "loop_start:\n"
-            "loadb LINKED_PASSAGES i -> sp\n"
-            "jz sp ?passage_not_set\n"
-            "storeb USERINPUT_LOOKUP selectcount i\n"
-            "add selectcount 1 -> sp\n"
-            "add selectcount 49 -> sp\n"
-            "print_char sp\n"
-            "print \": \"\n"
-            "call_vs print_name_for_passage i -> sp\n"
-            "new_line\n"
-            "add selectcount 1 -> selectcount\n"
+            "   loop_start:\n"
+            "   loadb LINKED_PASSAGES i -> sp\n"
+            "   jz sp ?passage_not_set\n"
+            "   storeb USERINPUT_LOOKUP selectcount i\n"
+            "   add selectcount 1 -> sp\n"
+            "   add selectcount 49 -> sp\n"
+            "   print_char sp\n"
+            "   print \": \"\n"
+            "   call_vs print_name_for_passage i -> sp\n"
+            "   new_line\n"
+            "   add selectcount 1 -> selectcount\n"
             "\n"
-            "passage_not_set:\n"
+            "   passage_not_set:\n"
             "\n"
-            "add i 1 -> i\n"
-            "jl i PASSAGES_COUNT ?loop_start\n"
+            "    add i 1 -> i\n"
+            "    jl i PASSAGES_COUNT ?loop_start\n"
             "\n"
-            "read_char 1 -> USER_INPUT\n"
-            "sub USER_INPUT 48 -> sp\n"
-            "sub sp 1 -> sp\n"
-            "loadb USERINPUT_LOOKUP sp -> sp \n"
+            "    jz selectcount ?~links_available\n"
+            "    ret -1\n"
+            "links_available:\n"
+            "    read_char 1 -> USER_INPUT\n"
+            "    sub USER_INPUT 48 -> sp\n"
+            "    sub sp 1 -> sp\n"
+            "    loadb USERINPUT_LOOKUP sp -> sp \n"
             "\n"
-            "ret sp"
+            "\t add TURNS 1 -> TURNS\n"
+            "   ret sp"
             "\n";
 }
 
 string makeClearTablesRoutine() {
     return ".FUNCT reset_tables i\n"
-            "loop_start:\n"
-            "storeb LINKED_PASSAGES i 0\n"
-            "storeb USERINPUT_LOOKUP i 0\n"
-            "add i 1 -> i\n"
-            "jl i PASSAGES_COUNT ?loop_start\n"
-            "ret 0"
+            "   loop_start:\n"
+            "   storeb LINKED_PASSAGES i 0\n"
+            "   storeb USERINPUT_LOOKUP i 0\n"
+            "   add i 1 -> i\n"
+            "   jl i PASSAGES_COUNT ?loop_start\n"
+            "   ret 0"
             "\n";
 }
 
@@ -172,28 +180,38 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ASSGEN.addByteArray(TABLE_LINKED_PASSAGES, (unsigned) passages.size());
     ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned) passages.size());
 
+    ASSGEN.addWordArray(TABLE_VISITED_PASSAGE_COUNT, (unsigned) passages.size());
 
     // globals
     ASSGEN.addGlobal(GLOB_PASSAGE)
             .addGlobal(GLOBAL_USER_INPUT)
-            .addGlobal(GLOB_PASSAGES_COUNT);
+            .addGlobal(GLOB_PASSAGES_COUNT)
+            .addGlobal(GLOB_PREVIOUS_PASSAGE_ID)
+            .addGlobal(GLOB_CURRENT_PASSAGE_ID)
+            .addGlobal(GLOB_TURNS_COUNT);
 
 
     // main routine
     {
+        static const string LOCAL_NEXT_PASSAGE = "next_passage";
         // call start routine first
-        ASSGEN.addRoutine(ROUTINE_MAIN)
+        ASSGEN.addRoutine(ROUTINE_MAIN, vector<ZRoutineArgument>({ZRoutineArgument(LOCAL_NEXT_PASSAGE)}))
                 .markStart()
                 .store(GLOB_PASSAGES_COUNT, to_string(passages.size()))
+                .store(GLOB_TURNS_COUNT, "1")
+                .store(GLOB_PREVIOUS_PASSAGE_ID, "0")
+                .store(GLOB_CURRENT_PASSAGE_ID, "0")
                 .call_1n(ROUTINE_CLEAR_TABLES)
-                .call_vs(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))), "sp");
+                .call_vn(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))));
 
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
-                .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, "sp")
+                .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, LOCAL_NEXT_PASSAGE)
+                .jumpLower(ASSGEN.makeArgs({LOCAL_NEXT_PASSAGE, "0"}), "end_program")
                 .call_1n(ROUTINE_CLEAR_TABLES)
-                .call_vs(ROUTINE_PASSAGE_BY_ID, string("sp"), "sp")
+                .call_vn(ROUTINE_PASSAGE_BY_ID, LOCAL_NEXT_PASSAGE)
                 .jump(LABEL_MAIN_LOOP);
 
+        ASSGEN.addLabel("end_program");
         ASSGEN.quit();
     }
 
@@ -202,7 +220,17 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // call passage by id routine
     {
         const string idLocal = "id";
-        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal)}));
+        const string passageCount = "passage_count";
+        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal), ZRoutineArgument(passageCount)}))
+                .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
+                .store(GLOB_CURRENT_PASSAGE_ID, idLocal)
+                .add(GLOB_CURRENT_PASSAGE_ID, "1", GLOB_CURRENT_PASSAGE_ID);
+        
+        // update visited array
+        ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
+                .add(passageCount, "1", passageCount)
+                .storew(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount);
+        
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             string passageName = it->getHead().getName();
             unsigned id = passageName2id.at(passageName);
@@ -210,8 +238,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         }
 
         // error case
-        ASSGEN.print("invalid id for passage "); // TODO: print offending argument as soon as print_num is available
-        ASSGEN.quit();
+        ASSGEN.print("invalid id for passage: ")
+                .print_num(idLocal)
+                .quit();
 
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             ASSGEN.addLabel(labelForPassage(*it)).call_vs(routineNameForPassage(*it), nullopt, "sp").ret("0");
@@ -230,8 +259,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         }
 
         // error case
-        ASSGEN.print("invalid id for passage "); // TODO: print offending argument as soon as print_num is available
-        ASSGEN.quit();
+        ASSGEN.print("invalid id for passage: ")
+                .print_num(idLocal)
+                .quit();
 
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             ASSGEN.addLabel(labelForPassage(*it)).print(it->getHead().getName()).ret("0");
@@ -320,15 +350,83 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     }
 }
 
+bool isPreviousMacro(string link) {
+    string previousFunc = "previous()";
+
+    while (link.size() > previousFunc.size() && link.at(0) == ' ') {
+        link = link.substr(1);
+    }
+    while (link.size() > previousFunc.size() && link.at(link.size() - 1) == ' ') {
+        link = link.substr(0, link.size() - 1);
+    }
+
+    return link == previousFunc;
+}
+
 void TweeCompiler::makePassageRoutine(const Passage &passage) {
     auto &bodyParts = passage.getBody().getBodyParts();
 
     // declare passage routine
-    ASSGEN.addRoutine(routineNameForPassage(passage));
+    ASSGEN.addRoutine(routineNameForPassage(passage), {ZRoutineArgument("min")});
 
     ASSGEN.println(string("***** ") + passage.getHead().getName() + string(" *****"));
 
+    //  print passage contents
     for (auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
+        BodyPart *bodyPart = it->get();
+        if (Text *text = dynamic_cast<Text *>(bodyPart)) {
+            ASSGEN.print(text->getContent());
+        } else if (Link *link = dynamic_cast<Link *>(bodyPart)) {
+            // TODO: catch invalid link
+
+            if (isPreviousMacro(link->getTarget())) {
+                ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
+            } else {
+                int id;
+                string target = link->getTarget();
+                try {
+                    id = passageName2id.at(target);
+                } catch(const out_of_range& outOfRange) {
+                    throw TweeDocumentException("invalid link target: " + target);
+                }
+
+                ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
+            }
+        } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
+            ASSGEN.newline();
+        } else if (Display *display = dynamic_cast<Display *>(bodyPart)) {
+            LOG_DEBUG << display->to_string();
+        } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
+            if (Previous *previous = dynamic_cast<Previous *>(print->getExpression().get())) {
+                ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
+            } else {
+                evalExpression(print->getExpression().get());
+                ASSGEN.print_num("sp");
+            }
+        } else if (IfMacro *ifMacro = dynamic_cast<IfMacro *>(bodyPart)) {
+            ifContexts.push(makeNextIfContext());
+            evalExpression(ifMacro->getExpression().get());
+            ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
+        } else if (ElseIfMacro *elseIfMacro = dynamic_cast<ElseIfMacro *>(bodyPart)) {
+            if (ifContexts.empty()) {
+                throw TweeDocumentException("else if macro encountered without preceding if macro");
+            }
+            ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
+            ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
+            ifContexts.top().caseCount++;
+            evalExpression(elseIfMacro->getExpression().get());
+            ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
+        } else if (ElseMacro *elseMacro = dynamic_cast<ElseMacro *>(bodyPart)) {
+            if (ifContexts.empty()) {
+                throw TweeDocumentException("else macro encountered without preceding if macro");
+            }
+            ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
+            ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
+            ifContexts.top().caseCount++;
+        } else if (EndIfMacro *endifMacro = dynamic_cast<EndIfMacro *>(bodyPart)) {
+            if (ifContexts.empty()) {
+                throw TweeDocumentException("endif macro encountered without preceding if macro");
+            }
         //  print passage contents
         BodyPart *bodyPart = it->get();
         if (Text *text = dynamic_cast<Text *>(bodyPart)) {
@@ -394,7 +492,6 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     if (ifContexts.size() > 0) {
         throw TweeDocumentException("unclosed if macro");
     }
-
     ASSGEN.ret("0");
 }
 
@@ -446,10 +543,30 @@ void TweeCompiler::evalExpression(Expression *expression) {
 
     } else if (Visited *visited = dynamic_cast<Visited *>(expression)) {
         LOG_DEBUG << visited->to_string();
-    } else if (Previous *previous = dynamic_cast<Previous *>(expression)) {
-        LOG_DEBUG << previous->to_string();
+        size_t passageCount = visited->getPassageCount();
+        if (passageCount == 0) {
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp");
+        } else if (passageCount == 1) {
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)] + 1), "sp");
+        } else {
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)] + 1), "min");
+
+            for (size_t i = 1; i < passageCount; i++) {
+                string label = "NO_NEW_MIN_FOUND_" + to_string(i);
+                string nextPassageVisitedCount = to_string(passageName2id[visited->getPassage(i)] + 1);
+
+                ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, nextPassageVisitedCount, "sp")
+                        .jumpLess("sp min", "~" + label)
+                        .loadw(TABLE_VISITED_PASSAGE_COUNT, nextPassageVisitedCount, "min")
+                        .addLabel(label);
+            }
+
+            ASSGEN.push("min");
+
+        }
     } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
         LOG_DEBUG << turns->to_string();
+        ASSGEN.load(GLOB_TURNS_COUNT, "sp");
     } else if (Random *random = dynamic_cast<Random *>(expression)) {
         LOG_DEBUG << random->to_string();
         evalExpression(random->getStart().get());

@@ -41,7 +41,11 @@ public:
 
     ZAssemblyGenerator &addByteArray(std::string name, unsigned size);
 
+    ZAssemblyGenerator &addWordArray(std::string name, unsigned size);
+
     ZAssemblyGenerator &call_vs(std::string routineName, std::experimental::optional<std::string> args, std::string storeTarget);
+
+    ZAssemblyGenerator &call_vn(std::string routineName, std::experimental::optional<std::string> args);
 
     ZAssemblyGenerator &call_1n(std::string routineName);
 
@@ -91,11 +95,18 @@ public:
     ZAssemblyGenerator &pop();
 
     ZAssemblyGenerator &variable(std::string variable);
-    ZAssemblyGenerator &store(std::string variableName, int value);
 
     ZAssemblyGenerator &loadb(std::string arrayName, unsigned int index, std::string storeTarget);
 
-    ZAssemblyGenerator &storeb(std::string arrayName, unsigned int index, int value);
+    ZAssemblyGenerator &loadb(std::string arrayName, std::string varIndex, std::string storeTarget);
+
+    ZAssemblyGenerator &loadw(std::string arrayName, std::string varIndex, std::string storeTarget);
+
+    ZAssemblyGenerator &storeb(std::string arrayName, unsigned int index, std::string value);
+
+    ZAssemblyGenerator &storeb(std::string arrayName, std::string var, std::string value);
+
+    ZAssemblyGenerator &storew(std::string arrayName, std::string var, std::string value);
 
     ZAssemblyGenerator &load(std::string source, std::string target);
 
@@ -132,7 +143,6 @@ private:
                                        std::experimental::optional<std::string> storeTarget);
 
     ZAssemblyGenerator &addDirective(std::string directiveName, std::experimental::optional<std::string> args);
-
 };
 
 

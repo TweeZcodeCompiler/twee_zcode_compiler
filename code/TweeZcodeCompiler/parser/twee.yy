@@ -19,7 +19,7 @@
     #include "include/Passage/Body/Text.h"
     #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
-
+    
     #include "include/Passage/Body/Macros/Display.h"
     #include "include/Passage/Body/Macros/Print.h"
     #include "include/Passage/Body/Macros/IfMacro.h"
@@ -33,11 +33,11 @@
     #include "include/Passage/Body/Expressions/UnaryOperation.h"
     #include "include/Passage/Body/Expressions/BinaryOperation.h"
     #include "include/Passage/Body/Expressions/Variable.h"
+    
     #include "include/Passage/Body/Expressions/Turns.h"
     #include "include/Passage/Body/Expressions/Visited.h"
     #include "include/Passage/Body/Expressions/Random.h"
     #include "include/Passage/Body/Expressions/Previous.h"
-
 
     #include <plog/Log.h>
     #include <plog/Appenders/ConsoleAppender.h>
@@ -287,6 +287,7 @@
 %type <expression> expressionTop
 
 %type <visited> visited
+%type <visited> visitedpartl
 %type <turns> turns
 %type <random> random
 
@@ -424,8 +425,43 @@ text :
     $$ = new Text(*$1);
     delete $1;
     }
+    |FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
+    {
+    //TODO:check if F_OPEN and F_CLOSE are the same
+    //TODO:check if anything needs to be deleted here
+    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE: "<< "create top:formatted:type(--Text--) with 2:token:TEXT_TOKEN";
+    $$ = new Text(*$2);
+    delete $1;
+    delete $2;
+    delete $3;
+    }
+    |FORMATTING_OPEN text FORMATTING_CLOSE
+    {
+    //TODO:check if F_OPEN and F_CLOSE are the same
+    //TODO:check if anything needs to be deleted here
+    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN formatted FORMATTING_CLOSE: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
+    delete $1;
+    delete $3;
+    }
+    |FORMATTING TEXT_TOKEN FORMATTING
+    {
+    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
+    LOG_DEBUG << "Parser: formatted -> FORMATTING TEXT_TOKEN FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
+    $$ = new Text(*$2);
+    delete $1;
+    delete $2;
+    delete $3;
+    }
+    |FORMATTING text FORMATTING
+    {
+    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
+    //TODO:check if anything needs to be deleted here
+    LOG_DEBUG << "Parser: formatted -> FORMATTING formatted FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
+    $$ = $2;
+    delete $1;
+    delete $3;
+    }
   ;
-
 
 newline:
     NEWLINE {
@@ -770,21 +806,37 @@ random:
   ;
 
 visited:
-    EXPR_VISITED EXPR_STR EXPR_CLOSE
+    EXPR_VISITED EXPR_CLOSE
     {
-    LOG_DEBUG << "visited -> EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE: create new Visited($2)";
-    $$ = new Visited(*$2);
-    delete $2;
+    LOG_DEBUG << "visited -> EXPR_VISITED EXPR_CLOSE: create new Visited()";
+    $$ = new Visited();
     }
-    |EXPR_VISITED EXPR_CLOSE
+    |visitedpartl EXPR_CLOSE
     {
-    LOG_DEBUG << "visited -> EXPR_VISITED EXPR_OPEN strconst EXPR_CLOSE: create new Visited()";
-    $$ = new Visited("");
+    LOG_DEBUG << "visited -> visitedpartl EXPR_CLOSE: create new Visited()";
+    $$ = $1;
     }
   ;
 
+visitedpartl:
+    EXPR_VISITED EXPR_STR_LIMITER EXPR_STR EXPR_STR_LIMITER
+    {
+    LOG_DEBUG << "visitedpartl -> EXPR_VISITED TEXT_TOKEN: create new Visited(), add passage name";
+    $$ = new Visited();
+    *$$ += *$3;
+    delete $3;
+    }
+    |visitedpartl FUNC_SEPARATOR EXPR_STR_LIMITER EXPR_STR EXPR_STR_LIMITER
+    {
+    LOG_DEBUG << "visitedpartl -> visitedpartl FUNC_SEPARATOR TEXT_TOKEN: add passage name";
+    $$ = $1;
+    *$$ += *$4;
+    delete $4;
+    }
+   ;
+
 turns:
-    EXPR_TURNS EXPR_CLOSE
+    EXPR_TURNS
     {
     LOG_DEBUG << "turns -> EXPR_TURNS EXPR_CLOSE: create $$ = new Turns()";
     $$ = new Turns();
@@ -792,9 +844,9 @@ turns:
   ;
 
 previous:
-    EXPR_PREVIOUS EXPR_CLOSE
+    EXPR_PREVIOUS
     {
-    LOG_DEBUG << "previous -> EXPR_PREVIOUS EXPR_CLOSE: create new Previous()";
+    LOG_DEBUG << "previous -> EXPR_PREVIOUS: create new Previous()";
     $$ = new Previous();
     }
   ;
