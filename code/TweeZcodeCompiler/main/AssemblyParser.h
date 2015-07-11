@@ -152,6 +152,7 @@ public:
                              RoutineGenerator &currentGenerator);
 
     void performStringDirective(std::string basic_string, std::shared_ptr<ZCodeContainer> dynamicMemory);
+
 };
 
 

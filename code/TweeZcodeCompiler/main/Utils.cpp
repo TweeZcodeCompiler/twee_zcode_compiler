@@ -8,7 +8,7 @@
 using std::bitset;
 using std::vector;
 
-std::shared_ptr<ZCodeContainer> Utils::dynamicMemory = std::shared_ptr<ZCodeContainer>(new ZCodeContainer());
+std::shared_ptr<ZCodeContainer> Utils::dynamicMemory = NULL;
 
 void Utils::addTwoBytes(uint16_t val, vector<bitset<8>> &bitvector) {
     bitset<16> shortVal(val);

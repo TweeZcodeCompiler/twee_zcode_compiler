@@ -201,7 +201,7 @@ void AssemblyParser::readAssembly(istream &input, shared_ptr<ZCodeContainer> dyn
                         performByteArrayDirective(line, dynamicMemory);
                     } else if (firstComp.compare(WORDARRAY_DIRECTIVE) == 0) { //wordarray
                         performWordArrayDirective(line, dynamicMemory);
-                    } else {
+                    } else  {
                         cerr << "unknown directive";
                         throw;
                     }
