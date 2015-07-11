@@ -436,7 +436,11 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
             if (ifContexts.empty()) {
                 throw TweeDocumentException("endif macro encountered without preceding if macro");
             }
-        //  print passage contents
+
+            ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
+            ASSGEN.addLabel(makeIfEndLabel(ifContexts.top()));
+
+            ifContexts.pop();
         } else if (SetMacro *op = dynamic_cast<SetMacro *>(bodyPart)) {
             LOG_DEBUG << "generate SetMacro assembly code";
 
