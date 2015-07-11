@@ -34,7 +34,7 @@ void ZCodeRoutine::print(std::vector<std::bitset<8>> &code) {
     ZCodeContainer::print(code);
 }
 
-void ZCodeRoutine::generate1OPInstruction(unsigned int opcode, ZParam &param,std::string name = "UNKNOWN") {
+void ZCodeRoutine::generate1OPInstruction(unsigned int opcode, ZParam &param,std::string showName) {
     vector<bitset<8>> instructions;
     bool paramIsVariable = param.isVariableArgument();
     bool paramIsName = param.isNameParam;
@@ -48,7 +48,7 @@ void ZCodeRoutine::generate1OPInstruction(unsigned int opcode, ZParam &param,std
         //Parameter is directive
         instructions.push_back(opcodeByte);
         std::string name = param.name;
-        this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions)));
+        this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions, showName)));
         this->add(shared_ptr<ZCodeObject>(new ZCodeCallAdress(Utils::dynamicMemory->getOrCreateLabel(name), false)));
         return;
     }
@@ -70,10 +70,10 @@ void ZCodeRoutine::generate1OPInstruction(unsigned int opcode, ZParam &param,std
     } else {
         Utils::addTwoBytes((int16_t) paramValue, instructions);
     }
-    this->add(std::shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions,name)));
+    this->add(std::shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions,showName)));
 }
 
-void ZCodeRoutine::generate2OPInstruction(unsigned int opcode, ZParam &param1, ZParam &param2, std::string name) {
+void ZCodeRoutine::generate2OPInstruction(unsigned int opcode, ZParam &param1, ZParam &param2, std::string showName) {
     bool param1IsVariable = param1.isVariableArgument();
     bool param2IsVariable = param2.isVariableArgument();
     bool param1IsName = param1.isNameParam;
@@ -101,7 +101,7 @@ void ZCodeRoutine::generate2OPInstruction(unsigned int opcode, ZParam &param1, Z
         this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(opcodeByte)));
         parameters.push_back(bitset<8>(param1.getZCodeValue()));
         parameters.push_back(bitset<8>(param2.getZCodeValue()));
-        this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(parameters)));
+        this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(parameters,showName)));
     } else {
         // variable form needed for large constants
         opcodeByte.set(7, true);
@@ -113,7 +113,7 @@ void ZCodeRoutine::generate2OPInstruction(unsigned int opcode, ZParam &param1, Z
         vector<std::unique_ptr<ZParam>> params;
         params.push_back(std::unique_ptr<ZParam>(param1.clone()));
         params.push_back(std::unique_ptr<ZParam>(param2.clone()));
-        this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(opcodeByte)));
+        this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(opcodeByte,showName)));
         generateTypeBitsetAndParameterBitsets(params);
     }
 }
@@ -138,7 +138,8 @@ void ZCodeRoutine::generateTypeBitsetAndParameterBitsets(std::vector<std::unique
             // type variable
             paramTypes.set(i, true);
             paramTypes.set(i - 1, false);
-            instructions.push_back(shared_ptr<ZCodeObject>(new ZCodeInstruction(params.at(param)->getZCodeValue())));
+            uint8_t val = params.at(param)->getZCodeValue();
+            instructions.push_back(shared_ptr<ZCodeObject>(new ZCodeInstruction(val,("Var {"+val+std::string(" }")))));
         } else if (params[param]->isNameParam) {
             //directive
             paramTypes.set(i, false);
@@ -165,14 +166,14 @@ void ZCodeRoutine::generateTypeBitsetAndParameterBitsets(std::vector<std::unique
     }
     vector<bitset<8>> paramTypeVector;
     paramTypeVector.push_back(paramTypes);
-    this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(paramTypeVector)));
+    this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(paramTypeVector, "-"+paramTypes.to_string()+"-")));
     for (shared_ptr<ZCodeObject> obj: instructions) {
         this->add(obj);
     }
     instructions.clear();
 }
 
-void ZCodeRoutine::generateVarOPInstruction(unsigned int opcode,vector<std::unique_ptr<ZParam>> &params, std::string name) {
+void ZCodeRoutine::generateVarOPInstruction(unsigned int opcode,vector<std::unique_ptr<ZParam>> &params, std::string showName) {
 
     bitset<8> opcodeByte = bitset<8>(opcode);
 
@@ -186,7 +187,7 @@ void ZCodeRoutine::generateVarOPInstruction(unsigned int opcode,vector<std::uniq
     // variable form
     opcodeByte.set(7, true);
     opcodeByte.set(6, true);
-    this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(opcodeByte,name)));
+    this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(opcodeByte,showName)));
     generateTypeBitsetAndParameterBitsets(params);
 }
 

@@ -18,7 +18,7 @@ private:
 public:
     void generateTypeBitsetAndParameterBitsets(std::vector<std::unique_ptr<ZParam>> &params);
     void print(std::vector<std::bitset<8>> &code);
-    void generate1OPInstruction(unsigned int opcode, ZParam &param, std::string name);
+    void generate1OPInstruction(unsigned int opcode, ZParam &param, std::string name = "UNKNOWN");
     void generate2OPInstruction(unsigned int opcode, ZParam &param1,ZParam &param2, std::string name = "UNKNOWN");
     void generateVarOPInstruction(unsigned int opcode,std::vector<std::unique_ptr<ZParam>> &params, std::string name = "UNKNOWN");
     void storeAdress(uint8_t adrr);

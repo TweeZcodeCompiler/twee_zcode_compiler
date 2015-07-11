@@ -275,7 +275,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::jumpLowerEquals(string args, string targ
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::quit() {
-    return addInstruction(instruction::QUIT_COMMAND, nullopt, nullopt, nullopt);
+    return this->newline().addInstruction(instruction::QUIT_COMMAND, nullopt, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::random(std::string range, std::string storeTarget) {

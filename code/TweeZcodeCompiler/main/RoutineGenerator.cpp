@@ -270,7 +270,7 @@ bitset<8> RoutineGenerator::numberToBitset(unsigned int number) {
     return bitset<8>(number);
 }
 
-void RoutineGenerator::loadb(std::vector<std::unique_ptr<ZParam>> &params,
+void RoutineGenerator::loadb(std::vector<std::unique_ptr<ZParam>> params,
                              std::shared_ptr<ZCodeContainer> dynamicMemor) {
     debug("loadb");
     checkParamCount(params, 3);
@@ -279,7 +279,7 @@ void RoutineGenerator::loadb(std::vector<std::unique_ptr<ZParam>> &params,
     routine->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(params.at(2)->getZCodeValue(),"store")));
 }
 
-void RoutineGenerator::loadw(std::vector<std::unique_ptr<ZParam>> &params,
+void RoutineGenerator::loadw(std::vector<std::unique_ptr<ZParam>> params,
                              std::shared_ptr<ZCodeContainer> dynamicMemor) {
     debug("loadw");
     checkParamCount(params, 3);

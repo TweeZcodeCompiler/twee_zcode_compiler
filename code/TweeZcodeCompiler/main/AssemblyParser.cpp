@@ -743,26 +743,26 @@ void AssemblyParser::executeSTOREWCOMMAND(const string &command, shared_ptr<ZCod
 
 void AssemblyParser::executeLOADBCOMMAND(const string &command, shared_ptr<ZCodeContainer> dynamicMemory,
                                          RoutineGenerator &currentGenerator) {
-    vector<string> parts = split(command, ASSIGNMENT_OPERATOR);
+    /**vector<string> parts = split(command, ASSIGNMENT_OPERATOR);
     vector<string> sparam = split(parts.at(0), SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
     vector<unique_ptr<ZParam>> params;
     params.push_back(unique_ptr<ZParam>(new ZNameParam(sparam.at(1))));
     params.push_back(createZParam(trim(sparam.at(2), " ")));
     string s = parts.at(1);
-    params.push_back(createZParam(trim(s, " ")));
-    currentGenerator.loadb(params, dynamicMemory);
+    params.push_back(std::unique_ptr<ZStoreParam>(new ZStoreParam(createZParam(trim(s, " ")));**/
+    currentGenerator.loadb(parseArguments(command), dynamicMemory);
 }
 
 void AssemblyParser::executeLOADWCOMMAND(const string &command, shared_ptr<ZCodeContainer> dynamicMemory,
                                          RoutineGenerator &currentGenerator) {
-    vector<string> parts = split(command, ASSIGNMENT_OPERATOR);
+    /**vector<string> parts = split(command, ASSIGNMENT_OPERATOR);
     vector<string> sparam = split(parts.at(0), SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
     vector<unique_ptr<ZParam>> params;
     params.push_back(unique_ptr<ZParam>(new ZNameParam(sparam.at(1))));
     params.push_back(createZParam(trim(sparam.at(2), " ")));
     string s = parts.at(1);
-    params.push_back(createZParam(trim(s, " ")));
-    currentGenerator.loadw(params, dynamicMemory);
+    params.push_back(createZParam(trim(s, " ")));**/
+    currentGenerator.loadw(parseArguments(command), dynamicMemory);
 }
 
 

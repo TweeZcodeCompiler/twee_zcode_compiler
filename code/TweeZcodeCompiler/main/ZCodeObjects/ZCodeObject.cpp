@@ -45,3 +45,11 @@ void ZCodeObject::printMemory() {
         child->printMemory();
     }
 }
+
+void ZCodeObject::checkOffset(std::vector<std::bitset<8>> &code) {
+    LOG_DEBUG << "check "<< this->displayName;
+    if(this->offset != code.size()){
+        LOG_ERROR << this->displayName+" offset is not valide. Expects " << this->offset << " but get " << code.size();
+        exit(1);
+    }
+}
