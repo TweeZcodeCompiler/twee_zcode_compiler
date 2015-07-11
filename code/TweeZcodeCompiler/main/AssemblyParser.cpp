@@ -592,6 +592,9 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::PULL_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new pull";
         routineGenerator.pull(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::RANDOM_COMMAND) == 0) {
+        LOG_DEBUG << ":::::: new random";
+        routineGenerator.random(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label;
