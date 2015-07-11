@@ -19,6 +19,7 @@ struct ZParam {
     std::string name;
     virtual bool isVariableArgument() const = 0;
     virtual ZParamType getParamType() = 0;
+    virtual ZParam* clone() = 0;
 
     uint16_t getZCodeValue() const {
         return valueOrAddress;
@@ -32,6 +33,8 @@ struct ZValueParam : public ZParam {
     ZValueParam(uint16_t value) {
         valueOrAddress = value;
     }
+
+    ZParam* clone() { return new ZValueParam(*this); }
 
     bool isVariableArgument() const { return false; }
 
@@ -47,6 +50,8 @@ struct ZVariableParam : public ZParam {
 
     bool isVariableArgument() const { return true; }
 
+    ZParam* clone() { return new ZVariableParam(*this); }
+
     ZParamType getParamType() {
         return VARIABLE;
     }
@@ -60,6 +65,8 @@ struct ZStoreParam : public ZParam {
 
     bool isVariableArgument() const { return true; }
 
+    ZParam* clone() { return new ZStoreParam(*this); }
+
     ZParamType getParamType() {
         return STORE_ADDRESS;
     }
@@ -72,6 +79,8 @@ struct ZNameParam : public ZParam {
     }
 
     bool isVariableArgument() const { return false; }
+
+    ZParam* clone() { return new ZNameParam(*this); }
 
     ZParamType getParamType() {
         return NAME;

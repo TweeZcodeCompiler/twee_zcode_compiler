@@ -111,8 +111,8 @@ void ZCodeRoutine::generate2OPInstruction(unsigned int opcode, ZParam &param1, Z
         opcodeByte.set(5, false);
 
         vector<std::unique_ptr<ZParam>> params;
-        params.push_back(std::move(std::unique_ptr<ZParam>(&param1)));
-        params.push_back(std::move(std::unique_ptr<ZParam>(&param2)));
+        params.push_back(std::unique_ptr<ZParam>(param1.clone()));
+        params.push_back(std::unique_ptr<ZParam>(param2.clone()));
         this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(opcodeByte)));
         generateTypeBitsetAndParameterBitsets(params);
     }
