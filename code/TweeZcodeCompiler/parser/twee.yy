@@ -802,6 +802,8 @@ random:
     {
     LOG_DEBUG << "random -> EXPR_RANDOM expression expression EXPR_CLOSE: create new Random($2, $4)";
     $$ = new Random($2, $4);
+    delete $2;
+    delete $4;
     }
   ;
 

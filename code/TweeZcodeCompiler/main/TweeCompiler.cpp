@@ -527,36 +527,44 @@ void TweeCompiler::evalExpression(Expression *expression) {
         ASSGEN.load(GLOB_TURNS_COUNT, "sp");
     } else if (Random *random = dynamic_cast<Random *>(expression)) {
         LOG_DEBUG << random->to_string();
+        std::string afterRandom = makeLabels("random").second;
+    // check if a > b, act accordingly
+        labels = makeLabels("randomAGTB");
         evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
-        labels = makeLabels("randomAB");
-        ASSGEN.jumpGreaterEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-        evalExpression(random->getEnd().get());
-        evalExpression(random->getStart().get());
-        ASSGEN.jump(labels.second);
-        ASSGEN.addLabel(labels.first);
+        ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.second);
+    //  a > b
         evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
-        ASSGEN.addLabel(labels.second);
         ASSGEN.add("sp", "1", "sp");
         ASSGEN.sub("sp", "sp", "sp");
         ASSGEN.random("sp", "sp");
-
-        labels = makeLabels("lastCalc");
         evalExpression(random->getStart().get());
-        evalExpression(random->getEnd().get());
-        ASSGEN.jumpLess("sp sp", "~" + labels.first);
-        evalExpression(random->getStart().get());
-
-        ASSGEN.jump(labels.second)
-                .addLabel(labels.first);
-        evalExpression(random->getEnd().get());
-
-        ASSGEN.addLabel(labels.second);
         ASSGEN.sub("sp", "1", "sp");
         ASSGEN.add("sp", "sp", "sp");
+        ASSGEN.jump(afterRandom);
 
+        ASSGEN.addLabel(labels.second);
+    // check if a < b, act accordingly
+        labels = makeLabels("randomALTB");
+        evalExpression(random->getStart().get());
+        evalExpression(random->getEnd().get());
+        ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.second);
+    //  a < b
+        evalExpression(random->getEnd().get());
+        evalExpression(random->getStart().get());
+        ASSGEN.add("sp", "1", "sp");
+        ASSGEN.sub("sp", "sp", "sp");
+        ASSGEN.random("sp", "sp");
+        evalExpression(random->getEnd().get());
+        ASSGEN.sub("sp", "1", "sp");
+        ASSGEN.add("sp", "sp", "sp");
+        ASSGEN.jump(afterRandom);
 
+        ASSGEN.addLabel(labels.second);
+    // a == b, simply return a
+        evalExpression(random->getEnd().get());
+        ASSGEN.addLabel(afterRandom);
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
 
         if (binaryOperation->getOperator() == BinOps::TO) {
