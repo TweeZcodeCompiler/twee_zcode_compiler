@@ -1,0 +1,18 @@
+::Start
+
+Displaying other passage:
+<<display "Passage1">>
+
+<<print visited("Passage1")>>
+
+Linking other passage: [[Passage1]]
+
+::Passage1
+
+This is passage 1!
+
+Linking to another passage: [[Passage2]]
+
+::Passage2
+
+This is passage 2!

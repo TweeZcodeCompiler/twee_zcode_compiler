@@ -394,7 +394,16 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
         } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
             ASSGEN.newline();
         } else if (Display *display = dynamic_cast<Display *>(bodyPart)) {
-            LOG_DEBUG << display->to_string();
+            string targetPassage = display->getPassage();
+            int targetId;
+            try {
+                targetId = passageName2id.at(targetPassage);
+            } catch(const out_of_range& outOfRange) {
+                throw TweeDocumentException(string("display target passage \"") + targetPassage +
+                                                    string("\" does not exist"));
+            }
+
+            ASSGEN.call_vn(ROUTINE_PASSAGE_BY_ID, to_string(targetId));
         } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
             if (Previous *previous = dynamic_cast<Previous *>(print->getExpression().get())) {
                 ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");

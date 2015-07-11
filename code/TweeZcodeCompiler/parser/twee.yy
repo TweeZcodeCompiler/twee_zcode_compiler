@@ -563,11 +563,11 @@ print:
   ;
 
 display:
-    MACRO_OPEN MACRO_DISPLAY EXPR_STR EXPR_CLOSE MACRO_CLOSE
+    MACRO_OPEN MACRO_DISPLAY EXPR_STR_LIMITER EXPR_STR EXPR_STR_LIMITER MACRO_CLOSE
     {
-    LOG_DEBUG << "display -> MACRO_OPEN MACRO_DISPLAY EXPR_OPEN strconst MACRO_CLOSE MACRO_CLOSE: create new Display($4);";
-    $$ = new Display(*$3);
-    delete $3;
+    LOG_DEBUG << "display -> MACRO_OPEN MACRO_DISPLAY EXPR_STR_LIMITER  strconst EXPR_STR_LIMITER MACRO_CLOSE: create new Display($4);";
+    $$ = new Display(*$4);
+    delete $4;
     }
   ;
 
