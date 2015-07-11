@@ -798,10 +798,12 @@ expressionTop:
   ;
 
 random:
-    EXPR_RANDOM expression expression EXPR_CLOSE
+    EXPR_RANDOM expression FUNC_SEPARATOR expression EXPR_CLOSE
     {
-    LOG_DEBUG << "random -> EXPR_RANDOM expression expression EXPR_CLOSE: create new Random($2, $3)";
-    $$ = new Random($2, $3);
+    LOG_DEBUG << "random -> EXPR_RANDOM expression expression EXPR_CLOSE: create new Random($2, $4)";
+    $$ = new Random($2, $4);
+    delete $2;
+    delete $4;
     }
   ;
 
@@ -865,6 +867,11 @@ integer:
     {
     LOG_DEBUG << "intconst-> EXPR_INT: create $$ = new Const<int> ($1)";
     $$ = new Const<int> ($1);
+    }
+    |EXPR_SUB EXPR_INT
+    {
+    LOG_DEBUG << "intconst-> EXPR_SUB EXPR_INT: create $$ = new Const<int> (-1*$2)";
+    $$ = new Const<int> (-$2);
     }
    ;
 
