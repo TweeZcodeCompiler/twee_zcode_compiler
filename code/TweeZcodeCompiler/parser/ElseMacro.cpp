@@ -7,4 +7,6 @@ std::string ElseMacro::to_string() const {
     return "ElseMacro";
 }
 
-void ElseMacro::accept(BodyInspector bodyInspector) { }
+void ElseMacro::accept(AssemblyGeneratorVisitor visitor) {
+    visitor.visit(*this);
+}

@@ -51,7 +51,7 @@ public:
 
     Body& operator+=(BodyPart&);
 
-    void accept(BodyInspector) const;
+    void accept(AssemblyGeneratorVisitor) const;
 
     std::string to_string() const;
 };

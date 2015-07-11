@@ -16,6 +16,6 @@ std::string Display::to_string() const {
     return "Display: " + this->getPassage();
 }
 
-void Display::accept(BodyInspector bodyInspector) const {
-    bodyInspector.visit(*this);
+void Display::accept(AssemblyGeneratorVisitor visitor) const {
+    visitor.visit(*this);
 }

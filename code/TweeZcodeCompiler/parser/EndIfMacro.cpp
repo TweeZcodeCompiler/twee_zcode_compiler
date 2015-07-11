@@ -7,4 +7,6 @@ std::string EndIfMacro::to_string() const {
     return "EndIfMacro";
 }
 
-void EndIfMacro::accept(BodyInspector bodyInspector) { }
+void EndIfMacro::accept(AssemblyGeneratorVisitor visitor) const {
+    visitor.visit(*this);
+}

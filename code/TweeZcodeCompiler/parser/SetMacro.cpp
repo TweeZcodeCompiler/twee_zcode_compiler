@@ -16,6 +16,6 @@ std::string SetMacro::to_string() const {
     return "SetMacro: " + this->getExpression()->to_string();
 }
 
-void SetMacro::accept(BodyInspector bodyInspector) const {
-    bodyInspector.visit(*this);
+void SetMacro::accept(AssemblyGeneratorVisitor visitor) const {
+    visitor.visit(*this);
 }

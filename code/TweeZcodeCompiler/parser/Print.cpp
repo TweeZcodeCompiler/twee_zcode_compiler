@@ -20,6 +20,6 @@ std::string Print::to_string() const {
     return "Print: " + this->expression->to_string();
 }
 
-void Print::accept(BodyInspector bodyInspector) const {
-    bodyInspector.visit(*this);
+void Print::accept(AssemblyGeneratorVisitor visitor) const {
+    visitor.visit(*this);
 }

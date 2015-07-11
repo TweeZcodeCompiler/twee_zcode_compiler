@@ -5,27 +5,52 @@
 #ifndef PROJECT_TWEECOMPILER_H
 #define PROJECT_TWEECOMPILER_H
 
-#include "ITweeCompiler.h"
-#include "ZAssemblyGenerator.h"
+#include <AssemblyGeneratorVisitor.h>
+#include <Passage/Body/Expressions/Expression.h>
+#include <Passage/Body/Expressions/BinaryOperation.h>
+
 #include <map>
 #include <set>
-#include <Passage/Body/Expressions/Expression.h>
 #include <stack>
-#include <Passage/Body/Expressions/BinaryOperation.h>
+
+#include "ITweeCompiler.h"
+#include "ZAssemblyGenerator.h"
 
 struct IfContext {
     unsigned caseCount = 0;
     unsigned number = 0;
 };
 
-class TweeCompiler : public ITweeCompiler {
+class TweeCompiler : public ITweeCompiler, AssemblyGeneratorVisitor {
 public:
-    void compile(TweeFile& tweeDoc, std::ostream& out);
+    void compile(TweeFile &tweeDoc, std::ostream &out);
 
     void evalExpression(Expression *);
-    void evalAssignment(BinaryOperation * expression);
+
+    void evalAssignment(BinaryOperation *expression);
 
     std::pair<std::string, std::string> makeLabels(std::string);
+
+    void visit(Text host) const;
+
+    void visit(Link host) const;
+
+    void visit(Newline host) const;
+
+    void visit(Print host) const;
+
+    void visit(Display host) const;
+
+    void visit(SetMacro host) const;
+
+    void visit(IfMacro host) const;
+
+    void visit(ElseMacro host) const;
+
+    void visit(ElseIfMacro host) const;
+
+    void visit(EndIfMacro host) const;
+
 
 private:
     std::map<std::string, int> passageName2id;

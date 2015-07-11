@@ -4,6 +4,7 @@
 
 #include "Macro.h"
 #include "../Expressions/Expression.h"
+#include "../../../AssemblyGeneratorVisitor.h"
 
 #include <string>
 #include <memory>
@@ -20,7 +21,7 @@ public:
         return new ElseMacro(*this);
     }
 
-    void accept(BodyInspector);
+    void accept(AssemblyGeneratorVisitor);
 
 };
 

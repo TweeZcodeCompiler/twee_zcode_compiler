@@ -33,7 +33,7 @@ public:
         return new ElseIfMacro(*this);
     }
 
-    void accept(BodyInspector);
+    void accept(AssemblyGeneratorVisitor);
 
 };
 

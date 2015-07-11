@@ -30,6 +30,6 @@ std::string Link::to_string() const {
            + std::string("      AltName: ") + this->getAltName();
 }
 
-void Link::accept(BodyInspector bodyInspector) const {
-    bodyInspector.visit(*this);
+void Link::accept(AssemblyGeneratorVisitor visitor) const {
+    visitor.visit(*this);
 }

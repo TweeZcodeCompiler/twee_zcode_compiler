@@ -4,6 +4,7 @@
 
 #include "Macro.h"
 #include "../Expressions/Expression.h"
+#include "../../../AssemblyGeneratorVisitor.h"
 
 #include <string>
 #include <memory>
@@ -31,7 +32,7 @@ public:
         return new SetMacro(*this);
     }
 
-    void accept(BodyInspector) const;
+    void accept(AssemblyGeneratorVisitor) const;
 
 };
 

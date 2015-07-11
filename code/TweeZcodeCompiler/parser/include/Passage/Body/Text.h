@@ -25,7 +25,7 @@ public:
 
     std::string to_string() const;
 
-    void accept(BodyInspector) const;
+    void accept(AssemblyGeneratorVisitor) const;
 
 };
 

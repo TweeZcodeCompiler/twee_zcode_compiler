@@ -18,6 +18,6 @@ std::string Text::to_string() const {
     return "Text: " + this->getContent();
 }
 
-void Text::accept(BodyInspector bodyInspector) const {
-    bodyInspector.visit(*this);
+void Text::accept(AssemblyGeneratorVisitor visitor) const {
+    visitor.visit(*this);
 }

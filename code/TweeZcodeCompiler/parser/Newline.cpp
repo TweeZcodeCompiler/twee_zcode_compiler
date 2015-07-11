@@ -10,6 +10,6 @@ std::string Newline::to_string() const {
     return "Newline: \\n";
 }
 
-void Newline::accept(BodyInspector bodyInspector) const {
-    bodyInspector.visit(*this);
+void Newline::accept(AssemblyGeneratorVisitor visitor) const {
+    visitor.visit(*this);
 }

@@ -14,6 +14,7 @@
 #include <array>
 #include <algorithm>
 
+#include "AssemblyGeneratorVisitor.h"
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
@@ -136,7 +137,7 @@ string makeUserInputRoutine() {
             "    sub sp 1 -> sp\n"
             "    loadb USERINPUT_LOOKUP sp -> sp \n"
             "\n"
-            "\t add TURNS 1 -> TURNS\n"
+            "   add TURNS 1 -> TURNS\n"
             "   ret sp"
             "\n";
 }
@@ -362,6 +363,47 @@ bool isPreviousMacro(string link) {
 
     return link == previousFunc;
 }
+
+void visit(Text host) const {
+
+}
+
+void visit(Link host) const {
+
+}
+
+void visit(Newline host) const {
+
+}
+
+void visit(Print host) const {
+
+}
+
+void visit(Display host) const {
+
+}
+
+void visit(SetMacro host) const {
+
+}
+
+void visit(IfMacro host) const {
+
+}
+
+void visit(ElseMacro host) const {
+
+}
+
+void visit(ElseIfMacro host) const {
+
+}
+
+void visit(EndIfMacro host) const {
+
+}
+
 
 void TweeCompiler::makePassageRoutine(const Passage &passage) {
     auto &bodyParts = passage.getBody().getBodyParts();

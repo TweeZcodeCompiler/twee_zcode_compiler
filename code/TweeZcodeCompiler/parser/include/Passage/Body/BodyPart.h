@@ -6,7 +6,7 @@
 #define BODYPART_H
 
 #include <string>
-#include "../../BodyInspector.h"
+#include "../../AssemblyGenerationVisitor.h"
 
 class BodyPart {
 
@@ -17,7 +17,7 @@ public:
 
     virtual BodyPart *clone() const = 0;
 
-    virtual void accept(BodyInspector) const = 0;
+    virtual void accept(AssemblyGenerationVisitor) const = 0;
 
 };
 
