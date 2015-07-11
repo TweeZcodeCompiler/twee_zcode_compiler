@@ -110,7 +110,7 @@ MACRO_SET               set
 
     /*Expression String and Integer Token*/
 EXPR_STR_LIMITER        \"
-EXPR_STR                [a-zA-Z][a-zA-Z0-9]*
+EXPR_STR                [a-zA-Z ][a-zA-Z0-9 ]*
 EXPR_INT                [0-9]+
 EXPR_TRUE               true
 EXPR_FALSE              false
@@ -162,6 +162,7 @@ EXPR_TO                to|=
 %x BodyMacro
 %x FunctionArgsLink
 %x FunctionArgsBody
+%x String
 
 %%
 
@@ -659,7 +660,7 @@ EXPR_TO                to|=
 
     /* macro display */
 <BodyMacro>{MACRO_DISPLAY}      {
-                                BEGIN(FunctionArgsBody);
+                                //BEGIN(FunctionArgsBody);
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"MACRO_DISPLAY" << " with value " << YYText();
                                 return BisonParser::token::MACRO_DISPLAY;
                                 }
@@ -788,6 +789,23 @@ EXPR_TO                to|=
                                 SAVE_FALSE;
                                 return BisonParser::token::EXPR_FALSE;
                                 }
+
+<BodyMacro>{EXPR_STR_LIMITER}   {
+                                BEGIN(String);
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsBody" << " matched Token " << "EXPR_STR_LIMITER" << " with value " << YYText();
+                                return BisonParser::token::EXPR_STR_LIMITER;
+                                }
+
+<String>{EXPR_STR}              {
+                                    LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsBody" << " matched Token " << "EXPR_STR" << " with value " << YYText();
+                                    SAVE_STRING;
+                                    return BisonParser::token::EXPR_STR;
+                                }
+
+<String>{EXPR_STR_LIMITER} {
+    BEGIN(BodyMacro);
+    return BisonParser::token::EXPR_STR_LIMITER;
+}
 
 <BodyMacro>,                    {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token FUNC_SEPARATOR" << " with value " << YYText();
