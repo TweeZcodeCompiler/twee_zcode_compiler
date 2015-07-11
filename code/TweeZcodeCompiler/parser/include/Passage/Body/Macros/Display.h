@@ -32,6 +32,8 @@ public:
         return new Display(*this);
     }
 
+    void accept(BodyInspector) const;
+
 };
 
 #endif //DISPLAY_H

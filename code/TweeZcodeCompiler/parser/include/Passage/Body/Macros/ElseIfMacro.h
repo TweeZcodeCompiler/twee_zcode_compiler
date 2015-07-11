@@ -33,6 +33,8 @@ public:
         return new ElseIfMacro(*this);
     }
 
+    void accept(BodyInspector);
+
 };
 
 #endif //ELSEIFMACRO_H

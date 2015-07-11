@@ -33,6 +33,8 @@ public:
         return new IfMacro(*this);
     }
 
+    void accept(BodyInspector) const;
+
 };
 
 #endif //IFMACRO_H

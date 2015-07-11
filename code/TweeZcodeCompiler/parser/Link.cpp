@@ -29,3 +29,7 @@ std::string Link::to_string() const {
            + std::string("      Target: ") + this->getTarget() + std::string("\n")
            + std::string("      AltName: ") + this->getAltName();
 }
+
+void Link::accept(BodyInspector bodyInspector) const {
+    bodyInspector.visit(*this);
+}

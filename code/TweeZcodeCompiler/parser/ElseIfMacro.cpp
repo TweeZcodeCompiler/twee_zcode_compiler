@@ -15,3 +15,7 @@ const std::unique_ptr<Expression> &ElseIfMacro::getExpression() const {
 std::string ElseIfMacro::to_string() const {
     return "ElseIfMacro: " + this->getExpression()->to_string();
 }
+
+void ElseIfMacro::accept(BodyInspector bodyInspector) {
+    bodyInspector.visit(*this);
+}

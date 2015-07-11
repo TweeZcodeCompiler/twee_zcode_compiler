@@ -15,3 +15,7 @@ const std::unique_ptr<Expression> &IfMacro::getExpression() const {
 std::string IfMacro::to_string() const {
     return "IfMacro: " + this->getExpression()->to_string();
 }
+
+void IfMacro::accept(BodyInspector bodyInspector) const {
+    bodyInspector.visit(*this);
+}

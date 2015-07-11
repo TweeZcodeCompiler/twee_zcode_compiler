@@ -31,6 +31,8 @@ public:
         return new SetMacro(*this);
     }
 
+    void accept(BodyInspector) const;
+
 };
 
 #endif //SETMACRO_H

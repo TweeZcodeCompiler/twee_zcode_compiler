@@ -20,6 +20,8 @@ public:
         return new ElseMacro(*this);
     }
 
+    void accept(BodyInspector);
+
 };
 
 #endif //ELSEMACRO_H

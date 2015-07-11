@@ -34,6 +34,8 @@ public:
         return new Print(*this);
     }
 
+    void accept(BodyInspector) const;
+
 };
 
 

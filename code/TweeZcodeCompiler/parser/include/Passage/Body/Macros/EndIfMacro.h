@@ -20,6 +20,8 @@ public:
         return new EndIfMacro(*this);
     }
 
+    void accept(BodyInspector) const;
+
 };
 
 #endif //ENDIF_H

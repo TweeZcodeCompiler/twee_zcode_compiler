@@ -24,6 +24,9 @@ public:
     std::string getContent() const;
 
     std::string to_string() const;
+
+    void accept(BodyInspector) const;
+
 };
 
 

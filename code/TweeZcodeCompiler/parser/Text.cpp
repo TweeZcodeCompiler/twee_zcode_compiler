@@ -17,3 +17,7 @@ std::string Text::getContent() const {
 std::string Text::to_string() const {
     return "Text: " + this->getContent();
 }
+
+void Text::accept(BodyInspector bodyInspector) const {
+    bodyInspector.visit(*this);
+}

@@ -24,3 +24,8 @@ std::string Body::to_string() const {
 
     return result;
 }
+
+void Body::accept(BodyInspector bodyInspector) const {
+    for (auto iter = bodyparts.begin(); iter != bodyparts.end(); ++iter)
+        (*iter)->accept(bodyInspector);
+}

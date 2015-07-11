@@ -19,6 +19,8 @@ public:
 
     virtual Macro *clone() const = 0;
 
+    virtual void accept(BodyInspector) const = 0;
+
 };
 
 

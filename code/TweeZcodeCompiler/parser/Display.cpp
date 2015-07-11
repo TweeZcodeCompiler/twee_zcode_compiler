@@ -15,3 +15,7 @@ const std::string &Display::getPassage() const {
 std::string Display::to_string() const {
     return "Display: " + this->getPassage();
 }
+
+void Display::accept(BodyInspector bodyInspector) const {
+    bodyInspector.visit(*this);
+}

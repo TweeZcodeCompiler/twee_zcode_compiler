@@ -6,3 +6,5 @@ EndIfMacro::EndIfMacro() {
 std::string EndIfMacro::to_string() const {
     return "EndIfMacro";
 }
+
+void EndIfMacro::accept(BodyInspector bodyInspector) { }
