@@ -866,6 +866,11 @@ integer:
     LOG_DEBUG << "intconst-> EXPR_INT: create $$ = new Const<int> ($1)";
     $$ = new Const<int> ($1);
     }
+    |EXPR_SUB EXPR_INT
+    {
+    LOG_DEBUG << "intconst-> EXPR_SUB EXPR_INT: create $$ = new Const<int> (-1*$2)";
+    $$ = new Const<int> (-$2);
+    }
    ;
 
 boolean:

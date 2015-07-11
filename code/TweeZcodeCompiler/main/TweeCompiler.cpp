@@ -542,6 +542,21 @@ void TweeCompiler::evalExpression(Expression *expression) {
         ASSGEN.sub("sp", "sp", "sp");
         ASSGEN.random("sp", "sp");
 
+        labels = makeLabels("lastCalc");
+        evalExpression(random->getStart().get());
+        evalExpression(random->getEnd().get());
+        ASSGEN.jumpLess("sp sp", "~" + labels.first);
+        evalExpression(random->getStart().get());
+
+        ASSGEN.jump(labels.second)
+                .addLabel(labels.first);
+        evalExpression(random->getEnd().get());
+
+        ASSGEN.addLabel(labels.second);
+        ASSGEN.sub("sp", "1", "sp");
+        ASSGEN.add("sp", "sp", "sp");
+
+
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
 
         if (binaryOperation->getOperator() == BinOps::TO) {
