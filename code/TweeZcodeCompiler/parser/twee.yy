@@ -563,11 +563,11 @@ print:
   ;
 
 display:
-    MACRO_OPEN MACRO_DISPLAY EXPR_STR EXPR_CLOSE MACRO_CLOSE
+    MACRO_OPEN MACRO_DISPLAY EXPR_STR_LIMITER EXPR_STR EXPR_STR_LIMITER MACRO_CLOSE
     {
-    LOG_DEBUG << "display -> MACRO_OPEN MACRO_DISPLAY EXPR_OPEN strconst MACRO_CLOSE MACRO_CLOSE: create new Display($4);";
-    $$ = new Display(*$3);
-    delete $3;
+    LOG_DEBUG << "display -> MACRO_OPEN MACRO_DISPLAY EXPR_STR_LIMITER  strconst EXPR_STR_LIMITER MACRO_CLOSE: create new Display($4);";
+    $$ = new Display(*$4);
+    delete $4;
     }
   ;
 
@@ -798,10 +798,12 @@ expressionTop:
   ;
 
 random:
-    EXPR_RANDOM expression expression EXPR_CLOSE
+    EXPR_RANDOM expression FUNC_SEPARATOR expression EXPR_CLOSE
     {
-    LOG_DEBUG << "random -> EXPR_RANDOM expression expression EXPR_CLOSE: create new Random($2, $3)";
-    $$ = new Random($2, $3);
+    LOG_DEBUG << "random -> EXPR_RANDOM expression expression EXPR_CLOSE: create new Random($2, $4)";
+    $$ = new Random($2, $4);
+    delete $2;
+    delete $4;
     }
   ;
 
@@ -865,6 +867,11 @@ integer:
     {
     LOG_DEBUG << "intconst-> EXPR_INT: create $$ = new Const<int> ($1)";
     $$ = new Const<int> ($1);
+    }
+    |EXPR_SUB EXPR_INT
+    {
+    LOG_DEBUG << "intconst-> EXPR_SUB EXPR_INT: create $$ = new Const<int> (-1*$2)";
+    $$ = new Const<int> (-$2);
     }
    ;
 
