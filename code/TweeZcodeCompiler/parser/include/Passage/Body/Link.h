@@ -6,6 +6,7 @@
 #define LINK_H
 
 #include "BodyPart.h"
+#include "IBodyPartsVisitor.h"
 
 #include <string>
 
@@ -29,6 +30,8 @@ public:
     std::string getAltName() const;
 
     std::string to_string() const;
+
+    void accept(IBodyPartsVisitor&) const;
 
 };
 

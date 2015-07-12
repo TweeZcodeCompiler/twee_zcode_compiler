@@ -20,8 +20,8 @@
     #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
     
-    #include "include/Passage/Body/Macros/Display.h"
-    #include "include/Passage/Body/Macros/Print.h"
+    #include "include/Passage/Body/Macros/DisplayMacro.h"
+    #include "include/Passage/Body/Macros/PrintMacro.h"
     #include "include/Passage/Body/Macros/IfMacro.h"
     #include "include/Passage/Body/Macros/ElseIfMacro.h"
     #include "include/Passage/Body/Macros/ElseMacro.h"
@@ -134,9 +134,9 @@
 	Body *body;
 
 	Macro *macro;
-	Print *print;
+	PrintMacro *printmacro;
 	SetMacro *setmacro;
-	Display *display;
+	DisplayMacro *displaymacro;
 
     Visited *visited;
     Previous *previous;
@@ -271,10 +271,10 @@
 %type <elsemacro> elsemacro
 %type <endifmacro> endifmacro
 
-%type <print> print
+%type <printmacro> printmacro
 %type <setmacro> setmacro
 
-%type <display> display
+%type <displaymacro> displaymacro
 %type <previous> previous
 
 %type <expression> expression
@@ -502,9 +502,9 @@ link :
   ;
 
 macro :
-    print
+    printmacro
     {
-    LOG_DEBUG << "macro -> print: pass print:type(Print) to macro:type(Macro)";
+    LOG_DEBUG << "macro -> printmacro: pass printmacro:type(PrintMacro) to macro:type(Macro)";
     $$ = $1;
     }
     |setmacro
@@ -532,41 +532,41 @@ macro :
     LOG_DEBUG << "macro -> endifmacro: pass endifmacro:type(EndIfMacro) to macro:type(Macro)";
     $$ = $1;
     }
-    |display
+    |displaymacro
     {
-    LOG_DEBUG << "macro -> display: pass display:type(Display) to macro:type(Macro)";
+    LOG_DEBUG << "macro -> displaymacro: pass displaymacro:type(DisplayMacro) to macro:type(Macro)";
     $$ = $1;
     }
   ;
 
-print:
+printmacro:
     MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE
     {
-    LOG_DEBUG << "print -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--Print--) with 3:expression";
-    $$ = new Print($3);
+    LOG_DEBUG << "printmacro -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--PrintMacro--) with 3:expression";
+    $$ = new PrintMacro($3);
     delete $3;
     }
     |
     MACRO_OPEN MACRO_PRINT expressionAssignment MACRO_CLOSE
     {
-    LOG_DEBUG << "print -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--Print--) with 3:expression";
-    $$ = new Print($3);
+    LOG_DEBUG << "printmacro -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--PrintMacro--) with 3:expression";
+    $$ = new PrintMacro($3);
     delete $3;
     }
     |MACRO_OPEN expression MACRO_CLOSE
     {
     //TODO:check if we need error handling here
-    LOG_DEBUG << "print -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
-    $$ = new Print($2);
+    LOG_DEBUG << "printmacro -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--PrintMacro--) with 2:expression";
+    $$ = new PrintMacro($2);
     delete $2;
     }
   ;
 
-display:
+displaymacro:
     MACRO_OPEN MACRO_DISPLAY EXPR_STR_LIMITER EXPR_STR EXPR_STR_LIMITER MACRO_CLOSE
     {
-    LOG_DEBUG << "display -> MACRO_OPEN MACRO_DISPLAY EXPR_STR_LIMITER  strconst EXPR_STR_LIMITER MACRO_CLOSE: create new Display($4);";
-    $$ = new Display(*$4);
+    LOG_DEBUG << "displaymacro -> MACRO_OPEN MACRO_DISPLAY EXPR_STR_LIMITER  strconst EXPR_STR_LIMITER MACRO_CLOSE: create new DisplayMacro($4);";
+    $$ = new DisplayMacro(*$4);
     delete $4;
     }
   ;

@@ -2,6 +2,7 @@
 #define NEWLINE_H
 
 #include "BodyPart.h"
+#include "IBodyPartsVisitor.h"
 
 #include <string>
 
@@ -15,6 +16,8 @@ public:
     Newline();
 
     std::string to_string() const;
+
+    void accept(IBodyPartsVisitor&) const;
 };
 
 
