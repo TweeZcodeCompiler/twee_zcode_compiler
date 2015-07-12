@@ -68,6 +68,10 @@ private:
     static const std::string PUSH_COMMAND;
     static const std::string PULL_COMMAND;
     static const std::string RANDOM_COMMAND;
+    static const std::string READ_MOUSE;
+    static const std::string MOUSE_WINDOW;
+    static const std::string GET_CURSOR;
+    static const std::string SET_CURSOR;
 
 
     unsigned currentLineNumber;

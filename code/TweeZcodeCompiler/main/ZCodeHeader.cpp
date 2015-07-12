@@ -158,21 +158,24 @@ void ZCodeHeader::setAddresses(vector<bitset<8>> &header) {
 void ZCodeHeader::setFlags2(std::vector<std::bitset<8>> &header) {
     // Hex 10 - 15
     for (int i = 0; i < 6; i++) {
-        header.push_back(0);
+        header.push_back(255);
     }
 
-    bitset<8> flags2;                           // Hex 16
-    flags2.set(0, transcripting);
+    bitset<8> flags2(255);                           // Hex 16
+    /*flags2.set(0, transcripting);
     flags2.set(1, forcePrintingInFixedPitchFont);
     flags2.set(2, requestScreenRedraw);
     flags2.set(3, usePictures);
     flags2.set(4, useUndoOpcodes);
     flags2.set(5, useMouse);
     flags2.set(6, useColors);
-    flags2.set(7, useSoundEffects);
+    flags2.set(7, useSoundEffects);*/
     header.push_back(flags2);
 
     flags2.reset();                             // Hex 17
     flags2.set(0, useMenus);
-    header.push_back(flags2);
+    //header.push_back(flags2);
+    header.push_back(255);
+
+
 }

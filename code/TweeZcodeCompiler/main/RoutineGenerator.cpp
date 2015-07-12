@@ -737,6 +737,61 @@ void RoutineGenerator::push(vector<unique_ptr<ZParam>> params) {
     addBitset(instructions);
 }
 
+void RoutineGenerator::mouseWindow(vector<unique_ptr<ZParam>> params) {
+    debug("mouse_window");
+    checkParamCount(params, 1);
+    checkParamType(params, VALUE);
+
+    vector<bitset<8>> instructions = opcodeGenerator.generateExtOPInstruction(MOUSE_WINDOW, params);
+    addBitset(instructions, "mouse_window");
+}
+
+void RoutineGenerator::readMouse(string array, shared_ptr<ZCodeContainer> dynamicMemory) {
+    vector<uint16_t> params;
+    vector<bool> paramIsVariable;
+
+    params.push_back(3000);
+    paramIsVariable.push_back(false);
+
+    vector<bitset<8>> instructions = opcodeGenerator.generateExtOPInstruction(READ_MOUSE, params, paramIsVariable);
+    vector<bitset<8>> instructionsWithoutPlaceholder;
+    for (int i = 0; i < instructions.size() - 2; i++) {
+        instructionsWithoutPlaceholder.push_back(instructions.at(i));
+    }
+    addBitset(instructionsWithoutPlaceholder, "read_mouse");
+
+    auto adress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(dynamicMemory->getOrCreateLabel(array)));
+    routine->add(adress);
+}
+
+void RoutineGenerator::getCursor(string array, shared_ptr<ZCodeContainer> dynamicMemory) {
+    debug("get_cursor");
+
+    vector<uint16_t> params;
+    vector<bool> paramIsVariable;
+
+    params.push_back(3000);
+    paramIsVariable.push_back(false);
+
+    vector<bitset<8>> generated = opcodeGenerator.generateVarOPInstruction(GET_CURSOR, params, paramIsVariable);
+    vector<bitset<8>> vopcode;
+    vopcode.push_back(generated.at(0));
+    vopcode.push_back(generated.at(1));
+    auto opcode = shared_ptr<ZCodeObject>(new ZCodeInstruction(vopcode, "get_cursor"));
+    routine->add(opcode);
+    auto adress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(dynamicMemory->getOrCreateLabel(array)));
+    routine->add(adress);
+}
+
+void RoutineGenerator::setCursor(vector<unique_ptr<ZParam>> params) {
+    debug("set_cursor");
+    checkParamCount(params, 2);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+
+    vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(SET_CURSOR, params);
+    addBitset(instructions, "set_cursor");
+}
+
 void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
     typedef map<size_t, string>::iterator it_type;
     for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {

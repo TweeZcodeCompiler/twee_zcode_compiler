@@ -40,8 +40,8 @@ public:
     // Flags 1 in Hex position 1 to 3
     bool colAvail = false;
     bool picDisplayAvail = false;
-    bool boldfaceAvail = false;
-    bool italicAvail = false;
+    bool boldfaceAvail = true;
+    bool italicAvail = true;
     bool fixedSpaceStyleAvail = false;
     bool soundEffectsAvail = false;
     bool timedKeyboardAvail = false;

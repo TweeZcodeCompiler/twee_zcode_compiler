@@ -178,6 +178,13 @@ public:
 
     void push(std::vector<std::unique_ptr<ZParam>> params);
 
+    void mouseWindow(std::vector<std::unique_ptr<ZParam>> params);
+
+    void readMouse(std::string array, std::shared_ptr<ZCodeContainer> dynamicMemory);
+
+    void getCursor(std::string array, std::shared_ptr<ZCodeContainer> dynamicMemory);
+
+    void setCursor(std::vector<std::unique_ptr<ZParam>> params);
 
     /*
      *      Enumerations
@@ -260,6 +267,10 @@ public:
                 PULL = 233,
         //VAR:231 7 random range -> (result)
                 RANDOM = 231,
+        //OPCODE: store cursor position in array
+                GET_CURSOR = 240,
+        //OPCODE: set cursor position
+                SET_CURSOR = 239
 
 
         /*
@@ -270,6 +281,11 @@ public:
          * catch -> (result), show_status, piracy ?(label)
          */
     };
+
+    enum ExtendedOpcode : unsigned int {
+                MOUSE_WINDOW = 23,
+                READ_MOUSE = 22
+    }
 
     enum BranchOffset {
         // Offset placeholder used for unconditional jumps

@@ -64,6 +64,10 @@ const string AssemblyParser::LOADW_COMMAND = "loadw";
 const string AssemblyParser::PUSH_COMMAND = "push";
 const string AssemblyParser::PULL_COMMAND = "pull";
 const string AssemblyParser::RANDOM_COMMAND = "random";
+const string AssemblyParser::READ_MOUSE = "read_mouse";
+const string AssemblyParser::MOUSE_WINDOW = "mouse_window";
+const string AssemblyParser::GET_CURSOR = "get_cursor";
+const string AssemblyParser::SET_CURSOR = "set_cursor";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -617,6 +621,19 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::RANDOM_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new random";
         routineGenerator.random(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::READ_MOUSE) == 0) {
+        LOG_DEBUG << ":::::: new read_mouse";
+        routineGenerator.readMouse("HeaderExtTable", dynamicMemory);
+    } else if (commandPart.compare(AssemblyParser::MOUSE_WINDOW) == 0) {
+        LOG_DEBUG << ":::::: new mouse_window";
+        routineGenerator.mouseWindow(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::GET_CURSOR) == 0) {
+        LOG_DEBUG << ":::::: new get_cursor";
+        vector<string> params = split(command, SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
+        routineGenerator.getCursor(params.at(1), dynamicMemory);
+    } else if (commandPart.compare(AssemblyParser::SET_CURSOR) == 0) {
+        LOG_DEBUG << ":::::: new set_cursor";
+        routineGenerator.setCursor(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label;

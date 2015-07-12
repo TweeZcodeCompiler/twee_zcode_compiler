@@ -75,7 +75,11 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
 
     vector<bitset<8>> headerExtensionTableCode;
     headerExtensionTableCode.push_back(0);
-    headerExtensionTableCode.push_back(2);
+    headerExtensionTableCode.push_back(4);
+    headerExtensionTableCode.push_back(0);
+    headerExtensionTableCode.push_back(0);
+    headerExtensionTableCode.push_back(0);
+    headerExtensionTableCode.push_back(0);
     headerExtensionTableCode.push_back(0);
     headerExtensionTableCode.push_back(0);
     headerExtensionTableCode.push_back(0);
