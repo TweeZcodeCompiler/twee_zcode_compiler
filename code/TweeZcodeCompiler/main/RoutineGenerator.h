@@ -71,8 +71,6 @@ public:
      *      methods to handle call routine offsets:
      */
 
-    static void resolveCallInstructions(std::vector<std::bitset<8>> &zCode);
-
     static std::map<size_t, std::string> callTo;    //keys = offset of call, value = name of routine
 
     /*
