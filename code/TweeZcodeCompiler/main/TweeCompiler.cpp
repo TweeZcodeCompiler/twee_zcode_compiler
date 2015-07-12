@@ -136,11 +136,10 @@ string makeUserInputRoutine() {
             "    jz selectcount ?~links_available\n"
             "    ret -1\n"
             "links_available:\n"
-            "    call_1n mouseClick\n"
-            "    call_1n afterMouseClick\n"
-            "    read_char 1 -> USER_INPUT\n"
-            "    sub USER_INPUT 48 -> sp\n"
-            "    sub sp 1 -> sp\n"
+            "    call_vs mouseClick selectcount -> sp\n"
+           // "    read_char 1 -> USER_INPUT\n"
+           // "    sub USER_INPUT 48 -> sp\n"
+           // "    sub sp 1 -> sp\n"
             "    loadb USERINPUT_LOOKUP sp -> sp \n"
             "\n"
             "\t add TURNS 1 -> TURNS\n"
@@ -281,8 +280,11 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // mouse control routines
     {
         string varKey = "key", varYCursor = "yCursor", varXCursor = "xCursor", varYLineClick = "yMouseLineClick", varYMouse = "yMouse", varXMouse = "xMouse", fontSize = "fontSize";
+        string varSelectableLinks = "selectableLinks";
+        string varFirstLinkLine = "firstLinkLine";
 
         vector<ZRoutineArgument> args;
+        args.push_back(ZRoutineArgument(varSelectableLinks));   // needs to be set by call command
         args.push_back(ZRoutineArgument(varKey));
         args.push_back(ZRoutineArgument(varYCursor));
         args.push_back(ZRoutineArgument(varYMouse));
@@ -290,14 +292,17 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         args.push_back(ZRoutineArgument(varYLineClick));
         args.push_back(ZRoutineArgument(varXMouse));
         args.push_back(ZRoutineArgument(fontSize));
+        args.push_back(ZRoutineArgument(varFirstLinkLine));
         ASSGEN.addRoutine(MOUSE_CLICK_ROUTINE, args);
+
+        ASSGEN.newline()
+                .print("Select an option with your mouse");
 
         ASSGEN.getWindowProperty("1", "13", fontSize)
                 .div(fontSize, "256", fontSize);
 
-        ASSGEN.mouseWindow("-1")
-                .newline()
-                .print("Select an option with your mouse")
+        ASSGEN.addLabel("MOUSE_CLICK_LOOP")
+                .mouseWindow("-1")
                 .read_char(varKey)
                 .mouseWindow("1");
 
@@ -309,33 +314,20 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.div(varYMouse, fontSize, varYLineClick)
                         .add(varYLineClick, "1", varYLineClick);
 
-        ASSGEN.print_num(varYCursor).newline().print_num(varYLineClick);
-        ASSGEN.read_char(varKey);
+        ASSGEN.push(varYCursor)
+                .sub("sp", "2", "sp")
+                .jumpGreater(varYLineClick + " sp", "MOUSE_CLICK_LOOP");
 
-        /*ASSGEN.setCursor(varYMouse, varXMouse)
-                .setCursor("-2", "0")
-                .setCursor("20", "1")
-                .print("YOYOYO")
-                .read_char(varKey)
-                .getCursor(TABLE_CURSOR_TO_MOUSE_CLICK)
-                .loadw(TABLE_CURSOR_TO_MOUSE_CLICK, "0", varYLineClick);
-        ASSGEN.setCursor(varYCursor, varXCursor)
-                .print("varYMouse: ").print_num(varYMouse).newline()
-                .print("varXMouse: ").print_num(varXMouse).newline()
-                .print("varYCursor: ").print_num(varYCursor).newline()
-                .print("varXCursor: ").print_num(varXCursor).newline()
-                .print("varYLineClick: ").print_num(varYLineClick).newline()
-                .read_char(varKey);
+        ASSGEN.push(varYCursor)
+                .sub("sp", "1", "sp")
+                .sub("sp", varSelectableLinks, "sp")
+                .store(varFirstLinkLine, "sp")
+                .jumpLess(varYLineClick + " " + varFirstLinkLine, "MOUSE_CLICK_LOOP");
 
+        ASSGEN.push(varYLineClick)
+                .sub("sp", varFirstLinkLine, "sp");
 
-        ASSGEN.addRoutine(AFTER_MOUSE_CLICK_ROUTINE, {ZRoutineArgument(varYCursor), ZRoutineArgument(varYMouse)});
-
-        ASSGEN.loadb(TABLE_CURSOR, "1", varYMouse)
-                .loadb(TABLE_CURSOR, "2", varYCursor)
-                .print_num(varYMouse)
-                .newline()
-                .print_num(varYCursor)
-                .setCursor(varYMouse, varYCursor);*/
+        ASSGEN.ret("sp");
     }
 
     // print appropriate text formatting args
