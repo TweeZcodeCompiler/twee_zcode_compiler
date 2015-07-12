@@ -29,6 +29,8 @@ public:
 
     static void insertPaddingToNextRoutine(std::vector<std::bitset<8>> &bitsets, size_t routineOffset);
 
+    static std::string getMallocLib();
+
     template<typename T>
     static bool contains(std::set<T> set, T elem) {
         return (std::find(set.begin(), set.end(), elem) != set.end());

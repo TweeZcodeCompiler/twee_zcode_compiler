@@ -10,6 +10,7 @@
 ;	3:	bool
 ;	4:	string
 ;	5:	concatinated types
+;	255:	EOM(End Of Memory)
 
 ;--------------------------------------------------------------------
 ;function sys_malloc(mem, size):
@@ -17,8 +18,7 @@
 ;	size:	size of the memory to allociate
 ;	return:	byte adress of the begin of the free memory
 
-.FUNCT sys_malloc mem, size, currentPointer, currentSize, lastPointer
-	
+.FUNCT sys_malloc mem, size, currentPointer, currentSize, lastPointer, help
 	; initial set currentPointer = lastPointer = mem
 	; all pointers points to the begin of the memory space
 	; size will be calculated with the 3 byte of storeage information
@@ -30,29 +30,35 @@
 	;increment the currentPointer until currentSize == size
 	;or found allready allociated memory
 SEARCH:
-	loadb currentPointer 0 -> sp
-	je sp 0 ?FREE_MEM
+	loadb currentPointer 0 -> help
+	je help 0 ?FREE_MEM
+	je help 255 ?EOM
 	;jump over the allociated memory
-	inc currentPointer
+	add currentPointer 1 -> currentPointer
 	loadw currentPointer 0 -> sp
 	add currentPointer sp -> currentPointer
-	dec currentPointer
-	store lastPointer
+	sub currentPointer 1 -> currentPointer
+	store lastPointer currentPointer
 	store currentSize 0
 	jump ?SEARCH
 FREE_MEM:
-	inc current Size
-	inc currentPointer
+	add currentSize 1 -> currentSize
+	add currentPointer 1 -> currentPointer
 	je currentSize size ?FOUND
 	jump ?SEARCH
 	
 	;if the algorithm found a free memory, it will be allociated
 FOUND:
 	storeb lastPointer 0 1
-	inc lastPointer
+	add lastPointer 1 -> lastPointer
 	storew lastPointer 0 size
 	add lastPointer 2 -> lastPointer
 	ret lastPointer
+EOM:	
+	new_line
+	print "ERROR: running out of memory :("
+	new_line
+	quit	
 	
 ;--------------------------------------------------------------------
 ;function sys_free(pointer)
@@ -63,15 +69,15 @@ FOUND:
 	;calculate the size of the pice of memory
 	sub pointer 2 -> pointer
 	loadw pointer 0 -> size
-	dec pointer
+	sub pointer 1 -> pointer
 	store i 0
 	
 	;fill with 0
 FREE:
 	je i size ?FINISH
 	storeb pointer 0 0
-	inc pointer
-	inc i
+	add pointer 1 -> pointer
+	add i 1 -> i
 	jump ?FREE
 FINISH:
 	rtrue
@@ -155,30 +161,30 @@ FINISH:
 	je type 3 ?BOOL
 	je type 4 ?STRING
 	je type 5 ?CONCAT
-	ret
+	rtrue
 	
 NUMBER:
 	loadw pointer 0 -> sp
 	print_num sp
-	ret
+	rtrue
 	
 BOOL:
 	loadb pointer 0 -> sp
 	je sp 0 ?FALSE
 	print "true"
-	ret
+	rtrue
 	FALSE:
 	print "false"
-	ret
+	rtrue
 	
 STRING:
 	loadw pointer 0 -> sp
 	print_addr sp
-	ret
+	rtrue
 
 CONCAT:
 	loadw pointer 1 -> sp
 	loadw pointer 0 -> sp
-	call sys_print sp
-	call sys_print sp
-	ret 
+	call_vn sys_print sp
+	call_vn sys_print sp
+	rtrue 
