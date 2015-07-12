@@ -23,7 +23,7 @@ void ZCodeObject::setSize(size_t size) {
         return;
     }
     this->size = size;
-    LOG_DEBUG << "size of '"<< displayName<<"' is set to "<< this->size;
+//    LOG_DEBUG << "size of '"<< displayName<<"' is set to "<< this->size;
 }
 
 size_t ZCodeObject::getSize() {
@@ -43,5 +43,13 @@ void ZCodeObject::printMemory() {
     for(size_t i = 0; i < children.size(); i++){
         std::shared_ptr<ZCodeObject> child = children.at(i);
         child->printMemory();
+    }
+}
+
+void ZCodeObject::checkOffset(std::vector<std::bitset<8>> &code) {
+    LOG_DEBUG << "check "<< this->displayName;
+    if(this->offset != code.size()){
+        LOG_ERROR << this->displayName+" offset is not valide. Expects " << this->offset << " but get " << code.size();
+        exit(1);
     }
 }

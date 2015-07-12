@@ -25,8 +25,9 @@ private:
 public:
     std::vector<std::bitset<8>> convertStringToZSCII(std::string source);
 
-
     void appendZSCII(std::vector<std::bitset<5>> &vector, int value);
+
+    std::vector<std::bitset<8>> printZSCIICharacters(std::string source);
 };
 
 

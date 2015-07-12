@@ -309,3 +309,11 @@ void ZCodeConverter::appendZSCII(std::vector<std::bitset<5>> &zcode, int asciiVa
     zcode.push_back(topByte);
     zcode.push_back(bottomByte);
 }
+
+std::vector<std::bitset<8>> ZCodeConverter::printZSCIICharacters(std::string source) {
+    vector<bitset<5>> result;
+    for(size_t i = 0; i < source.size(); i++){
+        appendZSCII(result,source.at(i));
+    }
+    return convert5BitTo8Bit(result);
+}
