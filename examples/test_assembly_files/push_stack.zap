@@ -1,6 +1,6 @@
 .WORDARRAY MYSTACK [1024]
 .FUNCT main
-storew MYSTACK 0 1024
+storew MYSTACK 0 1022
 push_stack 1 MYSTACK ?success
 loadw MYSTACK 0 -> sp
 print_num sp
@@ -12,4 +12,5 @@ success:
 print "success!"
 loadw MYSTACK 0 -> sp
 print_num sp
+new_line
 quit

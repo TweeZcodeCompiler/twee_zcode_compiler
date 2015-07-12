@@ -152,39 +152,6 @@ vector<bitset<8>> OpcodeParameterGenerator::generateVarOPInstruction(unsigned in
     return instructions;
 }
 
-vector<bitset<8>> OpcodeParameterGenerator::generateExtOPInstruction(unsigned int opcode,
-                                                                     const vector<unique_ptr<ZParam>> &params) {
-    vector<uint16_t> paramValues;
-    vector<bool> paramIsVariable;
-
-    for (vector<unique_ptr<ZParam>>::const_iterator param = params.begin(); param != params.end(); ++param) {
-        paramValues.push_back((*param)->getZCodeValue());
-        paramIsVariable.push_back((*param)->isVariableArgument());
-    }
-
-    return generateExtOPInstruction(opcode, paramValues, paramIsVariable);
-}
-
-vector<bitset<8>> OpcodeParameterGenerator::generateExtOPInstruction(unsigned int opcode, vector<uint16_t> params,
-                                                                     vector<bool> paramIsVariable)
-{
-    bitset<8> extOpcodeByte(EXT_OPCODE);
-    bitset<8> opcodeByte(opcode);
-
-    vector<bitset<8>> parameters = generateTypeBitsetAndParameterBitsets(params, paramIsVariable);
-
-    vector<bitset<8>> instructions;
-
-    instructions.push_back(extOpcodeByte);
-    instructions.push_back(opcodeByte);
-
-    for(auto bitset : parameters) {
-       instructions.push_back(bitset);
-    }
-
-    return instructions;
-}
-
 
 
 vector<bitset<8>> OpcodeParameterGenerator::generateTypeBitsetAndParameterBitsets(vector<uint16_t> params,

@@ -194,3 +194,11 @@ void ZCodeRoutine::generateVarOPInstruction(unsigned int opcode,vector<std::uniq
 void ZCodeRoutine::storeAdress(uint8_t addr) {
     this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(addr,"store adress: "+addr)));
 }
+
+
+void ZCodeRoutine::generateExtOPInstruction(unsigned int opcode, vector<std::unique_ptr<ZParam>> &params, std::string showName)
+{
+    this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(190,"EXT")));
+    this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(opcode,showName)));
+    generateTypeBitsetAndParameterBitsets(params);
+}
