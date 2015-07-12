@@ -172,19 +172,21 @@ public:
 
     void loadw(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
-    void storeb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void storeb(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
-    void storew(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void storew(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
     void outputStream(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemory);
 
     void push(std::vector<std::unique_ptr<ZParam>> params);
 
-    void point(std::vector<std::unique_ptr<ZParam>> params,std::shared_ptr<ZCodeContainer> &dynamicMemory);
+    void inc(std::vector<std::unique_ptr<ZParam>> params);
 
     void pushStack(std::vector<std::unique_ptr<ZParam>> params);
 
     void popStack(std::vector<std::unique_ptr<ZParam>> params);
+
+    void dec(std::vector<std::unique_ptr<ZParam>> params);
 
     /*
      *      Enumerations
@@ -267,8 +269,13 @@ public:
                 PULL = 233,
         //VAR:231 7 random range -> (result)
                 RANDOM = 231,
+
         //VAR:243 13 3 output_stream number table
-                OUTPUT_STREAM = 243
+                OUTPUT_STREAM = 243,
+        //1OP:133 5 inc (variable)
+                INC = 133,
+        //1OP:134 6 dec (variable)
+                DEC = 134
 
 
         /*

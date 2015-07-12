@@ -7,6 +7,7 @@
 
 #include "../BodyPart.h"
 #include "../Expressions/Expression.h"
+#include "../IBodyPartsVisitor.h"
 
 #include <string>
 #include <memory>

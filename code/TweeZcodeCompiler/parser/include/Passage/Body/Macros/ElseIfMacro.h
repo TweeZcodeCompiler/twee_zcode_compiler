@@ -4,6 +4,7 @@
 
 #include "Macro.h"
 #include "../Expressions/Expression.h"
+#include "../IBodyPartsVisitor.h"
 
 #include <string>
 #include <memory>
@@ -32,6 +33,8 @@ public:
     virtual ElseIfMacro *clone() const {
         return new ElseIfMacro(*this);
     }
+
+    void accept(IBodyPartsVisitor&) const;
 
 };
 

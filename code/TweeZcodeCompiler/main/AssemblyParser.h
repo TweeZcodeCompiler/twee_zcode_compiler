@@ -72,7 +72,8 @@ private:
     static const std::string PULL_COMMAND;
     static const std::string RANDOM_COMMAND;
     static const std::string OUTPUT_STREAM_COMMAND;
-    static const std::string POINT_COMMAND;
+    static const std::string INC_COMMAND;
+    static const std::string DEC_COMMAND;
 
 
     unsigned currentLineNumber;

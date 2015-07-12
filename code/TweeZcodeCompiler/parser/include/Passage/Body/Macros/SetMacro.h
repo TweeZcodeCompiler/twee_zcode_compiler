@@ -4,6 +4,7 @@
 
 #include "Macro.h"
 #include "../Expressions/Expression.h"
+#include "../IBodyPartsVisitor.h"
 
 #include <string>
 #include <memory>
@@ -30,6 +31,8 @@ public:
     virtual SetMacro *clone() const {
         return new SetMacro(*this);
     }
+
+    void accept(IBodyPartsVisitor&) const;
 
 };
 

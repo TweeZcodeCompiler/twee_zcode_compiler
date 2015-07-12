@@ -3,7 +3,7 @@
 #define ELSEMACRO_H
 
 #include "Macro.h"
-#include "../Expressions/Expression.h"
+#include "../IBodyPartsVisitor.h"
 
 #include <string>
 #include <memory>
@@ -19,6 +19,8 @@ public:
     virtual ElseMacro *clone() const {
         return new ElseMacro(*this);
     }
+
+    void accept(IBodyPartsVisitor&) const;
 
 };
 
