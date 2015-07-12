@@ -40,6 +40,7 @@ namespace instruction {
     INST_TYPE PRINT = "print";
     INST_TYPE READ_CHAR = "read_char";
     INST_TYPE JUMP_GREATER = "jg";
+    INST_TYPE JUMP_Zero = "jz";
     INST_TYPE SET_TEXT_STYLE = "set_text_style";
     INST_TYPE STOREBYTE = "storeb";
     INST_TYPE STOREWORD = "storew";
@@ -271,6 +272,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::jumpLower(string args, string targetLabe
 
 ZAssemblyGenerator &ZAssemblyGenerator::jumpLowerEquals(string args, string targetLabel) {
     return addInstruction(instruction::JG_COMMAND, args, make_pair(targetLabel, true), nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::jumpZero(string args, string targetLabel) {
+    return addInstruction(instruction::JZ_COMMAND, args, make_pair(targetLabel, false), nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::quit() {

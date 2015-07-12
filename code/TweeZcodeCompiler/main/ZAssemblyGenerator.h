@@ -142,6 +142,8 @@ public:
 
     ZAssemblyGenerator &getWindowProperty(std::string window, std::string propertyNumber, std::string target);
 
+    ZAssemblyGenerator &jumpZero(std::string args, std::string targetLabel);
+
 
 private:
     std::ostream &out;

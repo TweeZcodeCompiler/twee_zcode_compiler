@@ -292,6 +292,17 @@ void RoutineGenerator::loadb(std::vector<std::unique_ptr<ZParam>> &params,
     addBitset(instructions, "index and store value");
 }
 
+void RoutineGenerator::loadb(std::vector<std::unique_ptr<ZParam>> &params) {
+    debug("loadb with direct byte address");
+    checkParamCount(params, 3);
+    checkParamType(params, VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+    vector<bitset<8>> generated = opcodeGenerator.generate2OPInstruction(LOADB, params.at(0)->getZCodeValue(), params.at(1)->getZCodeValue(),
+                                                                         params.at(0)->isVariableArgument(), params.at(1)->isVariableArgument());
+
+    generated.push_back(numberToBitset(params.at(2)->getZCodeValue()));
+    addBitset(generated, "loadb with direct byte address");
+}
+
 void RoutineGenerator::loadw(std::vector<std::unique_ptr<ZParam>> &params,
                              std::shared_ptr<ZCodeContainer> dynamicMemor) {
     debug("loadw");

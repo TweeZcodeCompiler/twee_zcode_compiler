@@ -68,10 +68,11 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         GLOB_PREVIOUS_PASSAGE_ID = "PREVIOUS_PASSAGE_ID",
         GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID",
         MOUSE_CLICK_ROUTINE = "mouseClick",
-        AFTER_MOUSE_CLICK_ROUTINE = "afterMouseClick",
         TABLE_CURSOR = "TABLE_CURSOR",
         TABLE_CURSOR_TO_MOUSE_CLICK = "TABLE_CURSOR_TO_MOUSE_CLICK",
-        TABLE_MOUSE = "TABLE_MOUSE";
+        TABLE_MOUSE = "TABLE_MOUSE",
+        GLOB_INTERPRETER_SUPPORTS_MOUSE = "INTERPRETER_SUPPORTS_MOUSE",
+        SUPPORTS_MOUSE_ROUTINE = "SUPPORTS_MOUSE_ROUTINE";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -136,10 +137,14 @@ string makeUserInputRoutine() {
             "    jz selectcount ?~links_available\n"
             "    ret -1\n"
             "links_available:\n"
+            "    je INTERPRETER_SUPPORTS_MOUSE 1 ?mouse_supported\n"
+            "    read_char 1 -> USER_INPUT\n"
+            "    sub USER_INPUT 48 -> sp\n"
+            "    sub sp 1 -> sp\n"
+            "    jump ?fetch_userinput_lookup\n"
+            "mouse_supported:\n"
             "    call_vs mouseClick selectcount -> sp\n"
-           // "    read_char 1 -> USER_INPUT\n"
-           // "    sub USER_INPUT 48 -> sp\n"
-           // "    sub sp 1 -> sp\n"
+            "fetch_userinput_lookup:\n"
             "    loadb USERINPUT_LOOKUP sp -> sp \n"
             "\n"
             "\t add TURNS 1 -> TURNS\n"
@@ -197,7 +202,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             .addGlobal(GLOB_PASSAGES_COUNT)
             .addGlobal(GLOB_PREVIOUS_PASSAGE_ID)
             .addGlobal(GLOB_CURRENT_PASSAGE_ID)
-            .addGlobal(GLOB_TURNS_COUNT);
+            .addGlobal(GLOB_TURNS_COUNT)
+            .addGlobal(GLOB_INTERPRETER_SUPPORTS_MOUSE);
 
 
     // main routine
@@ -210,6 +216,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .store(GLOB_TURNS_COUNT, "1")
                 .store(GLOB_PREVIOUS_PASSAGE_ID, "0")
                 .store(GLOB_CURRENT_PASSAGE_ID, "0")
+                .call_1n(SUPPORTS_MOUSE_ROUTINE)
                 .call_1n(ROUTINE_CLEAR_TABLES)
                 .call_vn(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))));
 
@@ -279,18 +286,15 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
     // mouse control routines
     {
-        string varKey = "key", varYCursor = "yCursor", varXCursor = "xCursor", varYLineClick = "yMouseLineClick", varYMouse = "yMouse", varXMouse = "xMouse", fontSize = "fontSize";
-        string varSelectableLinks = "selectableLinks";
-        string varFirstLinkLine = "firstLinkLine";
+        string varKey = "key", varYCursor = "yCursor", varYLineClick = "yMouseLineClick", varYMouse = "yMouse", fontSize = "fontSize";
+        string varSelectableLinks = "selectableLinks", varFirstLinkLine = "firstLinkLine";
 
         vector<ZRoutineArgument> args;
         args.push_back(ZRoutineArgument(varSelectableLinks));   // needs to be set by call command
         args.push_back(ZRoutineArgument(varKey));
         args.push_back(ZRoutineArgument(varYCursor));
         args.push_back(ZRoutineArgument(varYMouse));
-        args.push_back(ZRoutineArgument(varXCursor));
         args.push_back(ZRoutineArgument(varYLineClick));
-        args.push_back(ZRoutineArgument(varXMouse));
         args.push_back(ZRoutineArgument(fontSize));
         args.push_back(ZRoutineArgument(varFirstLinkLine));
         ASSGEN.addRoutine(MOUSE_CLICK_ROUTINE, args);
@@ -328,6 +332,31 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .sub("sp", varFirstLinkLine, "sp");
 
         ASSGEN.ret("sp");
+
+
+        ASSGEN.addRoutine(SUPPORTS_MOUSE_ROUTINE);
+
+
+        ASSGEN.loadb("23", "0", "sp")  // flags in header, bit 5 needs to be true
+                .lor("sp", "11011111", "sp")
+                .jumpZero("sp", "NOT_SUPPORTED");
+
+
+        ASSGEN.loadb("50", "0", "sp")  // revision number first part, needs to be 1
+                .land("sp", "00000001", "sp")
+                .jumpZero("sp", "NOT_SUPPORTED");
+
+
+        ASSGEN.loadb("50", "1", "sp")  // revision number second part, needs to be 1
+                .land("sp", "00000001", "sp")
+                .jumpZero("sp", "NOT_SUPPORTED");
+
+        ASSGEN.store(GLOB_INTERPRETER_SUPPORTS_MOUSE, "1")
+                        .ret("0");
+
+        ASSGEN.addLabel("NOT_SUPPORTED")
+                .store(GLOB_INTERPRETER_SUPPORTS_MOUSE, "0")
+                        .ret("0");
     }
 
     // print appropriate text formatting args

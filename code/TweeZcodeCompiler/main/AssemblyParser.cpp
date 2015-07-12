@@ -779,6 +779,19 @@ void AssemblyParser::executeLOADBCOMMAND(const string &command, shared_ptr<ZCode
     vector<string> parts = split(command, ASSIGNMENT_OPERATOR);
     vector<string> sparam = split(parts.at(0), SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
     vector<unique_ptr<ZParam>> params;
+
+    try {
+        int byteAddress = stoi(sparam.at(1));
+        params.push_back(unique_ptr<ZParam>(new ZValueParam(byteAddress)));
+        params.push_back(createZParam(trim(sparam.at(2), " ")));
+        string s = parts.at(1);
+        params.push_back(createZParam(trim(s, " ")));
+        currentGenerator.loadb(params);
+        return;
+    } catch (const invalid_argument &invalidArgument) {
+
+    }
+
     params.push_back(unique_ptr<ZParam>(new ZNameParam(sparam.at(1))));
     params.push_back(createZParam(trim(sparam.at(2), " ")));
     string s = parts.at(1);

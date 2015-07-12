@@ -188,6 +188,8 @@ public:
 
     void getWindowProperty(std::vector<std::unique_ptr<ZParam>> params);
 
+    void loadb(std::vector<std::unique_ptr<ZParam>> &params);
+
     /*
      *      Enumerations
      */
