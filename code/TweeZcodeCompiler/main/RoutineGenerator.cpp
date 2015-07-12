@@ -797,8 +797,15 @@ void RoutineGenerator::getWindowProperty(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
 
+    vector<bitset<8>> target;
+    target.push_back(bitset<8>((*move(params.at(2))).getZCodeValue()));
+    params.erase(params.end() - 1);
+
     vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(GET_WINDOW_PROPERTY, params);
     addBitset(generated, "get_window_property");
+
+    auto targetObject = shared_ptr<ZCodeObject>(new ZCodeInstruction(target, "get_cursor"));
+    routine->add(targetObject);
 }
 
 void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {

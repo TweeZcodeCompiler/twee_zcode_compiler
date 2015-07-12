@@ -280,7 +280,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
     // mouse control routines
     {
-        string varKey = "key", varYCursor = "yCursor", varXCursor = "xCursor", varYLineClick = "yMouseLineClick", varYMouse = "yMouse", varXMouse = "xMouse";
+        string varKey = "key", varYCursor = "yCursor", varXCursor = "xCursor", varYLineClick = "yMouseLineClick", varYMouse = "yMouse", varXMouse = "xMouse", fontSize = "fontSize";
 
         vector<ZRoutineArgument> args;
         args.push_back(ZRoutineArgument(varKey));
@@ -289,27 +289,30 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         args.push_back(ZRoutineArgument(varXCursor));
         args.push_back(ZRoutineArgument(varYLineClick));
         args.push_back(ZRoutineArgument(varXMouse));
+        args.push_back(ZRoutineArgument(fontSize));
         ASSGEN.addRoutine(MOUSE_CLICK_ROUTINE, args);
 
+        ASSGEN.getWindowProperty("1", "13", fontSize)
+                .div(fontSize, "256", fontSize);
+
         ASSGEN.mouseWindow("-1")
-                .getCursor(TABLE_CURSOR)
-                .loadw(TABLE_CURSOR, "0", varYCursor)
-                .print_num(varYCursor)
-                .newline()
-                .newline()
                 .newline()
                 .print("Select an option with your mouse")
                 .read_char(varKey)
-                .print("test")
                 .mouseWindow("1");
 
         ASSGEN.readMouse(TABLE_MOUSE)
                 .loadw(TABLE_MOUSE, "0", varYMouse)
-                .loadw(TABLE_MOUSE, "1", varXMouse)
                 .getCursor(TABLE_CURSOR)
-                .loadw(TABLE_CURSOR, "0", varYCursor)
-                .loadw(TABLE_CURSOR, "1", varXCursor);
-        ASSGEN.setCursor(varYMouse, varXMouse)
+                .loadw(TABLE_CURSOR, "0", varYCursor);
+
+        ASSGEN.div(varYMouse, fontSize, varYLineClick)
+                        .add(varYLineClick, "1", varYLineClick);
+
+        ASSGEN.print_num(varYCursor).newline().print_num(varYLineClick);
+        ASSGEN.read_char(varKey);
+
+        /*ASSGEN.setCursor(varYMouse, varXMouse)
                 .setCursor("-2", "0")
                 .setCursor("20", "1")
                 .print("YOYOYO")
@@ -332,7 +335,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .print_num(varYMouse)
                 .newline()
                 .print_num(varYCursor)
-                .setCursor(varYMouse, varYCursor);
+                .setCursor(varYMouse, varYCursor);*/
     }
 
     // print appropriate text formatting args
