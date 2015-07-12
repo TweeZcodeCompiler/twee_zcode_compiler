@@ -3,7 +3,7 @@
 #define ENDIF_H
 
 #include "Macro.h"
-#include "../BodyPartsVisitor.h"
+#include "../IBodyPartsVisitor.h"
 
 #include <string>
 #include <memory>
@@ -20,7 +20,7 @@ public:
         return new EndIfMacro(*this);
     }
 
-    void accept(BodyPartsVisitor&);
+    void accept(const IBodyPartsVisitor&);
 
 };
 

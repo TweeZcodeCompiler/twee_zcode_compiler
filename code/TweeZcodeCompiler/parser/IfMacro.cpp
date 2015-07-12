@@ -1,5 +1,5 @@
 #include "include/Passage/Body/Macros/IfMacro.h"
-#include "include/Passage/Body/BodyPartsVisitor.h"
+#include "include/Passage/Body/IBodyPartsVisitor.h"
 
 IfMacro::IfMacro(const Expression &expression) {
     this->expression = std::unique_ptr<Expression>(expression.clone());
@@ -17,6 +17,6 @@ std::string IfMacro::to_string() const {
     return "IfMacro: " + this->getExpression()->to_string();
 }
 
-void IfMacro::accept(BodyPartsVisitor& visitor) {
+void IfMacro::accept(const IBodyPartsVisitor & visitor) {
     visitor.visit(*this);
 }

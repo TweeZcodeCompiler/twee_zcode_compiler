@@ -3,7 +3,7 @@
 //
 
 #include "include/Passage/Body/Text.h"
-#include "include/Passage/Body/BodyPartsVisitor.h"
+#include "include/Passage/Body/IBodyPartsVisitor.h"
 
 #include <string>
 
@@ -19,6 +19,6 @@ std::string Text::to_string() const {
     return "Text: " + this->getContent();
 }
 
-void Text::accept(BodyPartsVisitor& visitor) {
+void Text::accept(const IBodyPartsVisitor & visitor) {
     visitor.visit(*this);
 }

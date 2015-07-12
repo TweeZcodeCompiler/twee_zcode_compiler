@@ -3,7 +3,7 @@
 #define ELSEMACRO_H
 
 #include "Macro.h"
-#include "../BodyPartsVisitor.h"
+#include "../IBodyPartsVisitor.h"
 
 #include <string>
 #include <memory>
@@ -20,7 +20,7 @@ public:
         return new ElseMacro(*this);
     }
 
-    void accept(BodyPartsVisitor&);
+    void accept(const IBodyPartsVisitor&);
 
 };
 

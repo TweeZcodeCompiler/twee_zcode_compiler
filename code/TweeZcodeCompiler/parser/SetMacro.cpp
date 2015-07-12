@@ -1,5 +1,5 @@
 #include "include/Passage/Body/Macros/SetMacro.h"
-#include "include/Passage/Body/BodyPartsVisitor.h"
+#include "include/Passage/Body/IBodyPartsVisitor.h"
 
 SetMacro::SetMacro(const Expression &expression) {
     this->expression = std::unique_ptr<Expression>(expression.clone());
@@ -17,6 +17,6 @@ std::string SetMacro::to_string() const {
     return "SetMacro: " + this->getExpression()->to_string();
 }
 
-void SetMacro::accept(BodyPartsVisitor& visitor) {
+void SetMacro::accept(const IBodyPartsVisitor & visitor) {
     visitor.visit(*this);
 }

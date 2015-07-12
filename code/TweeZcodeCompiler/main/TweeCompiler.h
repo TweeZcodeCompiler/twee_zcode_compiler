@@ -5,7 +5,7 @@
 #ifndef PROJECT_TWEECOMPILER_H
 #define PROJECT_TWEECOMPILER_H
 
-#include <Passage/Body/BodyPartsVisitor.h>
+#include <Passage/Body/IBodyPartsVisitor.h>
 #include <Passage/Body/Expressions/Expression.h>
 #include <Passage/Body/Expressions/BinaryOperation.h>
 
@@ -21,7 +21,7 @@ struct IfContext {
     unsigned number = 0;
 };
 
-class TweeCompiler : public ITweeCompiler, BodyPartsVisitor {
+class TweeCompiler : public ITweeCompiler, IBodyPartsVisitor {
 public:
     void compile(TweeFile &tweeDoc, std::ostream &out);
 
@@ -31,25 +31,25 @@ public:
 
     std::pair<std::string, std::string> makeLabels(std::string);
 
-    void visit(Text& host);
+    void visit(const Text& host);
 
-    void visit(Link& host);
+    void visit(const Link& host);
 
-    void visit(Newline& host);
+    void visit(const Newline& host);
 
-    void visit(PrintMacro& host);
+    void visit(const PrintMacro& host);
 
-    void visit(DisplayMacro& host);
+    void visit(const DisplayMacro& host);
 
-    void visit(SetMacro& host);
+    void visit(const SetMacro& host);
 
-    void visit(IfMacro& host);
+    void visit(const IfMacro& host);
 
-    void visit(ElseMacro& host);
+    void visit(const ElseMacro& host);
 
-    void visit(ElseIfMacro& host);
+    void visit(const ElseIfMacro& host);
 
-    void visit(EndIfMacro& host);
+    void visit(const EndIfMacro& host);
 
 
 private:

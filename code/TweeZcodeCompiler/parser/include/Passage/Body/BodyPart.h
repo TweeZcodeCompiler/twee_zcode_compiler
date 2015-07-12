@@ -5,7 +5,7 @@
 #ifndef BODYPART_H
 #define BODYPART_H
 
-#include "BodyPartsVisitor.h"
+#include "IBodyPartsVisitor.h"
 
 #include <string>
 
@@ -18,7 +18,7 @@ public:
 
     virtual BodyPart *clone() const = 0;
 
-    virtual void accept(BodyPartsVisitor&) = 0;
+    virtual void accept(const IBodyPartsVisitor&) = 0;
 
 };
 

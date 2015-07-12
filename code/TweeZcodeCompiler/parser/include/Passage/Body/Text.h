@@ -6,7 +6,7 @@
 #define TEXT_H
 
 #include "BodyPart.h"
-#include "BodyPartsVisitor.h"
+#include "IBodyPartsVisitor.h"
 
 #include <string>
 
@@ -26,7 +26,7 @@ public:
 
     std::string to_string() const;
 
-    void accept(BodyPartsVisitor&);
+    void accept(const IBodyPartsVisitor&);
 
 };
 

@@ -7,7 +7,7 @@
 
 #include "Macro.h"
 #include "../Expressions/Expression.h"
-#include "../BodyPartsVisitor.h"
+#include "../IBodyPartsVisitor.h"
 
 #include <string>
 #include <memory>
@@ -35,7 +35,7 @@ public:
         return new PrintMacro(*this);
     }
 
-    void accept(BodyPartsVisitor&);
+    void accept(const IBodyPartsVisitor&);
 
 };
 

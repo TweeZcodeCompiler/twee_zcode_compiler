@@ -7,7 +7,7 @@
 
 #include "../BodyPart.h"
 #include "../Expressions/Expression.h"
-#include "../BodyPartsVisitor.h"
+#include "../IBodyPartsVisitor.h"
 
 #include <string>
 #include <memory>
@@ -20,7 +20,7 @@ public:
 
     virtual Macro *clone() const = 0;
 
-    virtual void accept(BodyPartsVisitor&) = 0;
+    virtual void accept(const IBodyPartsVisitor&) = 0;
 
 };
 
