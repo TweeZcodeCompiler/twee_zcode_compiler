@@ -177,13 +177,13 @@ void RoutineGenerator::callVS(vector<unique_ptr<ZParam>> params) {
     debug("call_vs");
     checkParamCount(params, 2, 3, 4, 5);
     if (params.size() == 2) {
-        checkParamType(params, NAME, STORE_ADDRESS);
+        checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, STORE_ADDRESS);
     } else if (params.size() == 3) {
-        checkParamType(params, NAME, VARIABLE_OR_VALUE, STORE_ADDRESS);
+        checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, STORE_ADDRESS);
     } else if (params.size() == 4) {
-        checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
+        checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, STORE_ADDRESS);
     } else {
-        checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
+        checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, STORE_ADDRESS);
     }
 
     string routineName = (*params.at(0)).name;
@@ -601,7 +601,7 @@ void RoutineGenerator::setLocalVariable(string name, int16_t value) {
 void RoutineGenerator::printNum(vector<unique_ptr<ZParam>> params) {
     debug("print_num");
     checkParamCount(params, 1);
-    checkParamType(params, VARIABLE_OR_VALUE);
+    checkParamType(params, VARIABLE_OR_VALUE_OR_NAME);
     routine->generateVarOPInstruction(PRINT_SIGNED_NUM, params, "print num");
 }
 
