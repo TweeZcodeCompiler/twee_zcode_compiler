@@ -14,7 +14,7 @@ je d 10 ?ENDE
 print "Gibt was ein"
 new_line
 read_char 1 -> sp
-call sys_number buff sp -> b
+call sys_char buff sp -> b
 call sys_concat buff a b -> a
 call sys_concat buff a diff -> a
 add d 1 -> d
