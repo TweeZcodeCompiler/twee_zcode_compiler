@@ -66,6 +66,7 @@ const string AssemblyParser::LOADB_COMMAND = "loadb";
 const string AssemblyParser::LOADW_COMMAND = "loadw";
 const string AssemblyParser::PUSH_COMMAND = "push";
 const string AssemblyParser::PUSH_STACK_COMMAND = "push_stack";
+const string AssemblyParser::POP_STACK_COMMAND = "pop_stack";
 const string AssemblyParser::PULL_COMMAND = "pull";
 const string AssemblyParser::RANDOM_COMMAND = "random";
 const string AssemblyParser::OUTPUT_STREAM_COMMAND = "output_stream";
@@ -613,6 +614,9 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart == AssemblyParser::PUSH_STACK_COMMAND) {
         LOG_DEBUG << ":::::: new push_stack";
         routineGenerator.pushStack(parseArguments(command));
+    } else if (commandPart == AssemblyParser::POP_STACK_COMMAND) {
+        LOG_DEBUG << ":::::: new push_stack";
+        routineGenerator.popStack(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label;

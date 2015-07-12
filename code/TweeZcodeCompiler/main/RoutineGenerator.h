@@ -184,6 +184,7 @@ public:
 
     void pushStack(std::vector<std::unique_ptr<ZParam>> params);
 
+    void popStack(std::vector<std::unique_ptr<ZParam>> params);
 
     /*
      *      Enumerations
@@ -280,7 +281,8 @@ public:
     };
 
     enum ExtOpcode : unsigned int {
-            PUSH_STACK = 24
+        POP_STACK = 21,
+        PUSH_STACK = 24,
     };
 
     enum BranchOffset {

@@ -179,11 +179,11 @@ void RoutineGenerator::callVS(vector<unique_ptr<ZParam>> params) {
     if (params.size() == 2) {
         checkParamType(params, NAME, STORE_ADDRESS);
     } else if (params.size() == 3) {
-        checkParamType(params, NAME, VARIABLE_OR_VALUE, STORE_ADDRESS);
+        checkParamType(params, NAME, VARIABLE_OR_VALUE_OR_NAME, STORE_ADDRESS);
     } else if (params.size() == 4) {
-        checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
+        checkParamType(params, NAME, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, STORE_ADDRESS);
     } else {
-        checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
+        checkParamType(params, NAME, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, STORE_ADDRESS);
     }
 
     string routineName = (*params.at(0)).name;
@@ -221,11 +221,11 @@ void RoutineGenerator::callVN(std::vector<std::unique_ptr<ZParam>> params) {
     if (params.size() == 1) {
         checkParamType(params, NAME);
     } else if (params.size() == 2) {
-        checkParamType(params, NAME, VARIABLE_OR_VALUE);
+        checkParamType(params, NAME, VARIABLE_OR_VALUE_OR_NAME);
     } else if (params.size() == 3) {
-        checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+        checkParamType(params, NAME, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME);
     } else {
-        checkParamType(params, NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+        checkParamType(params, NAME, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME);
     }
 
     string routineName = (*params.at(0)).name;
@@ -492,7 +492,7 @@ void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
 
 void RoutineGenerator::base2OpOperation(unsigned int opcode, vector<unique_ptr<ZParam>> &params) {
     checkParamCount(params, 3);
-    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
+    checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, STORE_ADDRESS);
 
     routine->generate2OPInstruction(opcode, *params.at(0), *params.at(1));
     routine->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(params.at(2)->getZCodeValue())));
@@ -602,7 +602,7 @@ void RoutineGenerator::setLocalVariable(string name, int16_t value) {
 void RoutineGenerator::printNum(vector<unique_ptr<ZParam>> params) {
     debug("print_num");
     checkParamCount(params, 1);
-    checkParamType(params, VARIABLE_OR_VALUE);
+    checkParamType(params, VARIABLE_OR_VALUE_OR_NAME);
     routine->generateVarOPInstruction(PRINT_SIGNED_NUM, params, "print num");
 }
 
@@ -669,6 +669,17 @@ void RoutineGenerator::pushStack(std::vector<std::unique_ptr<ZParam>> params) {
     auto jump = shared_ptr<ZCodeJump>(new ZCodeJump(getOrCreateLabel(label)));
     jump->jumpIfCondTrue = jumpIfTrue;
     routine->add(jump);
+}
+
+void RoutineGenerator::popStack(std::vector<std::unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1, 2);
+    if (params.size() == 1) {
+        checkParamType(params, VARIABLE_OR_VALUE_OR_NAME);
+    } else if (params.size() == 2) {
+        checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME);
+    }
+
+    routine->generateExtOPInstruction(POP_STACK, params, "pop stack");
 }
 
 void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
