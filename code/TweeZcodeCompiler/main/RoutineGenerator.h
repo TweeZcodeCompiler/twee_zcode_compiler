@@ -172,9 +172,9 @@ public:
 
     void loadw(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
-    void storeb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void storeb(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
-    void storew(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void storew(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
     void outputStream(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemory);
 

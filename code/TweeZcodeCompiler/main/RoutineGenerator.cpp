@@ -288,7 +288,7 @@ void RoutineGenerator::loadw(std::vector<std::unique_ptr<ZParam>> params,
     routine->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(params.at(2)->getZCodeValue(),""+params.at(2)->getZCodeValue())));
 }
 
-void RoutineGenerator::storeb(std::vector<std::unique_ptr<ZParam>> &params,
+void RoutineGenerator::storeb(std::vector<std::unique_ptr<ZParam>> params,
                               std::shared_ptr<ZCodeContainer> dynamicMemor) {
     debug("storeb");
     checkParamCount(params, 3);
@@ -296,7 +296,7 @@ void RoutineGenerator::storeb(std::vector<std::unique_ptr<ZParam>> &params,
     routine -> generateVarOPInstruction(STOREB,params,"storeb");
 }
 
-void RoutineGenerator::storew(std::vector<std::unique_ptr<ZParam>> &params,
+void RoutineGenerator::storew(std::vector<std::unique_ptr<ZParam>> params,
                               std::shared_ptr<ZCodeContainer> dynamicMemor) {
     debug("storew");
     checkParamCount(params, 3);
