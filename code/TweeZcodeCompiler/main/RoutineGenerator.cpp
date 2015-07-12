@@ -553,7 +553,7 @@ void RoutineGenerator::load(vector<unique_ptr<ZParam>> params) {
     ZValueParam valParam(varParam->getZCodeValue());
 
     routine->generate1OPInstruction(LOAD, valParam, "load");
-    routine->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(params.at(0)->getZCodeValue(), "store address")));
+    routine->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(params.at(1)->getZCodeValue(), "store address")));
 }
 
 void RoutineGenerator::load(ZParam &param1, ZParam &param2) {
