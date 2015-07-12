@@ -17,6 +17,6 @@ std::string DisplayMacro::to_string() const {
     return "DisplayMacro: " + this->getPassage();
 }
 
-void DisplayMacro::accept(BodyPartsVisitor visitor) {
+void DisplayMacro::accept(BodyPartsVisitor& visitor) {
     visitor.visit(*this);
 }

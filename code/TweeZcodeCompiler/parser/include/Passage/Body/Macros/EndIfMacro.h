@@ -20,7 +20,7 @@ public:
         return new EndIfMacro(*this);
     }
 
-    void accept(BodyPartsVisitor);
+    void accept(BodyPartsVisitor&);
 
 };
 

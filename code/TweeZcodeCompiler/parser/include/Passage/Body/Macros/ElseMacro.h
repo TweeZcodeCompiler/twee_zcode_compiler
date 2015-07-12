@@ -20,7 +20,7 @@ public:
         return new ElseMacro(*this);
     }
 
-    void accept(BodyPartsVisitor);
+    void accept(BodyPartsVisitor&);
 
 };
 

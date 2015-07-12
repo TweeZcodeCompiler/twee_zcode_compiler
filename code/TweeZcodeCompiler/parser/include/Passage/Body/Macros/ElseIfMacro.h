@@ -34,7 +34,7 @@ public:
         return new ElseIfMacro(*this);
     }
 
-    void accept(BodyPartsVisitor);
+    void accept(BodyPartsVisitor&);
 
 };
 

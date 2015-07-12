@@ -31,6 +31,6 @@ std::string Link::to_string() const {
            + std::string("      AltName: ") + this->getAltName();
 }
 
-void Link::accept(BodyPartsVisitor visitor) {
+void Link::accept(BodyPartsVisitor& visitor) {
     visitor.visit(*this);
 }

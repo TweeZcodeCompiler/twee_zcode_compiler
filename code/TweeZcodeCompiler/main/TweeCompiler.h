@@ -5,7 +5,7 @@
 #ifndef PROJECT_TWEECOMPILER_H
 #define PROJECT_TWEECOMPILER_H
 
-#include "BodyPartsVisitor.h"
+#include <Passage/Body/BodyPartsVisitor.h>
 #include <Passage/Body/Expressions/Expression.h>
 #include <Passage/Body/Expressions/BinaryOperation.h>
 
@@ -31,25 +31,25 @@ public:
 
     std::pair<std::string, std::string> makeLabels(std::string);
 
-    void visit(Text host);
+    void visit(Text& host);
 
-    void visit(Link host);
+    void visit(Link& host);
 
-    void visit(Newline host);
+    void visit(Newline& host);
 
-    void visit(PrintMacro host);
+    void visit(PrintMacro& host);
 
-    void visit(DisplayMacro host);
+    void visit(DisplayMacro& host);
 
-    void visit(SetMacro host);
+    void visit(SetMacro& host);
 
-    void visit(IfMacro host);
+    void visit(IfMacro& host);
 
-    void visit(ElseMacro host);
+    void visit(ElseMacro& host);
 
-    void visit(ElseIfMacro host);
+    void visit(ElseIfMacro& host);
 
-    void visit(EndIfMacro host);
+    void visit(EndIfMacro& host);
 
 
 private:

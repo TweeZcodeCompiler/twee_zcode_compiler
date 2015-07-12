@@ -14,7 +14,7 @@
 #include <array>
 #include <algorithm>
 
-#include "BodyPartsVisitor.h"
+#include <Passage/Body/BodyPartsVisitor.h>
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
@@ -32,8 +32,8 @@
 #include "Passage/Body/Expressions/Random.h"
 #include "Passage/Body/Expressions/Previous.h"
 
-#include "DisplayMacro.h"
-#include "PrintMacro.h"
+#include <Passage/Body/Macros/PrintMacro.h>
+#include <Passage/Body/Macros/DisplayMacro.h>
 #include <Passage/Body/Macros/SetMacro.h>
 
 #include <Passage/Body/Macros/IfMacro.h>
@@ -366,11 +366,11 @@ bool isPreviousMacro(string link) {
     return link == previousFunc;
 }
 
-void TweeCompiler::visit(Text host) {
+void TweeCompiler::visit(Text& host) {
     ASSGEN.print(host.getContent());
 }
 
-void TweeCompiler::visit(Link host) {
+void TweeCompiler::visit(Link& host) {
     if (isPreviousMacro(host.getTarget())) {
         ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
     } else {
@@ -386,11 +386,11 @@ void TweeCompiler::visit(Link host) {
     }
 }
 
-void TweeCompiler::visit(Newline host) {
+void TweeCompiler::visit(Newline& host) {
     ASSGEN.newline();
 }
 
-void TweeCompiler::visit(PrintMacro host) {
+void TweeCompiler::visit(PrintMacro& host) {
     if (Previous *previous = dynamic_cast<Previous *>(host.getExpression().get())) {
         ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
     } else {
@@ -399,7 +399,7 @@ void TweeCompiler::visit(PrintMacro host) {
     }
 }
 
-void TweeCompiler::visit(DisplayMacro host) {
+void TweeCompiler::visit(DisplayMacro& host) {
     string targetPassage = host.getPassage();
     int targetId;
     try {
@@ -412,7 +412,7 @@ void TweeCompiler::visit(DisplayMacro host) {
     ASSGEN.call_vn(ROUTINE_PASSAGE_BY_ID, to_string(targetId));
 }
 
-void TweeCompiler::visit(SetMacro host) {
+void TweeCompiler::visit(SetMacro& host) {
     LOG_DEBUG << "generate SetMacro assembly code";
 
     BinaryOperation *binaryOperation = nullptr;
@@ -429,13 +429,13 @@ void TweeCompiler::visit(SetMacro host) {
     }
 }
 
-void TweeCompiler::visit(IfMacro host) {
+void TweeCompiler::visit(IfMacro& host) {
     ifContexts.push(makeNextIfContext());
     evalExpression(host.getExpression().get());
     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
 }
 
-void TweeCompiler::visit(ElseMacro host) {
+void TweeCompiler::visit(ElseMacro& host) {
     if (ifContexts.empty()) {
         throw TweeDocumentException("else macro encountered without preceding if macro");
     }
@@ -444,7 +444,7 @@ void TweeCompiler::visit(ElseMacro host) {
     ifContexts.top().caseCount++;
 }
 
-void TweeCompiler::visit(ElseIfMacro host) {
+void TweeCompiler::visit(ElseIfMacro& host) {
     if (ifContexts.empty()) {
         throw TweeDocumentException("else if macro encountered without preceding if macro");
     }
@@ -455,7 +455,7 @@ void TweeCompiler::visit(ElseIfMacro host) {
     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
 }
 
-void TweeCompiler::visit(EndIfMacro host) {
+void TweeCompiler::visit(EndIfMacro& host) {
     if (ifContexts.empty()) {
         throw TweeDocumentException("endif macro encountered without preceding if macro");
     }
@@ -478,7 +478,7 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     //  print passage contents
     for (auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
         BodyPart *bodyPart = it->get();
-        bodyPart->accept(dynamic_cast<BodyPartsVisitor>(*this));
+        bodyPart->accept(dynamic_cast<BodyPartsVisitor&>(*this));
     }
 
     // unclosed if-macro

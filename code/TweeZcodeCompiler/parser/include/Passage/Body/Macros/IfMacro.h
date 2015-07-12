@@ -34,7 +34,7 @@ public:
         return new IfMacro(*this);
     }
 
-    void accept(BodyPartsVisitor);
+    void accept(BodyPartsVisitor&);
 
 };
 

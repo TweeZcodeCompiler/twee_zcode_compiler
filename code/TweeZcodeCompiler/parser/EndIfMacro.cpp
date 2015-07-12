@@ -8,6 +8,6 @@ std::string EndIfMacro::to_string() const {
     return "EndIfMacro";
 }
 
-void EndIfMacro::accept(BodyPartsVisitor visitor) {
+void EndIfMacro::accept(BodyPartsVisitor& visitor) {
     visitor.visit(*this);
 }

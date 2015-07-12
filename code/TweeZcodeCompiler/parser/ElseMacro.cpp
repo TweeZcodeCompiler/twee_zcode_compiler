@@ -8,6 +8,6 @@ std::string ElseMacro::to_string() const {
     return "ElseMacro";
 }
 
-void ElseMacro::accept(BodyPartsVisitor visitor) {
+void ElseMacro::accept(BodyPartsVisitor& visitor) {
     visitor.visit(*this);
 }

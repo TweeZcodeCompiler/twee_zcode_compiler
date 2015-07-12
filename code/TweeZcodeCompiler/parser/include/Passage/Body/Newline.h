@@ -17,7 +17,7 @@ public:
 
     std::string to_string() const;
 
-    void accept(BodyPartsVisitor);
+    void accept(BodyPartsVisitor&);
 };
 
 

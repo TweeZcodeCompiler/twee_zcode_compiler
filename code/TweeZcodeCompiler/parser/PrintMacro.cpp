@@ -21,6 +21,6 @@ std::string PrintMacro::to_string() const {
     return "PrintMacro: " + this->expression->to_string();
 }
 
-void PrintMacro::accept(BodyPartsVisitor visitor) {
+void PrintMacro::accept(BodyPartsVisitor& visitor) {
     visitor.visit(*this);
 }

@@ -19,6 +19,6 @@ std::string Text::to_string() const {
     return "Text: " + this->getContent();
 }
 
-void Text::accept(BodyPartsVisitor visitor) {
+void Text::accept(BodyPartsVisitor& visitor) {
     visitor.visit(*this);
 }

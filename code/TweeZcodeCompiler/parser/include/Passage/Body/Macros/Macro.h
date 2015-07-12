@@ -20,7 +20,7 @@ public:
 
     virtual Macro *clone() const = 0;
 
-    virtual void accept(BodyPartsVisitor) = 0;
+    virtual void accept(BodyPartsVisitor&) = 0;
 
 };
 

@@ -35,7 +35,7 @@ public:
         return new PrintMacro(*this);
     }
 
-    void accept(BodyPartsVisitor);
+    void accept(BodyPartsVisitor&);
 
 };
 

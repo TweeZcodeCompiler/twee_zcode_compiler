@@ -32,7 +32,7 @@ public:
         return new SetMacro(*this);
     }
 
-    void accept(BodyPartsVisitor);
+    void accept(BodyPartsVisitor&);
 
 };
 
