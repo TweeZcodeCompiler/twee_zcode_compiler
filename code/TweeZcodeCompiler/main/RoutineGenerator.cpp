@@ -792,6 +792,15 @@ void RoutineGenerator::setCursor(vector<unique_ptr<ZParam>> params) {
     addBitset(instructions, "set_cursor");
 }
 
+void RoutineGenerator::getWindowProperty(vector<unique_ptr<ZParam>> params) {
+    debug("get_window_property");
+    checkParamCount(params, 3);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
+
+    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(GET_WINDOW_PROPERTY, params);
+    addBitset(generated, "get_window_property");
+}
+
 void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
     typedef map<size_t, string>::iterator it_type;
     for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {

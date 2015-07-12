@@ -72,6 +72,7 @@ private:
     static const std::string MOUSE_WINDOW;
     static const std::string GET_CURSOR;
     static const std::string SET_CURSOR;
+    static const std::string GET_WINDOW_PROPERTY;
 
 
     unsigned currentLineNumber;

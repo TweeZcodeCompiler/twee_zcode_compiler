@@ -84,6 +84,7 @@ namespace instruction {
     INST_TYPE MOUSE_WINDOW = "mouse_window";
     INST_TYPE GET_CURSOR = "get_cursor";
     INST_TYPE SET_CURSOR = "set_cursor";
+    INST_TYPE GET_WINDOW_PROPERTY = "get_window_property";
 }
 
 ZAssemblyGenerator::ZAssemblyGenerator(ostream &out) : out(out) { }
@@ -361,8 +362,8 @@ ZAssemblyGenerator &ZAssemblyGenerator::lnot(std::string variable, std::string s
     return addInstruction(instruction::NOT_COMMAND, variable, nullopt, storeTarget);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::readMouse() {
-    return addInstruction(instruction::READ_MOUSE, nullopt, nullopt, nullopt);
+ZAssemblyGenerator &ZAssemblyGenerator::readMouse(string table) {
+    return addInstruction(instruction::READ_MOUSE, table, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::mouseWindow(string variable) {
@@ -375,6 +376,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::setCursor(string variableY, string varia
 
 ZAssemblyGenerator &ZAssemblyGenerator::getCursor(string array) {
     return addInstruction(instruction::GET_CURSOR, array, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::getWindowProperty(string window, string propertyNumber, string target) {
+    return addInstruction(instruction::GET_WINDOW_PROPERTY, makeArgs({window, propertyNumber}), nullopt, target);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::nop() {

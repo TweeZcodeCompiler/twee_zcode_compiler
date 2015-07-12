@@ -186,6 +186,8 @@ public:
 
     void setCursor(std::vector<std::unique_ptr<ZParam>> params);
 
+    void getWindowProperty(std::vector<std::unique_ptr<ZParam>> params);
+
     /*
      *      Enumerations
      */
@@ -284,8 +286,9 @@ public:
 
     enum ExtendedOpcode : unsigned int {
                 MOUSE_WINDOW = 23,
-                READ_MOUSE = 22
-    }
+                READ_MOUSE = 22,
+                GET_WINDOW_PROPERTY = 19
+    };
 
     enum BranchOffset {
         // Offset placeholder used for unconditional jumps
