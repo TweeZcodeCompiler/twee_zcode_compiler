@@ -18,7 +18,7 @@ public:
 
     virtual BodyPart *clone() const = 0;
 
-    virtual void accept(const IBodyPartsVisitor&) = 0;
+    virtual void accept(IBodyPartsVisitor&) const = 0;
 
 };
 

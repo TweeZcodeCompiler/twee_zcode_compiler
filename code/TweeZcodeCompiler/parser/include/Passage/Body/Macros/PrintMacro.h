@@ -35,7 +35,7 @@ public:
         return new PrintMacro(*this);
     }
 
-    void accept(const IBodyPartsVisitor&);
+    void accept(IBodyPartsVisitor&) const;
 
 };
 

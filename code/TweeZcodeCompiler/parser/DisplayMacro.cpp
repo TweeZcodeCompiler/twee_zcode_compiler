@@ -3,7 +3,6 @@
 //
 
 #include "include/Passage/Body/Macros/DisplayMacro.h"
-#include "include/Passage/Body/BodyPartsVisitor.h"
 
 DisplayMacro::DisplayMacro(const std::string passage) {
     this->passage = passage;
@@ -17,6 +16,6 @@ std::string DisplayMacro::to_string() const {
     return "DisplayMacro: " + this->getPassage();
 }
 
-void DisplayMacro::accept(BodyPartsVisitor& visitor) {
+void DisplayMacro::accept(IBodyPartsVisitor& visitor) const {
     visitor.visit(*this);
 }

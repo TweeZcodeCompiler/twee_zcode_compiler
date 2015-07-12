@@ -33,7 +33,7 @@ public:
         return new DisplayMacro(*this);
     }
 
-    void accept(const IBodyPartsVisitor&);
+    void accept(IBodyPartsVisitor&) const;
 
 };
 

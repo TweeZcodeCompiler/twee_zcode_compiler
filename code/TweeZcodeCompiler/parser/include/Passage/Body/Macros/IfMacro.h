@@ -34,7 +34,7 @@ public:
         return new IfMacro(*this);
     }
 
-    void accept(const IBodyPartsVisitor&);
+    void accept(IBodyPartsVisitor&) const;
 
 };
 

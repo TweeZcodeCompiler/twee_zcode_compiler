@@ -3,7 +3,6 @@
 //
 
 #include "include/Passage/Body/Macros/PrintMacro.h"
-#include "include/Passage/Body/BodyPartsVisitor.h"
 
 PrintMacro::PrintMacro(const Expression *expression) {
     this->expression = std::unique_ptr<Expression>(expression->clone());
@@ -21,6 +20,6 @@ std::string PrintMacro::to_string() const {
     return "PrintMacro: " + this->expression->to_string();
 }
 
-void PrintMacro::accept(BodyPartsVisitor& visitor) {
+void PrintMacro::accept(IBodyPartsVisitor& visitor) const {
     visitor.visit(*this);
 }

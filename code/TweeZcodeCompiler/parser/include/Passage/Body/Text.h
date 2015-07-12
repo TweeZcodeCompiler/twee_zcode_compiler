@@ -26,7 +26,7 @@ public:
 
     std::string to_string() const;
 
-    void accept(const IBodyPartsVisitor&);
+    void accept(IBodyPartsVisitor&) const;
 
 };
 

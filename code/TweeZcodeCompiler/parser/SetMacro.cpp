@@ -17,6 +17,6 @@ std::string SetMacro::to_string() const {
     return "SetMacro: " + this->getExpression()->to_string();
 }
 
-void SetMacro::accept(const IBodyPartsVisitor & visitor) {
+void SetMacro::accept(IBodyPartsVisitor & visitor) const {
     visitor.visit(*this);
 }

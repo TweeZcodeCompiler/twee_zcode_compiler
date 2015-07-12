@@ -11,6 +11,6 @@ std::string Newline::to_string() const {
     return "Newline: \\n";
 }
 
-void Newline::accept(const IBodyPartsVisitor & visitor) {
+void Newline::accept(IBodyPartsVisitor & visitor) const {
     visitor.visit(*this);
 }

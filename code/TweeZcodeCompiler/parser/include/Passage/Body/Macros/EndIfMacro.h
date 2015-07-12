@@ -20,7 +20,7 @@ public:
         return new EndIfMacro(*this);
     }
 
-    void accept(const IBodyPartsVisitor&);
+    void accept(IBodyPartsVisitor&) const;
 
 };
 

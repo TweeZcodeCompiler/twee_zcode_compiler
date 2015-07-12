@@ -17,6 +17,6 @@ std::string IfMacro::to_string() const {
     return "IfMacro: " + this->getExpression()->to_string();
 }
 
-void IfMacro::accept(const IBodyPartsVisitor & visitor) {
+void IfMacro::accept(IBodyPartsVisitor & visitor) const {
     visitor.visit(*this);
 }
