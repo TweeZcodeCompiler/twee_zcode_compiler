@@ -122,7 +122,7 @@ void ZCodeRoutine::generateTypeBitsetAndParameterBitsets(std::vector<std::unique
     vector<shared_ptr<ZCodeObject>> instructions;
     bitset<8> paramTypes;
 
-    if (params.size() > 4) {
+    if (params.size() > 4 && !(params.size() == 5 && params.at(4)->isStoreAddress)) {
         LOG_ERROR << "More than 4 operands are not allowed!";
         // this is a programming error, so we don't throw a specific exception
         throw std::exception();

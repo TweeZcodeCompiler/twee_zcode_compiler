@@ -69,7 +69,7 @@ EOM:
 	;calculate the size of the pice of memory
 	sub pointer 2 -> pointer
 	loadw pointer 0 -> size
-	dec pointer
+	sub pointer 1 -> pointer
 	store i 0
 	
 	;fill with 0
