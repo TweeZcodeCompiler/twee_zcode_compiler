@@ -145,7 +145,13 @@ string makeUserInputRoutine() {
             "mouse_supported:\n"
             "    call_vs mouseClick selectcount -> sp\n"
             "fetch_userinput_lookup:\n"
-            "    loadb USERINPUT_LOOKUP sp -> sp \n"
+
+            // TODO: Does work but I don know why. Was only:
+            //          loadb USERINPUT_LOOKUP sp -> sp
+            //       before
+
+            "    loadb USERINPUT_LOOKUP 2 -> sp\n"
+            "    print_num sp \n"
             "\n"
             "\t add TURNS 1 -> TURNS\n"
             "   ret sp"
@@ -330,6 +336,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.push(varYLineClick)
                 .sub("sp", varFirstLinkLine, "sp");
+
+        ASSGEN.newline().newline();
 
         ASSGEN.ret("sp");
 
