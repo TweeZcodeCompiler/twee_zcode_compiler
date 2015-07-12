@@ -132,6 +132,14 @@ public:
 
     ZAssemblyGenerator &random(std::string range, std::string storeTarget);
 
+    ZAssemblyGenerator &readMouse();
+
+    ZAssemblyGenerator &mouseWindow(std::string variable);
+
+    ZAssemblyGenerator &setCursor(std::string variableX, std::string variableY);
+
+    ZAssemblyGenerator &getCursor(std::string array);
+
 
 private:
     std::ostream &out;

@@ -66,7 +66,10 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         TEXT_FORMAT_FIXED_PITCH = "FIXED_PITCH",
         START_PASSAGE_NAME = "Start",
         GLOB_PREVIOUS_PASSAGE_ID = "PREVIOUS_PASSAGE_ID",
-        GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID";
+        GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID",
+        MOUSE_CLICK_ROUTINE = "mouseClick",
+        AFTER_MOUSE_CLICK_ROUTINE = "afterMouseClick",
+        TABLE_CURSOR = "TABLE_CURSOR";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -131,6 +134,8 @@ string makeUserInputRoutine() {
             "    jz selectcount ?~links_available\n"
             "    ret -1\n"
             "links_available:\n"
+            "    call mouseClick"
+            "    call afterMouseClick"
             "    read_char 1 -> USER_INPUT\n"
             "    sub USER_INPUT 48 -> sp\n"
             "    sub sp 1 -> sp\n"
@@ -181,6 +186,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned) passages.size());
 
     ASSGEN.addWordArray(TABLE_VISITED_PASSAGE_COUNT, (unsigned) passages.size());
+    ASSGEN.addByteArray(TABLE_CURSOR, 2);
 
     // globals
     ASSGEN.addGlobal(GLOB_PASSAGE)
@@ -266,6 +272,38 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             ASSGEN.addLabel(labelForPassage(*it)).print(it->getHead().getName()).ret("0");
         }
+    }
+
+    // mouse control routines
+    {
+        string varKey = "key", varX = "x", varY = "y";
+
+        vector<ZRoutineArgument> args;
+        args.push_back(ZRoutineArgument(varKey));
+        args.push_back(ZRoutineArgument(varX));
+        args.push_back(ZRoutineArgument(varY));
+        ASSGEN.addRoutine(MOUSE_CLICK_ROUTINE, args);
+
+        ASSGEN.mouseWindow("-1")
+                .print("Click the mouse on a option")
+                .read_char(varKey)
+                .mouseWindow("1");
+
+        ASSGEN.readMouse()
+                .loadw("HeaderExtTable", "1", varY)
+                .loadw("HeaderExtTable", "2", varX)
+                .getCursor(TABLE_CURSOR)
+                .setCursor(varY, varX);
+
+
+        ASSGEN.addRoutine(AFTER_MOUSE_CLICK_ROUTINE, {ZRoutineArgument(varX), ZRoutineArgument(varY)});
+
+        ASSGEN.loadb(TABLE_CURSOR, "1", varY)
+                .loadb(TABLE_CURSOR, "2", varX)
+                .print_num(varY)
+                .newline()
+                .print_num(varX)
+                .setCursor(varY, varX);
     }
 
     // print appropriate text formatting args

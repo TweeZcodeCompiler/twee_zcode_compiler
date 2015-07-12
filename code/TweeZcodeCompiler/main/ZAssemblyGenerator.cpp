@@ -80,6 +80,10 @@ namespace instruction {
     INST_TYPE VERIFY_COMMAND = "verify";
     INST_TYPE RANDOM_COMMAND = "random";
     INST_TYPE NOTHING = "";
+    INST_TYPE READ_MOUSE = "read_mouse";
+    INST_TYPE MOUSE_WINDOW = "mouse_window";
+    INST_TYPE GET_CURSOR = "get_cursor";
+    INST_TYPE SET_CURSOR = "set_cursor";
 }
 
 ZAssemblyGenerator::ZAssemblyGenerator(ostream &out) : out(out) { }
@@ -355,6 +359,22 @@ ZAssemblyGenerator &ZAssemblyGenerator::lor(std::string left, std::string right,
 
 ZAssemblyGenerator &ZAssemblyGenerator::lnot(std::string variable, std::string storeTarget) {
     return addInstruction(instruction::NOT_COMMAND, variable, nullopt, storeTarget);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::readMouse() {
+    return addInstruction(instruction::READ_MOUSE, nullopt, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::mouseWindow(string variable) {
+    return addInstruction(instruction::MOUSE_WINDOW, variable, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::setCursor(string variableY, string variableX) {
+    return addInstruction(instruction::SET_CURSOR, makeArgs({variableY, variableX}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::getCursor(string array) {
+    return addInstruction(instruction::GET_CURSOR, array, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::nop() {
