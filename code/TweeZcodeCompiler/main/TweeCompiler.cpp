@@ -223,8 +223,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         const string passageCount = "passage_count";
         ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal), ZRoutineArgument(passageCount)}))
                 .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
-                .store(GLOB_CURRENT_PASSAGE_ID, idLocal)
-                .add(GLOB_CURRENT_PASSAGE_ID, "1", GLOB_CURRENT_PASSAGE_ID);
+                .store(GLOB_CURRENT_PASSAGE_ID, idLocal);
         
         // update visited array
         ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
@@ -290,7 +289,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         vector<ZRoutineArgument> args;
         args.push_back(ZRoutineArgument(varCounter));
         args.push_back(ZRoutineArgument(varResult));
-        args.push_back(ZRoutineArgument(varFormatType));    // This value will be set via call_vs TEXT_FORMAT_ROUTINE 1 -> sp
+        args.push_back(
+                ZRoutineArgument(varFormatType));    // This value will be set via call_vs TEXT_FORMAT_ROUTINE 1 -> sp
         ASSGEN.addRoutine(TEXT_FORMAT_ROUTINE, args);
 
         ASSGEN.jumpEquals(string(varFormatType + " 0"), string("~" + labelNotZero))
@@ -342,7 +342,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .ret("0");
 
     }
-    
+
     // passage routines
     for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
         makePassageRoutine(*passage);
@@ -394,7 +394,16 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
         } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
             ASSGEN.newline();
         } else if (Display *display = dynamic_cast<Display *>(bodyPart)) {
-            LOG_DEBUG << display->to_string();
+            string targetPassage = display->getPassage();
+            int targetId;
+            try {
+                targetId = passageName2id.at(targetPassage);
+            } catch(const out_of_range& outOfRange) {
+                throw TweeDocumentException(string("display target passage \"") + targetPassage +
+                                                    string("\" does not exist"));
+            }
+
+            ASSGEN.call_vn(ROUTINE_PASSAGE_BY_ID, to_string(targetId));
         } else if (Print *print = dynamic_cast<Print *>(bodyPart)) {
             if (Previous *previous = dynamic_cast<Previous *>(print->getExpression().get())) {
                 ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
@@ -453,9 +462,7 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     if (ifContexts.size() > 0) {
         throw TweeDocumentException("unclosed if macro");
     }
-
     ASSGEN.ret("0");
-
 }
 
 IfContext TweeCompiler::makeNextIfContext() {
@@ -486,6 +493,7 @@ void TweeCompiler::evalAssignment(BinaryOperation *expression) {
 }
 
 void TweeCompiler::evalExpression(Expression *expression) {
+    std::pair<std::string, std::string> labels;
 
     if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
         ASSGEN.push(std::to_string(constant->getValue()));
@@ -531,15 +539,52 @@ void TweeCompiler::evalExpression(Expression *expression) {
         ASSGEN.load(GLOB_TURNS_COUNT, "sp");
     } else if (Random *random = dynamic_cast<Random *>(expression)) {
         LOG_DEBUG << random->to_string();
+        std::string afterRandom = makeLabels("random").second;
+    // check if a > b, act accordingly
+        labels = makeLabels("randomAGTB");
+        evalExpression(random->getStart().get());
+        evalExpression(random->getEnd().get());
+        ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.second);
+    //  a > b
+        evalExpression(random->getStart().get());
+        evalExpression(random->getEnd().get());
+        ASSGEN.add("sp", "1", "sp");
+        ASSGEN.sub("sp", "sp", "sp");
+        ASSGEN.random("sp", "sp");
+        evalExpression(random->getStart().get());
+        ASSGEN.sub("sp", "1", "sp");
+        ASSGEN.add("sp", "sp", "sp");
+        ASSGEN.jump(afterRandom);
+
+        ASSGEN.addLabel(labels.second);
+    // check if a < b, act accordingly
+        labels = makeLabels("randomALTB");
+        evalExpression(random->getStart().get());
+        evalExpression(random->getEnd().get());
+        ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.second);
+    //  a < b
+        evalExpression(random->getEnd().get());
+        evalExpression(random->getStart().get());
+        ASSGEN.add("sp", "1", "sp");
+        ASSGEN.sub("sp", "sp", "sp");
+        ASSGEN.random("sp", "sp");
+        evalExpression(random->getEnd().get());
+        ASSGEN.sub("sp", "1", "sp");
+        ASSGEN.add("sp", "sp", "sp");
+        ASSGEN.jump(afterRandom);
+
+        ASSGEN.addLabel(labels.second);
+    // a == b, simply return a
+        evalExpression(random->getEnd().get());
+        ASSGEN.addLabel(afterRandom);
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
-        std::pair<std::string, std::string> labels;
 
         if (binaryOperation->getOperator() == BinOps::TO) {
             evalAssignment(binaryOperation);
         }
 
-        TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
         TweeCompiler::evalExpression(binaryOperation->getRightSide().get());
+        TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
 
         switch (binaryOperation->getOperator()) {
             case BinOps::ADD:

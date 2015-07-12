@@ -25,7 +25,7 @@ public:
     size_t offset = 0;
     size_t size = 0;
     std::string displayName = "UNKNOWN";
-
+    void checkOffset(std::vector<std::bitset<8>> &code);
     virtual void print(std::vector<std::bitset<8>> &code) = 0;
 
     //returns true if needs to be revalidate again
