@@ -3,8 +3,7 @@
 #define ELSEMACRO_H
 
 #include "Macro.h"
-#include "../Expressions/Expression.h"
-#include "../../../AssemblyGeneratorVisitor.h"
+#include "../BodyPartsVisitor.h"
 
 #include <string>
 #include <memory>
@@ -21,7 +20,7 @@ public:
         return new ElseMacro(*this);
     }
 
-    void accept(AssemblyGeneratorVisitor);
+    void accept(BodyPartsVisitor);
 
 };
 

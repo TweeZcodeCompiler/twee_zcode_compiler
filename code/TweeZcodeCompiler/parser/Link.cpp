@@ -3,6 +3,7 @@
 //
 
 #include "include/Passage/Body/Link.h"
+#include "include/Passage/Body/BodyPartsVisitor.h"
 
 #include <string>
 
@@ -30,6 +31,6 @@ std::string Link::to_string() const {
            + std::string("      AltName: ") + this->getAltName();
 }
 
-void Link::accept(AssemblyGeneratorVisitor visitor) const {
+void Link::accept(BodyPartsVisitor visitor) {
     visitor.visit(*this);
 }

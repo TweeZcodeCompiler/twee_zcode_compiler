@@ -24,8 +24,3 @@ std::string Body::to_string() const {
 
     return result;
 }
-
-void Body::accept(AssemblyGeneratorVisitor visitor) const {
-    for (auto iter = bodyparts.begin(); iter != bodyparts.end(); ++iter)
-        (*iter)->accept(visitor);
-}

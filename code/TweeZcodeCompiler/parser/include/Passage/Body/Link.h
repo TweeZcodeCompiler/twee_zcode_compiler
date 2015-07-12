@@ -6,7 +6,7 @@
 #define LINK_H
 
 #include "BodyPart.h"
-#include "../../AssemblyGeneratorVisitor.h"
+#include "BodyPartsVisitor.h"
 
 #include <string>
 
@@ -31,7 +31,7 @@ public:
 
     std::string to_string() const;
 
-    void accept(AssemblyGeneratorVisitor) const;
+    void accept(BodyPartsVisitor);
 
 };
 

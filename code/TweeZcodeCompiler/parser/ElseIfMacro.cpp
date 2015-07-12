@@ -1,4 +1,5 @@
 #include "include/Passage/Body/Macros/ElseIfMacro.h"
+#include "include/Passage/Body/BodyPartsVisitor.h"
 
 ElseIfMacro::ElseIfMacro(const Expression &expression) {
     this->expression = std::unique_ptr<Expression>(expression.clone());
@@ -16,6 +17,6 @@ std::string ElseIfMacro::to_string() const {
     return "ElseIfMacro: " + this->getExpression()->to_string();
 }
 
-void ElseIfMacro::accept(AssemblyGeneratorVisitor visitor) {
+void ElseIfMacro::accept(BodyPartsVisitor visitor) {
     visitor.visit(*this);
 }

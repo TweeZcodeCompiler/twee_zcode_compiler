@@ -51,8 +51,6 @@ public:
 
     Body& operator+=(BodyPart&);
 
-    void accept(AssemblyGeneratorVisitor) const;
-
     std::string to_string() const;
 };
 

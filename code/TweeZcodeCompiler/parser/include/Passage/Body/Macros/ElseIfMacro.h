@@ -4,6 +4,7 @@
 
 #include "Macro.h"
 #include "../Expressions/Expression.h"
+#include "../BodyPartsVisitor.h"
 
 #include <string>
 #include <memory>
@@ -33,7 +34,7 @@ public:
         return new ElseIfMacro(*this);
     }
 
-    void accept(AssemblyGeneratorVisitor);
+    void accept(BodyPartsVisitor);
 
 };
 
