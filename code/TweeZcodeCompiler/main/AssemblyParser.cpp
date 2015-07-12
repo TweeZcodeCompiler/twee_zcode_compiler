@@ -701,9 +701,9 @@ void AssemblyParser::performByteArrayDirective(string command, shared_ptr<ZCodeC
         auto initialSize = shared_ptr<ZCodeObject>(new ZCodeInstruction(size));
         auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size, "ARRAY : " + name));
         auto label = dynamicMemory->getOrCreateLabel(name);
-
         dynamicMemory->add(label);
         dynamicMemory->add(table);
+        dynamicMemory->add(shared_ptr<ZCodeInstruction>(new ZCodeInstruction(0xff, "EOM")));
     } catch (std::invalid_argument) {
         LOG_ERROR << "'.BYTEARRAY_DIRECTIVE <name> [<size>]' expected. '" << command << "' found instead";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
@@ -723,6 +723,7 @@ void AssemblyParser::performWordArrayDirective(string command, shared_ptr<ZCodeC
         dynamicMemory->add(label);
         auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size * 2, "ARRAY : " + name));
         dynamicMemory->add(table);
+        dynamicMemory->add(shared_ptr<ZCodeInstruction>(new ZCodeInstruction(0xff, "EOM")));
     } catch (std::invalid_argument) {
         LOG_ERROR << "'.WORDARRAY_DIRECTIVE <name> [<size>]' expected. '" << command << "' found instead";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);

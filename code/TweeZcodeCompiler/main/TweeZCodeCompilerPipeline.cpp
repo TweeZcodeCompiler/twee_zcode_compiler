@@ -58,10 +58,7 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
         buffer << in.rdbuf();
     }
 
-    ifstream lib("malloc_lib.zap");
-    if(lib){
-        buffer << lib.rdbuf();
-    }
+    buffer << Utils::getMallocLib();
 
     shared_ptr<ZCodeContainer> zcode = shared_ptr<ZCodeContainer>(new ZCodeContainer("ZCode Container"));
 
