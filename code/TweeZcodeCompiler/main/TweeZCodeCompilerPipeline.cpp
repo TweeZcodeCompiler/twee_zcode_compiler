@@ -58,6 +58,8 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
         buffer << in.rdbuf();
     }
 
+    buffer << Utils::getMallocLib();
+
     shared_ptr<ZCodeContainer> zcode = shared_ptr<ZCodeContainer>(new ZCodeContainer("ZCode Container"));
 
     //create header
