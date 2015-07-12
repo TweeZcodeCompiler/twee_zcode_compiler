@@ -76,8 +76,8 @@ void ZCodeRoutine::generate1OPInstruction(unsigned int opcode, ZParam &param,std
 void ZCodeRoutine::generate2OPInstruction(unsigned int opcode, ZParam &param1, ZParam &param2, std::string showName) {
     bool param1IsVariable = param1.isVariableArgument();
     bool param2IsVariable = param2.isVariableArgument();
-    bool param1IsName = param1.isNameParam;
-    bool param2IsName = param2.isNameParam;
+    bool param1IsName = param1.isNameParam || param1.isRoutine;
+    bool param2IsName = param2.isNameParam || param2.isRoutine;
     bitset<8> opcodeByte = bitset<8>(opcode);
     bool longForm = true; // used for 2 operands
 
@@ -98,10 +98,10 @@ void ZCodeRoutine::generate2OPInstruction(unsigned int opcode, ZParam &param1, Z
         if (param2IsVariable) {
             opcodeByte.set(5, true);
         }
-        this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(opcodeByte)));
+        this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(opcodeByte,showName)));
         parameters.push_back(bitset<8>(param1.getZCodeValue()));
         parameters.push_back(bitset<8>(param2.getZCodeValue()));
-        this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(parameters,showName)));
+        this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(parameters)));
     } else {
         // variable form needed for large constants
         opcodeByte.set(7, true);
@@ -147,6 +147,13 @@ void ZCodeRoutine::generateTypeBitsetAndParameterBitsets(std::vector<std::unique
             std::string name = params[param]->name;
             instructions.push_back(
                     shared_ptr<ZCodeObject>(new ZCodeCallAdress(Utils::dynamicMemory->getOrCreateLabel(name), false)));
+        } else if (params[param]->isRoutine) {
+            //directive
+            paramTypes.set(i, false);
+            paramTypes.set(i - 1, false);
+            std::string name = params[param]->name;
+            instructions.push_back(
+                    shared_ptr<ZCodeObject>(new ZCodeCallAdress(ZCodeRoutine::getOrCreateRoutine(name,0), true)));
         } else if (params[param]->getZCodeValue() < 256) {
             // type small constant
             paramTypes.set(i, false);
