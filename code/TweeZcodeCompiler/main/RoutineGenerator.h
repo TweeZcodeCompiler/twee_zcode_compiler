@@ -111,7 +111,7 @@ public:
 
     void printString(std::vector<std::unique_ptr<ZParam>> params);
 
-    void printAddress(std::vector<std::unique_ptr<ZParam>> params);
+    void printAddress(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> &dynamicMemory);
 
     void printNum(std::vector<std::unique_ptr<ZParam>> params);
 
@@ -168,15 +168,19 @@ public:
 
     void pull(std::vector<std::unique_ptr<ZParam>> params);
 
-    void loadb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void loadb(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
-    void loadw(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void loadw(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
     void storeb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
     void storew(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
+    void outputStream(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemory);
+
     void push(std::vector<std::unique_ptr<ZParam>> params);
+
+    void point(std::vector<std::unique_ptr<ZParam>> params,std::shared_ptr<ZCodeContainer> &dynamicMemory);
 
 
     /*
@@ -260,6 +264,8 @@ public:
                 PULL = 233,
         //VAR:231 7 random range -> (result)
                 RANDOM = 231,
+        //VAR:243 13 3 output_stream number table
+                OUTPUT_STREAM = 243
 
 
         /*

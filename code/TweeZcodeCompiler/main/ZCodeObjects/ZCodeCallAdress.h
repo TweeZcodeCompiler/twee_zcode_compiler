@@ -21,6 +21,7 @@ public:
     }
     ZCodeCallAdress(std::shared_ptr<ZCodeObject> routine, bool isPackaged) : routine(routine){
         this->isPackaged = isPackaged;
+        setSize(2);
     }
 };
 

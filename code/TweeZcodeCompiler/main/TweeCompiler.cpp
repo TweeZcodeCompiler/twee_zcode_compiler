@@ -226,7 +226,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
                 .store(GLOB_CURRENT_PASSAGE_ID, idLocal)
                 .add(GLOB_CURRENT_PASSAGE_ID, "1", GLOB_CURRENT_PASSAGE_ID);
-
+        
         // update visited array
         ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
                 .add(passageCount, "1", passageCount)

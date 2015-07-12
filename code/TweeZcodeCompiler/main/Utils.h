@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <map>
 #include <set>
+#include "ZCodeObjects/ZCodeContainer.h"
 
 class Utils {
 
@@ -32,6 +33,8 @@ public:
     static bool contains(std::set<T> set, T elem) {
         return (std::find(set.begin(), set.end(), elem) != set.end());
     }
+
+    static std::shared_ptr<ZCodeContainer> dynamicMemory;
 };
 
 
