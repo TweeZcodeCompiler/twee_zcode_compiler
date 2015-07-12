@@ -478,7 +478,7 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     //  print passage contents
     for (auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
         BodyPart *bodyPart = it->get();
-        bodyPart->accept(dynamic_cast<IBodyPartsVisitor &>(*this));
+        bodyPart->accept(*this);
     }
 
     // unclosed if-macro
