@@ -9,9 +9,17 @@ set(SOURCE_FILES ZCodeConverter.cpp ZCodeConverter.h
                                              ZCodeObjects/ZCodeObject.cpp ZCodeObjects/ZCodeObject.h ZCodeObjects/ZCodeContainer.cpp ZCodeObjects/ZCodeContainer.h ZCodeObjects/ZCodeInstruction.cpp ZCodeObjects/ZCodeInstruction.h ZCodeObjects/ZCodeRoutine.cpp ZCodeObjects/ZCodeRoutine.h ZCodeObjects/ZCodeJump.cpp ZCodeObjects/ZCodeJump.h ZCodeObjects/ZCodeMemorySpace.cpp ZCodeObjects/ZCodeMemorySpace.h ZCodeObjects/ZCodePkgAdrrPadding.cpp ZCodeObjects/ZCodePkgAdrrPadding.h
                                              ZCodeObjects/ZCodeCallAdress.cpp ZCodeObjects/ZCodeCallAdress.h ZCodeObjects/ZCodeLabel.cpp ZCodeObjects/ZCodeLabel.h)
 add_executable(TweeZcodeCompiler ${SOURCE_FILES} main.cpp ZAssemblyGenerator.cpp ZAssemblyGenerator.h TweeCompiler.cpp TweeCompiler.h
-Utils.cpp Utils.h Jumps.cpp Jumps.h OpcodeParameterGenerator.cpp OpcodeParameterGenerator.h AssemblyParser.cpp AssemblyParser.h ITweeCompiler.cpp ITweeCompiler.h ArgsCommand.cpp ArgsCommand.h )
+Utils.cpp Utils.h Jumps.cpp Jumps.h OpcodeParameterGenerator.cpp OpcodeParameterGenerator.h AssemblyParser.cpp AssemblyParser.h ITweeCompiler.cpp ITweeCompiler.h ArgsCommand.cpp ArgsCommand.h AALibTest.cpp AALibTest.h AALibTest.cpp AALibTest.h)
 
 target_link_libraries (TweeZcodeCompiler TweeParser)
+
+
+if(AA_FOUND)
+	target_link_libraries(TweeZcodeCompiler ${AA_LIBRARY})
+else()
+	message(STATUS "AA not found, will not build AA interface")
+endif()
+
 
 add_executable(TestCompiler ${SOURCE_FILES} test/MainTest.cpp test/BinaryFileWriterTest.h test/BinaryFileWriterTest.cpp
         test/RoutineGeneratorTest.h test/RoutineGeneratorTest.cpp test/Test.cpp test/Test.h test/ZCodeHeaderTest.cpp

@@ -7,6 +7,7 @@
 #include "UserSideFormatter.h"
 #include "TweeCompiler.h"
 #include "ArgsCommand.h"
+#include "AALibTest.h"
 
 /*
  * How to use Logger:
@@ -36,6 +37,9 @@ void handler()
 int main(int argc, char **argv) {
     // install exception handler
     std::set_terminate(handler);
+
+    AALibTest test;
+    test.test();
 
     std::string invocation = argv[0];
     //get cmdargs
