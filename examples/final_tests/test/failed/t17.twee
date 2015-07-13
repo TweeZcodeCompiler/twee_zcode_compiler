@@ -1,0 +1,22 @@
+::Start
+Hello World
+[[Moon]]
+text text
+[[Mars1]]
+text text
+[[Mars1]]
+text text
+
+::Moon
+I am the moon
+
+::Venus
+I am Venus
+
+::Mars
+I am Mars
+
+::Mars1
+I am Mars 1
+
+
