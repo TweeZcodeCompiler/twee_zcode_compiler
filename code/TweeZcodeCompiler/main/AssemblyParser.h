@@ -74,6 +74,7 @@ private:
     static const std::string SET_CURSOR;
     static const std::string GET_WINDOW_PROPERTY;
     static const std::string WINDOW_STYLE;
+    static const std::string SCROLL_WINDOW;
 
 
     unsigned currentLineNumber;

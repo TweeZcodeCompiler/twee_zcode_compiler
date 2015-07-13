@@ -192,6 +192,8 @@ public:
 
     void windowStyle(std::vector<std::unique_ptr<ZParam>> params);
 
+    void scrollWindow(std::vector<std::unique_ptr<ZParam>> params);
+
     /*
      *      Enumerations
      */
@@ -292,7 +294,8 @@ public:
                 MOUSE_WINDOW = 23,
                 READ_MOUSE = 22,
                 GET_WINDOW_PROPERTY = 19,
-                WINDOW_STYLE = 18
+                WINDOW_STYLE = 18,
+                SCROLL_WINDOW = 20
     };
 
     enum BranchOffset {
