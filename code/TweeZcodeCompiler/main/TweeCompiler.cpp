@@ -625,10 +625,18 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.mod("sp", "sp", "sp");
                 break;
             case BinOps::AND:
-                ASSGEN.land("sp", "sp", "sp");
+                ASSGEN.mul("sp", "sp", "sp");
                 break;
             case BinOps::OR:
-                ASSGEN.lor("sp", "sp", "sp");
+                labels = makeLabels("or");
+                ASSGEN.jumpNotEquals(std::string("sp") + " " + "0", labels.first)
+                        .push("0")
+                        .jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first)
+                        .push("0")
+                        .jump(labels.second)
+                        .addLabel(labels.first)
+                        .push("1")
+                        .addLabel(labels.second);
                 break;
             case BinOps::TO:
                 // TODO: check if this is right
@@ -697,7 +705,13 @@ void TweeCompiler::evalExpression(Expression *expression) {
         TweeCompiler::evalExpression(unOp->getExpression().get());
         switch (unOp->getOperator()) {
             case UnOps::NOT:
-                ASSGEN.lnot("sp", "sp");
+                labels = makeLabels("not");
+                ASSGEN.jumpEquals(std::string("sp") + " " + "0", labels.first)
+                        .push("0")
+                        .jump(labels.second)
+                        .addLabel(labels.first)
+                        .push("1")
+                        .addLabel(labels.second);
                 break;
             case UnOps::PLUS:
                 ASSGEN.push("0");
