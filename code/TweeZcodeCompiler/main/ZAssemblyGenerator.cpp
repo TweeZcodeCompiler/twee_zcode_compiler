@@ -85,7 +85,7 @@ namespace instruction {
     INST_TYPE MOUSE_WINDOW = "mouse_window";
     INST_TYPE GET_CURSOR = "get_cursor";
     INST_TYPE SET_CURSOR = "set_cursor";
-    INST_TYPE GET_WINDOW_PROPERTY = "get_window_property";
+    INST_TYPE GET_WINDOW_PROPERTY = "get_wind_prop";
 }
 
 ZAssemblyGenerator::ZAssemblyGenerator(ostream &out) : out(out) { }

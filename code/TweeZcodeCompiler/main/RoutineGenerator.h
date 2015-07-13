@@ -196,6 +196,8 @@ public:
 
     void putWindProp(std::vector<std::unique_ptr<ZParam>> params);
 
+    void setWindow(std::vector<std::unique_ptr<ZParam>> params);
+
     /*
      *      Enumerations
      */
@@ -280,7 +282,9 @@ public:
         //OPCODE: store cursor position in array
                 GET_CURSOR = 240,
         //OPCODE: set cursor position
-                SET_CURSOR = 239
+                SET_CURSOR = 239,
+        //OPCODE: set used window to print
+                SET_WINDOW = 235
 
 
         /*
