@@ -837,6 +837,15 @@ void RoutineGenerator::scrollWindow(vector<unique_ptr<ZParam>> params) {
     addBitset(generated, "scroll_window");
 }
 
+void RoutineGenerator::putWindProp(std::vector<std::unique_ptr<ZParam>> params) {
+    debug("put_wind_prop");
+    checkParamCount(params, 3);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+
+    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(PUT_WIND_PROP, params);
+    addBitset(generated, "put_wind_prop");
+}
+
 void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
     typedef map<size_t, string>::iterator it_type;
     for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {
