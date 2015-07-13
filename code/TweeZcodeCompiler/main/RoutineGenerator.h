@@ -190,6 +190,8 @@ public:
 
     void loadb(std::vector<std::unique_ptr<ZParam>> &params);
 
+    void windowStyle(std::vector<std::unique_ptr<ZParam>> params);
+
     /*
      *      Enumerations
      */
@@ -289,7 +291,8 @@ public:
     enum ExtendedOpcode : unsigned int {
                 MOUSE_WINDOW = 23,
                 READ_MOUSE = 22,
-                GET_WINDOW_PROPERTY = 19
+                GET_WINDOW_PROPERTY = 19,
+                WINDOW_STYLE = 18
     };
 
     enum BranchOffset {

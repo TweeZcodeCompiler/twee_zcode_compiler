@@ -819,6 +819,15 @@ void RoutineGenerator::getWindowProperty(vector<unique_ptr<ZParam>> params) {
     routine->add(targetObject);
 }
 
+void RoutineGenerator::windowStyle(std::vector<std::unique_ptr<ZParam>> params) {
+    debug("window_style");
+    checkParamCount(params, 3);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+
+    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(WINDOW_STYLE, params);
+    addBitset(generated, "window_style");
+}
+
 void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
     typedef map<size_t, string>::iterator it_type;
     for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {

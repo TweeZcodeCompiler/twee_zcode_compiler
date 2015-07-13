@@ -73,6 +73,7 @@ private:
     static const std::string GET_CURSOR;
     static const std::string SET_CURSOR;
     static const std::string GET_WINDOW_PROPERTY;
+    static const std::string WINDOW_STYLE;
 
 
     unsigned currentLineNumber;
