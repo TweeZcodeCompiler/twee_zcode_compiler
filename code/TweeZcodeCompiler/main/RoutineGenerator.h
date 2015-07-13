@@ -198,6 +198,8 @@ public:
 
     void setWindow(std::vector<std::unique_ptr<ZParam>> params);
 
+    void windowSize(std::vector<std::unique_ptr<ZParam>> params);
+
     /*
      *      Enumerations
      */
@@ -302,7 +304,8 @@ public:
                 GET_WINDOW_PROPERTY = 19,
                 WINDOW_STYLE = 18,
                 SCROLL_WINDOW = 20,
-                PUT_WIND_PROP = 25
+                PUT_WIND_PROP = 25,
+                WINDOW_SIZE = 17
     };
 
     enum BranchOffset {
