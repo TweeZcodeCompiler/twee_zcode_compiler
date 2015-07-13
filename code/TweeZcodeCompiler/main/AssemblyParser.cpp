@@ -74,6 +74,7 @@ const string AssemblyParser::SCROLL_WINDOW = "scroll_window";
 const string AssemblyParser::PUT_WIND_PROP = "put_wind_prop";
 const string AssemblyParser::SET_WINDOW = "set_window";
 const string AssemblyParser::WINDOW_SIZE = "window_size";
+const string AssemblyParser::SET_MARGINS = "set_margins";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
@@ -659,6 +660,9 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::WINDOW_SIZE) == 0) {
         LOG_DEBUG << ":::::: new window_size";
         routineGenerator.windowSize(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::SET_MARGINS) == 0) {
+        LOG_DEBUG << ":::::: new set_margins";
+        routineGenerator.setMargins(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label;

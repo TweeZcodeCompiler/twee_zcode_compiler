@@ -78,6 +78,7 @@ private:
     static const std::string PUT_WIND_PROP;
     static const std::string SET_WINDOW;
     static const std::string WINDOW_SIZE;
+    static const std::string SET_MARGINS;
 
 
     unsigned currentLineNumber;

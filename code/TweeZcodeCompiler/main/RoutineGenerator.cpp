@@ -864,6 +864,15 @@ void RoutineGenerator::windowSize(vector<unique_ptr<ZParam>> params) {
     addBitset(generated, "window_size");
 }
 
+void RoutineGenerator::setMargins(vector<unique_ptr<ZParam>> params) {
+    debug("set_margins");
+    checkParamCount(params, 3);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+
+    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(SET_MARGINS, params);
+    addBitset(generated, "set_margins");
+}
+
 void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
     typedef map<size_t, string>::iterator it_type;
     for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {
