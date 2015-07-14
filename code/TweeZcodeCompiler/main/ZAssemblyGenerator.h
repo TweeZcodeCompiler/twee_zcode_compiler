@@ -154,6 +154,8 @@ public:
 
     ZAssemblyGenerator &eraseWindow(std::string window);
 
+    ZAssemblyGenerator &windowStyle(std::string window, std::string flags, std::string operation);
+
 
 private:
     std::ostream &out;

@@ -80,6 +80,8 @@ private:
     static const std::string WINDOW_SIZE;
     static const std::string SET_MARGINS;
     static const std::string ERASE_WINDOW;
+    static const std::string RESTORE_UNDO;
+    static const std::string SAVE_UNDO;
 
 
     unsigned currentLineNumber;

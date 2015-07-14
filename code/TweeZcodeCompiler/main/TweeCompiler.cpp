@@ -83,7 +83,8 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         GLOB_TABLE_MOUSE_LINKS_NEXT = "MOUSE_LINKS_NEXT",
         UPDATE_MOUSE_TABLE_BEFORE_ROUTINE = "UPDATE_MOUSE_TABLE_BEFORE_ROUTINE",
         UPDATE_MOUSE_TABLE_AFTER_ROUTINE = "UPDATE_MOUSE_TABLE_AFTER_ROUTINE",
-        CLEAR_MOUSE_TABLE_ROUTINE = "CLEAR_MOUSE_TABLE_ROUTINE";
+        CLEAR_MOUSE_TABLE_ROUTINE = "CLEAR_MOUSE_TABLE_ROUTINE",
+        GLOB_LINES_PRINTED = "LINES_PRINTED";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 static const unsigned int MAX_MOUSE_LINKS = 20;
@@ -233,7 +234,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             .addGlobal(GLOB_CURRENT_PASSAGE_ID)
             .addGlobal(GLOB_TURNS_COUNT)
             .addGlobal(GLOB_INTERPRETER_SUPPORTS_MOUSE)
-            .addGlobal(GLOB_TABLE_MOUSE_LINKS_NEXT);
+            .addGlobal(GLOB_TABLE_MOUSE_LINKS_NEXT)
+            .addGlobal(GLOB_LINES_PRINTED);
 
 
     // main routine
@@ -481,7 +483,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.eraseWindow("0")
                 .eraseWindow("1")
-                .store(GLOB_TABLE_MOUSE_LINKS_NEXT, "1");
+                .store(GLOB_TABLE_MOUSE_LINKS_NEXT, "1")
+                .store(GLOB_LINES_PRINTED, "1");
 
         ASSGEN.loadb("33", "0", varCharWidth)
                 .sub(varCharWidth, "4", varCharWidth)
@@ -489,14 +492,16 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .sub(varLineCount, "4", varLineCount);
 
         ASSGEN.getWindowProperty("0", "2", varYSize)
-                .getWindowProperty("0", "3", varXSize);
-                //.putWindowProperty("0", "15", "-999")    // set lineCount to -999 -> interpreter will not show [[MORE]]
-                //.putWindowProperty("1", "15", "-999");
+                .getWindowProperty("0", "3", varXSize)
+                .windowStyle("0", "15", "0")
+                .windowStyle("1", "15", "0")
+                .putWindowProperty("0", "15", "-999")    // set lineCount to -999 -> interpreter will not show [[MORE]]
+                .putWindowProperty("1", "15", "-999");
 
         ASSGEN.windowSize("1", varYSize, varXSize)
                 .setMargins(to_string(MARGIN_LEFT), to_string(MARGIN_RIGHT), "0");
 
-        ASSGEN.setWindow("1");
+        /*ASSGEN.setWindow("1");
 
         ASSGEN.newline()
                 .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
@@ -527,7 +532,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
                 .print(" V  ");
 
-        ASSGEN.setWindow("0");
+        ASSGEN.setWindow("0");*/
 
 
         ASSGEN.addLabel("no_mouse")
@@ -714,7 +719,13 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                 ASSGEN.call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, to_string(id));
             }
         } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
-            ASSGEN.newline();
+            ASSGEN.newline()
+                    .add(GLOB_LINES_PRINTED, "1", GLOB_LINES_PRINTED)
+                    .loadb("32", 0, "sp")
+                    .sub("sp", "5", "sp")
+                    .jumpLess(GLOB_LINES_PRINTED + " sp", "doNothing")
+
+                    .addLabel("doNothing");
         } else if (Display *display = dynamic_cast<Display *>(bodyPart)) {
             string targetPassage = display->getPassage();
             int targetId;

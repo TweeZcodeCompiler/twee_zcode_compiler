@@ -882,6 +882,36 @@ void RoutineGenerator::eraseWindow(vector<unique_ptr<ZParam>> params) {
     addBitset(generated, "erase_window");
 }
 
+void RoutineGenerator::saveUndo(vector<unique_ptr<ZParam>> params) {
+    debug("save_undo");
+    checkParamCount(params, 1);
+    checkParamType(params,  STORE_ADDRESS);
+
+    vector<unique_ptr<ZParam>> p;
+    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(SAVE_UNDO, p);
+    addBitset(generated, "save_undo");
+
+    vector<bitset<8>> target;
+    target.push_back(bitset<8>((*move(params.at(0))).getZCodeValue()));
+    auto targetObject = shared_ptr<ZCodeObject>(new ZCodeInstruction(target, "save_undo"));
+    routine->add(targetObject);
+}
+
+void RoutineGenerator::restoreUndo(vector<unique_ptr<ZParam>> params) {
+    debug("restore_undo");
+    checkParamCount(params, 1);
+    checkParamType(params,  STORE_ADDRESS);
+
+    vector<unique_ptr<ZParam>> p;
+    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(RESTORE_UNDO, p);
+    addBitset(generated, "restore_undo");
+
+    vector<bitset<8>> target;
+    target.push_back(bitset<8>((*move(params.at(0))).getZCodeValue()));
+    auto targetObject = shared_ptr<ZCodeObject>(new ZCodeInstruction(target, "restore_undo"));
+    routine->add(targetObject);
+}
+
 void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
     typedef map<size_t, string>::iterator it_type;
     for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {

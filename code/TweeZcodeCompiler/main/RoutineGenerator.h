@@ -204,6 +204,10 @@ public:
 
     void eraseWindow(std::vector<std::unique_ptr<ZParam>> params);
 
+    void saveUndo(std::vector<std::unique_ptr<ZParam>> params);
+
+    void restoreUndo(std::vector<std::unique_ptr<ZParam>> params);
+
     /*
      *      Enumerations
      */
@@ -312,7 +316,9 @@ public:
                 SCROLL_WINDOW = 20,
                 PUT_WIND_PROP = 25,
                 WINDOW_SIZE = 17,
-                SET_MARGINS = 8
+                SET_MARGINS = 8,
+                SAVE_UNDO = 9,
+                RESTORE_UNDO = 10
     };
 
     enum BranchOffset {

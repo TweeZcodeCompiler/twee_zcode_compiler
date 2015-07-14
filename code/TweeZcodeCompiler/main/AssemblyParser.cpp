@@ -667,6 +667,12 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::ERASE_WINDOW) == 0) {
         LOG_DEBUG << ":::::: new erase_window";
         routineGenerator.eraseWindow(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::SAVE_UNDO) == 0) {
+        LOG_DEBUG << ":::::: new save_undo";
+        routineGenerator.saveUndo(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::RESTORE_UNDO) == 0) {
+        LOG_DEBUG << ":::::: new restore_undo";
+        routineGenerator.restoreUndo(parseArguments(command));
     } else if (commandPart.at(commandPart.size() - 1) == ':') {
         string label = commandPart.substr(0, commandPart.size() - 1);
         LOG_DEBUG << ":::::: new label: " << label;
