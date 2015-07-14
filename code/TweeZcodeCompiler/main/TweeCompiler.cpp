@@ -67,6 +67,10 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         START_PASSAGE_NAME = "Start",
         GLOB_PREVIOUS_PASSAGE_ID = "PREVIOUS_PASSAGE_ID",
         GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID",
+
+        // mouse vars, routines & tables
+        // mouse link table: one link needs 4 entries: lineNumber, charStart, charEnd, passageNumber
+
         MOUSE_CLICK_ROUTINE = "mouseClick",
         TABLE_CURSOR = "TABLE_CURSOR",
         TABLE_CURSOR_TO_MOUSE_CLICK = "TABLE_CURSOR_TO_MOUSE_CLICK",
@@ -74,7 +78,11 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         GLOB_INTERPRETER_SUPPORTS_MOUSE = "INTERPRETER_SUPPORTS_MOUSE",
         SUPPORTS_MOUSE_ROUTINE = "SUPPORTS_MOUSE_ROUTINE",
         UPDATE_MOUSE_SCREEN_ROUTINE = "UPDATE_MOUSE_SCREEN_ROUTINE",
-        PRINT_SPACES_ROUTINE = "PRINT_SPACES_ROUTINE";
+        PRINT_SPACES_ROUTINE = "PRINT_SPACES_ROUTINE",
+        TABLE_MOUSE_LINKS = "MOUSE_LINKS",
+        GLOB_TABLE_MOUSE_LINKS_NEXT = "MOUSE_LINKS_NEXT",
+        UPDATE_MOUSE_TABLE_BEFORE_ROUTINE = "UPDATE_MOUSE_TABLE_BEFORE_ROUTINE",
+        UPDATE_MOUSE_TABLE_AFTER_ROUTINE = "UPDATE_MOUSE_TABLE_AFTER_ROUTINE";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -198,6 +206,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // tables needed for routine linking
     ASSGEN.addByteArray(TABLE_LINKED_PASSAGES, (unsigned) passages.size());
     ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned) passages.size());
+    ASSGEN.addByteArray(TABLE_MOUSE_LINKS, 20 * 4); // maximum of 20 links per page of a passage possible
 
     ASSGEN.addWordArray(TABLE_VISITED_PASSAGE_COUNT, (unsigned) passages.size());
     ASSGEN.addWordArray(TABLE_CURSOR, 2);
@@ -211,7 +220,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             .addGlobal(GLOB_PREVIOUS_PASSAGE_ID)
             .addGlobal(GLOB_CURRENT_PASSAGE_ID)
             .addGlobal(GLOB_TURNS_COUNT)
-            .addGlobal(GLOB_INTERPRETER_SUPPORTS_MOUSE);
+            .addGlobal(GLOB_INTERPRETER_SUPPORTS_MOUSE)
+            .addGlobal(GLOB_TABLE_MOUSE_LINKS_NEXT);
 
 
     // main routine
@@ -327,7 +337,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .loadw(TABLE_CURSOR, "0", varYCursor);
 
         ASSGEN.div(varYMouse, fontSize, varYLineClick)
-                        .add(varYLineClick, "1", varYLineClick);
+                .add(varYLineClick, "1", varYLineClick);
 
         ASSGEN.push(varYCursor)
                 .sub("sp", "2", "sp")
@@ -384,6 +394,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "no_mouse");
 
+        ASSGEN.eraseWindow("0")
+                .eraseWindow("1")
+                .store(GLOB_TABLE_MOUSE_LINKS_NEXT, "0");
+
         ASSGEN.loadb("33", "0", varCharWidth)
                 .sub(varCharWidth, "4", varCharWidth)
                 .loadb("32", "0", varLineCount)
@@ -433,6 +447,36 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.addLabel("no_mouse")
                 .ret("0");
+
+        // UPDATE_MOUSE_TABLE_BEFORE_ROUTINE
+
+        ASSGEN.addRoutine(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE)
+                .jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "no_mouse")
+                .getCursor(TABLE_CURSOR)
+                .loadw(TABLE_CURSOR, "0", "sp") // line number of cursor
+                .storeb(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
+                .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
+                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
+                .storeb(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
+                .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
+                .addGlobal("no_mouse")
+                .ret("0");
+
+        // UPDATE_MOUSE_TABLE_BEFORE_ROUTINE
+
+        string varId = "passage_id";
+
+        ASSGEN.addRoutine(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, {ZRoutineArgument(varId)})
+                .jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "no_mouse")
+                .getCursor(TABLE_CURSOR)
+                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
+                .storeb(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
+                .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
+                .storeb(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, varId)
+                .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
+                .addGlobal("no_mouse")
+                .ret("0");
+
 
         // helper routine
 
@@ -571,6 +615,11 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                 }
 
                 ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
+                ASSGEN.call_1n(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE);
+
+                ASSGEN.print(link->getTarget());
+
+                ASSGEN.call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, to_string(id));
             }
         } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
             ASSGEN.newline();
