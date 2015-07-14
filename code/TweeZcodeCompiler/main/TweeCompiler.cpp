@@ -288,10 +288,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         string labelThreeOn = "THREE_ON";
 
         vector<ZRoutineArgument> args;
-        args.push_back(ZRoutineArgument(varCounter));
-        args.push_back(ZRoutineArgument(varResult));
         args.push_back(
                 ZRoutineArgument(varFormatType));    // This value will be set via call_vs TEXT_FORMAT_ROUTINE 1 -> sp
+        args.push_back(ZRoutineArgument(varCounter));
+        args.push_back(ZRoutineArgument(varResult));
         ASSGEN.addRoutine(TEXT_FORMAT_ROUTINE, args);
 
         ASSGEN.jumpEquals(string(varFormatType + " 0"), string("~" + labelNotZero))
