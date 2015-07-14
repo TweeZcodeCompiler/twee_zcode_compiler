@@ -92,6 +92,8 @@ namespace instruction {
     INST_TYPE WINDOW_SIZE = "window_size";
     INST_TYPE ERASE_WINDOW = "erase_window";
     INST_TYPE WINDOW_STYLE = "window_style";
+    INST_TYPE RESTORE_UNDO = "restore_undo";
+    INST_TYPE SAVE_UNDO = "save_undo";
 }
 
 ZAssemblyGenerator::ZAssemblyGenerator(ostream &out) : out(out) { }
@@ -415,6 +417,14 @@ ZAssemblyGenerator &ZAssemblyGenerator::eraseWindow(std::string window) {
 
 ZAssemblyGenerator &ZAssemblyGenerator::windowStyle(std::string window, std::string flags, std::string operation) {
     return addInstruction(instruction::WINDOW_STYLE, makeArgs({window, flags, operation}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::saveUndo(std::string target) {
+    return addInstruction(instruction::SAVE_UNDO, nullopt, nullopt, target);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::restoreUndo(std::string target) {
+    return addInstruction(instruction::RESTORE_UNDO, nullopt, nullopt, target);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::nop() {

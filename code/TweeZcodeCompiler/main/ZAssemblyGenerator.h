@@ -156,6 +156,9 @@ public:
 
     ZAssemblyGenerator &windowStyle(std::string window, std::string flags, std::string operation);
 
+    ZAssemblyGenerator &saveUndo(std::string target);
+
+    ZAssemblyGenerator &restoreUndo(std::string target);
 
 private:
     std::ostream &out;

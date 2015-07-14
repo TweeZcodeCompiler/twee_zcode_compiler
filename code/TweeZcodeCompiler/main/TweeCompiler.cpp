@@ -84,7 +84,9 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         UPDATE_MOUSE_TABLE_BEFORE_ROUTINE = "UPDATE_MOUSE_TABLE_BEFORE_ROUTINE",
         UPDATE_MOUSE_TABLE_AFTER_ROUTINE = "UPDATE_MOUSE_TABLE_AFTER_ROUTINE",
         CLEAR_MOUSE_TABLE_ROUTINE = "CLEAR_MOUSE_TABLE_ROUTINE",
-        GLOB_LINES_PRINTED = "LINES_PRINTED";
+        GLOB_LINES_PRINTED = "LINES_PRINTED",
+        PAUSE_PRINTING_ROUTINE = "PAUSE_PRINTING_ROUTINE",
+        GLOB_NEXT_PASSAGE_ID = "NEXT_PASSAGE_ID";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 static const unsigned int MAX_MOUSE_LINKS = 20;
@@ -170,7 +172,7 @@ string makeUserInputRoutine() {
             "    jump ?fetch_userinput_lookup\n"
 
             "mouse_supported:\n"
-            "    call_vs mouseClick selectcount -> sp\n"
+            "    call_vs mouseClick 0 -> sp\n"
             "fetch_userinput_lookup:\n"
 
             "\n"
@@ -235,7 +237,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             .addGlobal(GLOB_TURNS_COUNT)
             .addGlobal(GLOB_INTERPRETER_SUPPORTS_MOUSE)
             .addGlobal(GLOB_TABLE_MOUSE_LINKS_NEXT)
-            .addGlobal(GLOB_LINES_PRINTED);
+            .addGlobal(GLOB_LINES_PRINTED)
+            .addGlobal(GLOB_NEXT_PASSAGE_ID);
 
 
     // main routine
@@ -251,12 +254,20 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .call_1n(SUPPORTS_MOUSE_ROUTINE)
                 .call_1n(ROUTINE_CLEAR_TABLES)
                 .call_1n(CLEAR_MOUSE_TABLE_ROUTINE)
-                .call_vn(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))));
+                .call_vn(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))))
+                .store(GLOB_NEXT_PASSAGE_ID, "-1");
 
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
+                .jumpEquals(GLOB_NEXT_PASSAGE_ID + " -1", "displayLinks")
+                .store(LOCAL_NEXT_PASSAGE, GLOB_NEXT_PASSAGE_ID)
+                .store(GLOB_NEXT_PASSAGE_ID, "-1")
+                .jump("callRoutines")
+                .addLabel("displayLinks")
                 .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, LOCAL_NEXT_PASSAGE)
+                .addLabel("callRoutines")
                 .jumpLower(ASSGEN.makeArgs({LOCAL_NEXT_PASSAGE, "0"}), "end_program")
                 .call_1n(ROUTINE_CLEAR_TABLES)
+                .call_1n(CLEAR_MOUSE_TABLE_ROUTINE)
                 .call_vn(ROUTINE_PASSAGE_BY_ID, LOCAL_NEXT_PASSAGE)
                 .jump(LABEL_MAIN_LOOP);
 
@@ -325,10 +336,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         // mouse click routine
 
         string varKey = "key", varXMouse = "xMouse", varYLineClick = "yMouseLineClick", varXMouseClick = "xMouseClick", varYMouse = "yMouse", varFontSize = "fontSize";
-        string varSelectableLinks = "selectableLinks", varFirstLinkLine = "firstLinkLine", varMouseTableIndex = "mouseTableIndex", varI = "i", varCharWidth = "charWidth";
+        string varClickSomewhere = "clickSomewhere", varFirstLinkLine = "firstLinkLine", varMouseTableIndex = "mouseTableIndex", varI = "i", varCharWidth = "charWidth";
 
         vector<ZRoutineArgument> args;
-        args.push_back(ZRoutineArgument(varSelectableLinks));   // needs to be set by call command
+        args.push_back(ZRoutineArgument(varClickSomewhere));   // needs to be set by call command
         args.push_back(ZRoutineArgument(varKey));
         args.push_back(ZRoutineArgument(varXMouse));
         args.push_back(ZRoutineArgument(varYMouse));
@@ -399,8 +410,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.store(varMouseTableIndex, "1");
         ASSGEN.addLabel("LINKS_ENTRIES")
                 .loadw(TABLE_MOUSE_LINKS, varMouseTableIndex, varI)
-                .jumpGreaterEquals(varMouseTableIndex + " " + GLOB_TABLE_MOUSE_LINKS_NEXT, "MOUSE_CLICK_LOOP")    // there are no more links saved in table
-                .jumpGreater(varMouseTableIndex + " " + to_string(MAX_MOUSE_LINKS * 4), "MOUSE_CLICK_LOOP")       // all 20 links are checked
+                .jumpGreaterEquals(varMouseTableIndex + " " + GLOB_TABLE_MOUSE_LINKS_NEXT, "ALL_ENTRIES_CHECKED")    // there are no more links saved in table
+                .jumpGreater(varMouseTableIndex + " " + to_string(MAX_MOUSE_LINKS * 4), "ALL_ENTRIES_CHECKED")       // all 20 links are checked
                 .jumpEquals(varYLineClick + " " + varI, "CORRECT_LINE")
                 .add(varMouseTableIndex, "4", varMouseTableIndex)
                 .jump("LINKS_ENTRIES");
@@ -424,6 +435,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .loadw(TABLE_MOUSE_LINKS, varMouseTableIndex, varI)
                 .print("clicked")
                 .ret(varI);
+
+        ASSGEN.addLabel("ALL_ENTRIES_CHECKED")
+                .jumpEquals(varClickSomewhere + " 0", "MOUSE_CLICK_LOOP")
+                .ret("-1");
 
 
         /*ASSGEN.push(varYCursor)
@@ -576,6 +591,18 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .jumpLess("i " + to_string(MAX_MOUSE_LINKS * 4), "loop")
                 .ret("0");
 
+        // PAUSE_PRINTING_ROUTINE
+
+        ASSGEN.addRoutine(PAUSE_PRINTING_ROUTINE, {ZRoutineArgument("result")})
+                .add(GLOB_LINES_PRINTED, "1", GLOB_LINES_PRINTED)
+                .loadb("32", 0, "sp")
+                .sub("sp", "5", "sp")
+                .jumpLess(GLOB_LINES_PRINTED + " sp", "end")
+                .call_vs(MOUSE_CLICK_ROUTINE, to_string(1), "result")
+                .jumpLess("result 0", "end")
+                .store(GLOB_NEXT_PASSAGE_ID, "result")
+                .addLabel("end")
+                .ret("0");
 
         // helper routine
 
@@ -688,7 +715,8 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     // declare passage routine
     ASSGEN.addRoutine(routineNameForPassage(passage), {ZRoutineArgument("min")});
 
-    ASSGEN.println(string("***** ") + passage.getHead().getName() + string(" *****"));
+    ASSGEN.println(string("***** ") + passage.getHead().getName() + string(" *****"))
+            .saveUndo("sp");
 
     //  print passage contents
     for (auto it = bodyParts.begin(); it != bodyParts.end(); it++) {
@@ -719,13 +747,12 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
                 ASSGEN.call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, to_string(id));
             }
         } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
+            pair<string, string> labels = makeLabels("routineClicked");
             ASSGEN.newline()
-                    .add(GLOB_LINES_PRINTED, "1", GLOB_LINES_PRINTED)
-                    .loadb("32", 0, "sp")
-                    .sub("sp", "5", "sp")
-                    .jumpLess(GLOB_LINES_PRINTED + " sp", "doNothing")
-
-                    .addLabel("doNothing");
+                    .call_1n(PAUSE_PRINTING_ROUTINE)
+                    .jumpEquals(GLOB_NEXT_PASSAGE_ID + " -1", labels.first)
+                    .ret("0")
+                    .addLabel(labels.first);
         } else if (Display *display = dynamic_cast<Display *>(bodyPart)) {
             string targetPassage = display->getPassage();
             int targetId;

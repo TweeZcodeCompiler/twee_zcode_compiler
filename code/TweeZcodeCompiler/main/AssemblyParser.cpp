@@ -76,6 +76,8 @@ const string AssemblyParser::SET_WINDOW = "set_window";
 const string AssemblyParser::WINDOW_SIZE = "window_size";
 const string AssemblyParser::SET_MARGINS = "set_margins";
 const string AssemblyParser::ERASE_WINDOW = "erase_window";
+const string AssemblyParser::SAVE_UNDO = "save_undo";
+const string AssemblyParser::RESTORE_UNDO = "restore_undo";
 
 const char AssemblyParser::SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND = ' ';
 const char AssemblyParser::STRING_DELIMITER = '\"';
