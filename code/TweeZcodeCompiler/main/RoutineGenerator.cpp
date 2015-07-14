@@ -873,6 +873,15 @@ void RoutineGenerator::setMargins(vector<unique_ptr<ZParam>> params) {
     addBitset(generated, "set_margins");
 }
 
+void RoutineGenerator::eraseWindow(vector<unique_ptr<ZParam>> params) {
+    debug("erase_window");
+    checkParamCount(params, 1);
+    checkParamType(params, VARIABLE_OR_VALUE);
+
+    vector<bitset<8>> generated = opcodeGenerator.generateVarOPInstruction(ERASE_WINDOW, params);
+    addBitset(generated, "erase_window");
+}
+
 void RoutineGenerator::resolveCallInstructions(vector<bitset<8>> &zCode) {
     typedef map<size_t, string>::iterator it_type;
     for (it_type it = RoutineGenerator::callTo.begin(); it != RoutineGenerator::callTo.end(); it++) {

@@ -202,6 +202,8 @@ public:
 
     void setMargins(std::vector<std::unique_ptr<ZParam>> params);
 
+    void eraseWindow(std::vector<std::unique_ptr<ZParam>> params);
+
     /*
      *      Enumerations
      */
@@ -288,7 +290,9 @@ public:
         //OPCODE: set cursor position
                 SET_CURSOR = 239,
         //OPCODE: set used window to print
-                SET_WINDOW = 235
+                SET_WINDOW = 235,
+        //OPCODE: clears window
+                ERASE_WINDOW = 237
 
 
         /*

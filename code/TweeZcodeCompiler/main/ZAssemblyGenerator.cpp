@@ -90,6 +90,7 @@ namespace instruction {
     INST_TYPE SET_WINDOW = "set_window";
     INST_TYPE SET_MARGINS = "set_margins";
     INST_TYPE WINDOW_SIZE = "window_size";
+    INST_TYPE ERASE_WINDOW = "erase_window";
 }
 
 ZAssemblyGenerator::ZAssemblyGenerator(ostream &out) : out(out) { }
@@ -405,6 +406,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::setWindow(string window) {
 
 ZAssemblyGenerator &ZAssemblyGenerator::putWindowProperty(string window, string propertyNumber, string value) {
     return addInstruction(instruction::PUT_WINDOW_PROPERTY, makeArgs({window, propertyNumber, value}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::eraseWindow(std::string window) {
+    return addInstruction(instruction::ERASE_WINDOW, window, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::nop() {

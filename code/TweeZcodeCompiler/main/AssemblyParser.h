@@ -79,6 +79,7 @@ private:
     static const std::string SET_WINDOW;
     static const std::string WINDOW_SIZE;
     static const std::string SET_MARGINS;
+    static const std::string ERASE_WINDOW;
 
 
     unsigned currentLineNumber;

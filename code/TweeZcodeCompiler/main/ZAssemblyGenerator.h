@@ -152,6 +152,8 @@ public:
 
     ZAssemblyGenerator &putWindowProperty(std::string window, std::string propertyNumber, std::string value);
 
+    ZAssemblyGenerator &eraseWindow(std::string window);
+
 
 private:
     std::ostream &out;
