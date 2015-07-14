@@ -33,7 +33,6 @@ public:
     }
 
     void accept(IBodyPartsVisitor&) const;
-
 };
 
 #endif //SETMACRO_H

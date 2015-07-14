@@ -35,7 +35,6 @@ public:
     }
 
     void accept(IBodyPartsVisitor&) const;
-
 };
 
 #endif //IFMACRO_H

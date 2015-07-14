@@ -20,6 +20,7 @@ public:
 
     virtual Macro *clone() const = 0;
 
+    virtual void accept(IBodyPartsVisitor&) const = 0;
 };
 
 
