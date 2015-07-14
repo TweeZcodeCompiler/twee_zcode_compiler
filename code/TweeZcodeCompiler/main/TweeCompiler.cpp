@@ -155,19 +155,21 @@ string makeUserInputRoutine() {
             "    read_char 1 -> USER_INPUT\n"
             "    sub USER_INPUT 48 -> sp\n"
             "    sub sp 1 -> sp\n"
-            "    jump ?fetch_userinput_lookup\n"
-            "mouse_supported:\n"
-            "    call_vs mouseClick selectcount -> sp\n"
-            "fetch_userinput_lookup:\n"
 
             // TODO: Does work but I don know why. Was only:
             //          loadb USERINPUT_LOOKUP sp -> sp
             //       before
 
-            "    loadb USERINPUT_LOOKUP 2 -> sp\n"
+            "    loadb USERINPUT_LOOKUP sp -> sp\n"
             "    new_line"
-            "    print \" remove this output: \""
-            "    print_num sp \n"
+            // "    print \" remove this output: \""
+            // "    print_num sp \n"
+            "    jump ?fetch_userinput_lookup\n"
+
+            "mouse_supported:\n"
+            "    call_vs mouseClick selectcount -> sp\n"
+            "fetch_userinput_lookup:\n"
+
             "\n"
             "\t add TURNS 1 -> TURNS\n"
             "   ret sp"
@@ -419,7 +421,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.addLabel("CORRECT_X_ENDING")
                 .add(varMouseTableIndex, "1", varMouseTableIndex)
                 .loadw(TABLE_MOUSE_LINKS, varMouseTableIndex, varI)
-                .print("clicked").read_char("sp")
+                .print("clicked")
                 .ret(varI);
 
 
