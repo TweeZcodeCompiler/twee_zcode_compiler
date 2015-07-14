@@ -137,10 +137,12 @@ string makeUserInputRoutine() {
             "   storeb USERINPUT_LOOKUP selectcount i\n"
             "   add selectcount 1 -> sp\n"
             "   add selectcount 49 -> sp\n"
+            "   je INTERPRETER_SUPPORTS_MOUSE 1 ?mouse_is_supported\n"
             "   print_char sp\n"
             "   print \": \"\n"
             "   call_vs print_name_for_passage i -> sp\n"
             "   new_line\n"
+            "   mouse_is_supported:\n"
             "   add selectcount 1 -> selectcount\n"
             "\n"
             "   passage_not_set:\n"
@@ -336,9 +338,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         args.push_back(ZRoutineArgument(varMouseTableIndex));
         args.push_back(ZRoutineArgument(varI));
         ASSGEN.addRoutine(MOUSE_CLICK_ROUTINE, args);
-
-        ASSGEN.newline()
-                .print("Select an option with your mouse");
 
         ASSGEN.getWindowProperty("0", "13", varFontSize)
                 .div(varFontSize, "256", varFontSize);
