@@ -380,8 +380,8 @@ ZAssemblyGenerator &ZAssemblyGenerator::mouseWindow(string variable) {
     return addInstruction(instruction::MOUSE_WINDOW, variable, nullopt, nullopt);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::setCursor(string variableY, string variableX) {
-    return addInstruction(instruction::SET_CURSOR, makeArgs({variableY, variableX}), nullopt, nullopt);
+ZAssemblyGenerator &ZAssemblyGenerator::setCursor(string variableY, string variableX, string window) {
+    return addInstruction(instruction::SET_CURSOR, makeArgs({variableY, variableX, window}), nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::getCursor(string array) {

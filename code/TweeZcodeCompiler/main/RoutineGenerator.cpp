@@ -796,8 +796,8 @@ void RoutineGenerator::getCursor(string array, shared_ptr<ZCodeContainer> dynami
 
 void RoutineGenerator::setCursor(vector<unique_ptr<ZParam>> params) {
     debug("set_cursor");
-    checkParamCount(params, 2);
-    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+    checkParamCount(params, 3);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
 
     vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(SET_CURSOR, params);
     addBitset(instructions, "set_cursor");

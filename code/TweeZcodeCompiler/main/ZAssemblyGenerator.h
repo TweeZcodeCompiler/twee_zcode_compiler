@@ -136,7 +136,7 @@ public:
 
     ZAssemblyGenerator &mouseWindow(std::string variable);
 
-    ZAssemblyGenerator &setCursor(std::string variableX, std::string variableY);
+    ZAssemblyGenerator &setCursor(std::string variableY, std::string variableX, std::string window);
 
     ZAssemblyGenerator &getCursor(std::string array);
 
