@@ -34,7 +34,6 @@ public:
     }
 
     void accept(IBodyPartsVisitor&) const;
-
 };
 
 #endif //DISPLAYMACRO_H

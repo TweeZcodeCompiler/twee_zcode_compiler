@@ -1,0 +1,18 @@
+kurzer report zu den fail test files
+------------------------------------
+
+
+t2 -> 	improvable		genauere fehlermeldung warum es nicht läuft
+t3 ->   fail			endless loop in compiler
+t10 ->	fail			anstatt in frotz 1 oder 2 zu drücken wurde "a" gedrückt
+t14 ->  fail			endless loop in compiler obwohl keine gleichen namen
+t15 -> fail			kompilieren möglich danach fehler in frotz am anfang
+t17 -> improveable		wird 2 mal verlinkt auf die selbe passage kommt in twine auch zweimal 					der link vor bei uns nur einmal
+
+
+t30 -> failed			nicht möglich zu kompilieren falsch (schrifarten)
+t31 -> failed			kompilieren nicht möglich testcase zu math. operationen (obwohl in twine auch seltsam)
+
+t33 -> failed			witchgirl.twee von rust gruppe lässt sich bei uns nicht kompilieren
+t34 -> failed			positivespace.twee von rust gruppe lässt ich bei uns nicht kompilieren
+t35 -> failed			dpressionQuest.twee von rust gruppe lässt sich bei uns nicht kompilieren

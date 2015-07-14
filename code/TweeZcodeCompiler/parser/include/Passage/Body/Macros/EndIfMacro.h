@@ -21,7 +21,6 @@ public:
     }
 
     void accept(IBodyPartsVisitor&) const;
-
 };
 
 #endif //ENDIF_H

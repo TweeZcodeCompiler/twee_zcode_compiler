@@ -26,7 +26,6 @@ public:
     const std::vector<std::string>& getTags() const;
 
     std::string to_string() const;
-
 };
 
 #endif //HEAD_H

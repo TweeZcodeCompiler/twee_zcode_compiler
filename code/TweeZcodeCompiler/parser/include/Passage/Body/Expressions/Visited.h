@@ -30,7 +30,6 @@ public:
     virtual Visited *clone() const {
         return new Visited(*this);
     }
-
 };
 
 #endif //VISITED_H

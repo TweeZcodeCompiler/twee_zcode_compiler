@@ -15,13 +15,13 @@
 #include <algorithm>
 
 #include <Passage/Body/IBodyPartsVisitor.h>
-#include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
+#include <Passage/Body/Formatting.h>
+#include <Passage/Body/Link.h>
 #include <Passage/Body/Newline.h>
-#include <Passage/Body/Macros/SetMacro.h>
+
 
 #include <Passage/Body/Expressions/BinaryOperation.h>
-#include <Passage/Body/Expressions/Variable.h>
 #include <Passage/Body/Expressions/UnaryOperation.h>
 
 #include <Passage/Body/Expressions/Const.h>
@@ -32,9 +32,9 @@
 #include "Passage/Body/Expressions/Random.h"
 #include "Passage/Body/Expressions/Previous.h"
 
+#include <Passage/Body/Macros/SetMacro.h>
 #include <Passage/Body/Macros/PrintMacro.h>
 #include <Passage/Body/Macros/DisplayMacro.h>
-#include <Passage/Body/Macros/SetMacro.h>
 
 #include <Passage/Body/Macros/IfMacro.h>
 #include <Passage/Body/Macros/ElseIfMacro.h>
@@ -224,8 +224,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         const string passageCount = "passage_count";
         ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal), ZRoutineArgument(passageCount)}))
                 .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
-                .store(GLOB_CURRENT_PASSAGE_ID, idLocal);
-        
+                .store(GLOB_CURRENT_PASSAGE_ID, idLocal)
+                .add("CURRENT_PASSAGE_ID", "1", "CURRENT_PASSAGE_ID");
+
         // update visited array
         ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
                 .add(passageCount, "1", passageCount)
@@ -288,10 +289,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         string labelThreeOn = "THREE_ON";
 
         vector<ZRoutineArgument> args;
-        args.push_back(ZRoutineArgument(varCounter));
-        args.push_back(ZRoutineArgument(varResult));
         args.push_back(
                 ZRoutineArgument(varFormatType));    // This value will be set via call_vs TEXT_FORMAT_ROUTINE 1 -> sp
+        args.push_back(ZRoutineArgument(varCounter));
+        args.push_back(ZRoutineArgument(varResult));
         ASSGEN.addRoutine(TEXT_FORMAT_ROUTINE, args);
 
         ASSGEN.jumpEquals(string(varFormatType + " 0"), string("~" + labelNotZero))
@@ -367,6 +368,25 @@ bool isPreviousMacro(string link) {
 
 void TweeCompiler::visit(const Text& host) {
     ASSGEN.print(host.getContent());
+}
+void TweeCompiler::visit(const Formatting& host) {
+    switch (host.getFormat()) {
+        case Format::UNDERLINED:
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("0"), "sp");
+            break;
+        case Format::BOLD:
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("1"), "sp");
+            break;
+        case Format::ITALIC:
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("2"), "sp");
+            break;
+        case Format::MONOSPACE:
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("3"), "sp");
+            break;
+        default:
+            LOG_DEBUG << "Unknown text formatting";
+            throw TweeDocumentException("Unsupported text formatting");
+    }
 }
 
 void TweeCompiler::visit(const Link& host) {
@@ -556,6 +576,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
             ASSGEN.push("min");
 
         }
+
     } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
         LOG_DEBUG << turns->to_string();
         ASSGEN.load(GLOB_TURNS_COUNT, "sp");

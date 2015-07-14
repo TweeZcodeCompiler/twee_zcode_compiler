@@ -1,0 +1,15 @@
+::Start
+
+<<print random(-10, -1)>>
+
+<<print random(-1, -10)>>
+
+<<print random(-10, 1)>>
+
+<<print random(10, -1)>>
+
+<<print random(1, 10)>>
+
+<<print random(10, 1)>>
+
+[[Start]]

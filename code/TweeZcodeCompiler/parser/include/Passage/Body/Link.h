@@ -21,18 +21,17 @@ public:
 
     Link(std::string, std::string);
 
-    virtual Link* clone() const {
-        return new Link(*this);
-    }
-
     std::string getTarget() const;
 
     std::string getAltName() const;
 
     std::string to_string() const;
 
-    void accept(IBodyPartsVisitor&) const;
+    virtual Link* clone() const {
+        return new Link(*this);
+    }
 
+    void accept(IBodyPartsVisitor&) const;
 };
 
 

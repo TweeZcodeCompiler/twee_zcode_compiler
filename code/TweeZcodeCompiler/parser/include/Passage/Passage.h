@@ -22,7 +22,6 @@ public:
     const Body &getBody() const;
 
     std::string to_string() const;
-
 };
 
 

@@ -17,23 +17,27 @@
     #include "include/TweeFile.h"
     #include "include/Passage/Passage.h"
     #include "include/Passage/Body/Text.h"
+    #include "include/Passage/Body/Formatting.h"
     #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
     
     #include "include/Passage/Body/Macros/DisplayMacro.h"
     #include "include/Passage/Body/Macros/PrintMacro.h"
+    #include "include/Passage/Body/Macros/SetMacro.h"
+
     #include "include/Passage/Body/Macros/IfMacro.h"
     #include "include/Passage/Body/Macros/ElseIfMacro.h"
     #include "include/Passage/Body/Macros/ElseMacro.h"
     #include "include/Passage/Body/Macros/EndIfMacro.h"
-    #include "include/Passage/Body/Macros/SetMacro.h"
 
     #include "include/Passage/Body/Expressions/Expression.h"
-    #include "include/Passage/Body/Expressions/Const.h"
+
     #include "include/Passage/Body/Expressions/UnaryOperation.h"
     #include "include/Passage/Body/Expressions/BinaryOperation.h"
+
+    #include "include/Passage/Body/Expressions/Const.h"
     #include "include/Passage/Body/Expressions/Variable.h"
-    
+
     #include "include/Passage/Body/Expressions/Turns.h"
     #include "include/Passage/Body/Expressions/Visited.h"
     #include "include/Passage/Body/Expressions/Random.h"
@@ -128,39 +132,43 @@
 	Passage *passage;
 
 	Head *head;
-	Text *tag;
-    Newline *newline;
-
 	Body *body;
 
+    BodyPart *bodypart;
+
+	Text *tag;
+
+	Text *text;
+	Formatting *formatting;
+	Link *link;
+    Newline *newline;
+
 	Macro *macro;
-	PrintMacro *printmacro;
+
 	SetMacro *setmacro;
+    PrintMacro *printmacro;
 	DisplayMacro *displaymacro;
-
-    Visited *visited;
-    Previous *previous;
-    Turns *turns;
-    Random *random;
-
 
     IfMacro *ifmacro;
     ElseIfMacro *elseifmacro;
     ElseMacro *elsemacro;
     EndIfMacro *endifmacro;
 
+    Expression *expression;
 
-	Expression *expression;
+    BinaryOperation *binaryOperation;
+    UnaryOperation *unaryOperation;
+
 	Variable *variable;
 	Const<int> *intconst;
 	Const<bool> *boolconst;
 	Const<std::string> *strconst;
 
-	BodyPart *bodypart;
-	Text *text;
-	Link *link;
-    BinaryOperation *binaryOperation;
-    
+    Visited *visited;
+    Previous *previous;
+    Turns *turns;
+    Random *random;
+
 	//TODO: add Syntax Tree classes
 }
 
@@ -261,6 +269,7 @@
 
 %type <bodypart> bodypart
 %type <text> text
+%type <formatting> formatting
 %type <link> link
 %type <newline> newline
 
@@ -416,7 +425,12 @@ bodypart :
     //TODO: implement Macro:BodyType
     $$ = $1;
     }
-  ;
+    |formatting
+    {
+    LOG_DEBUG << "Parser: bodypart -> textFormat: "<< "pass textFormat:type(textFormat) to bodypart:type(BodyPart)";
+    $$ = $1;
+    }
+   ;
 
 text :
     TEXT_TOKEN
@@ -425,41 +439,13 @@ text :
     $$ = new Text(*$1);
     delete $1;
     }
-    |FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
+  ;
+
+formatting:
+    FORMATTING
     {
-    //TODO:check if F_OPEN and F_CLOSE are the same
-    //TODO:check if anything needs to be deleted here
-    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE: "<< "create top:formatted:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Text(*$2);
-    delete $1;
-    delete $2;
-    delete $3;
-    }
-    |FORMATTING_OPEN text FORMATTING_CLOSE
-    {
-    //TODO:check if F_OPEN and F_CLOSE are the same
-    //TODO:check if anything needs to be deleted here
-    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN formatted FORMATTING_CLOSE: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-    delete $1;
-    delete $3;
-    }
-    |FORMATTING TEXT_TOKEN FORMATTING
-    {
-    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
-    LOG_DEBUG << "Parser: formatted -> FORMATTING TEXT_TOKEN FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-    $$ = new Text(*$2);
-    delete $1;
-    delete $2;
-    delete $3;
-    }
-    |FORMATTING text FORMATTING
-    {
-    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
-    //TODO:check if anything needs to be deleted here
-    LOG_DEBUG << "Parser: formatted -> FORMATTING formatted FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-    $$ = $2;
-    delete $1;
-    delete $3;
+    LOG_DEBUG << "Parser: formatted -> FORMATTING: ";
+    $$ = new Formatting(*$1);
     }
   ;
 

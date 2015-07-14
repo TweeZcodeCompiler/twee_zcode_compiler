@@ -8,7 +8,9 @@
 #include <string>
 
 enum class UnOps {
-    MINUS=0, PLUS=1, NOT=2
+    MINUS=0,
+    PLUS=1,
+    NOT=2
 };
 
 //if you want to change the order of this, I'll cut you ~georg
@@ -29,10 +31,6 @@ enum class BinOps {
     TO=13
 };
 
-enum FunctionName {
-    RANDOM=0, PREVIOUS, TURNS, VISITED
-};
-
 class Expression {
 
 public:
@@ -42,7 +40,6 @@ public:
     virtual std::string to_string() const = 0;
 
     virtual Expression *clone() const = 0;
-
 };
 
 #endif //EXPRESSION_H
