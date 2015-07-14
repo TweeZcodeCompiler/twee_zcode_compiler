@@ -74,7 +74,7 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         MOUSE_CLICK_ROUTINE = "mouseClick",
         TABLE_CURSOR = "TABLE_CURSOR",
         TABLE_CURSOR_TO_MOUSE_CLICK = "TABLE_CURSOR_TO_MOUSE_CLICK",
-        TABLE_MOUSE = "TABLE_MOUSE",
+        TABLE_MOUSE_CLICK = "TABLE_MOUSE_CLICK",
         GLOB_INTERPRETER_SUPPORTS_MOUSE = "INTERPRETER_SUPPORTS_MOUSE",
         SUPPORTS_MOUSE_ROUTINE = "SUPPORTS_MOUSE_ROUTINE",
         UPDATE_MOUSE_SCREEN_ROUTINE = "UPDATE_MOUSE_SCREEN_ROUTINE",
@@ -85,6 +85,7 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         UPDATE_MOUSE_TABLE_AFTER_ROUTINE = "UPDATE_MOUSE_TABLE_AFTER_ROUTINE";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
+static const unsigned int MAX_MOUSE_LINKS = 20;
 
 //#define ZAS_DEBUG
 
@@ -206,12 +207,12 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // tables needed for routine linking
     ASSGEN.addByteArray(TABLE_LINKED_PASSAGES, (unsigned) passages.size());
     ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned) passages.size());
-    ASSGEN.addByteArray(TABLE_MOUSE_LINKS, 20 * 4); // maximum of 20 links per page of a passage possible
+    ASSGEN.addByteArray(TABLE_MOUSE_LINKS, MAX_MOUSE_LINKS * 4); // maximum of MAX_MOUSE_LINKS links per page of a passage possible
 
     ASSGEN.addWordArray(TABLE_VISITED_PASSAGE_COUNT, (unsigned) passages.size());
     ASSGEN.addWordArray(TABLE_CURSOR, 2);
     ASSGEN.addWordArray(TABLE_CURSOR_TO_MOUSE_CLICK, 2);
-    ASSGEN.addWordArray(TABLE_MOUSE, 4);
+    ASSGEN.addWordArray(TABLE_MOUSE_CLICK, 4);
 
     // globals
     ASSGEN.addGlobal(GLOB_PASSAGE)
@@ -307,17 +308,22 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
     // mouse control routines
     {
-        string varKey = "key", varYCursor = "yCursor", varYLineClick = "yMouseLineClick", varYMouse = "yMouse", fontSize = "fontSize";
-        string varSelectableLinks = "selectableLinks", varFirstLinkLine = "firstLinkLine";
+        // mouse click routine
+
+        string varKey = "key", varXMouse = "xMouse", varYLineClick = "yMouseLineClick", varXMouseClick = "xMouseClick", varYMouse = "yMouse", fontSize = "fontSize";
+        string varSelectableLinks = "selectableLinks", varFirstLinkLine = "firstLinkLine", varMouseTableIndex = "mouseTableIndex", varI = "i";
 
         vector<ZRoutineArgument> args;
         args.push_back(ZRoutineArgument(varSelectableLinks));   // needs to be set by call command
         args.push_back(ZRoutineArgument(varKey));
-        args.push_back(ZRoutineArgument(varYCursor));
+        args.push_back(ZRoutineArgument(varXMouse));
         args.push_back(ZRoutineArgument(varYMouse));
         args.push_back(ZRoutineArgument(varYLineClick));
+        args.push_back(ZRoutineArgument(varXMouseClick));
         args.push_back(ZRoutineArgument(fontSize));
         args.push_back(ZRoutineArgument(varFirstLinkLine));
+        args.push_back(ZRoutineArgument(varMouseTableIndex));
+        args.push_back(ZRoutineArgument(varI));
         ASSGEN.addRoutine(MOUSE_CLICK_ROUTINE, args);
 
         ASSGEN.newline()
@@ -331,15 +337,44 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .read_char(varKey)
                 .mouseWindow("1");
 
-        ASSGEN.readMouse(TABLE_MOUSE)
-                .loadw(TABLE_MOUSE, "0", varYMouse)
-                .getCursor(TABLE_CURSOR)
-                .loadw(TABLE_CURSOR, "0", varYCursor);
+        ASSGEN.readMouse(TABLE_MOUSE_CLICK)
+                .loadw(TABLE_MOUSE_CLICK, "0", varYMouse)
+                .loadw(TABLE_MOUSE_CLICK, "1", varXMouse);
 
         ASSGEN.div(varYMouse, fontSize, varYLineClick)
-                .add(varYLineClick, "1", varYLineClick);
+                .add(varYLineClick, "1", varYLineClick)
+                .div(varXMouse, fontSize, varXMouseClick)
+                .add(varXMouseClick, "1", varXMouseClick);
 
-        ASSGEN.push(varYCursor)
+        ASSGEN.store(varMouseTableIndex, "1");
+        ASSGEN.addLabel("LINKS_ENTRIES")
+                .jumpGreater(varMouseTableIndex + " " + to_string(MAX_MOUSE_LINKS * 4), "MOUSE_CLICK_LOOP")
+                .loadb(TABLE_MOUSE_LINKS, varMouseTableIndex, varI)
+                .jumpEquals(varYLineClick + " " + varI, "CORRECT_LINE")
+                .add(varMouseTableIndex, "4", varMouseTableIndex)
+                .jump("LINKS_ENTRIES");
+
+        ASSGEN.addLabel("CORRECT_LINE")
+                .add(varMouseTableIndex, "1", varMouseTableIndex)
+                .loadb(TABLE_MOUSE_LINKS, varMouseTableIndex, varI)
+                .jumpGreater(varXMouseClick + " " + varI, "CORRECT_X_START")
+                .add(varMouseTableIndex, "3", varMouseTableIndex)
+                .jump("LINKS_ENTRIES");
+
+        ASSGEN.addLabel("CORRECT_X_START")
+                .add(varMouseTableIndex, "1", varMouseTableIndex)
+                .loadb(TABLE_MOUSE_LINKS, varMouseTableIndex, varI)
+                .jumpLess(varXMouseClick + " " + varI, "CORRECT_X_ENDING")
+                .add(varMouseTableIndex, "2", varMouseTableIndex)
+                .jump("LINKS_ENTRIES");
+
+        ASSGEN.addLabel("CORRECT_X_ENDING")
+                .add(varMouseTableIndex, "1", varMouseTableIndex)
+                .loadb(TABLE_MOUSE_LINKS, varMouseTableIndex, varI)
+                .ret(varI);
+
+
+        /*ASSGEN.push(varYCursor)
                 .sub("sp", "2", "sp")
                 .jumpGreater(varYLineClick + " sp", "MOUSE_CLICK_LOOP");
 
@@ -354,7 +389,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.newline().newline();
 
-        ASSGEN.ret("sp");
+        ASSGEN.ret("sp");*/
 
 
         // support mouse routine
