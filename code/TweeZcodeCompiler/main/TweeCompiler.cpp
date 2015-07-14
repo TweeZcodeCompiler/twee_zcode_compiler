@@ -72,7 +72,9 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         TABLE_CURSOR_TO_MOUSE_CLICK = "TABLE_CURSOR_TO_MOUSE_CLICK",
         TABLE_MOUSE = "TABLE_MOUSE",
         GLOB_INTERPRETER_SUPPORTS_MOUSE = "INTERPRETER_SUPPORTS_MOUSE",
-        SUPPORTS_MOUSE_ROUTINE = "SUPPORTS_MOUSE_ROUTINE";
+        SUPPORTS_MOUSE_ROUTINE = "SUPPORTS_MOUSE_ROUTINE",
+        UPDATE_MOUSE_SCREEN_ROUTINE = "UPDATE_MOUSE_SCREEN_ROUTINE",
+        PRINT_SPACES_ROUTINE = "PRINT_SPACES_ROUTINE";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -254,8 +256,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .storew(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount);
 
         // update screen
-        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "?no_mouse")
-                .
+        ASSGEN.call_1n(UPDATE_MOUSE_SCREEN_ROUTINE);
 
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             string passageName = it->getHead().getName();
@@ -346,6 +347,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.ret("sp");
 
 
+        // support mouse routine
+
         ASSGEN.addRoutine(SUPPORTS_MOUSE_ROUTINE);
 
 
@@ -369,6 +372,78 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.addLabel("NOT_SUPPORTED")
                 .store(GLOB_INTERPRETER_SUPPORTS_MOUSE, "0")
                         .ret("0");
+
+        // update screen routine
+
+        string varCharWidth = "char_width", varLineCount = "line_count", varYSize = "ySize", varXSize = "xSize";
+        string varLinesPrinted = "lines_printed";
+
+        ASSGEN.addRoutine(UPDATE_MOUSE_SCREEN_ROUTINE, {ZRoutineArgument(varCharWidth), ZRoutineArgument(varYSize),
+                                                        ZRoutineArgument(varXSize), ZRoutineArgument(varLineCount),
+                                                        ZRoutineArgument(varLinesPrinted)});
+
+        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "no_mouse");
+
+        ASSGEN.loadb("33", "0", varCharWidth)
+                .sub(varCharWidth, "4", varCharWidth)
+                .loadb("32", "0", varLineCount)
+                .sub(varLineCount, "4", varLineCount);
+
+        ASSGEN.getWindowProperty("0", "2", varYSize)
+                .getWindowProperty("0", "3", varXSize);
+                //.putWindowProperty("0", "15", "-999")    // set lineCount to -999 -> interpreter will not show [[MORE]]
+                //.putWindowProperty("1", "15", "-999");
+
+        ASSGEN.windowSize("1", varYSize, varXSize)
+                .setMargins("2", "10", "0");
+
+        ASSGEN.setWindow("1");
+
+        ASSGEN.newline()
+                .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print("/ \\ ");
+
+        ASSGEN.newline()
+                .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" |  ");
+
+        ASSGEN.newline()
+                .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" |  ");
+
+        ASSGEN.store(varLinesPrinted, "3")
+                .addLabel("loop")
+                .newline()
+                .add(varLinesPrinted, "1", varLinesPrinted)
+                .jumpLess(varLinesPrinted + " " + varLineCount, "loop");
+
+        ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" |  ")
+                .newline();
+
+        ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" |  ")
+                .newline();
+
+        ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" V  ");
+
+        ASSGEN.setWindow("0");
+
+
+        ASSGEN.addLabel("no_mouse")
+                .ret("0");
+
+        // helper routine
+
+        ASSGEN.addRoutine(PRINT_SPACES_ROUTINE, {ZRoutineArgument("count"), ZRoutineArgument("i")})
+                .addLabel("loop")
+                .print(" ")
+                .add("i", "1", "i")
+                .jumpLess("i count", "loop")
+                .ret("0");
+
+
     }
 
     // print appropriate text formatting args
