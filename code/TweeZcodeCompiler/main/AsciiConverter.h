@@ -5,10 +5,11 @@
 #ifndef ROOT_AALIBTEST_H
 #define ROOT_AALIBTEST_H
 
+#include <string>
 
-class AALibTest {
+class AsciiConverter {
 public:
-    void test();
+    std::string convertJpgToAscii(std::string file, unsigned int width);
 };
 
 
