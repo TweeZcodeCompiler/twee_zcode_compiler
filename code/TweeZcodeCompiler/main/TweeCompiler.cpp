@@ -224,8 +224,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         const string passageCount = "passage_count";
         ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal), ZRoutineArgument(passageCount)}))
                 .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
-                .store(GLOB_CURRENT_PASSAGE_ID, idLocal);
-        
+                .store(GLOB_CURRENT_PASSAGE_ID, idLocal)
+                .add("CURRENT_PASSAGE_ID", "1", "CURRENT_PASSAGE_ID");
+
         // update visited array
         ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
                 .add(passageCount, "1", passageCount)
@@ -575,6 +576,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
             ASSGEN.push("min");
 
         }
+
     } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
         LOG_DEBUG << turns->to_string();
         ASSGEN.load(GLOB_TURNS_COUNT, "sp");
