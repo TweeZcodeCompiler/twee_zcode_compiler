@@ -86,6 +86,10 @@ namespace instruction {
     INST_TYPE GET_CURSOR = "get_cursor";
     INST_TYPE SET_CURSOR = "set_cursor";
     INST_TYPE GET_WINDOW_PROPERTY = "get_wind_prop";
+    INST_TYPE PUT_WINDOW_PROPERTY = "put_wind_prop";
+    INST_TYPE SET_WINDOW = "set_window";
+    INST_TYPE SET_MARGINS = "set_margins";
+    INST_TYPE WINDOW_SIZE = "window_size";
 }
 
 ZAssemblyGenerator::ZAssemblyGenerator(ostream &out) : out(out) { }
@@ -385,6 +389,22 @@ ZAssemblyGenerator &ZAssemblyGenerator::getCursor(string array) {
 
 ZAssemblyGenerator &ZAssemblyGenerator::getWindowProperty(string window, string propertyNumber, string target) {
     return addInstruction(instruction::GET_WINDOW_PROPERTY, makeArgs({window, propertyNumber}), nullopt, target);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::windowSize(string window, string y, string x) {
+    return addInstruction(instruction::WINDOW_SIZE, makeArgs({window, y, x}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::setMargins(string left, string right, string window) {
+    return addInstruction(instruction::SET_MARGINS, makeArgs({left, right, window}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::setWindow(string window) {
+    return addInstruction(instruction::SET_WINDOW, window, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::putWindowProperty(string window, string propertyNumber, string value) {
+    return addInstruction(instruction::PUT_WINDOW_PROPERTY, makeArgs({window, propertyNumber, value}), nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::nop() {

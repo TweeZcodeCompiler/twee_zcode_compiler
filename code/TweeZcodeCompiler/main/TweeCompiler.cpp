@@ -252,7 +252,11 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
                 .add(passageCount, "1", passageCount)
                 .storew(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount);
-        
+
+        // update screen
+        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "?no_mouse")
+                .
+
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             string passageName = it->getHead().getName();
             unsigned id = passageName2id.at(passageName);
@@ -392,6 +396,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         args.push_back(
                 ZRoutineArgument(varFormatType));    // This value will be set via call_vs TEXT_FORMAT_ROUTINE 1 -> sp
         ASSGEN.addRoutine(TEXT_FORMAT_ROUTINE, args);
+
+        ASSGEN.print("Testasdasdasd");
 
         ASSGEN.jumpEquals(string(varFormatType + " 0"), string("~" + labelNotZero))
                 .jumpEquals(string(TEXT_FORMAT_REVERSE_VIDEO) + " 0", labelZeroOn)

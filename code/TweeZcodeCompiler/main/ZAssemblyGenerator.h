@@ -144,6 +144,14 @@ public:
 
     ZAssemblyGenerator &jumpZero(std::string args, std::string targetLabel);
 
+    ZAssemblyGenerator &windowSize(std::string window, std::string y, std::string x);
+
+    ZAssemblyGenerator &setMargins(std::string left, std::string right, std::string window);
+
+    ZAssemblyGenerator &setWindow(std::string window);
+
+    ZAssemblyGenerator &putWindowProperty(std::string window, std::string propertyNumber, std::string value);
+
 
 private:
     std::ostream &out;
