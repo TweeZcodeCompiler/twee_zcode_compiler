@@ -15,13 +15,13 @@
 #include <algorithm>
 
 #include <Passage/Body/IBodyPartsVisitor.h>
-#include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
+#include <Passage/Body/Formatting.h>
+#include <Passage/Body/Link.h>
 #include <Passage/Body/Newline.h>
-#include <Passage/Body/Macros/SetMacro.h>
+
 
 #include <Passage/Body/Expressions/BinaryOperation.h>
-#include <Passage/Body/Expressions/Variable.h>
 #include <Passage/Body/Expressions/UnaryOperation.h>
 
 #include <Passage/Body/Expressions/Const.h>
@@ -32,9 +32,9 @@
 #include "Passage/Body/Expressions/Random.h"
 #include "Passage/Body/Expressions/Previous.h"
 
+#include <Passage/Body/Macros/SetMacro.h>
 #include <Passage/Body/Macros/PrintMacro.h>
 #include <Passage/Body/Macros/DisplayMacro.h>
-#include <Passage/Body/Macros/SetMacro.h>
 
 #include <Passage/Body/Macros/IfMacro.h>
 #include <Passage/Body/Macros/ElseIfMacro.h>
@@ -367,6 +367,25 @@ bool isPreviousMacro(string link) {
 
 void TweeCompiler::visit(const Text& host) {
     ASSGEN.print(host.getContent());
+}
+void TweeCompiler::visit(const Formatting& host) {
+    switch (host.getFormat()) {
+        case Format::UNDERLINED:
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("0"), "sp");
+            break;
+        case Format::BOLD:
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("1"), "sp");
+            break;
+        case Format::ITALIC:
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("2"), "sp");
+            break;
+        case Format::MONOSPACE:
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("3"), "sp");
+            break;
+        default:
+            LOG_DEBUG << "Unknown text formatting";
+            throw TweeDocumentException("Unsupported text formatting");
+    }
 }
 
 void TweeCompiler::visit(const Link& host) {
