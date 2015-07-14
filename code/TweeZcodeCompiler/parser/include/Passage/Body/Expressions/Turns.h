@@ -18,7 +18,6 @@ public:
     virtual Turns *clone() const {
         return new Turns(*this);
     }
-
 };
 
 #endif //TURNS_H

@@ -18,7 +18,6 @@ public:
     virtual Previous *clone() const {
         return new Previous(*this);
     }
-
 };
 
 #endif //PREVIOUS_H

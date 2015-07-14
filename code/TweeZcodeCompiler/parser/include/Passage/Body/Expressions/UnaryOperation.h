@@ -13,9 +13,7 @@
 class UnaryOperation : public Expression {
 
 private:
-
     UnOps op;
-
     std::unique_ptr<Expression> expression;
 
 public:
@@ -35,12 +33,11 @@ public:
 
     const std::unique_ptr<Expression> &getExpression() const;
 
+    std::string to_string() const;
+
     virtual UnaryOperation *clone() const {
         return new UnaryOperation(*this);
     }
-
-    std::string to_string() const;
-
 };
 
 

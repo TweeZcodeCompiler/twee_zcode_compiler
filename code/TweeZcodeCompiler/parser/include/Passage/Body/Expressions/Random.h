@@ -33,7 +33,6 @@ public:
     virtual Random *clone() const {
         return new Random(*this);
     }
-
 };
 
 #endif //RANDOM_H
