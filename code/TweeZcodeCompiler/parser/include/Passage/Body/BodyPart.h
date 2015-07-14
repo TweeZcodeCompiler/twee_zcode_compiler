@@ -19,7 +19,6 @@ public:
     virtual BodyPart *clone() const = 0;
 
     virtual void accept(IBodyPartsVisitor&) const = 0;
-
 };
 
 #endif //BODYPART_H

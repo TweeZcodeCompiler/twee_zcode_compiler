@@ -16,9 +16,6 @@ private:
     std::string content;
 
 public:
-    virtual Text* clone() const {
-        return new Text(*this);
-    }
 
     Text(std::string content);
 
@@ -26,8 +23,11 @@ public:
 
     std::string to_string() const;
 
-    void accept(IBodyPartsVisitor&) const;
+    virtual Text* clone() const {
+        return new Text(*this);
+    }
 
+    void accept(IBodyPartsVisitor&) const;
 };
 
 

@@ -41,7 +41,6 @@ public:
     virtual void visit(const ElseIfMacro& host) = 0;
 
     virtual void visit(const EndIfMacro& host) = 0;
-
 };
 
 

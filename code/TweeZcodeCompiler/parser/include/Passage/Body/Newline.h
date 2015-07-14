@@ -9,13 +9,14 @@
 class Newline : public BodyPart {
 
 public:
-    virtual Newline* clone() const {
-        return new Newline(*this);
-    }
 
     Newline();
 
     std::string to_string() const;
+
+    virtual Newline* clone() const {
+        return new Newline(*this);
+    }
 
     void accept(IBodyPartsVisitor&) const;
 };
