@@ -22,6 +22,7 @@ public:
     void generate2OPInstruction(unsigned int opcode, ZParam &param1,ZParam &param2, std::string name = "UNKNOWN");
     void generateVarOPInstruction(unsigned int opcode,std::vector<std::unique_ptr<ZParam>> &params, std::string name = "UNKNOWN");
     void storeAdress(uint8_t adrr);
+    void generateExtOPInstruction(unsigned int opcode, std::vector<std::unique_ptr<ZParam>> &params, std::string showName);
 
     ZCodeRoutine(uint8_t locVariables) {
         containerOffset = 1;
