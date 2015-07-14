@@ -18,14 +18,12 @@
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
 #include <Passage/Body/Newline.h>
-#include <Passage/Body/Macros/SetMacro.h>
 
 #include <Passage/Body/Expressions/BinaryOperation.h>
 #include <Passage/Body/Expressions/Variable.h>
 #include <Passage/Body/Expressions/UnaryOperation.h>
 
 #include <Passage/Body/Expressions/Const.h>
-#include <Passage/Body/Expressions/Variable.h>
 
 #include "Passage/Body/Expressions/Visited.h"
 #include "Passage/Body/Expressions/Turns.h"
@@ -222,10 +220,11 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     {
         const string idLocal = "id";
         const string passageCount = "passage_count";
-        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal), ZRoutineArgument(passageCount)}))
+        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID,
+                          vector<ZRoutineArgument>({ZRoutineArgument(idLocal), ZRoutineArgument(passageCount)}))
                 .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
                 .store(GLOB_CURRENT_PASSAGE_ID, idLocal);
-        
+
         // update visited array
         ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
                 .add(passageCount, "1", passageCount)
@@ -365,11 +364,11 @@ bool isPreviousMacro(string link) {
     return link == previousFunc;
 }
 
-void TweeCompiler::visit(const Text& host) {
+void TweeCompiler::visit(const Text &host) {
     ASSGEN.print(host.getContent());
 }
 
-void TweeCompiler::visit(const Link& host) {
+void TweeCompiler::visit(const Link &host) {
     if (isPreviousMacro(host.getTarget())) {
         ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
     } else {
@@ -385,25 +384,25 @@ void TweeCompiler::visit(const Link& host) {
     }
 }
 
-void TweeCompiler::visit(const Newline& host) {
+void TweeCompiler::visit(const Newline &host) {
     ASSGEN.newline();
 }
 
-void TweeCompiler::visit(const PrintMacro& host) {
+void TweeCompiler::visit(const PrintMacro &host) {
     if (Previous *previous = dynamic_cast<Previous *>(host.getExpression().get())) {
         ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
     } else {
-        evalExpression(host.getExpression().get());
+        evalExpression(optimizeExpression(host.getExpression().get()));
         ASSGEN.print_num("sp");
     }
 }
 
-void TweeCompiler::visit(const DisplayMacro& host) {
+void TweeCompiler::visit(const DisplayMacro &host) {
     string targetPassage = host.getPassage();
     int targetId;
     try {
         targetId = passageName2id.at(targetPassage);
-    } catch(const out_of_range& outOfRange) {
+    } catch (const out_of_range &outOfRange) {
         throw TweeDocumentException(string("display target passage \"") + targetPassage +
                                     string("\" does not exist"));
     }
@@ -411,7 +410,7 @@ void TweeCompiler::visit(const DisplayMacro& host) {
     ASSGEN.call_vn(ROUTINE_PASSAGE_BY_ID, to_string(targetId));
 }
 
-void TweeCompiler::visit(const SetMacro& host) {
+void TweeCompiler::visit(const SetMacro &host) {
     LOG_DEBUG << "generate SetMacro assembly code";
 
     BinaryOperation *binaryOperation = nullptr;
@@ -428,13 +427,13 @@ void TweeCompiler::visit(const SetMacro& host) {
     }
 }
 
-void TweeCompiler::visit(const IfMacro& host) {
+void TweeCompiler::visit(const IfMacro &host) {
     ifContexts.push(makeNextIfContext());
     evalExpression(host.getExpression().get());
     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
 }
 
-void TweeCompiler::visit(const ElseMacro& host) {
+void TweeCompiler::visit(const ElseMacro &host) {
     if (ifContexts.empty()) {
         throw TweeDocumentException("else macro encountered without preceding if macro");
     }
@@ -443,7 +442,7 @@ void TweeCompiler::visit(const ElseMacro& host) {
     ifContexts.top().caseCount++;
 }
 
-void TweeCompiler::visit(const ElseIfMacro& host) {
+void TweeCompiler::visit(const ElseIfMacro &host) {
     if (ifContexts.empty()) {
         throw TweeDocumentException("else if macro encountered without preceding if macro");
     }
@@ -454,7 +453,7 @@ void TweeCompiler::visit(const ElseIfMacro& host) {
     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
 }
 
-void TweeCompiler::visit(const EndIfMacro& host) {
+void TweeCompiler::visit(const EndIfMacro &host) {
     if (ifContexts.empty()) {
         throw TweeDocumentException("endif macro encountered without preceding if macro");
     }
@@ -491,6 +490,118 @@ IfContext TweeCompiler::makeNextIfContext() {
     IfContext context;
     context.number = ifCount++;
     return context;
+}
+
+Expression *TweeCompiler::optimizeExpression(Expression *expression) {
+
+    if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
+        return constant;
+    } else if (Const<bool> *constant = dynamic_cast<Const<bool> *>(expression)) {
+        return constant;
+    }
+    else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
+        return variable;
+    } else if (UnaryOperation *unOp = dynamic_cast<UnaryOperation *>(expression)) {
+        Expression *unOpexpr = optimizeExpression(unOp->getExpression().get());
+        switch (unOp->getOperator()) {
+            case UnOps::NOT:
+                if (Const<bool> *constant = dynamic_cast<Const<bool> *>(unOpexpr)) {
+                    if (constant->getValue()) {
+                        return new Const<bool>(false);
+                    } else {
+                        return new Const<bool>(true);
+                    }
+                }
+                break;
+            case UnOps::PLUS:
+                if (Const<int> *constant = dynamic_cast<Const<int> *>(unOpexpr)) {
+                    return constant;
+                }
+                break;
+            case UnOps::MINUS:
+                if (Const<int> *constant = dynamic_cast<Const<int> *>(unOpexpr)) {
+                    return new Const<int>(-constant->getValue());
+                }
+                break;
+            default:
+                throw TweeDocumentException("unsupported operator");
+        }
+    } else if (BinaryOperation *binOp = dynamic_cast<BinaryOperation *>(expression)) {
+        Expression *lExpr = optimizeExpression(binOp->getLeftSide().get());
+        Expression *rExpr = optimizeExpression(binOp->getRightSide().get());
+
+        if (binOp->getOperator() == BinOps::TO) {
+            return new BinaryOperation(BinOps::TO, lExpr, rExpr);
+        }
+
+        if (Const<int> *lConst = dynamic_cast<Const<int> *>(lExpr)) {
+            if (Const<int> *rConst = dynamic_cast<Const<int> *>(rExpr)) {
+                switch (binOp->getOperator()) {
+                    case BinOps::ADD:
+                        return new Const<int>(lConst->getValue() + rConst->getValue());
+                    case BinOps::SUB:
+                        return new Const<int>(lConst->getValue() - rConst->getValue());
+                    case BinOps::MUL:
+                        return new Const<int>(lConst->getValue() * rConst->getValue());
+                    case BinOps::DIV:
+                        if (rConst) {
+                            return new Const<int>(lConst->getValue() / rConst->getValue());
+                        } else {
+                            throw TweeDocumentException("div by zero!");
+                        }
+                    case BinOps::MOD:
+                        if (rConst) {
+                            return new Const<int>(lConst->getValue() % rConst->getValue());
+                        } else {
+                            throw TweeDocumentException("mod by zero!");
+                        }
+                    case BinOps::LT:
+                        return new Const<bool>((lConst < rConst));
+                    case BinOps::LTE:
+                        return new Const<bool>((lConst <= rConst));
+                    case BinOps::GT:
+                        return new Const<bool>((lConst > rConst));
+                    case BinOps::GTE:
+                        return new Const<bool>((lConst >= rConst));
+                    case BinOps::IS:
+                        return new Const<bool>(!(lConst == rConst));
+                    case BinOps::NEQ:
+                        return new Const<bool>(!(lConst != rConst));
+                    default:
+                        throw TweeDocumentException("unsupported operator");
+                }
+            } else {
+                return new BinaryOperation(binOp->getOperator(), lExpr, rExpr);
+            }
+
+        }
+        if (Const<bool> *lConst = dynamic_cast<Const<bool> *>(lExpr)) {
+            if (Const<bool> *rConst = dynamic_cast<Const<bool> *>(rExpr)) {
+                switch (binOp->getOperator()) {
+                    case BinOps::AND:
+                        return new Const<bool>(lConst->getValue() && rConst->getValue());
+
+                    case BinOps::OR:
+                        return new Const<int>(lConst->getValue() || rConst->getValue());
+                    default:
+                        throw TweeDocumentException("unsupported operator");
+                }
+            }
+        } else {
+            return new BinaryOperation(binOp->getOperator(), lExpr, rExpr);
+        }
+
+    } else if (Visited *visited = dynamic_cast<Visited *>(expression)) {
+        return visited;
+    } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
+        return turns;
+    } else if (Random *random = dynamic_cast<Random *>(expression)) {
+        Expression *start = optimizeExpression(random->getStart().get());
+        Expression *end = optimizeExpression(random->getEnd().get());
+        return new Random(start, end);
+    } else if (Previous *previous = dynamic_cast<Previous * > (expression)) {
+        return previous;
+    }
 }
 
 void TweeCompiler::evalAssignment(BinaryOperation *expression) {
@@ -562,12 +673,12 @@ void TweeCompiler::evalExpression(Expression *expression) {
     } else if (Random *random = dynamic_cast<Random *>(expression)) {
         LOG_DEBUG << random->to_string();
         std::string afterRandom = makeLabels("random").second;
-    // check if a > b, act accordingly
+        // check if a > b, act accordingly
         labels = makeLabels("randomAGTB");
         evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
         ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.second);
-    //  a > b
+        //  a > b
         evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
         ASSGEN.add("sp", "1", "sp");
@@ -579,12 +690,12 @@ void TweeCompiler::evalExpression(Expression *expression) {
         ASSGEN.jump(afterRandom);
 
         ASSGEN.addLabel(labels.second);
-    // check if a < b, act accordingly
+        // check if a < b, act accordingly
         labels = makeLabels("randomALTB");
         evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
         ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.second);
-    //  a < b
+        //  a < b
         evalExpression(random->getEnd().get());
         evalExpression(random->getStart().get());
         ASSGEN.add("sp", "1", "sp");
@@ -596,102 +707,97 @@ void TweeCompiler::evalExpression(Expression *expression) {
         ASSGEN.jump(afterRandom);
 
         ASSGEN.addLabel(labels.second);
-    // a == b, simply return a
+        // a == b, simply return a
         evalExpression(random->getEnd().get());
         ASSGEN.addLabel(afterRandom);
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
 
         if (binaryOperation->getOperator() == BinOps::TO) {
             evalAssignment(binaryOperation);
-        }
+        } else {
 
-        TweeCompiler::evalExpression(binaryOperation->getRightSide().get());
-        TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
+            TweeCompiler::evalExpression(binaryOperation->getRightSide().get());
+            TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
 
-        switch (binaryOperation->getOperator()) {
-            case BinOps::ADD:
-                ASSGEN.add("sp", "sp", "sp");
-                break;
-            case BinOps::SUB:
-                ASSGEN.sub("sp", "sp", "sp");
-                break;
-            case BinOps::MUL:
-                ASSGEN.mul("sp", "sp", "sp");
-                break;
-            case BinOps::DIV:
-                ASSGEN.div("sp", "sp", "sp");
-                break;
-            case BinOps::MOD:
-                ASSGEN.mod("sp", "sp", "sp");
-                break;
-            case BinOps::AND:
-                ASSGEN.land("sp", "sp", "sp");
-                break;
-            case BinOps::OR:
-                ASSGEN.lor("sp", "sp", "sp");
-                break;
-            case BinOps::TO:
-                // TODO: check if this is right
-                ASSGEN.load("sp", "sp");
-                break;
-            case BinOps::LT:
-                labels = makeLabels("lower");
-                ASSGEN.jumpLower(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::LTE:
-                labels = makeLabels("lowerEquals");
-                ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::GT:
-                labels = makeLabels("greater");
-                ASSGEN.jumpGreater(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::GTE:
-                labels = makeLabels("greaterEquals");
-                ASSGEN.jumpGreaterEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::IS:
-                labels = makeLabels("is");
-                ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::NEQ:
-                labels = makeLabels("neq");
-                ASSGEN.jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            default:
-                //TODO: handle this
-                break;
-
+            switch (binaryOperation->getOperator()) {
+                case BinOps::ADD:
+                    ASSGEN.add("sp", "sp", "sp");
+                    break;
+                case BinOps::SUB:
+                    ASSGEN.sub("sp", "sp", "sp");
+                    break;
+                case BinOps::MUL:
+                    ASSGEN.mul("sp", "sp", "sp");
+                    break;
+                case BinOps::DIV:
+                    ASSGEN.div("sp", "sp", "sp");
+                    break;
+                case BinOps::MOD:
+                    ASSGEN.mod("sp", "sp", "sp");
+                    break;
+                case BinOps::AND:
+                    ASSGEN.land("sp", "sp", "sp");
+                    break;
+                case BinOps::OR:
+                    ASSGEN.lor("sp", "sp", "sp");
+                    break;
+                case BinOps::LT:
+                    labels = makeLabels("lower");
+                    ASSGEN.jumpLower(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::LTE:
+                    labels = makeLabels("lowerEquals");
+                    ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::GT:
+                    labels = makeLabels("greater");
+                    ASSGEN.jumpGreater(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::GTE:
+                    labels = makeLabels("greaterEquals");
+                    ASSGEN.jumpGreaterEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::IS:
+                    labels = makeLabels("is");
+                    ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::NEQ:
+                    labels = makeLabels("neq");
+                    ASSGEN.jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                default:
+                    throw TweeDocumentException("unsupported operator");
+            }
         }
     } else if (UnaryOperation *unOp = dynamic_cast<UnaryOperation *>(expression)) {
         TweeCompiler::evalExpression(unOp->getExpression().get());
@@ -708,8 +814,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.sub("sp", "sp", "sp");
                 break;
             default:
-                // TODO: handle this
-                break;
+                throw TweeDocumentException("unsupported operator");
         }
     }
 }

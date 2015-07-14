@@ -1,0 +1,9 @@
+::Start
+
+<<print (100+200*33-45)%12 neq 7>>
+
+<<print true and false or true>>
+
+<<set $var = 0>>
+
+<<print $var = $var + 5*20-30>>
