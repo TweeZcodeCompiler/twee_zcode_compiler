@@ -531,12 +531,15 @@ Expression *TweeCompiler::optimizeExpression(Expression *expression) {
         Expression *rExpr = optimizeExpression(binOp->getRightSide().get());
 
         if (binOp->getOperator() == BinOps::TO) {
-            if (BinaryOperation *rSide = dynamic_cast<BinaryOperation *>(rExpr)) {
-                if (rSide->getOperator() == BinOps::TO) {
+            if (BinaryOperation *rrExpr = dynamic_cast<BinaryOperation *>(rExpr)) {
+                if (rrExpr->getOperator() == BinOps::TO) {
                     Variable *varL = dynamic_cast<Variable *>(lExpr);
-                    Variable *varR = dynamic_cast<Variable *>(rSide->getLeftSide().get());
+                    Variable *varR = dynamic_cast<Variable *>(rrExpr->getLeftSide().get());
+                    if (rrExpr->getOperator() == BinOps::TO) {
+                        
+                    }
                     if (varL->getName() == varR->getName()) {
-                        return new BinaryOperation(BinOps::TO, varL, rSide->getRightSide().get());
+                        return new BinaryOperation(BinOps::TO, varL, rrExpr->getRightSide().get());
                     }
                 }
             }
@@ -573,9 +576,9 @@ Expression *TweeCompiler::optimizeExpression(Expression *expression) {
                     case BinOps::GTE:
                         return new Const<bool>((lConst >= rConst));
                     case BinOps::IS:
-                        return new Const<bool>(!(lConst == rConst));
+                        return new Const<bool>((lConst != rConst));
                     case BinOps::NEQ:
-                        return new Const<bool>(!(lConst != rConst));
+                        return new Const<bool>((lConst == rConst));
                     default:
                         throw TweeDocumentException("unsupported operator");
                 }
