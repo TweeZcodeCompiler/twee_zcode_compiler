@@ -170,8 +170,20 @@ void AssemblyParser::performRoutineGlobalVarCommand(string line) {
     }
 
     string gvar = lineComps.at(1);
-
-    addGlobal(gvar);
+    unsigned index = (unsigned) globalVariables.size();
+    if (index < 240) {
+        if (this->directiveNames.find(gvar) == this->directiveNames.end()) {
+            LOG_DEBUG << "adding gvar " << gvar << " at index " << to_string(index);
+            this->globalVariables[gvar] = index;
+            this->directiveNames.insert(gvar);
+        } else {
+            LOG_ERROR << "two directives have the same name";
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_GLOBAL);
+        }
+    } else {
+        LOG_DEBUG << "maximum amount of global variables reached!";
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_GLOBAL);
+    }
 }
 
 
@@ -403,23 +415,6 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string &paramString, bool 
 
 
     return param;
-}
-
-
-void AssemblyParser::addGlobal(string globalName) {
-    unsigned index = (unsigned) globalVariables.size();
-    if (index < 240) {
-        if (this->directives.find(globalName) == this->directives.end()) {
-            LOG_ERROR << "two global variable have the same name";
-            throw AssemblyException(AssemblyException::ErrorType::INVALID_GLOBAL);
-        }
-        LOG_DEBUG << "adding gvar " << globalName << " at index " << to_string(index);
-        this->globalVariables[globalName] = index;
-        this->directives.insert(globalName);
-    } else {
-        LOG_DEBUG << "maximum amount of global variables reached!";
-        throw AssemblyException(AssemblyException::ErrorType::INVALID_GLOBAL);
-    }
 }
 
 void AssemblyParser::registerJump(const vector<unique_ptr<ZParam>> &params) {
@@ -708,7 +703,7 @@ void AssemblyParser::performByteArrayDirective(string command, shared_ptr<ZCodeC
     try {
         vector<string> param = this->split(command, ' ');
         string name = param.at(1);
-        if (this->directives.find(name) == this->directives.end()) {
+        if (this->directiveNames.find(name) == this->directiveNames.end()) {
             string sSize = param.at(2).substr(1, param.at(2).size() - 2);
             int size = std::stoi(sSize.c_str());
             auto initialSize = shared_ptr<ZCodeObject>(new ZCodeInstruction(size));
@@ -717,7 +712,7 @@ void AssemblyParser::performByteArrayDirective(string command, shared_ptr<ZCodeC
             dynamicMemory->add(label);
             dynamicMemory->add(table);
             dynamicMemory->add(shared_ptr<ZCodeInstruction>(new ZCodeInstruction(0xff, "EOM")));
-            this->directives.insert(name);
+            this->directiveNames.insert(name);
         } else {
             LOG_ERROR << "two directives have the same name";
             throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
@@ -735,7 +730,7 @@ void AssemblyParser::performWordArrayDirective(string command, shared_ptr<ZCodeC
     try {
         vector<string> param = this->split(command, ' ');
         string name = param.at(1);
-        if (this->directives.find(name) == this->directives.end()) {
+        if (this->directiveNames.find(name) == this->directiveNames.end()) {
             string sSize = param.at(2).substr(1, param.at(2).size() - 2);
             int size = std::stoi(sSize.c_str());
             auto label = dynamicMemory->getOrCreateLabel(name);
@@ -743,7 +738,7 @@ void AssemblyParser::performWordArrayDirective(string command, shared_ptr<ZCodeC
             auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size * 2, "ARRAY : " + name));
             dynamicMemory->add(table);
             dynamicMemory->add(shared_ptr<ZCodeInstruction>(new ZCodeInstruction(0xff, "EOM")));
-            this->directives.insert(name);
+            this->directiveNames.insert(name);
         } else {
             LOG_ERROR << "two directives have the same name";
             throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
@@ -782,8 +777,8 @@ void AssemblyParser::performStringDirective(std::string command, shared_ptr<ZCod
     try {
         vector<string> param = this->split(command, ' ');
         string name = param.at(1);
-        if (this->directives.find(name) == this->directives.end()) {
-            this->directives.insert(name);
+        if (this->directiveNames.find(name) == this->directiveNames.end()) {
+            this->directiveNames.insert(name);
             unsigned long begin = command.find('\"');
             unsigned long end = command.find('\"', begin + 1);
             string str = command.substr(begin + 1, end - begin - 1);
