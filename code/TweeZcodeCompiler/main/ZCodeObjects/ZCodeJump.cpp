@@ -68,6 +68,7 @@ void ZCodeJump::addCondBranchOffset() {
         this->adress.push_back(firstHalf);
         this->size = 1;
     } else {
+        if (offset > 0) offset--;
         bitset<14> bitsetOffset(offset);
 
         for (size_t i = 0; i < 8; i++) {

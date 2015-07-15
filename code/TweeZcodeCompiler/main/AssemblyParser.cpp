@@ -209,7 +209,7 @@ void AssemblyParser::readAssembly(istream &input, shared_ptr<ZCodeContainer> dyn
                         performWordArrayDirective(line, dynamicMemory);
                     } else {
                         cerr << "unknown directive";
-                        throw;
+                        throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
                     }
                 } else {
                     executeCommand(line, *currentGenerator, dynamicMemory);

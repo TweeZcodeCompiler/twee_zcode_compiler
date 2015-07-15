@@ -24,6 +24,7 @@
 #include <Passage/Body/Expressions/UnaryOperation.h>
 
 #include <Passage/Body/Expressions/Const.h>
+#include <Passage/Body/Expressions/Variable.h>
 
 #include "Passage/Body/Expressions/Visited.h"
 #include "Passage/Body/Expressions/Turns.h"
@@ -38,7 +39,6 @@
 #include <Passage/Body/Macros/ElseIfMacro.h>
 #include <Passage/Body/Macros/ElseMacro.h>
 #include <Passage/Body/Macros/EndIfMacro.h>
-#include <Passage/Body/Expressions/Variable.h>
 
 
 using namespace std;
@@ -224,7 +224,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal), ZRoutineArgument(passageCount)}))
                 .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
                 .store(GLOB_CURRENT_PASSAGE_ID, idLocal);
-        
+
         // update visited array
         ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
                 .add(passageCount, "1", passageCount)
@@ -364,7 +364,7 @@ bool isPreviousMacro(string link) {
     return link == previousFunc;
 }
 
-void TweeCompiler::visit(const Text&host) {
+void TweeCompiler::visit(const Text& host) {
     ASSGEN.print(host.getContent());
 }
 void TweeCompiler::visit(const Formatting& host) {
@@ -685,9 +685,9 @@ void TweeCompiler::evalExpression(Expression *expression) {
         if (passageCount == 0) {
             ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp");
         } else if (passageCount == 1) {
-            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)] + 1), "sp");
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)]), "sp");
         } else {
-            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)] + 1), "min");
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)]), "min");
 
             for (size_t i = 1; i < passageCount; i++) {
                 string label = "NO_NEW_MIN_FOUND_" + to_string(i);
