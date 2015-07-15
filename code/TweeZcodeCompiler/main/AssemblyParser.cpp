@@ -97,66 +97,71 @@ void AssemblyParser::performRoutineDirectiveCommand(vector<string> lineComps, sh
         throw AssemblyException(AssemblyException::ErrorType::INVALID_ROUTINE);
     }
     string routineName = lineComps.at(1);
-
-    // currentGenerator exists, so we can get its code
-    if (currentGenerator) {
-        finishRoutine(highMemory);
-    }
-
-    // have to be cleared after each routine
-    registeredJumpsAtLines = vector<pair<string, unsigned>>();
-    registeredLabels = vector<string>();
-
-    unsigned locVariablesCount = (unsigned) (lineComps.size() - 2);
-    currentGenerator.reset(new RoutineGenerator(routineName, locVariablesCount));
-
-    vector<pair<string, optional<int>>> locals;
-    bool withoutComma = true;
-    for (; locVariablesCount > 0; locVariablesCount--) {     // parse locale variables
-        string var = lineComps[locVariablesCount + 1];
-
-        size_t nameEnd = var.find_first_of("=");
-        size_t varEnd = var.size();
-
-        if (withoutComma) {         // last locale variable has no comma as last char
-            withoutComma = false;
-        } else {
-            varEnd -= 1;
+    if (routineNames.find(routineName) == routineNames.end()) {
+        this->routineNames.insert(routineName);
+        // currentGenerator exists, so we can get its code
+        if (currentGenerator) {
+            finishRoutine(highMemory);
         }
 
-        if (nameEnd != string::npos) {
-            int val;
-            string valueString = var.substr(nameEnd + 1, varEnd - 1 - nameEnd);
+        // have to be cleared after each routine
+        registeredJumpsAtLines = vector<pair<string, unsigned>>();
+        registeredLabels = vector<string>();
 
-            try {
-                val = stoi(valueString);
-            } catch (const invalid_argument &invaldArgument) {
-                LOG_ERROR << "Given value for local variable is not an integer: " << valueString;
-                throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
-            } catch (const out_of_range &outOfRange) {
-                LOG_ERROR << "Given value for local variable too large or too small: " << valueString;
-                throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
+        unsigned locVariablesCount = (unsigned) (lineComps.size() - 2);
+        currentGenerator.reset(new RoutineGenerator(routineName, locVariablesCount));
+
+        vector<pair<string, optional<int>>> locals;
+        bool withoutComma = true;
+        for (; locVariablesCount > 0; locVariablesCount--) {     // parse locale variables
+            string var = lineComps[locVariablesCount + 1];
+
+            size_t nameEnd = var.find_first_of("=");
+            size_t varEnd = var.size();
+
+            if (withoutComma) {         // last locale variable has no comma as last char
+                withoutComma = false;
+            } else {
+                varEnd -= 1;
             }
 
-            if (val > INT16_MAX || val < INT16_MIN) {
-                LOG_ERROR << "Given value for local variable too large or too small: " << to_string(val);
-                throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
+            if (nameEnd != string::npos) {
+                int val;
+                string valueString = var.substr(nameEnd + 1, varEnd - 1 - nameEnd);
+
+                try {
+                    val = stoi(valueString);
+                } catch (const invalid_argument &invaldArgument) {
+                    LOG_ERROR << "Given value for local variable is not an integer: " << valueString;
+                    throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
+                } catch (const out_of_range &outOfRange) {
+                    LOG_ERROR << "Given value for local variable too large or too small: " << valueString;
+                    throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
+                }
+
+                if (val > INT16_MAX || val < INT16_MIN) {
+                    LOG_ERROR << "Given value for local variable too large or too small: " << to_string(val);
+                    throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
+                }
+
+                string name = var.substr(0, nameEnd);
+                locals.push_back(make_pair(name, val));
+            } else {
+                string name = var.substr(0, varEnd);
+                locals.push_back(make_pair(name, nullopt));
             }
-
-            string name = var.substr(0, nameEnd);
-            locals.push_back(make_pair(name, val));
-        } else {
-            string name = var.substr(0, varEnd);
-            locals.push_back(make_pair(name, nullopt));
         }
-    }
 
-    for (auto localPair = locals.rbegin(); localPair != locals.rend(); ++localPair) {
-        if (localPair->second) {
-            currentGenerator->setLocalVariable(localPair->first, *(localPair->second));
-        } else {
-            currentGenerator->setLocalVariable(localPair->first);
+        for (auto localPair = locals.rbegin(); localPair != locals.rend(); ++localPair) {
+            if (localPair->second) {
+                currentGenerator->setLocalVariable(localPair->first, *(localPair->second));
+            } else {
+                currentGenerator->setLocalVariable(localPair->first);
+            }
         }
+    } else {
+        LOG_ERROR << "two routines have the same name";
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_ROUTINE);
     }
 }
 
@@ -178,7 +183,7 @@ void AssemblyParser::performRoutineGlobalVarCommand(string line) {
             this->directiveNames.insert(gvar);
         } else {
             LOG_ERROR << "two directives have the same name";
-            throw AssemblyException(AssemblyException::ErrorType::INVALID_GLOBAL);
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
         }
     } else {
         LOG_DEBUG << "maximum amount of global variables reached!";

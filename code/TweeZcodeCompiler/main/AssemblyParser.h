@@ -122,6 +122,7 @@ private:
     std::vector<std::string> registeredLabels;
     std::map<std::string, uint8_t> globalVariables;
     std::set<std::string> directiveNames;
+    std::set<std::string> routineNames;
 
     bool firstRoutine = true;
 
