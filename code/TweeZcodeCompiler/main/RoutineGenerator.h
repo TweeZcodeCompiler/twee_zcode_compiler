@@ -12,7 +12,6 @@
 #include <map>
 #include <iostream>
 #include "Jumps.h"
-#include "OpcodeParameterGenerator.h"
 #include "Utils.h"
 #include "exceptions.h"
 #include "ZCodeObjects/ZCodeRoutine.h"
@@ -33,7 +32,6 @@ private:
     size_t addedLocalVariables = 0;
     size_t offsetOfRoutine = 0;
     Jumps jumps;
-    OpcodeParameterGenerator opcodeGenerator;
 
     size_t nextLocVarInitLabelNumber = 0;
 
