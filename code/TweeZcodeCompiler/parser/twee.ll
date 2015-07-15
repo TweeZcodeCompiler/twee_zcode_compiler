@@ -256,8 +256,6 @@ EXPR_TO                to|=
                                 }
 
  /* ___NEW CONDITION___ Body*/
-    /*From: HeaderTitle, HeaderTagsClose*/
-    /*To:   TODO: Body: NEWLINE PASSAGE_START    */
 
     /* :: */
 <Body>{NEWLINE}{PASSAGE_START}{MATCH_REST} {
@@ -284,44 +282,47 @@ EXPR_TO                to|=
                                 }
 
 <Body>{FORMATTING_ITALICS}{MATCH_REST}      {
-                                yyless(2); //TODO: enable correct matching, BODY_TEXT
+                                yyless(2);
                                 SAVE_STRING;
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING_ITALICS" << " with value " << YYText();
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING of type FORMATTING_ITALICS" << " with value " << YYText();
                                 return BisonParser::token::FORMATTING;
                                 }
 
 <Body>{FORMATTING_BOLDFACE}{MATCH_REST}      {
-                                yyless(2); //TODO: enable correct matching, BODY_TEXT
+                                yyless(2);
                                 SAVE_STRING;
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING_BOLDFACE" << " with value " << YYText();
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING of type FORMATTING_BOLDFACE" << " with value " << YYText();
                                 return BisonParser::token::FORMATTING;
                                 }
 
 <Body>{FORMATTING_UNDERLINE}{MATCH_REST}      {
-                                yyless(2); //TODO: enable correct matching, BODY_TEXT
+                                yyless(2);
                                 SAVE_STRING;
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING_UNDERLINE" << " with value " << YYText();
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING of type FORMATTING_UNDERLINE" << " with value " << YYText();
                                 return BisonParser::token::FORMATTING;
                                 }
 
 <Body>{FORMATTING_STRIKETHROUGH}{MATCH_REST}      {
-                                yyless(2); //TODO: enable correct matching, BODY_TEXT
+                                //TODO: currently not supported
+                                yyless(2);
                                 SAVE_STRING;
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING_STRIKETHROUGH" << " with value " << YYText();
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING of type FORMATTING_STRIKETHROUGH" << " with value " << YYText();
                                 return BisonParser::token::FORMATTING;
                                 }
 
 <Body>{FORMATTING_SUBSCRIPT}{MATCH_REST}      {
+                                //TODO: currently not supported
                                 yyless(2);
                                 SAVE_STRING;
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING_SUBSCRIPT" << " with value " << YYText();
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING of type FORMATTING_SUBSCRIPT" << " with value " << YYText();
                                  return BisonParser::token::FORMATTING;
                                  }
 
 <Body>{FORMATTING_SUPERSCRIPT}{MATCH_REST}      {
+                                //TODO: currently not supported
                                 yyless(2);
                                 SAVE_STRING;
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING_SUPERSCRIPT" << " with value " << YYText();
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING of type FORMATTING_SUPERSCRIPT" << " with value " << YYText();
                                 return BisonParser::token::FORMATTING;
                                 }
 
@@ -329,7 +330,7 @@ EXPR_TO                to|=
                                 yyless(3);
                                 SAVE_STRING;
                                 BEGIN(MonoSpaceContent);
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING_MONOSPACE_OPEN" << " with value " << YYText();
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING of type FORMATTING_MONOSPACE_OPEN" << " with value " << YYText();
                                 return BisonParser::token::FORMATTING;
                                 }
 
@@ -342,22 +343,25 @@ EXPR_TO                to|=
                                 }
 
 <Body>{FORMATTING_COMMENT_OPEN}{MATCH_REST} {
+                                //TODO: currently not supported
                                 yyless(2);
                                 BEGIN(FormattingComment);
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING_COMMENT_OPEN" << " with value " << YYText();
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING of type FORMATTING_COMMENT_OPEN" << " with value " << YYText();
                                 return BisonParser::token::FORMATTING;
                                 }
 <Body>{FORMATTING_COMMENT_CLOSE}{MATCH_REST} {
+                                //TODO: currently not supported
                                 yyless(2);
                                 BEGIN(FormattingComment);
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING_COMMENT_CLOSE" << " with value " << YYText();
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING of type FORMATTING_COMMENT_CLOSE" << " with value " << YYText();
                                 return BisonParser::token::FORMATTING;
                                 }
 
 <Body>{FORMATTING_ERROR_STYLING}{MATCH_REST} {
+                                //TODO: currently not supported
                                 yyless(2);
                                 BEGIN(FormattingErrorInlineStyling);
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING_ERROR_STYLING" << " with value " << YYText();
+                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "Body" << " matched Token " << "FORMATTING of type FORMATTING_ERROR_STYLING" << " with value " << YYText();
                                 return BisonParser::token::FORMATTING_ERROR_STYLING;
                                 }
 
@@ -379,7 +383,7 @@ EXPR_TO                to|=
     /* The Passage Text is lex-ed in an inverted way:
     [^x]+ will put everything into the next token except for x
     so we get ascii, Unicode and everything into the normal TEXT_TOKENS
-    but the text parsping will have to stop when it encounters one of the following symbols:
+    but the text parsing will have to stop when it encounters one of the following symbols:
     Glossary:
     short   purpose                     char regex-char
     Italics Formatting              /    \/{2}
