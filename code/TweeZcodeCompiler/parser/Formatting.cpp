@@ -8,7 +8,7 @@
 Formatting::Formatting(std::string format) {
     if (format == "//") {
         this->format = Format:: ITALIC;
-    } else if (format == "\"") {
+    } else if (format == "''") {
         this->format = Format::BOLD;
     } else if (format == "__") {
         this->format = Format::UNDERLINED;
