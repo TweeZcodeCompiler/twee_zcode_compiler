@@ -91,7 +91,8 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         ROUTINE_PRINT_ARROW_UP = "PRINT_ARROW_UP",
         ROUTINE_PRINT_ARROW_DOWN = "PRINT_ARROW_DOWN",
         GLOB_PRINT_ARROW_UP_AT_END = "PRINT_ARROW_UP_AT_END",
-        TABLE_MOUSE_CLICK_ARROWS = "MOUSE_CLICK_ARROWS";
+        TABLE_MOUSE_CLICK_ARROWS = "MOUSE_CLICK_ARROWS",
+        INIT_ROUTINE = "INIT_ROUTINE";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 static const unsigned int MAX_MOUSE_LINKS = 20;
@@ -99,6 +100,11 @@ static const unsigned int MARGIN_LEFT = 20;
 static const unsigned int MARGIN_RIGHT = 10;
 static const unsigned int MARGIN_TOP = 4;      // at least 4 lines to leave place for up arrow
 static const unsigned int MARGIN_BOTTOM = 4;   // at least 4 lines to leave place for down arrow
+static const string INTRO_TITLE = "C++ Compiler, built at FU Berlin";
+static const string INTRO_MOUSE = "This interpreter supports mouse control. Click on links to go to the next passage and use the arrow keys on the right side of the screen to navigate in one passage.";
+static const string INTRO_NO_MOUSE = "Unfortunately this interpreter does not support mouse control. Links are displayed at the end of a passage and can be chosen via your keyboard.";
+static const string INTRO_NEXT_MOUSE = "Click somewhere to start the story. Have fun and good luck.";
+static const string INTRO_NEXT_NO_MOUSE = "Press a key to start the story. Have fun and good luck.";
 
 //#define ZAS_DEBUG
 
@@ -265,6 +271,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .call_1n(SUPPORTS_MOUSE_ROUTINE)
                 .call_1n(ROUTINE_CLEAR_TABLES)
                 .store(GLOB_NEXT_PASSAGE_ID, "-1")
+                .setCursor("-1", "0", "0")           // hide cursor
+                .call_1n(INIT_ROUTINE)
                 .call_vn(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))));
 
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
@@ -282,6 +290,48 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.addLabel("end_program");
         ASSGEN.quit();
+    }
+
+    {
+        string varI = "i", varKey = "key";
+
+        ASSGEN.addRoutine(INIT_ROUTINE, {ZRoutineArgument(varI), ZRoutineArgument(varKey)})
+                .setMargins(to_string(MARGIN_LEFT), to_string(MARGIN_RIGHT), "0")
+
+                // add top margin
+                .addLabel("loop")
+                .newline()
+                .add(varI, "1", varI)
+                .jumpLess(varI + " " + to_string(MARGIN_TOP), "loop")
+                .windowStyle("0", "15", "1")
+
+                // TODO: bold and italic
+                //.setTextStyle("6")
+                .print(INTRO_TITLE)
+                //.setTextStyle("4")
+                .newline()
+                .newline()
+
+                .jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 1", "mouseSupported")
+                .print(INTRO_NO_MOUSE)
+                .newline()
+                .newline()
+                .newline()
+                .print(INTRO_NEXT_NO_MOUSE)
+                .read_char(varKey)
+                .ret("0");
+
+        ASSGEN.addLabel("mouseSupported")
+                .read_char(varKey)          // workaround for wrong jump offset calculation
+                .print(INTRO_MOUSE)
+                .newline()
+                .newline()
+                .newline()
+                .print(INTRO_NEXT_MOUSE)
+                .mouseWindow("-1")
+                .read_char(varKey)
+                .mouseWindow("1")
+                .ret("0");
     }
 
     out << makeUserInputRoutine() << makeClearTablesRoutine();
