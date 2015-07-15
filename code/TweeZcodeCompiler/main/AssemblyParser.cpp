@@ -772,8 +772,9 @@ void AssemblyParser::performStringDirective(std::string command, shared_ptr<ZCod
         auto label = dynamicMemory->getOrCreateLabel(name);
         ZCodeConverter converter;
         auto vstr = converter.convertStringToZSCII(str);
+        dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(7,"static string typedef")));
         vector<bitset<8>> vsize;
-        Utils::addTwoBytes(str.size(),vsize);
+        Utils::addTwoBytes(vstr.size(),vsize);
         dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(vsize,"size")));
         dynamicMemory->add(label);
         auto table = shared_ptr<ZCodeObject>(
