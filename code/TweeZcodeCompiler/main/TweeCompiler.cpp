@@ -536,7 +536,7 @@ Expression *TweeCompiler::optimizeExpression(Expression *expression) {
                     Variable *varL = dynamic_cast<Variable *>(lExpr);
                     Variable *varR = dynamic_cast<Variable *>(rrExpr->getLeftSide().get());
                     if (rrExpr->getOperator() == BinOps::TO) {
-                        
+
                     }
                     if (varL->getName() == varR->getName()) {
                         return new BinaryOperation(BinOps::TO, varL, rrExpr->getRightSide().get());
