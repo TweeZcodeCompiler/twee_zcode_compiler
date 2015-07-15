@@ -13,7 +13,7 @@ You've visited the Start passage <<print visited("Start")>> times.
 
 ::next
 You've visited this passage <<print visited()>> times.
-From all three passages you've visited the passage you've visited the least you've visited <<print visited("Start", "help", "next")>> times.
+From all three passages you've visited the passage you've visited the least you've visited <<print visited("Start","help","next")>> times.
 [[Start]]
 [[help]]
 [[next]]

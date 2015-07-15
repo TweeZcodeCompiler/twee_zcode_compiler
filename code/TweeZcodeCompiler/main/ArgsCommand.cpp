@@ -98,6 +98,20 @@ ArgsCommand::ArgsCommand(int argc, char **argv) {
     if (optind == argc - 1) {
         sourceFile = argv[optind];
 
+        int status;
+        struct stat st_buf;
+
+        status = stat(sourceFile.c_str(), &st_buf);
+        if(status != 0) {
+            cerr << "error checking file status: " << strerror(errno) << endl;
+            valid = false;
+        }
+
+        if (S_ISDIR(st_buf.st_mode)) {
+            cerr << "error: specified input is a directory" << endl;
+            valid = false;
+        }
+
         // define standard output file if necessary
         if (outputFile.empty()) { // assuming empty string means not set yet
             try {

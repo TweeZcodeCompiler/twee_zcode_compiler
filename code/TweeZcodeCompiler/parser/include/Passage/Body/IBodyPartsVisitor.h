@@ -6,6 +6,7 @@
 #define IBODYPARTSVISITOR_H
 
 class Text;
+class Formatting;
 class Link;
 class Newline;
 
@@ -23,6 +24,8 @@ class IBodyPartsVisitor {
 public:
 
     virtual void visit(const Text& host) = 0;
+
+    virtual void visit(const Formatting& host) = 0;
 
     virtual void visit(const Link& host) = 0;
 
