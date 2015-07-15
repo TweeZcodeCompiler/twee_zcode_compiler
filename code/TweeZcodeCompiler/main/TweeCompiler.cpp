@@ -38,6 +38,7 @@
 #include <Passage/Body/Macros/ElseIfMacro.h>
 #include <Passage/Body/Macros/ElseMacro.h>
 #include <Passage/Body/Macros/EndIfMacro.h>
+#include <Passage/Body/Expressions/Variable.h>
 
 
 using namespace std;
