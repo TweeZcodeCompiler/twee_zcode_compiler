@@ -186,8 +186,10 @@ void RoutineGenerator::callVS(vector<unique_ptr<ZParam>> params) {
         checkParamType(params, ROUTINE, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, STORE_ADDRESS);
     }
 
+    auto storeTarget = params.back()->getZCodeValue();
+    params.pop_back();
     routine -> generateVarOPInstruction(CALL_VS, params, "call vs");
-    routine -> storeAdress(params.at(params.size()-1)->getZCodeValue());
+    routine -> storeAdress(storeTarget);
 }
 
 // params: routineName, (arg1, (arg2, (arg3)))
@@ -633,7 +635,7 @@ void RoutineGenerator::push(vector<unique_ptr<ZParam>> params) {
 
 void RoutineGenerator::pushStack(std::vector<std::unique_ptr<ZParam>> params) {
     checkParamCount(params, 3);
-    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE_OR_NAME, NAME);
+    checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, NAME);
 
     vector<unique_ptr<ZParam>> myParams;
     myParams.push_back(unique_ptr<ZParam>(params.at(0)->clone()));

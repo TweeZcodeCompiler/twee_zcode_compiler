@@ -876,17 +876,12 @@ boolean:
 
 %%
 
-// We have to implement the error function
-//TODO: use this function to pass parse errors to the exceptions, also look for yyerror
-void Twee::BisonParser::error(const std::string& msg) {
-	LOG_ERROR  << "Error: " << msg ;
-}
-
-
-// Now that we have the Parser declared, we can declare the Scanner and implement
-// the yylex function
-
 #include "TweeScanner.h"
 static int yylex(Twee::BisonParser::semantic_type * yylval, Twee::TweeScanner &scanner) {
 	return scanner.yylex(yylval);
+}
+
+//error function that also gives the last token value and line position
+void Twee::BisonParser::error(const std::string& msg) {
+	LOG_ERROR  << "Error: " << msg << ". Lexer is on line " << scanner.lineno() << " with value: " << scanner.YYText();
 }
