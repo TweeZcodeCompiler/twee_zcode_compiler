@@ -411,7 +411,7 @@ void TweeCompiler::visit(const PrintMacro& host) {
     if (Previous *previous = dynamic_cast<Previous *>(host.getExpression().get())) {
         ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
     } else {
-        evalExpression(host.getExpression().get());
+        evalExpression(optimizeExpression(host.getExpression().get()));
         ASSGEN.print_num("sp");
     }
 }
@@ -448,7 +448,7 @@ void TweeCompiler::visit(const SetMacro& host) {
 
 void TweeCompiler::visit(const IfMacro& host) {
     ifContexts.push(makeNextIfContext());
-    evalExpression(host.getExpression().get());
+    evalExpression(optimizeExpression(host.getExpression().get()));
     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
 }
 
@@ -468,7 +468,7 @@ void TweeCompiler::visit(const ElseIfMacro& host) {
     ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
     ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
     ifContexts.top().caseCount++;
-    evalExpression(host.getExpression().get());
+    evalExpression(optimizeExpression(host.getExpression().get()));
     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
 }
 
@@ -650,7 +650,7 @@ void TweeCompiler::evalAssignment(BinaryOperation *expression) {
                 ASSGEN.addGlobal(variableName);
             }
 
-            evalExpression(expression->getRightSide().get());
+            evalExpression(optimizeExpression(expression->getRightSide().get()));
 
             ASSGEN.load("sp", variableName);
             ASSGEN.push(variableName);
