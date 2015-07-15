@@ -55,6 +55,10 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
     } else {
         //source file is assembly file
         std::ifstream in(inputFileName);
+        if(!in) {
+            LOG_ERROR << "Invalid input file specified: " << inputFileName;
+            throw; // TODO: throw proper exception
+        }
         buffer << in.rdbuf();
     }
 
