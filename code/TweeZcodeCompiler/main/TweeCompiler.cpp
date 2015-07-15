@@ -224,8 +224,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         const string passageCount = "passage_count";
         ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal), ZRoutineArgument(passageCount)}))
                 .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
-                .store(GLOB_CURRENT_PASSAGE_ID, idLocal)
-                .add("CURRENT_PASSAGE_ID", "1", "CURRENT_PASSAGE_ID");
+                .store(GLOB_CURRENT_PASSAGE_ID, idLocal);
 
         // update visited array
         ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
@@ -559,9 +558,9 @@ void TweeCompiler::evalExpression(Expression *expression) {
         if (passageCount == 0) {
             ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp");
         } else if (passageCount == 1) {
-            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)] + 1), "sp");
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)]), "sp");
         } else {
-            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)] + 1), "min");
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)]), "min");
 
             for (size_t i = 1; i < passageCount; i++) {
                 string label = "NO_NEW_MIN_FOUND_" + to_string(i);
