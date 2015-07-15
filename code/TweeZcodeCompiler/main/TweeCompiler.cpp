@@ -253,9 +253,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .store(GLOB_CURRENT_PASSAGE_ID, "0")
                 .call_1n(SUPPORTS_MOUSE_ROUTINE)
                 .call_1n(ROUTINE_CLEAR_TABLES)
-                .call_1n(CLEAR_MOUSE_TABLE_ROUTINE)
-                .call_vn(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))))
-                .store(GLOB_NEXT_PASSAGE_ID, "-1");
+                .store(GLOB_NEXT_PASSAGE_ID, "-1")
+                .call_vn(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))));
 
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
                 .jumpEquals(GLOB_NEXT_PASSAGE_ID + " -1", "displayLinks")
@@ -400,12 +399,14 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.print_num(GLOB_TABLE_MOUSE_LINKS_NEXT);
         ASSGEN.newline();*/
 
-        /*ASSGEN.store(varMouseTableIndex, "1");
+        /*ASSGEN.jumpEquals(varClickSomewhere + " 1", "beeeeep");
+        ASSGEN.store(varMouseTableIndex, "1");
         ASSGEN.addLabel("fu")
                 .loadw(TABLE_MOUSE_LINKS, varMouseTableIndex, "sp")
                 .print_num("sp")
                 .newline().add(varMouseTableIndex, "1", varMouseTableIndex)
-                .jumpLess(varMouseTableIndex + " 30", "fu");*/
+                .jumpLess(varMouseTableIndex + " 8", "fu");
+        ASSGEN.addLabel("beeeeep");*/
 
         ASSGEN.store(varMouseTableIndex, "1");
         ASSGEN.addLabel("LINKS_ENTRIES")
@@ -433,10 +434,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.addLabel("CORRECT_X_ENDING")
                 .add(varMouseTableIndex, "1", varMouseTableIndex)
                 .loadw(TABLE_MOUSE_LINKS, varMouseTableIndex, varI)
-                .print("clicked")
                 .ret(varI);
 
         ASSGEN.addLabel("ALL_ENTRIES_CHECKED")
+                .read_char("sp")                                             // read_char only workaround here for wrong jump offset -> is not executed
                 .jumpEquals(varClickSomewhere + " 0", "MOUSE_CLICK_LOOP")
                 .ret("-1");
 
@@ -499,7 +500,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.eraseWindow("0")
                 .eraseWindow("1")
                 .store(GLOB_TABLE_MOUSE_LINKS_NEXT, "1")
-                .store(GLOB_LINES_PRINTED, "1");
+                .store(GLOB_LINES_PRINTED, "1")
+                .call_1n(CLEAR_MOUSE_TABLE_ROUTINE);
 
         ASSGEN.loadb("33", "0", varCharWidth)
                 .sub(varCharWidth, "4", varCharWidth)
@@ -597,10 +599,13 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .add(GLOB_LINES_PRINTED, "1", GLOB_LINES_PRINTED)
                 .loadb("32", 0, "sp")
                 .sub("sp", "5", "sp")
-                .jumpLess(GLOB_LINES_PRINTED + " sp", "end")
+                .jumpLess(GLOB_LINES_PRINTED + " sp", "end")             // jump if last line of screen is not reached
                 .call_vs(MOUSE_CLICK_ROUTINE, to_string(1), "result")
-                .jumpLess("result 0", "end")
+                .jumpLess("result 0", "noLinkClicked")                   // jump if no link clicked by mouse
                 .store(GLOB_NEXT_PASSAGE_ID, "result")
+                .jump("end")
+                .addLabel("noLinkClicked")
+                .call_1n(UPDATE_MOUSE_SCREEN_ROUTINE)
                 .addLabel("end")
                 .ret("0");
 
