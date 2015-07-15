@@ -97,6 +97,8 @@ static const unsigned int ZSCII_NUM_OFFSET = 49;
 static const unsigned int MAX_MOUSE_LINKS = 20;
 static const unsigned int MARGIN_LEFT = 20;
 static const unsigned int MARGIN_RIGHT = 10;
+static const unsigned int MARGIN_TOP = 4;      // at least 4 lines to leave place for up arrow
+static const unsigned int MARGIN_BOTTOM = 4;   // at least 4 lines to leave place for down arrow
 
 //#define ZAS_DEBUG
 
@@ -600,7 +602,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         string varYSize = "ySize", varXSize = "xSize";
 
-        ASSGEN.addRoutine(UPDATE_MOUSE_SCREEN_ROUTINE, {ZRoutineArgument(varYSize), ZRoutineArgument(varXSize)});
+        ASSGEN.addRoutine(UPDATE_MOUSE_SCREEN_ROUTINE, {ZRoutineArgument(varYSize), ZRoutineArgument(varXSize), ZRoutineArgument(varI)});
 
         ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "no_mouse");
 
@@ -624,6 +626,12 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.windowSize("1", varYSize, varXSize)
                 .setMargins(to_string(MARGIN_LEFT), to_string(MARGIN_RIGHT), "0");
+
+        ASSGEN.addLabel("loop")
+                .newline()
+                .add(varI, "1", varI)
+                .jumpLess(varI + " " + to_string(MARGIN_TOP), "loop")
+                .add(GLOB_LINES_PRINTED, varI, GLOB_LINES_PRINTED);
 
         /*ASSGEN.setWindow("1");
 
@@ -711,7 +719,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.addRoutine(PAUSE_PRINTING_ROUTINE, {ZRoutineArgument("result")})
                 .add(GLOB_LINES_PRINTED, "1", GLOB_LINES_PRINTED)
                 .loadb("32", 0, "sp")
-                .sub("sp", "5", "sp")
+                .sub("sp", to_string(MARGIN_BOTTOM), "sp")
                 .jumpLess(GLOB_LINES_PRINTED + " sp", "end")             // jump if last line of screen is not reached
                 .store(GLOB_PRINT_ARROW_UP_AT_END, "1")
                 .call_1n(ROUTINE_PRINT_ARROW_DOWN)
