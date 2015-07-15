@@ -36,7 +36,6 @@ public:
     }
 
     void accept(IBodyPartsVisitor&) const;
-
 };
 
 

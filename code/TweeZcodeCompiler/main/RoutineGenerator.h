@@ -180,6 +180,10 @@ public:
 
     void inc(std::vector<std::unique_ptr<ZParam>> params);
 
+    void pushStack(std::vector<std::unique_ptr<ZParam>> params);
+
+    void popStack(std::vector<std::unique_ptr<ZParam>> params);
+
     void dec(std::vector<std::unique_ptr<ZParam>> params);
 
     /*
@@ -279,6 +283,11 @@ public:
          * nop, save ?(label), save -> (result), restore ?(label), restore -> (result), pop,
          * catch -> (result), show_status, piracy ?(label)
          */
+    };
+
+    enum ExtOpcode : unsigned int {
+        POP_STACK = 21,
+        PUSH_STACK = 24,
     };
 
     enum BranchOffset {

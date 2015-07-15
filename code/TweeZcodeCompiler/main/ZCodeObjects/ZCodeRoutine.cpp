@@ -122,54 +122,55 @@ void ZCodeRoutine::generateTypeBitsetAndParameterBitsets(std::vector<std::unique
     vector<shared_ptr<ZCodeObject>> instructions;
     bitset<8> paramTypes;
 
-    if (params.size() > 4 && !(params.size() == 5 && params.at(4)->isStoreAddress)) {
-        LOG_ERROR << "More than 4 operands are not allowed!";
-        // this is a programming error, so we don't throw a specific exception
+    // some instructions can take up to 8 parameters
+    bool extraLongVars = params.size() > 4;
+
+    if(params.size() > 8) {
         throw std::exception();
     }
 
-    size_t param = 0;
-    for (int i = 7; i > 0; i -= 2) {
-        if (param >= params.size()|| params.at(param)->isStoreAddress) {
+    size_t paramIndex = 0;
+    for (int i = 7 * (extraLongVars ? 2 : 1); i > 0; i -= 2) {
+        if (paramIndex >= params.size()|| params.at(paramIndex)->isStoreAddress) {
             // if less than 4 parameter types needed set last bits to type omitted
             paramTypes.set(i, true);
             paramTypes.set(i - 1, true);
-        } else if (params.at(param)->isVariableArgument()) {
+        } else if (params.at(paramIndex)->isVariableArgument()) {
             // type variable
             paramTypes.set(i, true);
             paramTypes.set(i - 1, false);
-            uint8_t val = params.at(param)->getZCodeValue();
+            uint8_t val = params.at(paramIndex)->getZCodeValue();
             instructions.push_back(shared_ptr<ZCodeObject>(new ZCodeInstruction(val,"VAR:"+std::to_string(val))));
-        } else if (params[param]->isNameParam) {
+        } else if (params[paramIndex]->isNameParam) {
             //directive
             paramTypes.set(i, false);
             paramTypes.set(i - 1, false);
-            std::string name = params[param]->name;
+            std::string name = params[paramIndex]->name;
             instructions.push_back(
                     shared_ptr<ZCodeObject>(new ZCodeCallAdress(Utils::dynamicMemory->getOrCreateLabel(name), false)));
-        } else if (params[param]->isRoutine) {
+        } else if (params[paramIndex]->isRoutine) {
             //directive
             paramTypes.set(i, false);
             paramTypes.set(i - 1, false);
-            std::string name = params[param]->name;
+            std::string name = params[paramIndex]->name;
             instructions.push_back(
                     shared_ptr<ZCodeObject>(new ZCodeCallAdress(ZCodeRoutine::getOrCreateRoutine(name,0), true)));
-        } else if (params[param]->getZCodeValue() < 256) {
+        } else if (params[paramIndex]->getZCodeValue() < 256) {
             // type small constant
             paramTypes.set(i, false);
             paramTypes.set(i - 1, true);
 
-            instructions.push_back(shared_ptr<ZCodeObject>(new ZCodeInstruction(params.at(param)->getZCodeValue(),"S:"+std::to_string(params.at(param)->getZCodeValue()))));
+            instructions.push_back(shared_ptr<ZCodeObject>(new ZCodeInstruction(params.at(paramIndex)->getZCodeValue(),"S:"+std::to_string(params.at(paramIndex)->getZCodeValue()))));
         } else {
             // type large constant
             paramTypes.set(i, false);
             paramTypes.set(i - 1, false);
             vector<bitset<8>> two;
-            Utils::addTwoBytes((int16_t) params[param]->getZCodeValue(), two);
-            instructions.push_back(shared_ptr<ZCodeObject>(new ZCodeInstruction(two,"L:"+std::to_string(params.at(param)->getZCodeValue()))));
+            Utils::addTwoBytes((int16_t) params[paramIndex]->getZCodeValue(), two);
+            instructions.push_back(shared_ptr<ZCodeObject>(new ZCodeInstruction(two,"L:"+std::to_string(params.at(paramIndex)->getZCodeValue()))));
         }
 
-        param++;
+        paramIndex++;
     }
     vector<bitset<8>> paramTypeVector;
     paramTypeVector.push_back(paramTypes);
@@ -191,6 +192,13 @@ void ZCodeRoutine::generateVarOPInstruction(unsigned int opcode,vector<std::uniq
         opcodeByte.set(5, true);
     }
 
+
+    if (params.size() > 4) {
+        LOG_ERROR << "More than 4 operands are not allowed!";
+        // this is a programming error, so we don't throw a specific exception
+        throw std::exception();
+    }
+
     // variable form
     opcodeByte.set(7, true);
     opcodeByte.set(6, true);
@@ -200,4 +208,12 @@ void ZCodeRoutine::generateVarOPInstruction(unsigned int opcode,vector<std::uniq
 
 void ZCodeRoutine::storeAdress(uint8_t addr) {
     this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(addr,"store adress: "+addr)));
+}
+
+
+void ZCodeRoutine::generateExtOPInstruction(unsigned int opcode, vector<std::unique_ptr<ZParam>> &params, std::string showName)
+{
+    this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(190,"EXT")));
+    this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(opcode,showName)));
+    generateTypeBitsetAndParameterBitsets(params);
 }

@@ -17,6 +17,6 @@ std::string ElseIfMacro::to_string() const {
     return "ElseIfMacro: " + this->getExpression()->to_string();
 }
 
-void ElseIfMacro::accept(IBodyPartsVisitor & visitor) const {
+void ElseIfMacro::accept(IBodyPartsVisitor &visitor) const {
     visitor.visit(*this);
 }

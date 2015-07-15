@@ -7,13 +7,13 @@
 
 using namespace std;
 
-const vector<unique_ptr<BodyPart>>& Body::getBodyParts() const {
-    return bodyparts;
-}
-
 Body &Body::operator+=(BodyPart& bodyPart) {
     this->bodyparts.push_back(unique_ptr<BodyPart>(bodyPart.clone()));
     return *this;
+}
+
+const vector<unique_ptr<BodyPart>>& Body::getBodyParts() const {
+    return bodyparts;
 }
 
 std::string Body::to_string() const {

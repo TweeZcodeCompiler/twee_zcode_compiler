@@ -1,0 +1,245 @@
+:: End [end]
+<html>
+<body>
+<p>
+made in <a href="http://www.gimcrackd.com/etc/src/">twine</a> by <a href="http://www.mkopas.net">merritt kopas</a></p>
+Quotes and images from Mira Bellwether's <a href="https://payhip.com/b/hRtK"></p><p>Fucking Trans Women #0</a></p>
+<p>Read it. It's important.</p>
+<p>(Thanks, Mira.)</p>
+</body>
+</html>
+
+
+:: FTW14 [ftw]
+<html><body><p id="ftw"><img src="muffing8.png"></img></p></body></html>[[Back|14]]
+
+
+:: FTW12 [ftw]
+<html><body><p id="ftw"><img src="muffing7.png"></img></p></body></html>[[Back|12]]
+
+
+:: FTW10 [ftw]
+<html><body><p id="ftw"><img src="muffing5.png"></img></p></body></html>[[Back|10]]
+
+
+:: Note [about]
+FTW uses language like 'testicles' to refer to trans women's bodies -- see the original zine for Mira's explanation of why this is, there's a link to download it at the end of the story.
+
+[[Back|About2]]
+
+
+:: Start
+[[positive space|Dedication]]
+
+
+:: webfont [script]
+WebFontConfig = {
+    google: { families: [ 'Open+Sans:400,700:latin' ] }
+  };
+  (function() {
+    var wf = document.createElement('script');
+    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+  })();
+
+
+:: About2 [about]
+In any passage with two links, the first link will display a quote or image from Mira Bellwether's on hiatus zine "Fucking Trans Women."[[*|Note]]
+
+The second link will advance the story and bypass the technical info.
+
+[[Begin|1]]
+
+
+:: Untitled Passage 1 [stylesheet]
+.passage { width: 550px !important ;}
+#passages {font-size:36px; font-family:'Open Sans'; border-left: 0px !important; margin:200px 0px 0px 200px !important;}
+#ftw {color: #FF1493;}
+#sidebar {width: 0px !important;}
+#sidebar li{visibility: hidden;}
+a:link    {text-decoration:none; color:#FF69B4;}
+a:visited {text-decoration:none; color:#FF69B4;}
+a:hover   {text-decoration:none !important; color:#FFB6C1;}
+a:active  {text-decoration:none; color:#FF69B4;}
+
+[data-tags~=ftw] {
+  color: #FF1493;
+  font-size: 24px;
+}
+
+[data-tags~=about] {
+  font-size: 20px;
+}
+
+[data-tags~=end] {
+  font-size: 20px;
+}
+
+
+:: 21
+I cried some [[more|22]].
+
+
+:: 22
+I love you [[too|End]].
+
+
+:: FTW9 [ftw]
+<html><body><p id="ftw"><img src="muffing4.png"></img></p></body></html>[[Back|9]]
+
+
+:: 1
+On the first night we spent together, she [[asked me|FTW1]] what I [[wanted|2]].
+
+
+:: 3
+Earlier she'd shown me a space [[inside her body|FTW3]] I'd scarcely known [[existed|4]].
+
+
+:: StoryAuthor
+Anonymous
+
+
+:: 2
+I told her, [[hesitating and nervous|FTW2]], that I wanted to feel her [[inside me|3]].
+
+
+:: 5
+And now I'd [[asked her|FTW5]] to do the same [[for me|6]].
+
+
+:: 4
+A space that I could slide my fingers [[up into|FTW4]] and watch her arch her back, pushing against [[my hands|5]]. 
+
+
+:: 7
+Even as I [[desperately|FTW7]] [[wanted it|8]].
+
+
+:: 6
+To help me [[explore|FTW6]] my body in a way that [[terrified me|7]].
+
+
+:: 9
+I [[breathed in|FTW9]], felt her hand [[against me|10]].
+
+
+:: StoryTitle
+Positive Space
+
+
+:: FTW1 [ftw]
+Muffing is the word that I use to describe the act of being fucked in one or both of my inguinal canals.
+
+[[Back|1]]
+
+
+:: FTW7 [ftw]
+Muffing might sound painful, but it's not, or if it is painful, it's painful in a good way.
+
+[[Back|7]]
+
+
+:: FTW6 [ftw]
+<html><body><p id="ftw"><img src="muffing2.png"></img></p></body></html>[[Back|6]]
+
+
+:: FTW5 [ftw]
+Trans women who tuck often learn to push their testicles up and into the inguinal canals and to hold them there. Depending on how much and how often the inguinals are being used, they might initially be difficult to find, but with only a little practice they are actually quite easy to access.
+
+[[Back|5]]
+
+
+:: FTW4 [ftw]
+<html><body><p id="ftw"><img src="muffing6.png"></img></p></body></html>[[Back|4]]
+
+
+:: About [about]
+This is a short story about sex. In particular, it's about the sex act sometimes known as "muffing." The story contains images of genitals and detailed descriptions of fucking.
+
+This might not be comfortable for everybody, especially people who have complicated relationships with their genitals. Take care of yourself.
+
+[[Continue|About2]]
+
+
+:: FTW3 [ftw]
+<html><body><p id="ftw"><img src="muffing1.png"></img></p></body></html>[[Back|3]]
+
+
+:: FTW [ftw]
+
+
+[[Back|About2]]
+
+
+:: Dedication
+for T, who showed me that I contain [[hidden worlds|About]]
+
+
+:: 8
+She asked me to take [[deep breaths|9]].
+
+
+:: 20
+In the dark she held me and told me she [[loved me|21]]. 
+
+
+:: 11
+It felt like hours but must have only [[been seconds|12]].
+
+
+:: 10
+[[Breathed out|FTW10]], laying flat and fighting hard to relax [[my body|11]].
+
+
+:: 13
+I stared straight up at the ceiling, lacking the nerve to look down at [[what was happening|14]]. 
+
+
+:: 12
+When I finally felt her finger push upwards [[into me|FTW12]], my body went stiff, my [[eyes wide|13]].
+
+
+:: 15
+A shock ran through my body, cascading [[upwards|16]]
+
+
+:: 14
+Her finger [[moved|FTW14]], stretching out against me -- [[inside of me|15]].
+
+
+:: 17
+in a sigh that carried with it more pain and [[longing|18]]
+
+
+:: 16
+until it reached my head and escaped through [[my mouth|17]]
+
+
+:: 19
+I [[cried|20]]. 
+
+
+:: 18
+than I could have imagined I was carrying inside of [[me|19]].
+
+
+:: FTW2 [ftw]
+The inguinal canals are the twin 'pockets' that are situated in the groin above and behind the testicles and scrotum.
+
+They are sealed from the outside but can still be penetrated, basically by turning the 'pocket' inside-out. (The technical term for this is "invagination.")
+
+The outside-in scrotum then acts as a natural and flexible barrier and either one, or both, can be fucked.
+
+[[Back|2]]
+
+
+:: untitled [script]
+(function(){ var render2 = Passage.prototype.render; Passage.prototype.render = function () { var b = render2.call(this); var t = this.tags.join(" "); document.body.setAttribute("data-tags", t); b.setAttribute("data-tags",t); return b; }}()); if(state) { var tgs = state.history[0].passage.tags.join(" "); var fc = $('passages').firstChild; fc.setAttribute("data-tags",tgs); }
+
+
+

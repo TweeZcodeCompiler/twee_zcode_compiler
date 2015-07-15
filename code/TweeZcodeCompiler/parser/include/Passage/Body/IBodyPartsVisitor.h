@@ -6,6 +6,7 @@
 #define IBODYPARTSVISITOR_H
 
 class Text;
+class Formatting;
 class Link;
 class Newline;
 
@@ -24,6 +25,8 @@ public:
 
     virtual void visit(const Text& host) = 0;
 
+    virtual void visit(const Formatting& host) = 0;
+
     virtual void visit(const Link& host) = 0;
 
     virtual void visit(const Newline& host) = 0;
@@ -41,7 +44,6 @@ public:
     virtual void visit(const ElseIfMacro& host) = 0;
 
     virtual void visit(const EndIfMacro& host) = 0;
-
 };
 
 

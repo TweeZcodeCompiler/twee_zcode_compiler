@@ -15,12 +15,12 @@
 #include <algorithm>
 
 #include <Passage/Body/IBodyPartsVisitor.h>
-#include <Passage/Body/Link.h>
 #include <Passage/Body/Text.h>
+#include <Passage/Body/Formatting.h>
+#include <Passage/Body/Link.h>
 #include <Passage/Body/Newline.h>
 
 #include <Passage/Body/Expressions/BinaryOperation.h>
-#include <Passage/Body/Expressions/Variable.h>
 #include <Passage/Body/Expressions/UnaryOperation.h>
 
 #include <Passage/Body/Expressions/Const.h>
@@ -30,9 +30,9 @@
 #include "Passage/Body/Expressions/Random.h"
 #include "Passage/Body/Expressions/Previous.h"
 
+#include <Passage/Body/Macros/SetMacro.h>
 #include <Passage/Body/Macros/PrintMacro.h>
 #include <Passage/Body/Macros/DisplayMacro.h>
-#include <Passage/Body/Macros/SetMacro.h>
 
 #include <Passage/Body/Macros/IfMacro.h>
 #include <Passage/Body/Macros/ElseIfMacro.h>
@@ -220,11 +220,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     {
         const string idLocal = "id";
         const string passageCount = "passage_count";
-        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID,
-                          vector<ZRoutineArgument>({ZRoutineArgument(idLocal), ZRoutineArgument(passageCount)}))
+        ASSGEN.addRoutine(ROUTINE_PASSAGE_BY_ID, vector<ZRoutineArgument>({ZRoutineArgument(idLocal), ZRoutineArgument(passageCount)}))
                 .store(GLOB_PREVIOUS_PASSAGE_ID, GLOB_CURRENT_PASSAGE_ID)
                 .store(GLOB_CURRENT_PASSAGE_ID, idLocal);
-
+        
         // update visited array
         ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, passageCount)
                 .add(passageCount, "1", passageCount)
@@ -287,10 +286,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         string labelThreeOn = "THREE_ON";
 
         vector<ZRoutineArgument> args;
-        args.push_back(ZRoutineArgument(varCounter));
-        args.push_back(ZRoutineArgument(varResult));
         args.push_back(
                 ZRoutineArgument(varFormatType));    // This value will be set via call_vs TEXT_FORMAT_ROUTINE 1 -> sp
+        args.push_back(ZRoutineArgument(varCounter));
+        args.push_back(ZRoutineArgument(varResult));
         ASSGEN.addRoutine(TEXT_FORMAT_ROUTINE, args);
 
         ASSGEN.jumpEquals(string(varFormatType + " 0"), string("~" + labelNotZero))
@@ -364,11 +363,30 @@ bool isPreviousMacro(string link) {
     return link == previousFunc;
 }
 
-void TweeCompiler::visit(const Text &host) {
+void TweeCompiler::visit(const Text&host) {
     ASSGEN.print(host.getContent());
 }
+void TweeCompiler::visit(const Formatting& host) {
+    switch (host.getFormat()) {
+        case Format::UNDERLINED:
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("0"), "sp");
+            break;
+        case Format::BOLD:
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("1"), "sp");
+            break;
+        case Format::ITALIC:
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("2"), "sp");
+            break;
+        case Format::MONOSPACE:
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("3"), "sp");
+            break;
+        default:
+            LOG_DEBUG << "Unknown text formatting";
+            throw TweeDocumentException("Unsupported text formatting");
+    }
+}
 
-void TweeCompiler::visit(const Link &host) {
+void TweeCompiler::visit(const Link& host) {
     if (isPreviousMacro(host.getTarget())) {
         ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
     } else {
@@ -384,25 +402,25 @@ void TweeCompiler::visit(const Link &host) {
     }
 }
 
-void TweeCompiler::visit(const Newline &host) {
+void TweeCompiler::visit(const Newline& host) {
     ASSGEN.newline();
 }
 
-void TweeCompiler::visit(const PrintMacro &host) {
+void TweeCompiler::visit(const PrintMacro& host) {
     if (Previous *previous = dynamic_cast<Previous *>(host.getExpression().get())) {
         ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
     } else {
-        evalExpression(optimizeExpression(host.getExpression().get()));
+        evalExpression(host.getExpression().get());
         ASSGEN.print_num("sp");
     }
 }
 
-void TweeCompiler::visit(const DisplayMacro &host) {
+void TweeCompiler::visit(const DisplayMacro& host) {
     string targetPassage = host.getPassage();
     int targetId;
     try {
         targetId = passageName2id.at(targetPassage);
-    } catch (const out_of_range &outOfRange) {
+    } catch(const out_of_range& outOfRange) {
         throw TweeDocumentException(string("display target passage \"") + targetPassage +
                                     string("\" does not exist"));
     }
@@ -410,7 +428,7 @@ void TweeCompiler::visit(const DisplayMacro &host) {
     ASSGEN.call_vn(ROUTINE_PASSAGE_BY_ID, to_string(targetId));
 }
 
-void TweeCompiler::visit(const SetMacro &host) {
+void TweeCompiler::visit(const SetMacro& host) {
     LOG_DEBUG << "generate SetMacro assembly code";
 
     BinaryOperation *binaryOperation = nullptr;
@@ -427,13 +445,13 @@ void TweeCompiler::visit(const SetMacro &host) {
     }
 }
 
-void TweeCompiler::visit(const IfMacro &host) {
+void TweeCompiler::visit(const IfMacro& host) {
     ifContexts.push(makeNextIfContext());
     evalExpression(host.getExpression().get());
     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
 }
 
-void TweeCompiler::visit(const ElseMacro &host) {
+void TweeCompiler::visit(const ElseMacro& host) {
     if (ifContexts.empty()) {
         throw TweeDocumentException("else macro encountered without preceding if macro");
     }
@@ -442,7 +460,7 @@ void TweeCompiler::visit(const ElseMacro &host) {
     ifContexts.top().caseCount++;
 }
 
-void TweeCompiler::visit(const ElseIfMacro &host) {
+void TweeCompiler::visit(const ElseIfMacro& host) {
     if (ifContexts.empty()) {
         throw TweeDocumentException("else if macro encountered without preceding if macro");
     }
@@ -453,7 +471,7 @@ void TweeCompiler::visit(const ElseIfMacro &host) {
     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
 }
 
-void TweeCompiler::visit(const EndIfMacro &host) {
+void TweeCompiler::visit(const EndIfMacro& host) {
     if (ifContexts.empty()) {
         throw TweeDocumentException("endif macro encountered without preceding if macro");
     }
@@ -683,18 +701,19 @@ void TweeCompiler::evalExpression(Expression *expression) {
             ASSGEN.push("min");
 
         }
+
     } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
         LOG_DEBUG << turns->to_string();
         ASSGEN.load(GLOB_TURNS_COUNT, "sp");
     } else if (Random *random = dynamic_cast<Random *>(expression)) {
         LOG_DEBUG << random->to_string();
         std::string afterRandom = makeLabels("random").second;
-        // check if a > b, act accordingly
+    // check if a > b, act accordingly
         labels = makeLabels("randomAGTB");
         evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
         ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.second);
-        //  a > b
+    //  a > b
         evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
         ASSGEN.add("sp", "1", "sp");
@@ -706,12 +725,12 @@ void TweeCompiler::evalExpression(Expression *expression) {
         ASSGEN.jump(afterRandom);
 
         ASSGEN.addLabel(labels.second);
-        // check if a < b, act accordingly
+    // check if a < b, act accordingly
         labels = makeLabels("randomALTB");
         evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
         ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.second);
-        //  a < b
+    //  a < b
         evalExpression(random->getEnd().get());
         evalExpression(random->getStart().get());
         ASSGEN.add("sp", "1", "sp");
@@ -723,7 +742,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
         ASSGEN.jump(afterRandom);
 
         ASSGEN.addLabel(labels.second);
-        // a == b, simply return a
+    // a == b, simply return a
         evalExpression(random->getEnd().get());
         ASSGEN.addLabel(afterRandom);
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {

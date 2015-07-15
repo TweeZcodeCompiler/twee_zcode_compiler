@@ -186,8 +186,10 @@ void RoutineGenerator::callVS(vector<unique_ptr<ZParam>> params) {
         checkParamType(params, ROUTINE, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, STORE_ADDRESS);
     }
 
+    auto storeTarget = params.back()->getZCodeValue();
+    params.pop_back();
     routine -> generateVarOPInstruction(CALL_VS, params, "call vs");
-    routine -> storeAdress(params.at(params.size()-1)->getZCodeValue());
+    routine -> storeAdress(storeTarget);
 }
 
 // params: routineName, (arg1, (arg2, (arg3)))
@@ -252,7 +254,7 @@ void RoutineGenerator::loadb(std::vector<std::unique_ptr<ZParam>> params,
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE, STORE_ADDRESS);
     routine->generate2OPInstruction(LOADB, *params.at(0), *params.at(1), "loadb");
-    routine->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(params.at(2)->getZCodeValue(),"store")));
+    routine->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(params.at(2)->getZCodeValue(), "store")));
 }
 
 void RoutineGenerator::loadw(std::vector<std::unique_ptr<ZParam>> params,
@@ -261,7 +263,8 @@ void RoutineGenerator::loadw(std::vector<std::unique_ptr<ZParam>> params,
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE, STORE_ADDRESS);
     routine->generate2OPInstruction(LOADW, *params.at(0), *params.at(1), "loadw");
-    routine->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(params.at(2)->getZCodeValue(),""+params.at(2)->getZCodeValue())));
+    routine->add(shared_ptr<ZCodeObject>(
+            new ZCodeInstruction(params.at(2)->getZCodeValue(), "" + params.at(2)->getZCodeValue())));
 }
 
 void RoutineGenerator::storeb(std::vector<std::unique_ptr<ZParam>> params,
@@ -269,7 +272,7 @@ void RoutineGenerator::storeb(std::vector<std::unique_ptr<ZParam>> params,
     debug("storeb");
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
-    routine -> generateVarOPInstruction(STOREB,params,"storeb");
+    routine->generateVarOPInstruction(STOREB, params, "storeb");
 }
 
 void RoutineGenerator::storew(std::vector<std::unique_ptr<ZParam>> params,
@@ -277,7 +280,7 @@ void RoutineGenerator::storew(std::vector<std::unique_ptr<ZParam>> params,
     debug("storew");
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
-    routine -> generateVarOPInstruction(STOREW,params,"storew");
+    routine->generateVarOPInstruction(STOREW, params, "storew");
 }
 
 void RoutineGenerator::outputStream(std::vector<std::unique_ptr<ZParam>> params,
@@ -467,7 +470,7 @@ void RoutineGenerator::store(vector<unique_ptr<ZParam>> params) {
 
 void RoutineGenerator::base2OpOperation(unsigned int opcode, vector<unique_ptr<ZParam>> &params) {
     checkParamCount(params, 3);
-    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
+    checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, STORE_ADDRESS);
 
     routine->generate2OPInstruction(opcode, *params.at(0), *params.at(1));
     routine->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(params.at(2)->getZCodeValue())));
@@ -628,6 +631,33 @@ void RoutineGenerator::push(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1, 2, 3, 4);
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
     routine->generateVarOPInstruction(PUSH, params, "push");
+}
+
+void RoutineGenerator::pushStack(std::vector<std::unique_ptr<ZParam>> params) {
+    checkParamCount(params, 3);
+    checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME, NAME);
+
+    vector<unique_ptr<ZParam>> myParams;
+    myParams.push_back(unique_ptr<ZParam>(params.at(0)->clone()));
+    myParams.push_back(unique_ptr<ZParam>(params.at(1)->clone()));
+    routine->generateExtOPInstruction(PUSH_STACK,myParams,"push stack");
+    string label;
+    bool jumpIfTrue;
+    setLabelValues(*params.at(params.size() - 1), label, jumpIfTrue);
+    auto jump = shared_ptr<ZCodeJump>(new ZCodeJump(getOrCreateLabel(label)));
+    jump->jumpIfCondTrue = jumpIfTrue;
+    routine->add(jump);
+}
+
+void RoutineGenerator::popStack(std::vector<std::unique_ptr<ZParam>> params) {
+    checkParamCount(params, 1, 2);
+    if (params.size() == 1) {
+        checkParamType(params, VARIABLE_OR_VALUE_OR_NAME);
+    } else if (params.size() == 2) {
+        checkParamType(params, VARIABLE_OR_VALUE_OR_NAME, VARIABLE_OR_VALUE_OR_NAME);
+    }
+
+    routine->generateExtOPInstruction(POP_STACK, params, "pop stack");
 }
 
 void RoutineGenerator::inc(std::vector<std::unique_ptr<ZParam>> params) {

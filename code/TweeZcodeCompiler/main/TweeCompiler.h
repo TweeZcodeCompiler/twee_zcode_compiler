@@ -35,6 +35,8 @@ public:
 
     void visit(const Text& host);
 
+    void visit(const Formatting& host);
+
     void visit(const Link& host);
 
     void visit(const Newline& host);
