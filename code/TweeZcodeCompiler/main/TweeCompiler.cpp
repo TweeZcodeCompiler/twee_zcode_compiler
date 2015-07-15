@@ -86,7 +86,10 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         CLEAR_MOUSE_TABLE_ROUTINE = "CLEAR_MOUSE_TABLE_ROUTINE",
         GLOB_LINES_PRINTED = "LINES_PRINTED",
         PAUSE_PRINTING_ROUTINE = "PAUSE_PRINTING_ROUTINE",
-        GLOB_NEXT_PASSAGE_ID = "NEXT_PASSAGE_ID";
+        GLOB_NEXT_PASSAGE_ID = "NEXT_PASSAGE_ID",
+        ROUTINE_PRINT_ARROW_UP = "PRINT_ARROW_UP",
+        ROUTINE_PRINT_ARROW_DOWN = "PRINT_ARROW_DOWN",
+        GLOB_PRINT_ARROW_UP_AT_END = "PRINT_ARROW_UP_AT_END";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 static const unsigned int MAX_MOUSE_LINKS = 20;
@@ -238,7 +241,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             .addGlobal(GLOB_INTERPRETER_SUPPORTS_MOUSE)
             .addGlobal(GLOB_TABLE_MOUSE_LINKS_NEXT)
             .addGlobal(GLOB_LINES_PRINTED)
-            .addGlobal(GLOB_NEXT_PASSAGE_ID);
+            .addGlobal(GLOB_NEXT_PASSAGE_ID)
+            .addGlobal(GLOB_PRINT_ARROW_UP_AT_END);
 
 
     // main routine
@@ -266,7 +270,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .addLabel("callRoutines")
                 .jumpLower(ASSGEN.makeArgs({LOCAL_NEXT_PASSAGE, "0"}), "end_program")
                 .call_1n(ROUTINE_CLEAR_TABLES)
-                .call_1n(CLEAR_MOUSE_TABLE_ROUTINE)
                 .call_vn(ROUTINE_PASSAGE_BY_ID, LOCAL_NEXT_PASSAGE)
                 .jump(LABEL_MAIN_LOOP);
 
@@ -460,10 +463,70 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.ret("sp");*/
 
 
+        // print arrow up routine
+
+        string varLineCount = "line_count";
+
+        ASSGEN.addRoutine(ROUTINE_PRINT_ARROW_UP, {ZRoutineArgument(varCharWidth), ZRoutineArgument(varLineCount)});
+
+        ASSGEN.loadb("33", "0", varCharWidth)
+                .sub(varCharWidth, "4", varCharWidth)
+                .loadb("32", "0", varLineCount)
+                .sub(varLineCount, "4", varLineCount);
+
+        ASSGEN.setWindow("1")
+                .newline()
+                .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print("/ \\ ");
+
+        ASSGEN.newline()
+                .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" |  ");
+
+        ASSGEN.newline()
+                .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" |  ");
+
+        ASSGEN.setWindow("0")
+                .ret("0");
+
+
+        // print arrow down routine
+
+        string varLinesPrinted = "lines_printed";
+
+        ASSGEN.addRoutine(ROUTINE_PRINT_ARROW_DOWN, {ZRoutineArgument(varCharWidth), ZRoutineArgument(varLinesPrinted),
+                                                     ZRoutineArgument(varLineCount)});
+
+        ASSGEN.loadb("33", "0", varCharWidth)
+                .sub(varCharWidth, "4", varCharWidth)
+                .loadb("32", "0", varLineCount)
+                .sub(varLineCount, "4", varLineCount);
+
+        ASSGEN.setWindow("1")
+                .addLabel("loop")
+                .newline()
+                .add(varLinesPrinted, "1", varLinesPrinted)
+                .jumpLess(varLinesPrinted + " " + varLineCount, "loop");
+
+        ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" |  ")
+                .newline();
+
+        ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" |  ")
+                .newline();
+
+        ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" V  ");
+
+        ASSGEN.setWindow("0")
+                .ret("0");
+
+
         // support mouse routine
 
         ASSGEN.addRoutine(SUPPORTS_MOUSE_ROUTINE);
-
 
         ASSGEN.loadb("23", "0", "sp")  // flags in header, bit 5 needs to be true
                 .lor("sp", "11011111", "sp")
@@ -488,12 +551,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         // update screen routine
 
-        string varLineCount = "line_count", varYSize = "ySize", varXSize = "xSize";
-        string varLinesPrinted = "lines_printed";
+        string varYSize = "ySize", varXSize = "xSize";
 
-        ASSGEN.addRoutine(UPDATE_MOUSE_SCREEN_ROUTINE, {ZRoutineArgument(varCharWidth), ZRoutineArgument(varYSize),
-                                                        ZRoutineArgument(varXSize), ZRoutineArgument(varLineCount),
-                                                        ZRoutineArgument(varLinesPrinted)});
+        ASSGEN.addRoutine(UPDATE_MOUSE_SCREEN_ROUTINE, {ZRoutineArgument(varYSize), ZRoutineArgument(varXSize)});
 
         ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "no_mouse");
 
@@ -503,15 +563,15 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .store(GLOB_LINES_PRINTED, "1")
                 .call_1n(CLEAR_MOUSE_TABLE_ROUTINE);
 
-        ASSGEN.loadb("33", "0", varCharWidth)
+        /*ASSGEN.loadb("33", "0", varCharWidth)
                 .sub(varCharWidth, "4", varCharWidth)
                 .loadb("32", "0", varLineCount)
-                .sub(varLineCount, "4", varLineCount);
+                .sub(varLineCount, "4", varLineCount);*/
 
         ASSGEN.getWindowProperty("0", "2", varYSize)
                 .getWindowProperty("0", "3", varXSize)
-                .windowStyle("0", "15", "0")
-                .windowStyle("1", "15", "0")
+                .windowStyle("0", "15", "1")
+                .windowStyle("1", "15", "1")
                 .putWindowProperty("0", "15", "-999")    // set lineCount to -999 -> interpreter will not show [[MORE]]
                 .putWindowProperty("1", "15", "-999");
 
@@ -600,6 +660,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .loadb("32", 0, "sp")
                 .sub("sp", "5", "sp")
                 .jumpLess(GLOB_LINES_PRINTED + " sp", "end")             // jump if last line of screen is not reached
+                .store(GLOB_PRINT_ARROW_UP_AT_END, "1")
+                .call_1n(ROUTINE_PRINT_ARROW_DOWN)
                 .call_vs(MOUSE_CLICK_ROUTINE, to_string(1), "result")
                 .jumpLess("result 0", "noLinkClicked")                   // jump if no link clicked by mouse
                 .store(GLOB_NEXT_PASSAGE_ID, "result")
@@ -827,6 +889,12 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     if (ifContexts.size() > 0) {
         throw TweeDocumentException("unclosed if macro");
     }
+
+    ASSGEN.jumpEquals(GLOB_PRINT_ARROW_UP_AT_END + " 0", "onlyOnePage")
+            .call_1n(ROUTINE_PRINT_ARROW_UP)
+            .store(GLOB_PRINT_ARROW_UP_AT_END, "0")
+            .addLabel("onlyOnePage");
+
     ASSGEN.ret("0");
 }
 
