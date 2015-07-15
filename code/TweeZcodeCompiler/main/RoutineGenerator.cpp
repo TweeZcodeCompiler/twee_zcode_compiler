@@ -353,6 +353,10 @@ void RoutineGenerator::jumpZero(vector<unique_ptr<ZParam>> params) {
     setLabelValues(*params.at(params.size() - 1), label, jumpIfTrue);
 
     routine->generate1OPInstruction(JZ, *params.at(0), "jump zero");
+
+    auto jump = shared_ptr<ZCodeJump>(new ZCodeJump(getOrCreateLabel(label)));
+    jump->jumpIfCondTrue = jumpIfTrue;
+    routine->add(jump);
 }
 
 // params: param1, param2, (param3, (param4,)) label
