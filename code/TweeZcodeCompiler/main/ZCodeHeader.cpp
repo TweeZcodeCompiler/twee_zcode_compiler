@@ -158,7 +158,7 @@ void ZCodeHeader::setAddresses(vector<bitset<8>> &header) {
 void ZCodeHeader::setFlags2(std::vector<std::bitset<8>> &header) {
     // Hex 10 - 15
     for (int i = 0; i < 6; i++) {
-        header.push_back(255);
+        header.push_back(0);
     }
 
     bitset<8> flags2;

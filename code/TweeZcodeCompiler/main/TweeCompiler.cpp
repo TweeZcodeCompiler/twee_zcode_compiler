@@ -173,15 +173,8 @@ string makeUserInputRoutine() {
             "    read_char 1 -> USER_INPUT\n"
             "    sub USER_INPUT 48 -> sp\n"
             "    sub sp 1 -> sp\n"
-
-            // TODO: Does work but I don know why. Was only:
-            //          loadb USERINPUT_LOOKUP sp -> sp
-            //       before
-
             "    loadb USERINPUT_LOOKUP sp -> sp\n"
-            "    new_line"
-            // "    print \" remove this output: \""
-            // "    print_num sp \n"
+            "    new_line\n"
             "    jump ?fetch_userinput_lookup\n"
 
             "mouse_supported:\n"
@@ -319,6 +312,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .newline()
                 .print(INTRO_NEXT_NO_MOUSE)
                 .read_char(varKey)
+                .setMargins("0", "0", "0")
+                .eraseWindow("0")
                 .ret("0");
 
         ASSGEN.addLabel("mouseSupported")
@@ -893,12 +888,16 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     // declare passage routine
     ASSGEN.addRoutine(routineNameForPassage(passage), {ZRoutineArgument("min"), ZRoutineArgument("saveUndo")});
 
+    ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "noMouse");
+
     // save game often to be able to restore multiple times
     ASSGEN.saveUndo("sp").saveUndo("sp").saveUndo("sp").saveUndo("sp").saveUndo("sp").saveUndo("sp");
 
     // update screen
     ASSGEN.call_1n(UPDATE_MOUSE_SCREEN_ROUTINE)
             .store(GLOB_PRINT_ARROW_UP_AT_END, "0");
+
+    ASSGEN.addLabel("noMouse");
 
     ASSGEN.println(string("***** ") + passage.getHead().getName() + string(" *****"));
 
@@ -915,24 +914,30 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
             } else {
                 int id;
                 string target = link->getTarget();
+                pair<string, string> labels = makeLabels("routineClicked");
                 try {
                     id = passageName2id.at(target);
                 } catch(const out_of_range& outOfRange) {
                     throw TweeDocumentException("invalid link target: " + target);
                 }
 
-                ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
-                ASSGEN.call_1n(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE);
+                ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.first)
+                        .call_1n(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE)
+                        .addLabel(labels.first);
 
+                ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
                 ASSGEN.print("|||");
                 ASSGEN.print(link->getTarget());
                 ASSGEN.print("|||");
 
-                ASSGEN.call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, to_string(id));
+                ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.second)
+                        .call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, to_string(id))
+                        .addLabel(labels.second);
             }
         } else if (Newline *newLine = dynamic_cast<Newline *>(bodyPart)) {
             pair<string, string> labels = makeLabels("routineClicked");
             ASSGEN.newline()
+                    .jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.first)
                     .call_1n(PAUSE_PRINTING_ROUTINE)
                     .jumpEquals(GLOB_NEXT_PASSAGE_ID + " -1", labels.first)
                     .ret("0")
@@ -1007,7 +1012,8 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
         throw TweeDocumentException("unclosed if macro");
     }
 
-    ASSGEN.jumpEquals(GLOB_PRINT_ARROW_UP_AT_END + " 0", "onlyOnePage")
+    ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "onlyOnePage")
+            .jumpEquals(GLOB_PRINT_ARROW_UP_AT_END + " 0", "onlyOnePage")
             .call_1n(ROUTINE_PRINT_ARROW_UP)
             .addLabel("onlyOnePage");
 
