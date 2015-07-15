@@ -380,6 +380,10 @@ void RoutineGenerator::jumpEquals(vector<unique_ptr<ZParam>> params) {
     } else {
         params.erase(params.end()); // erase label param
         routine->generateVarOPInstruction(JE, params);
+
+        auto jump = shared_ptr<ZCodeJump>(new ZCodeJump(getOrCreateLabel(label)));
+        jump->jumpIfCondTrue = jumpIfTrue;
+        routine->add(jump);
     }
 }
 
