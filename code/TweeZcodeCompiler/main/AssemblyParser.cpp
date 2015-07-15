@@ -78,8 +78,7 @@ const char AssemblyParser::STRING_DELIMITER = '\"';
 const string AssemblyParser::ASSIGNMENT_OPERATOR = "->";
 
 
-string trim(const string &str,
-            const string &whitespace = " \t") {
+string trim(const string &str, const string &whitespace = " \t") {
     const auto strBegin = str.find_first_not_of(whitespace);
     if (strBegin == string::npos)
         return ""; // no content
@@ -408,14 +407,19 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string &paramString, bool 
 
 
 void AssemblyParser::addGlobal(string globalName) {
-    // TODO: check if maximum gvar limit is reached
     unsigned index = (unsigned) globalVariables.size();
-    if (globalVariables.find(globalName) != globalVariables.end()) {
-        LOG_ERROR << "two global variable have the same name";
+    if (index < 240) {
+        if (this->directives.find(globalName) == this->directives.end()) {
+            LOG_ERROR << "two global variable have the same name";
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_GLOBAL);
+        }
+        LOG_DEBUG << "adding gvar " << globalName << " at index " << to_string(index);
+        this->globalVariables[globalName] = index;
+        this->directives.insert(globalName);
+    } else {
+        LOG_DEBUG << "maximum amount of global variables reached!";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_GLOBAL);
     }
-    LOG_DEBUG << "adding gvar " << globalName << " at index " << to_string(index);
-    this->globalVariables[globalName] = index;
 }
 
 void AssemblyParser::registerJump(const vector<unique_ptr<ZParam>> &params) {
@@ -704,14 +708,20 @@ void AssemblyParser::performByteArrayDirective(string command, shared_ptr<ZCodeC
     try {
         vector<string> param = this->split(command, ' ');
         string name = param.at(1);
-        string sSize = param.at(2).substr(1, param.at(2).size() - 2);
-        int size = std::stoi(sSize.c_str());
-        auto initialSize = shared_ptr<ZCodeObject>(new ZCodeInstruction(size));
-        auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size, "ARRAY : " + name));
-        auto label = dynamicMemory->getOrCreateLabel(name);
-        dynamicMemory->add(label);
-        dynamicMemory->add(table);
-        dynamicMemory->add(shared_ptr<ZCodeInstruction>(new ZCodeInstruction(0xff, "EOM")));
+        if (this->directives.find(name) == this->directives.end()) {
+            string sSize = param.at(2).substr(1, param.at(2).size() - 2);
+            int size = std::stoi(sSize.c_str());
+            auto initialSize = shared_ptr<ZCodeObject>(new ZCodeInstruction(size));
+            auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size, "ARRAY : " + name));
+            auto label = dynamicMemory->getOrCreateLabel(name);
+            dynamicMemory->add(label);
+            dynamicMemory->add(table);
+            dynamicMemory->add(shared_ptr<ZCodeInstruction>(new ZCodeInstruction(0xff, "EOM")));
+            this->directives.insert(name);
+        } else {
+            LOG_ERROR << "two directives have the same name";
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
+        }
     } catch (std::invalid_argument) {
         LOG_ERROR << "'.BYTEARRAY_DIRECTIVE <name> [<size>]' expected. '" << command << "' found instead";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
@@ -725,13 +735,19 @@ void AssemblyParser::performWordArrayDirective(string command, shared_ptr<ZCodeC
     try {
         vector<string> param = this->split(command, ' ');
         string name = param.at(1);
-        string sSize = param.at(2).substr(1, param.at(2).size() - 2);
-        int size = std::stoi(sSize.c_str());
-        auto label = dynamicMemory->getOrCreateLabel(name);
-        dynamicMemory->add(label);
-        auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size * 2, "ARRAY : " + name));
-        dynamicMemory->add(table);
-        dynamicMemory->add(shared_ptr<ZCodeInstruction>(new ZCodeInstruction(0xff, "EOM")));
+        if (this->directives.find(name) == this->directives.end()) {
+            string sSize = param.at(2).substr(1, param.at(2).size() - 2);
+            int size = std::stoi(sSize.c_str());
+            auto label = dynamicMemory->getOrCreateLabel(name);
+            dynamicMemory->add(label);
+            auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size * 2, "ARRAY : " + name));
+            dynamicMemory->add(table);
+            dynamicMemory->add(shared_ptr<ZCodeInstruction>(new ZCodeInstruction(0xff, "EOM")));
+            this->directives.insert(name);
+        } else {
+            LOG_ERROR << "two directives have the same name";
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
+        }
     } catch (std::invalid_argument) {
         LOG_ERROR << "'.WORDARRAY_DIRECTIVE <name> [<size>]' expected. '" << command << "' found instead";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
@@ -766,15 +782,21 @@ void AssemblyParser::performStringDirective(std::string command, shared_ptr<ZCod
     try {
         vector<string> param = this->split(command, ' ');
         string name = param.at(1);
-        unsigned long begin = command.find('\"');
-        unsigned long end = command.find('\"', begin + 1);
-        string str = command.substr(begin + 1, end - begin - 1);
-        auto label = dynamicMemory->getOrCreateLabel(name);
-        dynamicMemory->add(label);
-        ZCodeConverter converter;
-        auto table = shared_ptr<ZCodeObject>(
-                new ZCodeInstruction(converter.convertStringToZSCII(str), "string " + name));
-        dynamicMemory->add(table);
+        if (this->directives.find(name) == this->directives.end()) {
+            this->directives.insert(name);
+            unsigned long begin = command.find('\"');
+            unsigned long end = command.find('\"', begin + 1);
+            string str = command.substr(begin + 1, end - begin - 1);
+            auto label = dynamicMemory->getOrCreateLabel(name);
+            dynamicMemory->add(label);
+            ZCodeConverter converter;
+            auto table = shared_ptr<ZCodeObject>(
+            new ZCodeInstruction(converter.convertStringToZSCII(str), "string " + name));
+            dynamicMemory->add(table);
+        } else {
+            LOG_ERROR << "two directives have the same name";
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
+        }
     } catch (std::out_of_range) {
         LOG_ERROR << "'.STRING <name> \"<size>\"' expected. '" << command << "' found instead";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);

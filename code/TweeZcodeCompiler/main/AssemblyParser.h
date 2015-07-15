@@ -121,6 +121,7 @@ private:
     std::vector<std::pair<std::string, unsigned>> registeredJumpsAtLines;
     std::vector<std::string> registeredLabels;
     std::map<std::string, uint8_t> globalVariables;
+    std::set<std::string> directives;
 
     bool firstRoutine = true;
 
