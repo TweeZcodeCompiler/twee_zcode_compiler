@@ -435,7 +435,6 @@ std::string Utils::getMallocLib() {
             "CHAR:\n"
             "\tret 2\n"
             "HEHE:\n"
-            "\tread_char 1 -> sp\n"
             "\tcall_vs sys_rollout_string pointer pos -> count\n"
             "\tret count\n"
             "\n"
