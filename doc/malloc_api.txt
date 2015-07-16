@@ -1,0 +1,60 @@
+;one data set contains:
+;	1 byte:		type of stored data
+;	2 byte:		size of stored data
+;	n bit:		data
+
+;the types are:
+;	0:	free
+;	1:	reservated
+;	2:	number
+;	3:	bool
+;	4:	string
+;	5:	concatinated types
+;	6:	char
+;	255:	EOM(End Of Memory)
+
+;function sys_malloc(mem, size):
+;	mem:	byte-adress of an array (or some other memory space)
+;	size:	size of the memory to allociate
+;	return:	byte adress of the begin of the free memory
+
+;function sys_free(pointer)
+;	pointer:	byte adress
+
+;function sys_number(mem, initialValue):
+;	mem:		byte-adress of an array (or some other memory space)
+;	initialValue:	initial value of number
+;	return:		byte-adress of the number
+
+;function sys_bool(mem, initialValue):
+;	mem:		byte-adress of an array (or some other memory space)
+;	initialValue:	initial value of bool
+;	return:		byte-adress of the bool
+
+;function sys_string(mem, initialValue):
+;	mem:		byte-adress of an array (or some other memory space)
+;	initialValue:	initial value of string (byte-adress)
+;	return:		byte-adress of the string
+
+;function sys_concat(mem, head, tail):
+;	mem:		byte-adress of an array (or some other memory space)
+;	heat:		byte-adress of the first part
+;	tail:		byte-adress of the second part
+;	return:		byte-adress of the concatination
+
+;function sys_instanceof(pointer,type)
+;	pointer:	byte-adress of the stored type\n
+;	type:		type to compare with\n
+;	return:		1:true or 0:false\n
+
+;function sys_print(pointer)
+;	pointer:	byte-adress of the stored type
+
+;function sys_typeof(pointer)
+;	pointer:	byte-adress of the stored type
+;	return:		type code (see top of page)
+
+;function sys_comp(mem, v1, v2)
+;	mem:		byte-adress of an array (or some other memory space)
+;	v1/v2:		things to compars
+:	ret:		1:true or 0:false

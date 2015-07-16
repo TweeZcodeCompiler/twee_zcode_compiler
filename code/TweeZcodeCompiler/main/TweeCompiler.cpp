@@ -841,7 +841,7 @@ void TweeCompiler::visit(const Link& host) {
 
         ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
         ASSGEN.print("|||");
-        ASSGEN.print(host.getTarget());
+        ASSGEN.print(host.getAltName());
         ASSGEN.print("|||");
 
         ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.second)
