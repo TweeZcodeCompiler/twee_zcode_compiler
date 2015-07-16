@@ -666,7 +666,7 @@ void RoutineGenerator::getCursor(vector<unique_ptr<ZParam>> params, shared_ptr<Z
     checkParamCount(params, 1);
     checkParamType(params, NAME);
 
-    routine->generateExtOPInstruction(GET_CURSOR, params, "get_cursor");
+    routine->generateVarOPInstruction(GET_CURSOR, params, "get_cursor");
 }
 
 void RoutineGenerator::setCursor(vector<unique_ptr<ZParam>> params) {

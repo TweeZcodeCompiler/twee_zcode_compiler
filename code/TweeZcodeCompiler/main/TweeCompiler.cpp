@@ -451,13 +451,13 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.newline();*/
 
         //ASSGEN.jumpEquals(varClickArrows + " 1", "beeeeep");
-        ASSGEN.store(varMouseTableIndex, "1");
+        /*ASSGEN.store(varMouseTableIndex, "1");
         ASSGEN.addLabel("fu")
                 .loadw(TABLE_MOUSE_LINKS, varMouseTableIndex, "sp")
                 .print_num("sp")
                 .newline().add(varMouseTableIndex, "1", varMouseTableIndex)
                 .jumpLess(varMouseTableIndex + " 16", "fu");
-        ASSGEN.addLabel("beeeeep");
+        ASSGEN.addLabel("beeeeep");*/
 
         ASSGEN.store(varMouseTableIndex, "1");
         ASSGEN.addLabel("LINKS_ENTRIES")
@@ -722,7 +722,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
                 .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
                 .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
-                .print("sp: ").print_num("sp").read_char("sp")
                 .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
                 .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
                 .addLabel("no_mouse")
