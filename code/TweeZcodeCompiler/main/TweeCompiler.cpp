@@ -891,8 +891,8 @@ void TweeCompiler::visit(const PrintMacro& host) {
     if (Previous *previous = dynamic_cast<Previous *>(host.getExpression().get())) {
         ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
     } else {
-        evalExpression(host.getExpression().get());
-        ASSGEN.print_num("sp");
+                evalExpression(host.getExpression().get());
+                ASSGEN.print_num("sp");
     }
 }
 
@@ -1145,10 +1145,6 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 break;
             case BinOps::OR:
                 ASSGEN.lor("sp", "sp", "sp");
-                break;
-            case BinOps::TO:
-                // TODO: check if this is right
-                ASSGEN.load("sp", "sp");
                 break;
             case BinOps::LT:
                 labels = makeLabels("lower");
