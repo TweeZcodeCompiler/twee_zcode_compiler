@@ -548,7 +548,6 @@ EXPR_TO                to|=
                                 }
 
 <LinkExpression>{EXPR_PREVIOUS}		{
-                                BEGIN(FunctionArgsLink);
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: LinkExpression matched Token "<<"EXPR_PREVIOUS" << " with value " << YYText();
                                 return BisonParser::token::EXPR_PREVIOUS;
                                 }
@@ -689,7 +688,7 @@ EXPR_TO                to|=
                                 return BisonParser::token::MACRO_ENDIF;
                                 }
 
-<BodyMacro>set		            {
+<BodyMacro>{MACRO_SET}          {
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"MACRO_SET" << " with value " << YYText();
                                 return BisonParser::token::MACRO_SET;
                                 }
@@ -728,7 +727,6 @@ EXPR_TO                to|=
                                 }
 
 <BodyMacro>{EXPR_PREVIOUS}		{
-                                BEGIN(FunctionArgsBody);
                                 LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: BodyMacro matched Token "<<"EXPR_PREVIOUS" << " with value " << YYText();
                                 return BisonParser::token::EXPR_PREVIOUS;
                                 }
