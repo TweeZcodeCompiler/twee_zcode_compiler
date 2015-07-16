@@ -374,7 +374,11 @@ ZAssemblyGenerator &ZAssemblyGenerator::nop() {
             .addInstruction(instruction::POP_COMMAND, nullopt, nullopt, nullopt);
 }
 
-ZAssemblyGenerator &ZAssemblyGenerator::pushStack(std::string stack, std::string value, std::string offset,
-                                                  std::string label, bool negateJump) {
-    return addInstruction(instruction::PUSH_STACK_COMMAND, makeArgs({stack, value, offset}), make_pair(label, negateJump), nullopt);
+ZAssemblyGenerator &ZAssemblyGenerator::pushStack(std::string stack, std::string value, std::string label,
+                                                  bool negateJump) {
+    return addInstruction(instruction::PUSH_STACK_COMMAND, makeArgs({value, stack}), make_pair(label, negateJump), nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::printAddr(std::string addr) {
+    return addInstruction(instruction::PRINT_ADDR_COMMAND, addr, nullopt, nullopt);
 }

@@ -49,7 +49,9 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         GLOB_PASSAGES_COUNT = "PASSAGES_COUNT",
         GLOB_TURNS_COUNT = "TURNS",
         LABEL_MAIN_LOOP = "MAIN_LOOP",
+        LABEL_ROUTINE_FAIL_HANDLER = "failure",
         ROUTINE_MAIN = "main",
+        ROUTINE_PASSAGE_FOR_STRING = "passage_id_for_string_link",
         GLOBAL_USER_INPUT = "USER_INPUT",
         TABLE_LINKED_PASSAGES = "LINKED_PASSAGES",
         TABLE_USERINPUT_LOOKUP = "USERINPUT_LOOKUP",
@@ -67,7 +69,8 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         TEXT_FORMAT_FIXED_PITCH = "FIXED_PITCH",
         START_PASSAGE_NAME = "Start",
         GLOB_PREVIOUS_PASSAGE_ID = "PREVIOUS_PASSAGE_ID",
-        GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID";
+        GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID",
+        LINK_PREFIX = "LINK_";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
@@ -95,12 +98,15 @@ string routineNameForPassage(const Passage &passage) {
     return routineNameForPassageName(passage.getHead().getName());
 }
 
-string labelForPassage(Passage &passage) {
+string labelForPassageName(string passageName) {
     stringstream ss;
-    string passageName = passage.getHead().getName();
     maskString(passageName);
     ss << "L_" << passageName;
     return ss.str();
+}
+
+string labelForPassage(Passage &passage) {
+    return labelForPassageName(passage.getHead().getName());
 }
 
 string makeIfCaseLabel(const IfContext &context) {
@@ -140,7 +146,7 @@ string makeUserInputRoutine() {
             "   \n"
             "   call_vs __stack_at LINKED_PASSAGES " << to_string(LINKED_PASSAGES_SIZE) << " sp -> sp\n"
             "   call_vs passage_id_for_string_link sp -> sp\n"
-            "   pop_stack LINKED_PASSAGES linkedcount\n"
+            "   pop_stack linkedcount LINKED_PASSAGES\n"
             "\n"
             "   ret sp";
 
@@ -359,6 +365,38 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
         makePassageRoutine(*passage);
     }
+
+    // label for link string routine
+    {
+        static const string STRING_ARG_NAME = "thestring";
+        static const string linkLabelPrefix = "L_";
+        ASSGEN.addRoutine(ROUTINE_PASSAGE_FOR_STRING, vector<ZRoutineArgument>{ ZRoutineArgument(STRING_ARG_NAME) });
+
+        int i=0;
+        for(auto link = foundLinks.begin(); link != foundLinks.end(); ++link) {
+            string linkName = LINK_PREFIX + to_string(i);
+
+            ASSGEN.jumpEquals(ASSGEN.makeArgs({STRING_ARG_NAME, linkName}), linkLabelPrefix + linkName);
+            i++;
+        }
+
+        // error handling
+        ASSGEN.print("could not find target passage for string ")
+                .printAddr(STRING_ARG_NAME)
+                .print(" at address ")
+                .print_num(STRING_ARG_NAME);
+
+        i=0;
+
+
+        for(auto link = foundLinks.begin(); link != foundLinks.end(); ++link) {
+            int targetId = passageName2id.at(link->getTarget());
+            string linkName = LINK_PREFIX + to_string(i);
+            ASSGEN.addLabel(linkLabelPrefix + linkName)
+                    .ret(to_string(targetId));
+            i++;
+        }
+    }
 }
 
 bool isPreviousMacro(string link) {
@@ -412,7 +450,14 @@ void TweeCompiler::visit(const Link& host) {
             throw TweeDocumentException("invalid link target: " + target);
         }
 
-        ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
+
+        string linkName = LINK_PREFIX + to_string(linkCount++);
+        ASSGEN.addString(linkName, (host.getAltName() == "") ? host.getTarget() : host.getAltName());
+
+        ASSGEN.pushStack(TABLE_LINKED_PASSAGES,
+                         linkName,
+                         LABEL_ROUTINE_FAIL_HANDLER, true);
+        foundLinks.push_back(Link(host));
     }
 }
 
@@ -515,7 +560,10 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     if (ifContexts.size() > 0) {
         throw TweeDocumentException("unclosed if macro");
     }
+
     ASSGEN.ret("0");
+
+    ASSGEN.addLabel(LABEL_ROUTINE_FAIL_HANDLER).ret("-1");
 }
 
 IfContext TweeCompiler::makeNextIfContext() {

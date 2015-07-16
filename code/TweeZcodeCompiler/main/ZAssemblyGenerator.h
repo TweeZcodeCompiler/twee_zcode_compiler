@@ -41,7 +41,7 @@ public:
 
     ZAssemblyGenerator &addByteArray(std::string name, unsigned size);
 
-    ZAssemblyGenerator &addString(std::string name, std::string size);
+    ZAssemblyGenerator &addString(std::string name, std::string str);
 
     ZAssemblyGenerator &addWordArray(std::string name, unsigned size);
 
@@ -92,6 +92,8 @@ public:
 
     ZAssemblyGenerator &print_num(std::string value);
 
+    ZAssemblyGenerator &printAddr(std::string addr);
+
     ZAssemblyGenerator &push(std::string value);
 
     ZAssemblyGenerator &pop();
@@ -136,8 +138,8 @@ public:
 
     ZAssemblyGenerator &random(std::string range, std::string storeTarget);
 
-    ZAssemblyGenerator &pushStack(std::string stack, std::string value, std::string offset,
-                                                      std::string label, bool negateJump);
+    ZAssemblyGenerator &pushStack(std::string stack, std::string value, std::string label,
+                                                      bool negateJump);
 
 private:
     std::ostream &out;
