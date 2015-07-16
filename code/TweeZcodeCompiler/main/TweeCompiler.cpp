@@ -210,20 +210,33 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ifCount = 0;
 
     {
+        //check if all passage names are unique and there is a start passage "Start"
+        set<string> passageNames;
+        bool hasStart = false;
+
+        for (auto passage =  passages.begin(); passage!=passages.end(); ++passage) {
+            if (!hasStart) {
+               hasStart = (passage->getHead().getName() == "Start");
+            }
+            if(passageNames.find(passage->getHead().getName()) == passageNames.end()) {
+                passageNames.insert(passage->getHead().getName());
+            } else {
+                throw TweeDocumentException("Duplicate passage name: " + passage->getHead().getName());
+            }
+        }
+
+        if (!hasStart) {
+            throw TweeDocumentException("Twee document doesn't contain a start passage: ::Start");
+        }
+
+    }
+
+    {
         int i = 0;
         for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
-            passageName2id[passage->getHead().getName()] = i;
-            i++;
+            passageName2id[passage->getHead().getName()] = (i++);
         }
     }
-
-    // check if start passage is contained
-    try {
-        passageName2id.at("Start");
-    } catch (const out_of_range &outOfRange) {
-        throw TweeDocumentException("Twee document doesn't contain a start passage");
-    }
-
     // tables needed for routine linking
     ASSGEN.addByteArray(TABLE_LINKED_PASSAGES, (unsigned) passages.size());
     ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned) passages.size());
