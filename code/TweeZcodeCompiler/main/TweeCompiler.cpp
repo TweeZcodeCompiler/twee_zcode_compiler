@@ -315,7 +315,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 // TODO: bold and italic
                 //.setTextStyle("6")
                 .print(INTRO_TITLE)
-                //.setTextStyle("4")
+                //.setTextStyle("6")
                 .newline()
                 .newline()
 
@@ -835,13 +835,26 @@ void TweeCompiler::visit(const Formatting& host) {
 
 void TweeCompiler::visit(const Link& host) {
     // TODO: catch invalid link
+    pair<string, string> labels = makeLabels("routineClicked");
 
     if (isPreviousMacro(host.getTarget())) {
+        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.first)
+                .call_1n(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE)
+                .addLabel(labels.first);
+
         ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
+
+        ASSGEN.print("|||");
+        ASSGEN.print(host.getAltName());
+        ASSGEN.print("|||");
+
+        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.second)
+                .call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, GLOB_PREVIOUS_PASSAGE_ID)
+                .addLabel(labels.second);
     } else {
         int id;
         string target = host.getTarget();
-        pair<string, string> labels = makeLabels("routineClicked");
+
         try {
             id = passageName2id.at(target);
         } catch(const out_of_range& outOfRange) {
