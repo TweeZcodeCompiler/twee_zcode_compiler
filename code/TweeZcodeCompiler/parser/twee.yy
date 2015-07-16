@@ -309,6 +309,7 @@
 %type <variable> variable
 %type <intconst> integer
 %type <boolconst> boolean
+%type <strconst> string
 
 
 %start TweeDocument
@@ -761,6 +762,11 @@ expressionTop:
     LOG_DEBUG << "expressionTop-> boolean: pass boolean up)";
     $$ = $1;
     }
+   |string
+    {
+    LOG_DEBUG << "expressionTop-> string: pass string up)";
+    $$ = $1;
+    }
    |random
     {
     LOG_DEBUG << "expressionTop-> random: pass random function up)";
@@ -875,6 +881,18 @@ boolean:
     }
    ;
 
+string:
+    EXPR_STR
+    {
+    LOG_DEBUG << "string-> EXPR_STR: create new Const<bool> ($1)";
+    $$ = new Const<std::string>(*$1);
+    }
+    |EXPR_STR_LIMITER EXPR_STR EXPR_STR_LIMITER
+    {
+    LOG_DEBUG << "string-> EXPR_STR_LIMITER EXPR_STR EXPR_STR_LIMITER: create new Const<string> ($2)";
+    $$ = new Const<std::string>(*$2);
+    }
+   ;
 %%
 
 #include "TweeScanner.h"

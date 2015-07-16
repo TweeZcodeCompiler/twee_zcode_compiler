@@ -32,4 +32,28 @@ public:
     }
 };
 
+template<>
+class Const<std::string> : public Expression {
+
+private:
+    const std::string value;
+
+public:
+
+    Const<std::string>(const std::string value) : value(value) { }
+
+    std::string getValue() const {
+        return this->value;
+    }
+
+    std::string to_string() const {
+        return "Const: " + this->getValue();
+    }
+
+    virtual Const* clone() const {
+        return new Const(*this);
+    }
+};
+
+
 #endif //CONST_H

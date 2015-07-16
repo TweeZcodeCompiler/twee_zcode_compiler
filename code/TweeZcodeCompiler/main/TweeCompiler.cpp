@@ -609,8 +609,8 @@ void TweeCompiler::visit(const PrintMacro& host) {
     if (Previous *previous = dynamic_cast<Previous *>(host.getExpression().get())) {
         ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
     } else {
-        evalExpression(host.getExpression().get());
-        ASSGEN.print_num("sp");
+                evalExpression(host.getExpression().get());
+                ASSGEN.print_num("sp");
     }
 }
 
@@ -840,95 +840,92 @@ void TweeCompiler::evalExpression(Expression *expression) {
 
         if (binaryOperation->getOperator() == BinOps::TO) {
             evalAssignment(binaryOperation);
-        }
 
-        TweeCompiler::evalExpression(binaryOperation->getRightSide().get());
-        TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
+        } else {
+            TweeCompiler::evalExpression(binaryOperation->getRightSide().get());
+            TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
 
-        switch (binaryOperation->getOperator()) {
-            case BinOps::ADD:
-                ASSGEN.add("sp", "sp", "sp");
-                break;
-            case BinOps::SUB:
-                ASSGEN.sub("sp", "sp", "sp");
-                break;
-            case BinOps::MUL:
-                ASSGEN.mul("sp", "sp", "sp");
-                break;
-            case BinOps::DIV:
-                ASSGEN.div("sp", "sp", "sp");
-                break;
-            case BinOps::MOD:
-                ASSGEN.mod("sp", "sp", "sp");
-                break;
-            case BinOps::AND:
-                ASSGEN.land("sp", "sp", "sp");
-                break;
-            case BinOps::OR:
-                ASSGEN.lor("sp", "sp", "sp");
-                break;
-            case BinOps::TO:
-                // TODO: check if this is right
-                ASSGEN.load("sp", "sp");
-                break;
-            case BinOps::LT:
-                labels = makeLabels("lower");
-                ASSGEN.jumpLower(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::LTE:
-                labels = makeLabels("lowerEquals");
-                ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::GT:
-                labels = makeLabels("greater");
-                ASSGEN.jumpGreater(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::GTE:
-                labels = makeLabels("greaterEquals");
-                ASSGEN.jumpGreaterEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::IS:
-                labels = makeLabels("is");
-                ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::NEQ:
-                labels = makeLabels("neq");
-                ASSGEN.jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            default:
-                //TODO: handle this
-                break;
+            switch (binaryOperation->getOperator()) {
+                case BinOps::ADD:
+                    ASSGEN.add("sp", "sp", "sp");
+                    break;
+                case BinOps::SUB:
+                    ASSGEN.sub("sp", "sp", "sp");
+                    break;
+                case BinOps::MUL:
+                    ASSGEN.mul("sp", "sp", "sp");
+                    break;
+                case BinOps::DIV:
+                    ASSGEN.div("sp", "sp", "sp");
+                    break;
+                case BinOps::MOD:
+                    ASSGEN.mod("sp", "sp", "sp");
+                    break;
+                case BinOps::AND:
+                    ASSGEN.land("sp", "sp", "sp");
+                    break;
+                case BinOps::OR:
+                    ASSGEN.lor("sp", "sp", "sp");
+                    break;
+                case BinOps::LT:
+                    labels = makeLabels("lower");
+                    ASSGEN.jumpLower(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::LTE:
+                    labels = makeLabels("lowerEquals");
+                    ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::GT:
+                    labels = makeLabels("greater");
+                    ASSGEN.jumpGreater(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::GTE:
+                    labels = makeLabels("greaterEquals");
+                    ASSGEN.jumpGreaterEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::IS:
+                    labels = makeLabels("is");
+                    ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::NEQ:
+                    labels = makeLabels("neq");
+                    ASSGEN.jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                default:
+                    //TODO: handle this
+                    break;
 
+            }
         }
     } else if (UnaryOperation *unOp = dynamic_cast<UnaryOperation *>(expression)) {
         TweeCompiler::evalExpression(unOp->getExpression().get());
@@ -947,8 +944,8 @@ void TweeCompiler::evalExpression(Expression *expression) {
             default:
                 // TODO: handle this
                 break;
+            }
         }
-    }
 }
 
 std::pair<std::string, std::string> TweeCompiler::makeLabels(std::string prefix) {
