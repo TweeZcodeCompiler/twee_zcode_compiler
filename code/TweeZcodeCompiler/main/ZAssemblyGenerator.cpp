@@ -27,6 +27,7 @@ namespace directive {
     INST_TYPE GLOBAL_VAR = "GVAR";
     INST_TYPE BYTE_ARRAY = "BYTEARRAY";
     INST_TYPE WORD_ARRAY = "WORDARRAY";
+    INST_TYPE STRING = "STRING";
 }
 
 namespace instruction {
@@ -157,6 +158,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::addByteArray(std::string name, unsigned 
     return addDirective(directive::BYTE_ARRAY, makeArgs({name, string("[") + to_string(size) + string("]")}));
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::addString(std::string name, std::string str) {
+    return addDirective(directive::STRING, makeArgs({name, string("\"") + str + string("\"")}));
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::addWordArray(std::string name, unsigned size) {
     return addDirective(directive::WORD_ARRAY, makeArgs({name, string("[") + to_string(size) + string("]")}));
 }
@@ -243,7 +248,8 @@ ZAssemblyGenerator &ZAssemblyGenerator::markStart() {
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::call_vs(string routineName, optional<string> args, string storeTarget) {
-    return addInstruction(instruction::CALL_VS, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt, storeTarget);
+    return addInstruction(instruction::CALL_VS, routineName + (args ? (INST_SEPARATOR + *args) : ""), nullopt,
+                          storeTarget);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::call_vn(string routineName, optional<string> args) {
@@ -287,7 +293,7 @@ ZAssemblyGenerator &ZAssemblyGenerator::jumpZero(string args, string targetLabel
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::quit() {
-    return addInstruction(instruction::QUIT_COMMAND, nullopt, nullopt, nullopt);
+    return this->newline().addInstruction(instruction::QUIT_COMMAND, nullopt, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::random(std::string range, std::string storeTarget) {
@@ -341,6 +347,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::load(std::string source, std::string tar
 ZAssemblyGenerator &ZAssemblyGenerator::store(std::string target, std::string value) {
     // Do not change this!
     return addInstruction(instruction::STORE_COMMAND, target + " " + value, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::point(std::string target, std::string address) {
+    return addInstruction(instruction::STORE_COMMAND, target + " " + address, nullopt, nullopt);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::add(std::string left, std::string right, std::string storeTarget) {

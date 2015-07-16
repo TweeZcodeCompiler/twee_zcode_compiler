@@ -55,8 +55,14 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
     } else {
         //source file is assembly file
         std::ifstream in(inputFileName);
+        if(!in) {
+            LOG_ERROR << "Invalid input file specified: " << inputFileName;
+            throw; // TODO: throw proper exception
+        }
         buffer << in.rdbuf();
     }
+
+    buffer << endl << Utils::getMallocLib();
 
     shared_ptr<ZCodeContainer> zcode = shared_ptr<ZCodeContainer>(new ZCodeContainer("ZCode Container"));
 
@@ -66,6 +72,7 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
 
     //create dynamicMemory
     shared_ptr<ZCodeContainer> dynamicMemory = shared_ptr<ZCodeContainer>(new ZCodeContainer("dynamic memory"));
+    Utils::dynamicMemory = dynamicMemory;
     shared_ptr<ZCodeObject> globalVariablesTable = shared_ptr<ZCodeObject>(new ZCodeMemorySpace((0xff - 0x0f)*2+1000,"global variables table"));// Global Var Table
     dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodePkgAdrrPadding()));
     dynamicMemory->add(globalVariablesTable);
@@ -141,6 +148,7 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
     binaryFileWriter.write(outputFileName, zCode);
     log("ZCode File '" + outputFileName + "' generated");
     zcode->cleanup();
+    Utils::dynamicMemory = NULL;
 }
 
 std::vector<std::bitset<8>> TweeZCodeCompilerPipeline::addFileSizeToHeader(std::vector<std::bitset<8>> zCode,

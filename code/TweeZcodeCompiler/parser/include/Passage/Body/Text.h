@@ -6,6 +6,7 @@
 #define TEXT_H
 
 #include "BodyPart.h"
+#include "IBodyPartsVisitor.h"
 
 #include <string>
 
@@ -15,15 +16,18 @@ private:
     std::string content;
 
 public:
-    virtual Text* clone() const {
-        return new Text(*this);
-    }
 
     Text(std::string content);
 
     std::string getContent() const;
 
     std::string to_string() const;
+
+    virtual Text* clone() const {
+        return new Text(*this);
+    }
+
+    void accept(IBodyPartsVisitor&) const;
 };
 
 

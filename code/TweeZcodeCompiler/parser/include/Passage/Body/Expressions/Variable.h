@@ -14,9 +14,6 @@ private:
     std::string name;
 
 public:
-    virtual Variable* clone() const {
-        return new Variable(*this);
-    }
 
     Variable(std::string name);
 
@@ -24,6 +21,9 @@ public:
 
     std::string to_string() const;
 
+    virtual Variable* clone() const {
+        return new Variable(*this);
+    }
 };
 
 

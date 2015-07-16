@@ -3,6 +3,7 @@
 //
 
 #include "include/Passage/Body/Link.h"
+#include "include/Passage/Body/IBodyPartsVisitor.h"
 
 #include <string>
 
@@ -28,4 +29,8 @@ std::string Link::to_string() const {
     return std::string("Link \n")
            + std::string("      Target: ") + this->getTarget() + std::string("\n")
            + std::string("      AltName: ") + this->getAltName();
+}
+
+void Link::accept(IBodyPartsVisitor & visitor) const {
+    visitor.visit(*this);
 }

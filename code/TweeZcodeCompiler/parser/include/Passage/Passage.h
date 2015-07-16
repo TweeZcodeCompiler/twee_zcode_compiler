@@ -15,9 +15,12 @@ private:
     Body body;
 
 public:
-    Passage(Head&, Body&);
-    const Head& getHead() const;
-    const Body& getBody() const;
+    Passage(Head &, Body &);
+
+    const Head &getHead() const;
+
+    const Body &getBody() const;
+
     std::string to_string() const;
 };
 

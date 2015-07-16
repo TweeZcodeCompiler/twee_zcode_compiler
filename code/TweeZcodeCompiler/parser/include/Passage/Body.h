@@ -41,6 +41,8 @@ public:
         return *this;
     };
 
+    Body& operator+=(BodyPart&);
+
     void copyParts(const Body& that) {
         for(auto it = that.bodyparts.begin(); it != that.bodyparts.end(); it++) {
             bodyparts.push_back(std::unique_ptr<BodyPart>(it->get()->clone()));
@@ -48,8 +50,6 @@ public:
     }
 
     const std::vector<std::unique_ptr<BodyPart>> &getBodyParts() const;
-
-    Body& operator+=(BodyPart&);
 
     std::string to_string() const;
 };

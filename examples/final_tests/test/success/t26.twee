@@ -1,0 +1,54 @@
+::Start
+(set $var to 3)
+<<set $var to 3>>
+
+(print $var)
+<<print $var>>
+
+(if $var is 2) FALSE (else if $var is 3) true (else) FALSE (endif)
+<<if $var is 2>> FALSE <<else if $var is 3>> true <<else>> FALSE <<endif>>
+
+(print $var)
+<<print $var>>
+
+!!!SIMPLE IF!!!
+(if $var is 2) FALSE (endif)
+<<if $var is 2>> FALSE <<endif>>
+
+(print $var)
+<<print $var>>
+
+!!!IF WITH ELSE!!!
+(if $var is 3) true (else) FALSE (endif)
+<<if $var is 3>> true <<else>> FALSE <<endif>>
+
+!!!IF WITH ELSE2!!!
+(if $var is 2) FALSE (else) true (endif)
+<<if $var is 2>> FALSE <<else>> true <<endif>>
+
+(print $var)
+<<print $var>>
+
+!!!IF WITH ELSE IF!!!
+(if $var is 3) true (else if $var is 2) FALSE (endif)
+<<if $var is 3>> true <<else if $var is 2>> FALSE <<endif>>
+
+(print $var)
+<<print $var>>
+
+!!!NESTED IF!!!
+
+<<if $var is 3>>
+    <<if $var is 3>>
+        <<if $var is 2>>FALSE <<else if $var is 3>> elseiftruesetvar-15 (set $var to -15) <<set $var to -15>> (print $var) <<print $var>> <<else>>FALSE<<endif>>
+        <<if $var is -15>>true<<else>>FALSE<<endif>>
+        <<if $var is -13>>FALSE<<else>>true<<endif>>
+        <<if $var is -14>>FALSE<<else>><<set $var to 15>><<endif>>
+        <<if $var is 15>>true<<else>>FALSE<<endif>>
+        <<if $var is 13>>FALSE<<else>>true<<endif>>
+        <<if $var is 14>>FALSE<<else>><<set $var to 3>><<endif>>
+    <<else>>true<<endif>>
+<<endif>>
+
+(print $var)
+<<print $var>>

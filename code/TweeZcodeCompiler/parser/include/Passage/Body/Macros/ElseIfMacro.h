@@ -4,6 +4,7 @@
 
 #include "Macro.h"
 #include "../Expressions/Expression.h"
+#include "../IBodyPartsVisitor.h"
 
 #include <string>
 #include <memory>
@@ -33,6 +34,7 @@ public:
         return new ElseIfMacro(*this);
     }
 
+    void accept(IBodyPartsVisitor&) const;
 };
 
 #endif //ELSEIFMACRO_H

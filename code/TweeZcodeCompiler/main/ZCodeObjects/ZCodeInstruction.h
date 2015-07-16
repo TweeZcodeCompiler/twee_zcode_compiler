@@ -29,6 +29,11 @@ public:
         content.push_back(std::bitset<8>(code));
         size = 1;
     }
+    ZCodeInstruction(std::bitset<8> code, std::string name = "UNKNOWN") : ZCodeObject(name) {
+        content = std::vector<std::bitset<8>>();
+        content.push_back(code);
+        size = 1;
+    }
 };
 
 

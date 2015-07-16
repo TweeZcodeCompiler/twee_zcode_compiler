@@ -17,23 +17,27 @@
     #include "include/TweeFile.h"
     #include "include/Passage/Passage.h"
     #include "include/Passage/Body/Text.h"
+    #include "include/Passage/Body/Formatting.h"
     #include "include/Passage/Body/Newline.h"
     #include "include/Passage/Body/Link.h"
     
-    #include "include/Passage/Body/Macros/Display.h"
-    #include "include/Passage/Body/Macros/Print.h"
+    #include "include/Passage/Body/Macros/DisplayMacro.h"
+    #include "include/Passage/Body/Macros/PrintMacro.h"
+    #include "include/Passage/Body/Macros/SetMacro.h"
+
     #include "include/Passage/Body/Macros/IfMacro.h"
     #include "include/Passage/Body/Macros/ElseIfMacro.h"
     #include "include/Passage/Body/Macros/ElseMacro.h"
     #include "include/Passage/Body/Macros/EndIfMacro.h"
-    #include "include/Passage/Body/Macros/SetMacro.h"
 
     #include "include/Passage/Body/Expressions/Expression.h"
-    #include "include/Passage/Body/Expressions/Const.h"
+
     #include "include/Passage/Body/Expressions/UnaryOperation.h"
     #include "include/Passage/Body/Expressions/BinaryOperation.h"
+
+    #include "include/Passage/Body/Expressions/Const.h"
     #include "include/Passage/Body/Expressions/Variable.h"
-    
+
     #include "include/Passage/Body/Expressions/Turns.h"
     #include "include/Passage/Body/Expressions/Visited.h"
     #include "include/Passage/Body/Expressions/Random.h"
@@ -128,39 +132,43 @@
 	Passage *passage;
 
 	Head *head;
-	Text *tag;
-    Newline *newline;
-
 	Body *body;
 
+    BodyPart *bodypart;
+
+	Text *tag;
+
+	Text *text;
+	Formatting *formatting;
+	Link *link;
+    Newline *newline;
+
 	Macro *macro;
-	Print *print;
+
 	SetMacro *setmacro;
-	Display *display;
-
-    Visited *visited;
-    Previous *previous;
-    Turns *turns;
-    Random *random;
-
+    PrintMacro *printmacro;
+	DisplayMacro *displaymacro;
 
     IfMacro *ifmacro;
     ElseIfMacro *elseifmacro;
     ElseMacro *elsemacro;
     EndIfMacro *endifmacro;
 
+    Expression *expression;
 
-	Expression *expression;
+    BinaryOperation *binaryOperation;
+    UnaryOperation *unaryOperation;
+
 	Variable *variable;
 	Const<int> *intconst;
 	Const<bool> *boolconst;
 	Const<std::string> *strconst;
 
-	BodyPart *bodypart;
-	Text *text;
-	Link *link;
-    BinaryOperation *binaryOperation;
-    
+    Visited *visited;
+    Previous *previous;
+    Turns *turns;
+    Random *random;
+
 	//TODO: add Syntax Tree classes
 }
 
@@ -261,6 +269,7 @@
 
 %type <bodypart> bodypart
 %type <text> text
+%type <formatting> formatting
 %type <link> link
 %type <newline> newline
 
@@ -271,10 +280,10 @@
 %type <elsemacro> elsemacro
 %type <endifmacro> endifmacro
 
-%type <print> print
+%type <printmacro> printmacro
 %type <setmacro> setmacro
 
-%type <display> display
+%type <displaymacro> displaymacro
 %type <previous> previous
 
 %type <expression> expression
@@ -416,7 +425,12 @@ bodypart :
     //TODO: implement Macro:BodyType
     $$ = $1;
     }
-  ;
+    |formatting
+    {
+    LOG_DEBUG << "Parser: bodypart -> textFormat: "<< "pass textFormat:type(textFormat) to bodypart:type(BodyPart)";
+    $$ = $1;
+    }
+   ;
 
 text :
     TEXT_TOKEN
@@ -425,41 +439,13 @@ text :
     $$ = new Text(*$1);
     delete $1;
     }
-    |FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE
+  ;
+
+formatting:
+    FORMATTING
     {
-    //TODO:check if F_OPEN and F_CLOSE are the same
-    //TODO:check if anything needs to be deleted here
-    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN TEXT_TOKEN FORMATTING_CLOSE: "<< "create top:formatted:type(--Text--) with 2:token:TEXT_TOKEN";
-    $$ = new Text(*$2);
-    delete $1;
-    delete $2;
-    delete $3;
-    }
-    |FORMATTING_OPEN text FORMATTING_CLOSE
-    {
-    //TODO:check if F_OPEN and F_CLOSE are the same
-    //TODO:check if anything needs to be deleted here
-    LOG_DEBUG << "Parser: formatted -> FORMATTING_OPEN formatted FORMATTING_CLOSE: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-    delete $1;
-    delete $3;
-    }
-    |FORMATTING TEXT_TOKEN FORMATTING
-    {
-    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
-    LOG_DEBUG << "Parser: formatted -> FORMATTING TEXT_TOKEN FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-    $$ = new Text(*$2);
-    delete $1;
-    delete $2;
-    delete $3;
-    }
-    |FORMATTING text FORMATTING
-    {
-    //TODO:check if FORMATTING($1) and FORMATTING($3) are the same
-    //TODO:check if anything needs to be deleted here
-    LOG_DEBUG << "Parser: formatted -> FORMATTING formatted FORMATTING: "<< "pass formatted:type(--Text--) up to top:formatted:type(--Text--)";
-    $$ = $2;
-    delete $1;
-    delete $3;
+    LOG_DEBUG << "Parser: formatted -> FORMATTING: ";
+    $$ = new Formatting(*$1);
     }
   ;
 
@@ -502,9 +488,9 @@ link :
   ;
 
 macro :
-    print
+    printmacro
     {
-    LOG_DEBUG << "macro -> print: pass print:type(Print) to macro:type(Macro)";
+    LOG_DEBUG << "macro -> printmacro: pass printmacro:type(PrintMacro) to macro:type(Macro)";
     $$ = $1;
     }
     |setmacro
@@ -532,41 +518,41 @@ macro :
     LOG_DEBUG << "macro -> endifmacro: pass endifmacro:type(EndIfMacro) to macro:type(Macro)";
     $$ = $1;
     }
-    |display
+    |displaymacro
     {
-    LOG_DEBUG << "macro -> display: pass display:type(Display) to macro:type(Macro)";
+    LOG_DEBUG << "macro -> displaymacro: pass displaymacro:type(DisplayMacro) to macro:type(Macro)";
     $$ = $1;
     }
   ;
 
-print:
+printmacro:
     MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE
     {
-    LOG_DEBUG << "print -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--Print--) with 3:expression";
-    $$ = new Print($3);
+    LOG_DEBUG << "printmacro -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--PrintMacro--) with 3:expression";
+    $$ = new PrintMacro($3);
     delete $3;
     }
     |
     MACRO_OPEN MACRO_PRINT expressionAssignment MACRO_CLOSE
     {
-    LOG_DEBUG << "print -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--Print--) with 3:expression";
-    $$ = new Print($3);
+    LOG_DEBUG << "printmacro -> MACRO_OPEN MACRO_PRINT expression MACRO_CLOSE create top:macro:type(--PrintMacro--) with 3:expression";
+    $$ = new PrintMacro($3);
     delete $3;
     }
     |MACRO_OPEN expression MACRO_CLOSE
     {
     //TODO:check if we need error handling here
-    LOG_DEBUG << "print -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--Print--) with 2:expression";
-    $$ = new Print($2);
+    LOG_DEBUG << "printmacro -> MACRO_OPEN expression MACRO_CLOSE create top:macro:type(--PrintMacro--) with 2:expression";
+    $$ = new PrintMacro($2);
     delete $2;
     }
   ;
 
-display:
+displaymacro:
     MACRO_OPEN MACRO_DISPLAY EXPR_STR_LIMITER EXPR_STR EXPR_STR_LIMITER MACRO_CLOSE
     {
-    LOG_DEBUG << "display -> MACRO_OPEN MACRO_DISPLAY EXPR_STR_LIMITER  strconst EXPR_STR_LIMITER MACRO_CLOSE: create new Display($4);";
-    $$ = new Display(*$4);
+    LOG_DEBUG << "displaymacro -> MACRO_OPEN MACRO_DISPLAY EXPR_STR_LIMITER  strconst EXPR_STR_LIMITER MACRO_CLOSE: create new DisplayMacro($4);";
+    $$ = new DisplayMacro(*$4);
     delete $4;
     }
   ;
@@ -890,17 +876,12 @@ boolean:
 
 %%
 
-// We have to implement the error function
-//TODO: use this function to pass parse errors to the exceptions, also look for yyerror
-void Twee::BisonParser::error(const std::string& msg) {
-	LOG_ERROR  << "Error: " << msg ;
-}
-
-
-// Now that we have the Parser declared, we can declare the Scanner and implement
-// the yylex function
-
 #include "TweeScanner.h"
 static int yylex(Twee::BisonParser::semantic_type * yylval, Twee::TweeScanner &scanner) {
 	return scanner.yylex(yylval);
+}
+
+//error function that also gives the last token value and line position
+void Twee::BisonParser::error(const std::string& msg) {
+	LOG_ERROR  << "Error: " << msg << ". Lexer is on line " << scanner.lineno() << " with value: " << scanner.YYText();
 }

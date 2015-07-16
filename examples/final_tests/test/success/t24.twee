@@ -1,0 +1,7 @@
+::Start
+Welcome in my Twee Story
+<<set $var=1>>
+<<set $var2= 2>>
+<<set $var2=5+$var2>>
+<<print $var2>>
+

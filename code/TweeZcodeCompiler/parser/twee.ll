@@ -2,16 +2,6 @@
 TweeZCodeCompiler:
 Lexer Input file.
 install flex on your system (build/make works with 2.5.39 on my system)
-
-if you are here because of an error, have a look at this: http://flex.sourceforge.net/manual/Diagnostics.html#Diagnostics
-TODO: YYLMAX should be considered, pushback should be considered
-TODO: consider lexer speed & opt: http://flex.sourceforge.net/manual/Options-for-Scanner-Speed-and-Size.html#Options-for-Scanner-Speed-and-Size
-
-some stated 'goals':
- convert UTF-8 to ASCII
-    [\x80-\xFF] is a UTF-8 match
-    also look at: http://sourceforge.net/p/flex/mailman/message/22611390/
-    and: http://stackoverflow.com/questions/9611682/flexlexer-support-for-unicode
 */
 
 %{
@@ -20,39 +10,32 @@ some stated 'goals':
 #include <memory>
 #include <vector>
 #include <string>
+
+//Logging
 #include <plog/Log.h>
 #include <plog/Appenders/ConsoleAppender.h>
 
 //TweeScanner.h for the Tokens
 #include "TweeScanner.h"
-
 #include "include/TweeFile.h"
 
-// TODO: check memory stuff for SAVE_TOKEN, does the parser clear that?
+//User Actions
 #define SAVE_STRING yylval->string = new std::string(YYText(), YYLeng())
 #define SAVE_INT yylval->integer = std::stoi(std::string(YYText(), YYLeng()))
 #define SAVE_TRUE yylval->boolean = true
 #define SAVE_FALSE yylval->boolean = false
 
-
-// TODO: decide if this is needed, look at that tutorial again: #define TOKEN(t) (yylval.token = t)
-
 /*logging templates: use these to get logging consistent
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "condition" << " matched Token" << "tokenName";
-                                LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "condition" << " matched Token " << "tokenName" << " with value " << YYText();
-                                LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "condition" << " when matching Token " << "tokenName";
-                                LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "condition" << " when matching Token " << "tokenName" << " with value " << YYText();
+LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "condition" << " matched Token" << "tokenName";
+LOG_DEBUG << "Lexer: line: "<< lineno() <<" Condition: " << "condition" << " matched Token " << "tokenName" << " with value " << YYText();
+LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "condition" << " when matching Token " << "tokenName";
+LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "condition" << " when matching Token " << "tokenName" << " with value " << YYText();
 */
-
 %}
 
- /*misc options*/
 %option noyywrap
-
- /* debug options: http://flex.sourceforge.net/manual/Debugging-Options.html#Debugging-Options */
 %option debug warn verbose
 %option yylineno
-
  /* output relevant stuff*/
 %option yyclass="Twee::TweeScanner" c++
 %option outfile="GeneratedTweeLexer.cpp"
@@ -63,12 +46,11 @@ BODY_PASSAGE_START      ::
 NEWLINE                 \n
 WHITESPACE              [ \t]
 
- /*TITLE_CHAR              [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}{ASCII_WHITESPACE}] */
 TITLE                   [a-zA-Z0-9_\-="+\\/?.,\t ]
 
 TAGS_OPEN               \[
 TAGS_CLOSE              \]
- /*TAG_CHAR                [{ASCII_LOWER_CASE}{ASCII_UPPER_CASE}{ASCII_NUMBER}{ASCII_SYMBOL_NOTOKEN}]*/
+
 TAG                     [a-zA-Z0-9\-_="'!+\\/?.,]+
 
 MATCH_REST                  .*
@@ -180,10 +162,9 @@ EXPR_TO                to|=
 
     /* unexpected Token(s) */
 <INITIAL>.                      {
-                                //TODO: lexer error in INITIAL
-                                LOG_ERROR << "lexer error in condition INITIAL";
-                                LOG_ERROR << "\t matched:";
-                                LOG_ERROR << YYText();
+                                LOG_WARNING << "lexer warning in condition INITIAL";
+                                LOG_WARNING << "\t matched:";
+                                LOG_WARNING << YYText();
                                 }
 
  /* ___NEW CONDITION___ HeaderTitle*/
@@ -239,10 +220,9 @@ EXPR_TO                to|=
 
     /* unexpected Token(s) */
 <HeaderTags>.                   {
-                                //TODO: lexer error in HeaderTags
-                                LOG_DEBUG << "lexer error in condition HeaderTags";
-                                LOG_ERROR << "\t matched:";
-                                LOG_ERROR << YYText();
+                                LOG_WARNING << "lexer warning in condition HeaderTags";
+                                LOG_WARNING << "\t matched:";
+                                LOG_WARNING << YYText();
                                 }
 
  /* ___NEW CONDITION___ HeaderTagsClose*/
@@ -258,7 +238,7 @@ EXPR_TO                to|=
 
     /* unexpected Token(s) */
 <HeaderTagsClose>.              {
-                                LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "condition" << " when matching Token " << "tokenName" << " with value " << YYText();
+                                LOG_WARNING << "WARNING in Lexer: line: "<< lineno() <<" Condition: " << "condition" << " when matching Token " << "tokenName" << " with value " << YYText();
                                 }
 
  /* ___NEW CONDITION___ Body*/
@@ -399,7 +379,7 @@ EXPR_TO                to|=
 
     /* unexpected Token(s) */
 <FormattingErrorInlineStyling>. {
-                                LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "FormattingErrorInlineStyling" << " when matching Token " << "." << " with value " << YYText();
+                                LOG_WARNING << "WARNING in Lexer: line: "<< lineno() <<" Condition: " << "FormattingErrorInlineStyling" << " when matching Token " << "." << " with value " << YYText();
                                 }
 
  /* ___NEW CONDITION___ FormattingComment*/
@@ -416,7 +396,7 @@ EXPR_TO                to|=
 
     /* unexpected Token(s) */
 <FormattingComment>.            {
-                                LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "FormattingComment" << " when matching Token " << "." << " with value " << YYText();
+                                LOG_WARNING << "WARNING in Lexer: line: "<< lineno() <<" Condition: " << "FormattingComment" << " when matching Token " << "." << " with value " << YYText();
                                 }
 
 <MonoSpaceContent>{FORMATTING_MONOSPACE_CLOSE} {
@@ -478,7 +458,7 @@ EXPR_TO                to|=
 
     /* unexpected Token(s) */
 <BodyLink>.                     {
-                                LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "BodyLink" << " when matching Token " << "." << " with value " << YYText();
+                                LOG_WARNING << "WARNING in Lexer: line: "<< lineno() <<" Condition: " << "BodyLink" << " when matching Token " << "." << " with value " << YYText();
                                 }
 
  /* ___NEW CONDITION___ LinkExpression*/
@@ -619,7 +599,7 @@ EXPR_TO                to|=
 
     /* unexpected Token(s) */
 <LinkExpression>.                     {
-                                LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "BodyLink" << " when matching Token " << "." << " with value " << YYText();
+                                LOG_WARNING << "WARNING in Lexer: line: "<< lineno() <<" Condition: " << "BodyLink" << " when matching Token " << "." << " with value " << YYText();
                                 }
 
  /* ___NEW CONDITION___ BodyMacro*/
@@ -824,7 +804,7 @@ EXPR_TO                to|=
 
     /* unexpected Token(s) */
 <BodyMacro>.                    {
-                                LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "BodyMacro" << " when matching Token " << "." << " with value " << YYText();
+                                LOG_WARNING << "WARNING in Lexer: line: "<< lineno() <<" Condition: " << "BodyMacro" << " when matching Token " << "." << " with value " << YYText();
                                 }
 
 
@@ -874,7 +854,7 @@ EXPR_TO                to|=
                                 }
     /* unexpected Token(s) */
 <FunctionArgsLink>.             {
-                                LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsLink" << " when matching Token " << "." << " with value " << YYText();
+                                LOG_WARNING << "WARNING in Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsLink" << " when matching Token " << "." << " with value " << YYText();
                                 }
 
  /* ___NEW CONDITION___ FunctionArgsBody*/
@@ -923,7 +903,7 @@ EXPR_TO                to|=
                                 }
     /* unexpected Token(s) */
 <FunctionArgsBody>.             {
-                                LOG_ERROR << "ERROR in Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsBody" << " when matching Token " << "." << " with value " << YYText();
+                                LOG_WARNING << "WARNING in Lexer: line: "<< lineno() <<" Condition: " << "FunctionArgsBody" << " when matching Token " << "." << " with value " << YYText();
                                 }
 
 %%

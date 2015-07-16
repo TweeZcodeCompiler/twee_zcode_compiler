@@ -17,6 +17,7 @@ private:
 
 public:
     TweeFile();
+
     ~TweeFile();
 
     const std::vector<Passage> &getPassages() const;

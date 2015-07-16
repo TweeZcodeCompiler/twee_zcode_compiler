@@ -23,8 +23,9 @@ private:
     static const std::string GVAR_DIRECTIVE;
     static const char STRING_DELIMITER;
     static const std::string ASSIGNMENT_OPERATOR;
-    static const std::string BYTEARRAY;
-    static const std::string WORDARRAY;
+    static const std::string BYTEARRAY_DIRECTIVE;
+    static const std::string WORDARRAY_DIRECTIVE;
+    static const std::string STRING_DIRECTIVE;
 
     static const std::string ROUTINE_DIRECTIVE;
     static const std::string NEW_LINE_COMMAND;
@@ -66,6 +67,8 @@ private:
     static const std::string LOADB_COMMAND;
     static const std::string LOADW_COMMAND;
     static const std::string PUSH_COMMAND;
+    static const std::string PUSH_STACK_COMMAND;
+    static const std::string POP_STACK_COMMAND;
     static const std::string PULL_COMMAND;
     static const std::string RANDOM_COMMAND;
     static const std::string READ_MOUSE;
@@ -82,6 +85,9 @@ private:
     static const std::string ERASE_WINDOW;
     static const std::string RESTORE_UNDO;
     static const std::string SAVE_UNDO;
+    static const std::string OUTPUT_STREAM_COMMAND;
+    static const std::string INC_COMMAND;
+    static const std::string DEC_COMMAND;
 
 
     unsigned currentLineNumber;
@@ -117,9 +123,9 @@ private:
 
     void executeRETCommand(const std::string &callCommand, RoutineGenerator &routineGenerator);
 
-    std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction);
+    std::vector<std::unique_ptr<ZParam>> parseArguments(const std::string instruction, bool namesAllowed = true);
 
-    std::unique_ptr<ZParam> createZParam(const std::string &paramString);
+    std::unique_ptr<ZParam> createZParam(const std::string &paramString, bool namesAllowed = true);
 
     void performRoutineDirectiveCommand(std::vector<std::string> lineComps, std::shared_ptr<ZCodeContainer> highMemory);
 
@@ -161,6 +167,8 @@ public:
 
     void executeLOADWCOMMAND(const std::string &basic_string, std::shared_ptr<ZCodeContainer> shared_ptr,
                              RoutineGenerator &currentGenerator);
+
+    void performStringDirective(std::string basic_string, std::shared_ptr<ZCodeContainer> dynamicMemory);
 
 };
 

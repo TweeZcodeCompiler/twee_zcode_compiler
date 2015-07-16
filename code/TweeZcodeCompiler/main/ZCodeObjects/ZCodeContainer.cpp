@@ -38,6 +38,7 @@ void ZCodeContainer::print(std::vector<std::bitset<8>> &code) {
     std::vector<std::bitset<8>> instructions = std::vector<std::bitset<8>>();
     for(size_t i = 0; i < children.size(); i++){
         std::shared_ptr<ZCodeObject> child = children.at(i);
+        child->checkOffset(code);
         child->print(code);
     }
 }

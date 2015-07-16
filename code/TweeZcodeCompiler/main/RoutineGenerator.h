@@ -12,7 +12,6 @@
 #include <map>
 #include <iostream>
 #include "Jumps.h"
-#include "OpcodeParameterGenerator.h"
 #include "Utils.h"
 #include "exceptions.h"
 #include "ZCodeObjects/ZCodeRoutine.h"
@@ -33,7 +32,6 @@ private:
     size_t addedLocalVariables = 0;
     size_t offsetOfRoutine = 0;
     Jumps jumps;
-    OpcodeParameterGenerator opcodeGenerator;
 
     size_t nextLocVarInitLabelNumber = 0;
 
@@ -70,8 +68,6 @@ public:
     /*
      *      methods to handle call routine offsets:
      */
-
-    static void resolveCallInstructions(std::vector<std::bitset<8>> &zCode);
 
     static std::map<size_t, std::string> callTo;    //keys = offset of call, value = name of routine
 
@@ -111,7 +107,7 @@ public:
 
     void printString(std::vector<std::unique_ptr<ZParam>> params);
 
-    void printAddress(std::vector<std::unique_ptr<ZParam>> params);
+    void printAddress(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> &dynamicMemory);
 
     void printNum(std::vector<std::unique_ptr<ZParam>> params);
 
@@ -168,17 +164,27 @@ public:
 
     void pull(std::vector<std::unique_ptr<ZParam>> params);
 
-    void loadb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void loadb(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
-    void loadw(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void loadw(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
-    void storeb(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void storeb(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemor);
 
-    void storew(std::vector<std::unique_ptr<ZParam>> &params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+    void storew(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemor);
+
+    void outputStream(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemory);
 
     void push(std::vector<std::unique_ptr<ZParam>> params);
 
+    void inc(std::vector<std::unique_ptr<ZParam>> params);
+    
     void mouseWindow(std::vector<std::unique_ptr<ZParam>> params);
+
+    void pushStack(std::vector<std::unique_ptr<ZParam>> params);
+
+    void popStack(std::vector<std::unique_ptr<ZParam>> params);
+
+    void dec(std::vector<std::unique_ptr<ZParam>> params);
 
     void readMouse(std::string array, std::shared_ptr<ZCodeContainer> dynamicMemory);
 
@@ -298,6 +304,12 @@ public:
         //OPCODE: clears window
                 ERASE_WINDOW = 237
 
+        //VAR:243 13 3 output_stream number table
+                OUTPUT_STREAM = 243,
+        //1OP:133 5 inc (variable)
+                INC = 133,
+        //1OP:134 6 dec (variable)
+                DEC = 134
 
         /*
          * Not implemented:
@@ -318,7 +330,9 @@ public:
                 WINDOW_SIZE = 17,
                 SET_MARGINS = 8,
                 SAVE_UNDO = 9,
-                RESTORE_UNDO = 10
+                RESTORE_UNDO = 10,
+                POP_STACK = 21,
+                PUSH_STACK = 24,
     };
 
     enum BranchOffset {

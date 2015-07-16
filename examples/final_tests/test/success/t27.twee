@@ -1,0 +1,6 @@
+::Start
+
+<<set $var to 3>>
+<<if $var is (2+1-1)+1>> true <<endif>>
+
+<<print $var>>

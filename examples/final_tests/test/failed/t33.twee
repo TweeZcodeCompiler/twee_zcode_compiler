@@ -1,0 +1,3267 @@
+﻿:: 133
+
+133
+
+
+'A ship sets sail?' you hazard.
+
+The bat king mulls this over for a moment. 'Hmmm,' he says at last. 'Well it didn't really make any sense, but it did rhyme, and of course that is the sign of an excellent poem. Very well, girls, my wings are yours, but I want them back when you're done with them.'
+
+'Oh, really?' you say, surprised. 'But don't you need them?'
+
+'No, they're just for decoration really. Clip ons.' He detaches them to illustrate his point. 'Lost mine in the war, but a chap doesn't feel complete without something flapping around back there. Anyway, enough of my ramblings. Many thanks for the poem, and good luck to you both.'
+
+''Quest Item Gained - Bat King's Wings!''<<set $gotWings = true>>
+
+<<if $gotwingsonce>>You emerge from the cave to find Ethel waiting on the trail. Giant mechanical spiders are stomping about setting fire to things, and she is using superwater to rust their limbs. It's very loud and confusing.
+
+'We got the wings again!' you whoop.
+
+'What are you playing at?' asks Ethel. 'You've already got the wings! Get back in that cauldron and save the world already!'
+
+'Ok, ok, relax,' you sigh before hopping into the Fast Travel Cauldron.
+
+Now [[turn to 90|90]].<<else>>You emerge from the cave to find Ethel waiting on the trail. Giant mechanical spiders are stomping about setting fire to things, and she using superwater to rust their limbs. It's very loud and confusing.
+
+'Hey, kids, did you get them bat wings?' says Ethel.
+
+'We sure did!' you reply, dodging a falling arachnid seconds before it crashes to the dirt.
+
+'Good work!' says Ethel. 'I'm running out of superwater, so you better get back in the Fast Travel Cauldron (patents pending). We need to kill that eye!'
+
+'We're on it!' You each chestbump the witch before hopping into the Fast Travel Cauldron.<<set $gotwingsonce = true>>
+
+Now [[turn to 90|90]].<<endif>>
+
+
+:: 132
+
+132
+
+
+You hand out samples of Bill's flour to the waiting customers, crying things like 'Free flour from the old crumbling windmill!' and 'Try before you buy!' to get their attention. Even super-cheap flour can't compete with free flour, and before long all the customers have gone home to try Bill's flour out, and the savvy business elf looks pretty annoyed.
+
+'We've done a good thing here,' you say to Esme, who nods in agreement.<<set $doneFlour = true>>
+
+''Subquest Complete - Help Bill Out!''
+
+Before too long you find yourself outside Ethel Frogbottle's rundown old cottage. Weeds threaten to devour the ramshackle structure, and the glass is broken in most of the windows. A faint, indeterminate odour pervades the still air.
+
+If you go right up to the front door and boldly knock, [[turn to 65|65]].
+If you sneak round the back, exercising nosy caution, [[turn to 37|37]].
+
+
+:: 131
+
+131
+
+
+<<if $gotRose>>'Um... Yes?' you say hesitantly.
+
+The weird lady cocks her head to one side and a faraway look comes into her eyes. 'If someone finds me pretty, they'll bring me a flower. Do you ''have'' a flower for me?'
+
+'Um, we've got this one,' you say, holding up the black rose the spider king gave you.
+
+'It's beautiful,' whispers the swamp lady, and then she glides across the pool to collect it from your shaking hand. 'Somewhere in this pool is a treasure you seek. Fare well, travellers.' And with that she sinks back into the lake.
+
+'Somewhere in this pool?' says Esme.
+
+'That's what she said,' you nod. 'There's no way we're jumping in there.'
+
+<<if $gotRod>>'The fishing rod!' exclaims your friend. 'We can fish for it!'
+
+Congratulating Esme on her quick thinking, you cast your rod into the waters. Something tugs on the line, and you reel it in. It's...
+
+A pair of spectacles?
+
+Suddenly the wise old elf from the Place at the End of the End of Places appears in a puff of smoke, a nice effect which is almost lost against the backdrop of swamp smog. 'You found them!' he smiles. 'Where were they?'
+
+'In there,' you say, pointing to the large pool.
+
+'Ah,' says the wise old elf, wiping them on his robe. 'Yes, that's where they usually are. Anyway, shouldn't you be saving the world?'
+
+'That's what we've been trying to do!' you protest. 'We need a wizard's tooth, remember?'
+
+'Ah yes, well a deal's a deal. Here you are,' smiles the wise old elf, and reaching up he pulls out one of his own long, sharp teeth!
+
+'Ew,' says Esme as he hands it to you.
+
+''Quest Item Gained - Wizard's Tooth!''
+
+'Couldn't you have just given us this straight away?' you ask, a little angrily.
+
+'Well yes, but then I wouldn't have got my spectacles back,' says the wizard mildly. 'Anyway, you better get back to climbing this mountain! I was just kidding about the eye crossing, by the way.'
+
+You angrily retrace your steps to the mouth of the tunnel where you encountered the leery fire sprite and continue your climb, cursing the wizard with every spare breath.
+
+<<if $gotAmulet>>The amulet you got from the mysterious stranger begins to glow strongly. '//Now// you're showing me the proper path? The only way is up, you useless piece of junk.' With disgust, you yank the amulet from your neck and toss it from the mountain.<<endif>>
+
+The eye is now positioned directly over the mountain. Waves of evil emanate from it, washing over the land. A series of increasingly horrible creatures make their way across the night sky towards Carn, ready to lay waste to everything you know. Although your arms and legs are tired, the climb becomes easier the higher you get, and when you look down Ebb and Sol are far below you. The eye is everything, and it's terrible stare transfixes you.
+
+Now [[turn to 123|123]].<<else>>As you ''have'' no means of searching the pool, you are forced to leave the swamp. 'This is just getting annoying,' moans Esme.
+
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you head to town, [[turn to 124|124]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<endif>><<else>>'Um... Yes?' you say hesitantly.
+
+The weird lady cocks her head to one side and a faraway look comes into her eyes. 'If someone finds me pretty, they'll bring me a flower. Do you ''have'' a flower for me?'
+
+'No, sorry,' you say, because you don't.
+
+The lady sighs deeply. 'I see,' she says sadly. 'Fare well, travellers.' And with that she sinks back into the lake.
+
+'I guess we better get her a stupid flower from somewhere,' says Esme as you trudge out of the swamp. 'Why is everyone so demanding around here?'
+
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you head to town, [[turn to 124|124]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<endif>>
+
+
+:: 130
+
+130
+
+
+You blow sharply on the fire sprite, who slinks away to compose itself. Just like in the book! What's more he drops 10 Gold, which you quickly pocket. You also gain the experience of defeating a leery fire sprite.<<set $gotGold = true>>
+
+''Item Gained - A Little Gold''
+
+'Let's check out this tunnel!' you say excitedly. You walk along the tunnel, which is just as well-lit and nicely decorated as it appeared. Unfortunately all you find at the end is the fire sprite's living space, which holds only a book about how to attack ladies and few singed blankets. Finding nothing of interest, you double back and head down the dank, gloomy tunnel, your footsteps echoing all around you. Eventually there is a dim light up ahead, and as you draw closer it grows brighter.
+
+<<set $ftcHill = true>>You emerge blinking into daylight - but that makes no sense, there's no way you've walked far enough to go right through the mountain. You stand at the top of a sloping hill, at the base of which is a great lake that opens into the sea. Besides a faint breeze playing across your earholes, all is silent. A pirate ship bobs lazily on the waters. On one side of the lake, flags flying above a small town can be made out. On the other you see what looks like an expanse of marshland. Oh, and the Fast Travel Cauldron is here, too.
+
+'This place is weird,' says Esme, and you're inclined to agree.
+
+'Hey, notice anything missing?' you say. 'I don't know where we are, but the eye hasn't got here yet. Let's hurry all the same.'
+
+If you head down to the pirate ship, [[turn to 89|89]].
+If you approach the town, [[turn to 124|124]].
+If you sample the marshland, [[turn to 101|101]].
+Nearby you spot the Fast Travel Cauldron bubbling merrily away. If you jump in, [[turn to 90|90]].
+
+
+:: 136
+
+136
+
+
+You feel yourself slip between the pages of reality, the universe rearranges itself around you, and then...
+
+You emerge blinking into daylight - but that makes no sense, there's no way you've walked far enough to go right through the mountain. You stand at the top of a sloping hill, at the base of which is a great lake that opens into the sea. Besides a faint breeze playing across your earholes, all is silent. A pirate ship bobs lazily on the waters. On one side of the lake, flags flying above a small town can be made out. On the other you see what looks like an expanse of marshland. Oh, and the Fast Travel Cauldron is here, too.
+
+'This place is weird,' says Esme, and you're inclined to agree.
+
+'Hey, notice anything missing?' you say. 'I don't know where we are, but the eye hasn't got here yet. Let's hurry all the same.'
+
+If you head down to the pirate ship, [[turn to 89|89]].
+If you approach the town, [[turn to 124|124]].
+If you sample the marshland, [[turn to 101|101]].
+If you jump into the Fast Travel Cauldron and flee this place, [[turn to 90|90]].
+
+
+:: 135
+
+135
+
+
+You head back to the bat guy cave entrance, where the pile of semi-conscious bat guys is struggling to seperate. 'Why you do dis fing?' wails one of them, and you almost feel sorry for the illiterate brute.
+
+'We better not stick around long,' Esme warns. 'They'll recover soon enough, and our super-strength could wear off any minute. Plus, I keep losing consciousness briefly.'
+
+What to do?
+
+If you try the stairs, [[turn to 102|102]].
+If you flee the bat cave, [[turn to 126|126]].
+
+
+:: 134
+
+134
+
+
+'This is useless,' you snarl. 'Fall back!'
+
+You run from the room, knocking over a barrel in your haste. The powder spills towards the oil lamp, and then you realise it is gunpowder and therefore this is very bad! You leap up through the trapdoor, surprising the ghost, and leap from the deck as the ship explodes, propelling you forward to land on your faces at the waterside.
+
+'That was awesome!' says Esme. 'My face hurts.'
+
+'Yeah, it was awesome, but I'd have liked to get a closer look around that pirate king's cabin. Bound to be some cool stuff in there.'
+
+If you traipse to town, [[turn to 124|124]].
+If you make merry in the marshland, [[turn to 101|101]].
+If you head back up the hill and jump in the Fast Travel Cauldron, [[turn to 90|90]].
+
+
+:: 41
+
+41
+
+
+<<if $prevlocfc>>'Let's go this way,' you suggest. Esme doesn't object, so you head down the winding path to the west. The trees grow shorter here, and you are forced to duck to avoid a faceful of leaves. Soon you emerge in another clearing, with paths leading east, back to the first clearing, and northeast, where the shrubbery seems to take on an odd shimmering quality. <<if $investrustle>>Something rustles in the undergrowth.<<endif>><<else>>You toodle westwards, whistling a merry tune. The trees grow shorter here, and you are forced to duck to avoid a faceful of leaves. Soon you emerge in another clearing, with paths leading east, back to the first clearing, and northeast, where you just came from. <<if $investrustle>> Something rustles in the undergrowth.<<endif>><<endif>>
+
+If you try the north path, [[turn to 78|78]].
+If you head back to the first clearing, [[turn to 92|92]].
+<<if $investrustle>>If you investigate the rustling, [[turn to 81|81]].<<endif>>
+
+
+:: 24
+
+24
+
+
+'I choose death!' you shout enthusiastically.
+
+The sprite seems slightly taken aback. 'Really? No-one ever said that before. Usually they just help out around the orchard. In fact, I've never actually killed anyone before.'
+
+'Oblivia, what in blazes are you doing?' hisses Esme between splutters.
+
+'Trust me, I've got a plan!' you hiss back.
+
+The tree sprite teeters this way and that. 'Are you sure you don't want to help out around the orchard?'
+
+'Nope,' you smile. 'It's death or nothing.'
+
+'Curses!' cries the sprite. 'It's just not in me to take another life!' And with that, he disappears in a puff of moral dilemma.
+
+'How did you know he wouldn't kill us?' asks Esme, finally recovering.
+
+'Just a hunch,' you shrug, looking at your watch. 'Ooh, it's nearly dinnertime!'
+
+Now [[turn to 73|73]].
+
+
+:: 25
+
+25
+
+<html><img src="002.jpg" width="400" height="300"></html>
+
+As the words leave your lips, Esme's head thuds dejectedly to her desk, and your heart sinks.
+
+'Not even close,' snarls Mistress Honeywell. 'This simply isn't good enough. If it happens again I shall see you in Madam Scrimshaw's office, and I hope you'll pay more attention there.'
+
+'Sorry, miss,' you mutter. And you are, a bit.
+
+Finally the lunch bell rings out from the courtyard, and you quickly make your escape.
+
+Outside, a flushed and slightly out of breath Esme waits impatiently. 'Thank Gaia that's over,' she pouts. 'I thought I was going to die of boredom, literally //die.// So, what do you want to do?'
+
+If you head to the library, [[turn to 13|13]].
+If you quietly eat your lunch, [[turn to 28|28]].
+If you go looking for trouble, [[turn to 5|5]].
+<<if $travelledBefore>>Nearby you spot the Fast Travel Cauldron bubbling merrily away. If you jump in, [[turn to 90|90]].<<endif>>
+
+
+:: 26
+
+26
+
+<html><img src="005.jpg" width="400" height="300"></html>
+
+With Esme in tow you bury yourself in the forest, following notches carved into the tree trunks until you come to a clearing. A single tree grows in the centre, and finger-wide grooves in the bark help you climb up to a ramshackle structure clinging to the canopy like a scared wood-and-nails cat.
+
+You and Esme spent weeks building this treehouse, though even your own rose-tinted perspective uses the term loosely. A woven rug protects bums from splinters, a shoebox contains snacks and drawing materials and an oil lamp provides sufficient light to draw by. In the corner is a modest pile of comic books that you have made in the six years since you became friends, and pinned to the wall-planks are dozens of pages of character designs for the latest project. Your art styles are similar, but you can easily identify Esme's work because she always dots her 'i's with a heart. Esme takes a pencil and some paper and begins to work on a sketch.
+
+If you draw as well, [[turn to 36|36]].
+If you flip through an old comic instead, [[turn to 42|42]].
+
+
+:: 27
+
+27
+
+
+'Talk to me,' says the business elf as you approach.
+
+'Um... Ok,' you reply, taken slightly off guard. 'How's it going?'
+
+'Business is booming!' glows the elf. 'Up 300 percent from last week, in fact. Speculate, accumulate, repeat. You?'
+
+'We're off to help out a witch,' you reply, wondering what on earth he's going on about.
+
+'Witches love flour! Buy her a bag, it's cheap!'
+
+<<if $gotGold>>You decide to hold on to the measly 10 Gold you got from the leery fire sprite to buy something more exciting than flour.<<else>>'We don't have any money,' you admit.<<endif>>
+
+The smile melts from the business elf's face, and he goes all frowny. 'I have no time for you,' he says. 'Please leave at once.'
+
+'How rude!' says Esme as you set off. 'I much prefer Bill's old rundown windmill, even if the flour is more expensive. Harrumph!'
+
+Before too long you find yourself outside Ethel Frogbottle's rundown old cottage. Weeds threaten to devour the ramshackle structure, and the glass is broken in most of the windows. A faint, indeterminate odour pervades the still air.
+
+If you go right up to the front door and boldly knock, [[turn to 65|65]].
+If you sneak round the back, exercising nosy caution, [[turn to 37|37]].
+
+
+:: 20
+
+20
+
+
+'I am Oblivia Firespoon,' you announce in hushed reverence, 'and this is my good friend Esme Featherwhistle.'
+
+The spider king nods a courteous greeting. 'Few venture this far into the stacks of the bookworld, and fewer still return to the land of men. For your bravery, child, a pretty flower.' With some of his legs he dramatically indicates a black rose lying on the floor nearby. You pick it up, thank him for his kindness and leave the library, making it look a little harder than it is so as not to hurt the spider king's feelings.
+
+//You were lucky today, Spider King,// you think as you walk away. //Next time you'll get what's coming to you.//
+
+''Item Gained - Black Rose!''<<set $gotRose = true>>
+
+'What on earth was all that about?' asks a bemused Esme.
+
+Only a few minutes of lunch remain, so you quickly snarfle some snowfish sandwiches (your favourite) while a shiny-eyed Esme recounts your spider-stomping adventure to some first-years.
+
+As the bell rings, you notice a hooded figure lurking near the bicycle sheds, apparently beckoning to you.
+
+If you investigate further, [[turn to 11|11]].
+If you head straight to class, not wishing to be tardy, [[turn to 60|60]].
+
+
+:: 21
+
+21
+
+
+The fisherperson, hidden from view by a long, shabby cloak, doesn't turn as you approach.
+
+'Um, excuse me?' you venture, but there is no response.
+
+You reach out to touch his or her shoulder, a feeling of dread building within you as you do. The sun falls behind the distant peaks of Ebb and Sol. Esme tugs warningly on your sleeve.
+
+As soon as your fingers touch the coarse fibres, the cloak crumples and the rod clatters to the ground. The fisherperson is nowhere to be seen.
+
+'Whaaa?' gasps Esme, her mouth lolling open in amazement.
+
+'It's getting late,' you say, the words catching in your dry throat. 'We should be getting home for dinner.' Unsure why, you stoop and pick up the fishing rod before hastily leaving.
+
+''Item gained - Fishing Rod!''<<set $gotRod = true>>
+
+Now [[turn to 73|73]].
+
+
+:: 22
+
+22
+
+
+'Hey, I know!' you exclaim brightly. The tree sprite pricks up his pointy ears with interest. 'Why don't //you// eat an apple?'
+
+'Me?' cries the tree sprite. 'Eat an apple? Hark at the child! Why, it'd be like eating my own children!'
+
+'Aw, c'mon,' you goad, 'they're delicious! Just try a little bite.'
+
+The tree sprite cocks his head to one side, considering this. 'Well, I suppose one little bite can't hurt.' He chews on a small green apple thoughtfully. 'Gadzooks, this //is// delicious!'
+
+So you all sit and eat apples together while the sun goes down, and you soon become fast friends. Before long there is little you don't know about each other, and you're calling him Friend Tree Sprite.
+
+You glance at your watch. 'Gosh, is that the time? We're going to miss dinner. Not that I feel that hungry after all these apples.'
+
+'Run along, girls, but promise you'll come back and visit your friend. Oh, and if you happen to run into my brother, mention Treezlebub's name and he'll sing you a song, probably.'<<set $knowTreezlebub = true>>
+
+''Knowledge gained - Treezlebub's name.''
+
+'Um, thanks!' you say, before hurrying along to dinner.
+
+Now [[turn to 73|73]].
+
+
+:: 23
+
+23
+
+<html><img src="002.jpg" width="400" height="300"></html>
+
+'Um... Well, actually, no,' you reply honestly.
+
+Mistress Honeywell splutters a little at your unexpected candour, then regains her composure. 'Well, this simply isn't good enough. If it happens again I shall see you in Madam Scrimshaw's office, and I hope you'll pay more attention there.'
+
+'Sorry, miss,' you mutter. And you are, a bit.
+
+Finally the lunch bell rings out from the courtyard, and you quickly make your escape.
+
+Outside, a flushed and slightly out of breath Esme waits impatiently. 'Thank Gaia that's over,' she pouts. 'I thought I was going to die of boredom, literally //die.// So, what do you want to do?'
+
+If you head to the library, [[turn to 13|13]].
+If you quietly eat your lunch, [[turn to 28|28]].
+If you go looking for trouble, [[turn to 5|5]].
+<<if $travelledBefore>>Nearby you spot the Fast Travel Cauldron bubbling merrily away. If you jump in, [[turn to 90|90]].<<endif>>
+
+
+:: 28
+
+28
+
+
+You decide to stay out of trouble for a change and locate a nearby bench where you sit with Esme and munch leisurely on snowfish sandwiches. You chat about pirate queens and ethernauts, and before you know it the bell rings for afternoon class.
+
+As it does you notice a hooded figure lurking near the bicycle sheds, apparently beckoning to you.
+
+If you investigate further, [[turn to 11|11]].
+If you head straight to class, not wishing to be tardy, [[turn to 60|60]].
+
+
+:: 29
+
+29
+
+
+You lower your foot. 'Better make this good,' you warn.
+
+'Oh thank you, kind madam!' exclaims the evil looking bug with a deep bow, 'Truly, I am undeserving of such pity. You see, I was just a normal bug, heading to the orphanage with some delicious cookies, when a snooty vampire bit me! Now I'm an evil looking vampirey bug. I guess he must have taken the cookies too.'
+
+'Well, I guess that kind of makes sense,' you say slowly.
+
+'Anyway, to prove my good intent I'll help you out with the rest of the weeding, and so will a few of my friends!' He clicks and whistles, and suddenly there are weird bug things everywhere. They flit about like mad things, devouring most of the larger weeds while you pull up the smaller ones. Then they bid you good day and buzz off into the sunset.
+
+'All finished, are we?' sniffs Ethel disapprovingly. 'Well, the garden does look a little tidier, I suppose. Tell you what, go and tidy up the attic for me and then you can run along home.'
+
+You traipse up a rickety staircase to the dark, dusty attic, where flittery somethings scurry into cobwebbed corners to peer out at you. Glass tanks hold odd shapes that you'd rather not look at too closely, and spidery etchings adorn the walls. Esme shudders a lot.
+
+'Hey, what's this?' you exclaim, picking up a book with a weird face on the front.
+
+'Eep!' cries Esme. 'Put it down! Books with faces on can only have bad things inside!'
+
+If you heed her warning and replace the book, [[turn to 61|61]].
+If you just take one quick peek, [[turn to 75|75]].
+<<if $travelledBefore>>If you run downstairs and jump in the cauldron, [[turn to 90|90]].<<endif>>
+
+
+:: 4
+
+4
+
+With effort you manage to shrug off your soporific state and make an earnest attempt to follow Mistress Honeywell's apparently endless lecture.
+
+'The lesser spotted fuzzwort is known for the mysterious qualities it imbues upon one who consumes it, such as super strength and night vision. Of course, it also has horrendous side effects including, but not limited to, death, so excessive use is strongly advised against. It is occasionally found in the vicinity of bats.' She holds up a picture of the root.<<set $knowFuzzwort = true>>
+
+''Knowledge gained - Properties of Fuzzwort''
+
+Eventually the lunch bell rings out from the courtyard, and your classmates eagerly file out. You curtsey to Mistress Honeywell, who seems pleased with your attentiveness.
+
+Outside, a flushed and slightly out of breath Esme waits impatiently. 'Thank Gaia that's over,' she pouts. 'I thought I was going to die of boredom, literally //die.// So, what do you want to do?'
+
+If you head to the library, [[turn to 13|13]].
+If you quietly eat your lunch, [[turn to 28|28]].
+If you go looking for trouble, [[turn to 5|5]].
+<<if $travelledBefore>>Nearby you spot the Fast Travel Cauldron bubbling merrily away. If you jump in, [[turn to 90|90]].<<endif>>
+
+
+:: StoryTitle
+Witch's Girl
+
+
+:: 120
+
+120
+
+
+'Follow my lead,' you hiss to Esme. You start to do your best impression of a bat-guy, making little whistly noises, flexing your arms and stomping about like an idiot. Esme does the same, though whether or not she realises what you're doing is unclear. The bat seems fooled however, for lets out a yelp, springs out of the bed and salutes as smartly as can be expected for a giant lumbering bat.
+
+'Dur, sorry Batsy was sleeping in king bed,' says the giant bat. 'King out on business and Batsy not like hang upside down. Please no kill Batsy.'
+
+As surprised by the effectiveness of your impression as you are by the revelation that this isn't the bat king, but simply an imposter named Batsy, you hesitate.
+
+'Well, Batsy,' Esme says sternly, 'we won't kill you this time so long as you keep quiet and don't tell anyone you saw us here.'
+
+'Ok, sure, Batsy keep real quiet!' shouts Batsy as you shush him frantically. 'Batsy keep real quiet,' he whispers, and grins when you give him the thumbs up. 'Bye then!' he waves, stomping loudly out of the room, but remembering to close the door behind him.
+
+'I think the fuzzwort's wearing off,' you say. 'It's getting kinda dark, and I don't feel like I'm dying inside.'
+
+'So what now?' asks Esme. 'Hide until the king comes back?'
+
+'That won't be necessary,' says a tiny crowned bat who has apparently entered through a tiny hole in the door. 'I am the bat king. What is the meaning of all this?' The door opens, and two massive armoured bat guards appear behind him. A third squeezes between them and lifts the tiny bat king onto his enormous bed.
+
+'We've come for your wings!' cries Esme bravely.
+
+'Oh, really?' laughs the bat king, making himself comfortable. 'Tell me, girls, do you know any poetry? I'm rather fond of it. If not, my friends here can see you out.'
+
+<<if $knowPoetry>>'Hey, we //do// know some poetry!' says Esme excitedly. 'We read it down at the lake, remember?'
+
+'Oh yeah!' you nod. 'Now, how did it go... I think I remember! Ahem,
+
+	In the end
+	Words Fail
+	Fallen Moons... Um...'
+
+'Yes?' says the bat king, leaning forward and nearly falling off his cushion. The guards look ready to throw you out. What was that last line?
+
+If you say 'The rain and hail,' [[turn to 97|97]].
+If you say 'A ship sets sail, [[turn to 133|133]].
+If you say 'Perpetual snail', [[turn to 88|88]].
+
+<<else>>Unfortunately you don't know any poetry, and with your super-strength waning the guards have little trouble ejecting you from the bat guy cave to sit blinking in the sunlight. They wedge themselves into the cave entrance, blocking any attempt at re-entry.
+
+Your eyes start doing their thing, and you see that giant mechanical spiders are stomping about setting fire to things, and Ethel using superwater to rust their limbs. It's very loud and confusing.
+
+'Hey, kids, did you get them bat wings?' says Ethel.
+
+'Nah, we were gonna go and do something else,' you reply, dodging a flaming web.
+
+'These spiders keep coming out of the void,' says Ethel. 'They run on empty promises, and their only emissions are broken dreams. I can't hold them off much longer, so you better hop in the Fast Travel Cauldron (patents pending) and head back. Remember, any stuff that you've found or learnt will be retained, so try stuff out. Go crazy! But the fabric of the universe can only hold out so long what with the huge purple eye and all this time travel, so let's try and get that stuff we need sharpish, okay?'
+
+'Okay,' you nod, and hop into the Fast Travel Cauldron.
+
+Now [[turn to 90|90]].<<endif>>
+
+
+:: 121
+
+121
+
+
+You creep over to the trapdoor, the floorboards creaking beneath your feet, though thankfully not waking the sleeping figure. You hoist it open and climb down, Esme close behind.
+
+An oil lamp casts a warm glow over the generic corridor you find yourself in. Unmarked doors lead, um, port, and, er... starboard? A rude statue stands at the far end of the corridor, but you manage to avert your gaze.
+
+If you plump for port, [[turn to 118|118]].
+If you sidle starboard, [[turn to 129|129]].
+
+
+:: 122
+
+122
+
+You feel yourself slip between the pages of reality, the universe rearranges itself around you, and then...
+
+'Well, so much for the hols,' grumbles Esme as you leave through the gates of Clara Bumbleshoot's School for Wayward Orphan Girls. 'Now we've got six weeks of trying not to get eaten, or turned into something slimy.'
+
+'Cheer up, Es,' you say, though your voice sounds a little hollow. 'It'll be an adventure!' Truth be told, you're pretty scared of witches.
+
+'Well, we might as well enjoy our last night of freedom,' sighs Esme. 'What shall we do?'
+
+If you head down to the old fish pond, [[turn to 18|18]].
+If you head to your secret tree house, [[turn to 26|26]].
+If you go scrumping for apples, [[turn to 48|48]].
+If you hop straight back into the Fast Travel Cauldron, [[turn to 90|90]].
+
+
+:: 123
+
+123
+
+
+You stand at the very peak of the third mountain of Carn. Only fifty feet above you the eye spreads like a virus, infecting suns, devouring stars, and watching, always watching.
+
+The world below is lost to you. Any feeling, any emotion you might once have known has been stripped away from you like meat from a carcass, and now there is only this.
+
+You watch the eye, and the eye watches you, and for the longest time there is nothing else...
+
+
+
+
+And then Esme's hand slips into yours, and you remember the moonbird's egg, and the bat king's wings, and the wizard's tooth, and you know what you ''have'' to do.<<set $ftcEnd = true>>
+
+
+<<if $knowFlight>>[[You have to fly!|The Eye]]<<else>>But you don't ''know'' how to do it. [[You have to go back.|90]]<<endif>>
+
+
+:: 124
+
+124
+
+
+<<if $beenTown>>'Townsville' consists of three buildings, conveniently marked 'Bar', 'Armoury' and 'Magic Shop', and a patch of dirt. In the centre of the dirt patch sits a bored-looking human child throwing a rock at some other rocks.<<else>>After a brisk walk you arrive at the tiny town. A sign declares 'Welcome to Townsville, Population 4.'
+
+'Four?' questions Esme. 'Townsville? I have many problems with this sign.'
+
+'Townsville' consists of three buildings, conveniently marked 'Bar', 'Armoury' and 'Magic Shop', and a patch of dirt. In the centre of the dirt patch sits a bored-looking human child throwing a rock at some other rocks.<<endif>>
+
+<html><img src="021.jpg" width="414" height="275"></html>
+
+If you talk to the child, [[turn to 127|127]].
+If you breach the bar, [[turn to 109|109]].
+If you assess the armoury, [[turn to 67|67]].
+If you mosey on down to the magic shop, [[turn to 96|96]].
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you leave town and strike out towards the marshland, [[turn to 101|101]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<set $beenTown = true>>
+
+
+:: 125
+
+125
+
+
+<<set $beenHut = true>>You approach the wooden hut quietly, wondering what manner of creature could occupy it. Raising a hand you knock timidly on the wooden door, and after a few moments you hear movement from within.
+
+'Who is it?' hisses a voice from inside.
+
+'Um, it's Oblivia and Esme. You don't know us. We're just, er, on a quest and that.'
+
+'A quest, is it? Well, I wouldn't know anything about that. To be perfectly honest, unless you've got some kind of continental pastry to eat, I'd rather you didn't bother me.'
+
+<<if $gotCroissant>>'Will a croissant do?' you ask hopefully.
+
+'Will it? //Will// it! Oh boy, oh boy. Gimme!' says the voice urgently. The door creaks open, and a hand pops out to grab the proffered pastry before slamming it again. The slightly gross sounds of desperate chewing follows. 'Oh, wow! This is great! Where did you get this?'
+
+'The bat guy cave,' you reply.
+
+After a moment, the voice says, 'come again?'
+
+'The bat guy cave,' you repeat, a little louder.'
+
+'Well, it's great. Thanks a bunch!'
+
+''Subquest Complete - Croissant Fetcher!''<<set $doneCroissant = true>>
+
+'And that helped us how?' asks Esme as you stroll away.
+
+'I have no idea,' you shrug.<<else>>You search your pockets, but as you ''have'' no baked goods it seems you cannot progress here... for now! That being so, you step away from the hut and reconsider your options.<<endif>>
+
+If you give in to the wild temptation of crazy paving, [[turn to 78|78]].
+If you try that bridge on for size, [[turn to 92|92]].
+
+
+:: 126
+
+126
+
+
+You emerge from the cave to find Ethel waiting on the trail. Giant mechanical spiders are stomping about setting fire to things, and she using superwater to rust their limbs. It's very loud and confusing.
+
+'Hey, kids, how goes it?' says Ethel.
+
+'Okay, I guess,' you reply, dodging a flaming web.
+
+'These spiders keep coming out of the void,' says Ethel. 'They run on empty promises, and their only emissions are broken dreams. I can't hold them off much longer, so you better hop in the Fast Travel Cauldron (patents pending) and head back. Remember, any stuff that you've found or learnt will be retained, so try stuff out. Go crazy! But the fabric of the universe can only hold out so long what with the huge purple eye and all this time travel, so let's try and get that stuff we need sharpish, okay?'
+
+'Okay,' you nod, and hop into the Fast Travel Cauldron.
+
+Now [[turn to 90|90]].
+
+
+:: 127
+
+127
+
+
+<<if $beenChild>>The child doesn't seem in the mood for further conversation. You deduce this when he starts throwing rocks at you upon your approach.<<else>>'Hey, kiddo,' you say, attempting a friendly smile.
+
+The child pauses, a rock in one hand, and scowls at you.  'Whaddya want?'
+
+You think for a moment. 'Um... what are you doing?'
+
+'Playin' rocks,' says the child, spitting a bit. 'What's it to you?'
+
+'Eh, nothing,' you say. 'So, pretty small... town, I guess?'
+
+'I wouldn't know,' says the surly child. 'Having lived here all my life, I have no point of reference.'
+
+'Oh, ok,' you say. 'Well, it is. See you around.'
+
+'Whatever,' says the child dismissively, and goes back to his rocks. How rude!<<set $beenChild = true>><<endif>>
+
+If you talk to the child again, [[turn to 127|127]].
+If you breach the bar, [[turn to 109|109]].
+If you assess the armoury, [[turn to 67|67]].
+If you mosey on down to the magic shop, [[turn to 96|96]].
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you leave town and strike out towards the marshland, [[turn to 101|101]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>>
+
+
+:: 128
+
+128
+
+
+'An excellent choice!' beams the hobgoblin in congratulatory tones. 'This power is especially effective against hate-based stuff. That'll be 1,250 gold, please.'
+
+'1,250 gold?' you gasp. We don't have that kind of money!'
+
+'Oh, okay. Well, the only budget power I currently offer is zombie power. Just how much gold //do// you have?'
+
+<<if $gotGold>>'We ''have'' 10 gold!' you beam proudly.
+
+'What a coincidence!' says the shopkeeper. '10 measly gold is exactly how much zombie power is currently on sale for. Hand that blade over.'
+
+You pay the man and give him your sword. He rubs it with a purple cloth and hands it back.
+
+'Is that it?' you ask doubtfully.
+
+'Yup, that's it. Well, have fun with it!'
+
+''Item gained - Zombie piratey sword!''<<set $gotZombiesword = true>><<set $donezombie = true>><<else>>'We ''have'' no gold,' you say glumly.
+
+'No gold, no powers, I'm afraid,' says the shopkeeper. You show yourselves out.<<endif>>
+
+If you talk to the child, [[turn to 127|127]].
+If you breach the bar, [[turn to 109|109]].
+If you try the armoury again, [[turn to 67|67]].
+If you mosey on down to the magic shop, [[turn to 96|96]].
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you leave town and strike out towards the marshland, [[turn to 101|101]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<endif>><<set $beenArm = true>><<endif>>
+
+
+:: 129
+
+129
+
+
+You pull the door, realise it's a push door, then push it while feeling a little silly. This time it opens, and a grand cabin awaits you, with all the fancy items you'd associate with one. Globes, a big desk, some stuffed fish, the whole shebang. You don't have long to take it all in, because a zombie pirate king is lumbering towards you!
+
+<html><img src="022.jpg" width="413" height="338"></html>
+
+'Braiiiins?' asks the zombie pirate king. Unsure how to answer, you run back into the corridor. You push the other door, realise its a pull door, curse the inconsistency of this ship's design, then pull it while feeling rather frustrated. You find yourself in a store room cluttered with all manner of useless junk.
+
+'This junk is useless!' complains Esme.
+
+'All junk is useless,' you point out. 'But hey, what's this?' You pull at something shiny under some other non-shiny stuff, and it turns out to be a super-cool piratey sword!
+
+''Item gained - Piratey Sword!''<<set $gotSword = true>>
+
+'Sweet!' says Esme. 'Now what about that zombie pirate king?' Right on cue, you hear the supernatural seadog struggling with the grand cabin door.
+
+If you return to attack the zombie pirate king with the piratey sword, [[turn to 71|71]].
+If you chicken out and run away, [[turn to 134|134]].
+
+
+:: 59
+
+59
+
+
+<<if $beenEOP>>You trek all the way back to the end of the End of Places, only to be politely reminded that you need the Moonbird's egg and the bat king's wings to progress from here.
+
+'Darn!' says Esme emphatically as you set off again.
+
+You plod along, and soon enough you see that tree sprite you bumped into sitting by the trail, whittling something or other and whistling a whittling tune. He offers a glare as you approach.
+
+<<if $knowTreezlebub>>If you use the tree sprite's name, [[turn to 82|82]].<<else>>You didn't ''know'' tree sprites were so grumpy.<<endif>>
+If you walk back to the bat cave, [[turn to 74|74]].
+<<else>>You finally reach the place at the end of the End of Places, which turns out to be an unassuming patch of dirt. A wise old elf sits on a stool, milking an old baleful-type cow.<<set $beenEOP = true>>
+
+'Do you think he's the wizard?' you whisper to Esme.
+
+'What wizard? What are you talking about?' Esme whispers back.
+
+'You know, we need a wizard's tooth to save the world, right?'
+
+'Oh yeah, I remember now. Yep, he looks sorta wizardy.' What's up with this girl? It's a good job you're here.
+
+'I can hear you, you know,' says the wise old elf. 'I'm sitting right here.'
+
+'We seek the tooth of a wizard, which we were told we would find at the place at the end of the End of Places.'
+
+'Have you brought the wings of the bat king?'
+
+<<if $gotWings>>'Why yes, we do!' you nod.<<else>>'Not yet,' you admit.<<endif>>
+
+'How about the egg of the Moonbird?'
+
+<<if $gotEgg>>'Got it right here,' you reply.<<else>>'Nope,' you reply.<<endif>>
+
+<<set $eggwing = 0>><<if $gotWings>><<set $eggwing = $eggwing + 1>><<endif>><<if $gotEgg>><<set $eggwing = $eggwing + 1>><<endif>><<if $eggwing eq 2>>'Very well,' nods the wise old elf. 'You have done well to come this far, Oblivia and Esme,' (here he pauses while you gasp at him knowing your names), 'but your greatest challenge is yet to come. To gain the tooth of a wizard and save the world, you must climb the third mountain of Carn.'
+
+You and Esme look at each other doubtfully. 'Respectfully, sir,' you say, 'Carn only has two mountains.'
+
+The old elf smiles benignly, then giggles malignantly. 'You have much to learn about the ways of the world, girls. Turn around, and cross your eyes.'
+
+'Do what now?' is your initial response, but you do as he says.
+
+'You must make the mountains meet, and become one,' says the elf. 'That is the secret of Carn.'
+
+'Really?' says Esme. 'That's kinda dumb.'
+
+'Are the mountains overlapped? Can you see the third mountain?' he says fervently. 'Can you see the great miracle?'
+
+'Um... we can see the two mountains overlapped.'
+
+'Wonderful!' claps the elf. 'Now go forth and climb the mountain! And keep your eyes crossed the whole way, or you will fall to your deaths.'
+
+'Wow, ok,' you say. 'I guess we'd better get going.'
+
+'By the way,' says the elf, 'if you happen to find my spectacles up there, I'd be very much obliged.'
+
+Now [[turn to 108|108]].<<else>><<set $eggwing = 0>>'There's an order to these things, you know,' smiles the elf. 'Sometimes you need to take two steps back in order to take one step forward. I read that in books. Come back when you are ready, and I will show you the way.'
+
+You nod in agreement, then head back down the trail.
+
+Now [[turn to 54|54]].<<endif>>
+<<endif>>
+
+
+:: 58
+
+58
+
+
+'Erm, I'm the egg inspector!' you say improvisationally. 'And, I've come to take this egg to the egg inspection... thing. So, I'll just be -'
+
+'You are Oblivia Firespoon, and you have come to take my egg to save the world,' says the Moonbird quietly, staring deep into your eyes.
+
+You want to look away, but you cannot. 'Sorry,' you whisper, and you truly mean it.
+
+'Take it,' says the Moonbird sadly. 'But know this - I am the last of the Moonbirds, at the end of my life, and this is the only egg I'll ever lay. It can only hatch in a place of pure darkness, and this nest at night is the last such spot in Carn, so when it is removed my kind will die out. Now before you leave you will hear my song.'
+
+<html><img src="018.jpg" width="413" height="550"></html>
+
+And then the Moonbird begins to sing; a sweet, slow, mournful song that washes over your senses and puddles in your soul. Discordant harmonies creep in, dancing in and out of the melody like the ghosts of fallen warriors, and as you stand transfixed lights twinkle in each and every tree as the weird and wonderful inhabitants of the Wooded Realm peek between the leaves to watch. The song lasts forever, and then it is over, and the Moonbird lays down to sleep, and not to wake.
+
+'What was all that squawking about?' asks Esme as you reach the base of the tree. 'Have you been crying?'
+
+'Um, yeah, a bit,' you say feebly, 'but I'm alright now. And look, I've got the egg!'<<set $gotEgg = true>>
+
+''Quest Item Gained - Moonbird Egg!''
+
+Now [[turn to 105|105]].
+
+
+:: 61
+
+61
+
+
+'You're probably right,' you say, reluctantly replacing the book. It seems to stick to your fingers, and even after you've put it down you feel a strong attraction to it. Slightly unnerved, you cross to the other end of the attic and busy yourself with a spot of cobweb dusting. You find a collection of pointy hats and start to clean them, brushing the tops and bottoms counter-clockwise with a soft brush, and hanging them from pegs to retain their shape.
+
+'So it looks like she's definitely a witch, then,' you say to Esme. 'Cauldron, pointy hats, there's a few broomsticks over there. I'd say it's a sure thing. She seems very nice, though.'
+
+Esme says nothing, which is unusual, but maybe she's just busy cleaning.
+
+'Later on we could head down to the lake,' you continue. 'I could do with some peace and quiet after today.'
+
+When Esme doesn't respond, you turn around, sensing that something is wrong. It is. Esme is reading the face-book! She is also hovering slightly above the ground, her eyes look all weird and she is silently mouthing something.
+
+'Esme, what the prakk are you doing?' you gasp.
+
+If you rush to pry the book away from her, [[turn to 85|85]].
+If you run downstairs to fetch Ethel, [[turn to 49|49]].
+
+
+:: 55
+
+55
+
+
+'Well, I've always been fond of animals,' says Esme hesitantly, 'so I'd like to walk the dog, I suppose.'
+
+'Brilliant,' says Ethel. 'I'll go and get Bloodwart, then.'
+
+Any hopes of Bloodwart being an ironically named ball of fluff are dashed when Ethel returns a moment later with a slavering heckhound that snaps wildly at you. Esme shrieks and hides behind a chair, so you get handed the leash.
+
+'He's a big softy, really,' says Ethel affectionately, patting the great beast's head and quickly drawing her hand away when it attempts to bite it off. 'Well, off you go.' With that, she bundles all three of you out of the front door and shuts it firmly.
+
+The excited heckhound shoots off toward the hills, dragging you along behind it while Esme struggles to keep up. You are pulled through a variety of hedges and ditches and even a low stone wall, but sustain only minor injuries.
+
+The heckhound bursts into a forest glade where a terrified gnome family were enjoying a picnic. They drop their jam sandwiches in terror as the beast looks ready to devour them all.
+
+If you bravely throw yourself in front of the gnome family to protect them, [[turn to 56|56]].
+If you figure it's not worth it; you never liked gnomes that much anyway, so let's just wait and see what happens, [[turn to 39|39]].
+
+
+:: 54
+
+<<if $beenTreesprite>>
+54
+
+
+You plod along, and soon enough you see that tree sprite you bumped into sitting by the trail, whittling something or other and whistling a whittling tune. He offers a glare as you approach.
+
+<<if $knowTreezlebub>>If you use the tree sprite's name, [[turn to 82|82]].<<else>>You didn't ''know'' tree sprites were so grumpy.<<endif>>
+If you head for the trail's end, [[turn to 59|59]].
+If you walk back to the bat cave, [[turn to 74|74]].
+<<else>>
+
+54 
+
+
+You set off again up the interminable trail, putting one foot in front of the other, then putting the other foot down, down, down. 
+
+Besides your own footsteps, a rustling in the undergrowth by the side of the trail is the first sound you've heard for a while, and it makes the hair on the back of your neck stand up. A tree sprite emerges, notices you, and freezes.
+
+'Are you... them?' he asks.
+
+'Um... no?' you guess.
+
+He relaxes a little. 'You're just a couple of kids,' he says, a little rudely for your liking. 'Listen, this place is - well, it's bad, and I'm not one for helping strangers. You should get out of here, quick-sharp.'
+
+<<if $knowTreezlebub>>Hey! You might just know this tree sprite's name! If you use it, [[turn to 82|82]].<<else>>It's a shame you don't ''know'' this tree sprite.<<endif>>
+
+If you continue along the trail, [[turn to 59|59]].
+If you head back the way you came, [[turn to 74|74]].<<endif>><<set $beenTreesprite = true>>
+
+
+:: 57
+
+57
+
+<html><img src="012.jpg" width="272" height="450"></html>
+
+You show your picture to Esme, who claps delightedly. 'That's great! I drew an zombie pirate king.'
+
+<html><img src="013.jpg" width="290" height="450"></html>
+
+'Woah, he's awesome!' you smile. 'They could set up a detective agency.'
+
+You sit and draw together until the sun goes down, then hurry along to dinner.
+
+Now [[turn to 73|73]].
+
+
+:: 56
+
+56
+
+
+'No, Bloodwart!' you yell, launching yourself into a starberry trifle with extra starberries. 'Bad dog!'
+
+Esme, in an unexpected fit of bravery, jumps onto Bloodwart's back, holding on to his collar for dear life as he snarls and bucks, trying to throw her off.
+
+'Quick, go!' you gasp to the gnome family. 'We can't hold him much longer!'
+
+The gnome family pause only to grab a few jam sandwiches before dashing into the trees. Eventually Bloodwart tires himself out and you're able to drag him back to the cottage.
+
+'Back already, are we?' sniffs Ethel disapprovingly. 'Old Bloodwart looks worn out, bless him. Tell you what, go and tidy up the attic for me and then you can run along home.'
+
+You traipse up a rickety staircase to the dark, dusty attic, where flittery somethings scurry into cobwebbed corners to peer out at you. Glass tanks hold odd shapes that you'd rather not look at too closely, and spidery etchings adorn the walls. Esme shudders a lot.
+
+'Hey, what's this?' you exclaim, picking up a book with a weird face on the front.
+
+'Eep!' cries Esme. 'Put it down! Books with faces on can only have bad things inside!'
+
+If you heed her warning and replace the book, [[turn to 61|61]].
+If you just take one quick peek, [[turn to 75|75]].
+<<if $travelledBefore>>If you run downstairs and jump in the cauldron, [[turn to 90|90]].<<endif>>
+
+
+:: 51
+
+51
+
+
+You draw your fist back and smack the snake right in the mouth.
+
+'What wassssss //that// for?' asks the snake, surprising you with it's talking.
+
+'Erm,' you stutter, 'I thought you were going to... you know.'
+
+The snake raises an eyebrow, which it has. 'Thought I wassssssss going to //what?//'
+
+'Well,' you mumble, 'I thought you were going to mumble mumble.'
+
+'Speak up, child!' roars the snake.
+
+'I thought you were going to bite me!' you blurt, feeling rather embarrassed.
+
+The snake draws itself up and manages to look indignant (the eyebrow helps). '//Bite// you!' it hisses, and then, shifting the emphasis, 'bite //you?//'
+
+'I.. er... erm...' you stutter, ashamed by your prejudice.
+
+'Oh wait a second, I //was// going to bite you!'
+
+The snake lunges, and you punch it again, knocking it senseless! It falls from the tree, and you shout a warning to Esme below. She dodges the snake, which lands with a satisfying 'whump', kicks it under a bush and gives you two thumbs up.
+
+You start to climb again, trying not to look down as you reach the dizzying heights of the canopy. Peering over the edge of the great nest, you see a tiny egg, kicking out an awful lot of mysterious glow for its diminutive size. This being a treasure you seek, you make straight for it, but your thieving hands are stilled by a great screech from above. You look up to see a gigantic golden bird peering at you with angry bead-eyes.
+
+'Who are you,' squawks the bird, 'and what, pray, are you doing in my tree?'
+
+If you tell the truth, [[turn to 70|70]].
+If you make something up, [[turn to 58|58]].
+
+
+:: 50
+
+50
+
+
+'Um... We could help out a little, I guess,' you say noncommittally.
+
+'Yay, helpers!' claps the tree sprite, jumping gaily into the air and clicking his heels. 'Did you hear that, everyone?' he shouts, 'they said they'll help!'
+
+Suddenly all manner of woodland creatures appear; squirrels, owls and so on. Many of them hold gardening equipment in paw, claw or talon. They hand you both rakes and point their beaks, noses or snouts in the general direction of various fallen leaves, and you begin to sweep them up into neat piles as the sky grows dark.
+
+'This is boring,' says Esme. 'We should have picked death.'
+
+'Excuse me sir,' you say politely to the tree sprite, 'but we're going to be awfully late for dinner, so would you mind...?'
+
+'Oh, are you still here?' asks the wood nymph. 'I forgot all about it, to be honest. On your way, then, quick quick.' And with that, he shoos you out of the orchard and off to dinner.
+
+Now [[turn to 73|73]].
+
+
+:: 53
+
+53
+
+
+You pluck a book from a pile at random, and scan the cover. It's engraved cover shows a snarky looking green guy leering at a passing lady, and bears the legend 'Helpful Hints for a Lady Dealing with Frisky Goblins and the Ilk' by Mademoiselle Chanteuse LePlume.
+
+If you skim the book for useful information, [[turn to 19|19]].
+If you decide against reading after all and stomp those pesky spiders, [[turn to 46|19]].
+
+
+:: 52
+
+52
+
+
+'I wouldn't riddle you ree if you were the last water devil in the bat guy cave!' you cry gleefully, punching his watery face which just sploshes about before reforming.
+
+'Can't punch me, girly,' cackles the water devil, 'I'm //all// water! Now take this!' He launches some water magic at your hair, soaking it. 'That's gonna frizz so bad when it dries out!'
+
+'Is that the best you've got?' quips Esme, getting into the swing of things.
+
+'Hey, wait a second,' you say, engaging your think-parts, which don't seem to be working so well since you ate that root. 'If you're just water, what's to stop us just walking straight through you?'
+
+'Because you'll get horribly wet,' laughs the water devil. 'A fate far worse than death!'
+
+You exchange shrugs with Esme, then stride straight through the spluttering water devil and over to the creaky-looking door.
+
+'A lucky escape, girls!' cackles the beaten water devil pathetically. 'You'd never have solved my super-hard riddle! And you'll take ages to dry out!'
+
+'Shut up already!' you snap, opening the door, which surprisingly doesn't creak at all. 'We're not even that wet!'
+
+You emerge into a large echoey space with an odd bat-patterned roof. Then you inwardly realise 'Hey, that's no pattern, but hundreds of bat guys hanging upside down!' Judging from all the batsnores, they seem to be asleep. You motion Esme to keep quiet while you scope out the room, which has a large ornate door labelled 'BAT KING ROOM' and a small cheap door labelled 'BAT GUY ROOM'.
+
+'So what should we do?' says Esme.
+
+If you tiptoe over to the large ornate door, [[turn to 62|62]].
+If you tap-dance round to the small cheap door, [[turn to 79|79]].
+If you utilise your super-strength to climb up a pillar and hang upside down like the bat guys, [[turn to 107|107]].
+
+
+:: 67
+
+67
+
+
+<<if $donezombie>>'I think we're done at the armoury,' says Esme. 'Unless we find a whole heap of gold.'
+
+If you talk to the child, [[turn to 127|127]].
+If you breach the bar, [[turn to 109|109]].
+If you try the armoury again, [[turn to 67|67]].
+If you mosey on down to the magic shop, [[turn to 96|96]].
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you leave town and strike out towards the marshland, [[turn to 101|101]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<else>><<if $beenArm>>You re-enter the armoury. 'Hello again,' says the hobgoblin. 'Found a weapon yet?'
+
+<<if $gotSword>>With Esme, you rifle through the collection of oddments you've picked up along your time-bending adventure. 'Oh, we ''have'' this piratey sword!'
+
+'Very nice,' nods the hobgoblin. 'That salty sea-steel should absorb the elemental stuff nicely.' This all sounds a little technical, so you just nod along. 'Now, what powers would you like me to bestow upon the blade? There's a list of our special offers on the wall.' So there is!
+
+If you choose lightning power, [[turn to 86|86]].
+If you choose fire power, [[turn to 98|98]].
+If you choose wind power, [[turn to 68|68]].
+If you choose love power, [[turn to 128|128]].<<else>>With Esme, you rifle through the collection of oddments you've picked up along your time-bending adventure, but come up with nothing weaponworthy.
+
+'Sorry, but if you don't ''have'' a weapon there's nothing I can do for you,' says the hobgoblin, showing you out once more.
+
+If you talk to the child, [[turn to 127|127]].
+If you breach the bar, [[turn to 109|109]].
+If you try the armoury again, [[turn to 67|67]].
+If you mosey on down to the magic shop, [[turn to 96|96]].
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you leave town and strike out towards the marshland, [[turn to 101|101]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<endif>><<else>>You enter the armoury, which smells like swords and stuff. The owner, a friendly young hobgoblin, greets you. 'Hello!' he chimes enthusiastically. 'How can I help you?'
+
+'Oh, do you sell swords and stuff?' you ask.
+
+'Yes, normally. But right now I'm all out of sword-making materials. I can, however, imbue a pre-existing weapon with a range of exciting elemental properties for a reasonable fee. Got any weapons?'
+
+<<if $gotSword>>With Esme, you rifle through the collection of oddments you've picked up along your time-bending adventure. 'Oh, we ''have'' this piratey sword!'
+
+'Very nice,' nods the hobgoblin. 'That salty sea-steel should absorb the elemental stuff nicely.' This all sounds a little technical, so you just nod along. 'Now, what powers would you like me to bestow upon the blade? There's a list of our special offers on the wall.' So there is!
+
+If you choose lightning power, [[turn to 86|86]].
+If you choose fire power, [[turn to 98|98]].
+If you choose wind power, [[turn to 68|68]].
+If you choose love power, [[turn to 128|128]].<<else>>With Esme, you rifle through the collection of oddments you've picked up along your time-bending adventure, but come up with nothing weaponworthy.
+
+'Sorry, but if you don't ''have'' a weapon there's nothing I can do for you,' says the hobgoblin, showing you out.
+
+If you talk to the child, [[turn to 127|127]].
+If you breach the bar, [[turn to 109|109]].
+If you try the armoury again, [[turn to 67|67]].
+If you mosey on down to the magic shop, [[turn to 96|96]].
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you leave town and strike out towards the marshland, [[turn to 101|101]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<endif>><<set $beenArm = true>><<endif>><<endif>>
+
+
+:: 115
+
+115
+
+
+You feel yourself slip between the pages of reality, the universe rearranges itself around you, and then...
+
+<html><img src="001.jpg" width="400" height="300"></html>
+
+Sunlight streams through the classroom window to warm your knees, and Mistress Honeywell's dulcet tones threaten to lull you to sleep. She's blathering on about healing herbs or something. From the corner of your eye you notice your best friend Esme's fiery red hair bobbing about, and you wonder idly what manner of mischief she might be causing.
+
+The fast travel cauldron sits in a corner. It seems no-one but you and Esme can see it!
+
+If you continue to daydream idly, [[turn to 7|7]].
+If you try your best to sit up straight and pay attention, [[turn to 4|4]].
+If you see what Esme's up to, [[turn to 15|15]].
+If you hop straight back into the Fast Travel Cauldron, [[turn to 90|90]].
+
+
+:: 114
+114
+
+'Hmm... No?' you say hesitantly.
+
+'I see,' says the scary lady. 'You possess an honest heart, child. A rare quality, but one that will win you no favours with me. Good luck in your quest.'
+
+'Okay, thanks,' you say as she sinks below the waters, and then to Esme, 'I probably should have said yes, right?'
+
+'We all make mistakes,' says your friend with an encouraging smile. 'Let's get out of here, anyway.' You carefully retrace your steps.
+
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you head to town, [[turn to 124|124]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<set $saidNo = true>>
+
+
+:: 88
+
+133
+
+
+'Perpetual snail?' you hazard.
+
+The bat king mulls this over for a moment. 'Hmmm,' he says at last. 'Well it didn't really make any sense, but it did rhyme, and of course that is the sign of an excellent poem. Very well, girls, my wings are yours, but I want them back when you're done with them.'
+
+'Oh, really?' you say, surprised. 'But don't you need them?'
+
+'No, they're just for decoration really. Clip ons.' He detaches them to illustrate his point. 'Lost mine in the war, but a chap doesn't feel complete without something flapping around back there. Anyway, enough of my ramblings. Many thanks for the poem, and good luck to you both.'
+
+''Quest Item Gained - Bat King's Wings!''<<set $gotWings = true>>
+
+<<if $gotwingsonce>>You emerge from the cave to find Ethel waiting on the trail. Giant mechanical spiders are stomping about setting fire to things, and she is using superwater to rust their limbs. It's very loud and confusing.
+
+'We got the wings again!' you whoop.
+
+'What are you playing at?' asks Ethel. 'You've already got the wings! Get back in that cauldron and save the world already!'
+
+'Ok, ok, relax,' you sigh before hopping into the Fast Travel Cauldron.
+
+Now [[turn to 90|90]].<<else>>You emerge from the cave to find Ethel waiting on the trail. Giant mechanical spiders are stomping about setting fire to things, and she using superwater to rust their limbs. It's very loud and confusing.
+
+'Hey, kids, did you get them bat wings?' says Ethel.
+
+'We sure did!' you reply, dodging a falling arachnid seconds before it crashes to the dirt.
+
+'Good work!' says Ethel. 'I'm running out of superwater, so you better get back in the Fast Travel Cauldron (patents pending). We need to kill that eye!'
+
+'We're on it!' You each chestbump the witch before hopping into the Fast Travel Cauldron.<<set $gotwingsonce = true>>
+
+Now [[turn to 90|90]].<<endif>>
+
+
+:: 89
+
+89
+<html><img src="019.jpg" width="450" height="338"></html>
+
+<<set $beenShip = true>>You traipse down the hill and paddle out to the pirate ship, which seems to be deserted.
+
+'Give us a leg-up,' you say, and Esme only complains a little before kneeling in the water to give you a boost. You manage to grab a rope and climb onto the deck, then reach down to help Esme up. After a little kerfuffle you both stand aboard the ship.
+
+'Let's check out the poop deck,' says Esme, and you both fall about giggling. You don't actually know your poop deck from your fo'c's'le, so you just try the first door you come to, which takes you into the sleeping quarters. A bunk bed appears to hold a unconscious figure, though their identity is concealed by way of a sheet. A trapdoor leads below.
+
+If you disturb the sleeping figure, [[turn to 72|72]].
+If you head below, [[turn to 121|121]].
+
+
+:: 111
+
+111
+
+
+You hop back through the doorway to find Ethel waiting on the trail. Horrible fire, water, earth and love monsters are everywhere, and she is using the opposing elemental magics to fend them off. It's very exciting and colourful.
+
+'Hey, kids, how goes it?' says Ethel.
+
+'Yeah, not bad,' you reply, ducking under a hate bolt which neatly dispatches a love phantasm.
+
+'These monsters keep coming out of the void,' says Ethel. 'I'm running out of magic points, so you better hop in the Fast Travel Cauldron (patents pending) and head back. Remember, any stuff that you've found or learnt will be retained, so try stuff out. Go crazy! But the fabric of the universe can only hold out so long what with the huge purple eye and all this time travel, so let's try and get that stuff we need, okay?'
+
+'Okay,' you nod, and hop into the Fast Travel Cauldron.
+
+Now [[turn to 90|90]].
+
+
+:: 110
+
+110
+
+
+<<if $prevlocfc>>You skip merrily over the stone bridge, which places you neatly in a generic glade-type area. Forest animals scurry about the place, getting in the way. They have large, sightless eyes, so that's pretty scary. A little ramshackle wood hut is erected here, and crazy paving curves northwest.<<else>>You follow the crazy paving to a generic glade-type area. Forest animals scurry about the place, getting in the way. They have large, sightless eyes, so that's pretty scary. A little ramshackle wood hut is erected here, and crazy paving curves northwest.<<endif>>
+
+If you throw caution to the wind and entrust your fate to the crazy paving, [[turn to 78|78]].
+If you hop over the bridge, [[turn to 92|92]].
+<<if $beenHut>> <<else>>If you investigate the little hut, [[turn to 125|125]].<<endif>>
+
+
+:: 82
+
+82
+
+
+'You wouldn't be Treezlebub, by any chance?' you ask hopefully.
+
+'How do you know my name?' the tree sprite asks sharply, his eyes narrow with suspicion.
+
+'We bumped into your brother in the orchard,' explains Esme. 'He told us to look out for you.'
+
+'Oh, really? Well, any friend of my brother's is a friend of mine! So tell me, what on earth are you doing out here?'
+
+You explain your quest to save the world, which doesn't take long. Treezlebub listens keenly throughout, his head cocked to one side to emphasise his attentiveness. 'Ah, well I did wonder what that giant terrifying eye was doing up there. You mentioned the speckled egg of a moonbird, right? Well, this is your lucky day! It just so happens the fabled moonbird nests in the Moontree, deep in the Wooded Realm, and only I know how to get there. You have to run straight at that tree.'
+
+He points at a tree. You look at Esme doubtfully. 'For realsies?' you ask the tree sprite.
+
+'Yup,' he replies solemnly.
+
+Expecting nothing but a sore head, you dash full force at the tree - but the impact never comes! Instead you find yourself in what looks like a vast underground cavern filled with dense forest. A moment later Esme appears through a magical floating doorway behind you, panting a little.
+
+'Glad you made it,' you say.
+
+'What is this place?' whispers Esme in awe. 'I mean, I know it's the Wooded Realm and all that, but it's... //odd//.'
+
+You stand in a clearing, surrounded by tall, branchless trees. A path winds away to the west, and a stone bridge crosses a stream to the east. A crooked tree in the centre of the clearing look climbable, and could afford a good view of your surroundings.<<set $prevlocfc = true>><<set $investrustle = true>><<set $treeclimb = true>><<set $beenHut = false>>
+
+If you explore the west path, [[turn to 41|41]].
+If you cross the stone bridge, [[turn to 110|110]].
+If you climb the crooked tree, [[turn to 77|77]].
+
+
+:: 83
+
+83
+
+
+'Ok, sure, whatever,' you say, trying to control a severe facial tic you seem to have developed. 'Just make it quick.'
+
+'Oh, don't worry,' says the water devil. 'It's only - the Hardest Riddle Ever! Ahem:
+
+My first is in water, wave and wet,
+My second in albatross, aft and... er... well, anyway,
+My third is in - um, let me think. Tiller, that's part of a ship right? Yeah, tiller, and -- tench, and... um.
+My fourth -'
+
+'Is it water?' you interrupt.
+
+'Awww, man!' cries the water devil. 'How'd you guess?'
+
+'Worst. Riddle. Ever,' says Esme flatly.
+
+'Nooooo!' cries the water devil, exploding into refreshing globules.
+
+'So there was that,' you say to Esme as you head through the creaky-looking door, which surprisingly doesn't creak a bit. You emerge into a large echoey space with an odd bat-patterned roof. Then you realise that's no pattern, but hundreds of bat guys hanging upside down! Judging from all the batsnores, they seem to be asleep. You motion Esme to keep quiet while you scope out the room, which has a large ornate door labelled 'KING ROOM' and a small cheap door labelled 'BAT GUY ROOM'.
+
+If you tiptoe over to the large ornate door, [[turn to 62|62]].
+If you tap-dance round to the small cheap door, [[turn to 79|79]].
+If you utilise your super-strength to climb up a pillar and hang upside down like the bat guys, [[turn to 107|107]].
+
+
+:: 80
+
+80
+
+
+'Well Bill,' you sympathise while edging away, 'that really sucks, but we've got a witch to visit, so... You know how it is.'
+
+'Of course, of course,' says Bill waving you along. 'We've all got our problems, and I'll probably figure something out. Well, see you later girls!'
+
+'I feel bad for him,' you say to Esme as you move on, 'but what can we do, really? We've already got to look after a witch all summer, I don't think we'd have time to help out around the old windmill too.'
+
+'Feh,' shrugs Esme in agreement.
+
+Before too long you find yourself outside Ethel Frogbottle's rundown old cottage. Weeds threaten to devour the ramshackle structure, and the glass is broken in most of the windows. A faint, indeterminate odour pervades the still air.
+
+If you go right up to the front door and boldly knock, [[turn to 65|65]].
+If you sneak round the back, exercising nosy caution, [[turn to 37|37]].
+
+
+:: 81
+
+81
+
+
+'I'm investigating that rustling,' you announce boldly, and Esme claps your bravery. After striking a heroic pose you venture into the undergrowth, where you find and squish a number of potentially undiscovered bug species. Sooner or later you come across a hollow tree stump, containing a giant ladybird drinking from a tiny china teaset.
+
+'Oh, hello,' says the ladybird as you peer into the stump. 'Would you like some tea?'<<set $investrustle = false>>
+
+If you would like some tea, [[turn to 95|95]].
+If you would not like some tea, [[turn to 84|84]].
+
+
+:: 119
+
+119
+
+
+<<set $ftcHill = true>>Keeping well away from the leery fire sprite, you head down the dank, gloomy tunnel, your footsteps echoing all around you. Eventually there is a dim light up ahead, and as you draw closer it grows brighter. You emerge blinking into daylight - but that makes no sense, there's no way you've walked far enough to go right through the mountain. You stand at the top of a sloping hill, at the base of which is a great lake that opens into the sea. Besides a faint breeze playing across your earholes, all is silent. A pirate ship bobs lazily on the waters. On one side of the lake, flags flying above a small town can be made out. On the other you see what looks like an expanse of marshland. Oh, and the Fast Travel Cauldron is here, too.
+
+'This place is weird,' says Esme, and you're inclined to agree.
+
+'Hey, notice anything missing?' you say. 'I don't know where we are, but the eye hasn't got here yet. Let's hurry all the same.'
+
+If you head down to the pirate ship, [[turn to 89|89]].
+If you approach the town, [[turn to 124|124]].
+If you sample the marshland, [[turn to 101|101]].
+If you jump into the Fast Travel Cauldron and flee this place, [[turn to 90|90]].
+
+
+:: 118
+
+118
+
+
+You push the door, realise it's a pull door, then pull it while feeling a little silly. This time it opens, and you head into a store room cluttered with all manner of useless junk.
+
+'This junk is useless!' complains Esme. 'We should have tried the other door.'
+
+'We still can,' you point out. 'But hey, what's this?' You pull at something shiny under some other non-shiny stuff, and it turns out to be a super-cool piratey sword!
+
+''Item gained - Piratey Sword!''<<set $gotSword = true>>
+
+'Sweet!' says Esme. 'Now let's try that other door.'
+
+You pull the other door, realise its a push door, curse the inconsistency of this ship's design, then push it while feeling rather frustrated. A grand cabin awaits you, with all the fancy items you'd associate with one. Globes, a big desk, some stuffed fish, the whole shebang. You don't have long to take it all in, because a zombie pirate king is lumbering towards you!
+
+<html><img src="022.jpg" width="413" height="338"></html>
+
+'Braiiiins?' asks the zombie pirate king. Unsure how to answer, you engage fight or flight mode.
+
+If you attack the zombie pirate king with the piratey sword, [[turn to 71|71]].
+If you chicken out and run away, [[turn to 134|134]].
+
+
+:: 84
+
+84
+
+
+'Nah, I'm fine, thanks. I don't really like tea.'
+
+The ladybird flaps indignantly. 'Well, really! I never heard of such a thing. No tea?' So wildly does she gesticulate that her tea is quite spilt, but she doesn't seem to notice.
+
+'Yeah, no tea,' you shrug. 'Sorry?'
+
+'Fuhgetaboutit,' says the ladybird. 'And to think I was going to give you a super cool grappling hook!'
+
+'A what now?' you ask, curiosity piqued. You glance around and spot a super cool grappling hook leaning against a tree trunk. 'Oh, nifty,' you remark.
+
+'Yep, and now you'll never know the untold joys of a hook on a rope,' smirks the ladybird.
+
+'Yeah, about that,' you say slowly, edging towards the grappling hook. 'What's to stop me just, y'know, taking it?'
+
+The ladybird bridles. 'Don't you dare, you little cur! //Guards!//'
+
+''Item gained - Grappling hook!''<<set $gotGrapple = true>>
+
+You quickly grapple with the grappling hook and peg it back to a surprised Esme, who  provides an attentive audience as you bring her up to date. Despite the ladybird's still audible squawkings there's no sign of any guards, so you may resume your adventure thusly:
+
+If you take the north path, [[turn to 78|78]].
+If you head back to the first clearing, [[turn to 92|92]].
+
+
+:: 85
+
+85
+
+
+You rush towards your friend ready to grab the book away from her, but an unseen force pushes you back, smashing you into a set of shelves holding various mysterious artefacts which crash to the floor around you. Esme, apparently unaware of your attempts to interfere, continues to read, and as she does the dust around her begins to lift from the ground and take on strange shapes, dancing about, collapsing in on themselves, adopting ever more complex forms. The whole room begins to shake.
+
+Suddenly Esme straightens, her head snapping back, her mouth opening wide as an inhuman sound escapes her throat; a terrible, strangled wail that assaults your ears and threatens to drive you to insanity.
+
+You are dimly aware of Ethel bursting in, and then the witch and your friend shouting magic stuff at each other while crazy lights dance around the room. The lights become brighter, and you are forced to shield your eyes, but between your fingers you see some terrifying things.
+
+And then it all stops - the lights, the screaming and the floating Esme, who lands flat on her bum. You rush to her side at once.
+
+'Esme, are you okay?'
+
+Your heart pounds as she stares at you blankly for a moment, then leaps with hope as she blinks a few times.
+
+'Is it lunch time yet?'
+
+The voice is small and faint, but unmistakably Esme's. You hug your friend tightly, relief coursing over you.
+
+'Ahem,' coughs Ethel deliberately, staring out of a dusty window. 'This is all very sweet, but we have a problem.'
+
+With Esme in arm you scamper over to the window, where you are rather alarmed to see a huge gash splitting the sky open, with a gigantic, terrible lizard-type eye peering through it. 'That doesn't look good,' you remark limply.
+
+'Yes, when your little red friend read the incantation, she opened a dimensional rift through which all the evil of the universe will soon pour. Now, I'm pretty sure there's a way to stop it, but I'm going to need your help.'
+
+Now [[turn to 100|100]].
+
+
+:: 3
+
+3
+<html><img src="001.jpg" width="400" height="300"></html>
+
+Sunlight streams between the twin peaks of Ebb and Sol, struggling through the classroom window to warm your knees while Mistress Honeywell's dulcet tones threaten to lull you to sleep. She's blathering on about healing herbs or something. From the corner of your eye you notice your best friend Esme's fiery red hair bobbing about, and you wonder idly what manner of mischief she might be causing.
+
+If you continue to daydream idly, [[turn to 7|7]].
+If you try your best to sit up straight and pay attention, [[turn to 4|4]].
+If you see what Esme's up to, [[turn to 15|15]].
+
+
+:: 7
+
+7
+
+
+You allow your gaze to wander out of the window to the fountain below, where a pair of water sprites frolic. An elderly caretaker shuffles up to shoo them away, and they dance around him, mocking his slow movements. Before long a shadow falls across you, and you realise Mistress Honeywell is hovering darkly before your desk.
+
+'Miss Firespoon, you seem distracted. Have you actually been listening today?'
+
+If you admit your lapse of concentration, [[turn to 23|23]].
+If you try to blag it, [[turn to 9|9]].
+
+
+:: The Eye
+
+
+You clip the bat kings wings on to your back and take off, hurtling towards the eye. It begins to blink, to shield itself from you, but you are too fast for it. You remember the Moonbird's words - //only in a place of pure darkness//...
+
+The wizard's tooth, clenched tightly in your fist, drives into the great black pupil, and the universe is filled with the greatest screech. Thick purple threads pour out of the hole, filling your mouth, choking you, blinding you, but undeterred you pull the tooth down, making a gash into which you force the Moonbird's egg.
+
+Then you are falling back to earth, the eye still staring at you but now in surprise, in horror, in human terms it can comprehend only in it's final moments. And from the eye the last of the Moonbirds bursts, and the universe is filled with its song as swoops down to save you. Esme leaps from the mountain top and grabs on behind you, and then you are borne down from the dizzying heights of the wizard's mountain, down between Ebb and Sol and out over Carn, painted below you in all her glory. The spectres shriek and fade away, the eye closes forever and evil is gone from the land. Then the Moonbird sets you gently down at Ethel's house and you go inside for tea.
+
+
+                                              ''THE END''
+
+
+Now [[turn to 117|117]].
+
+
+:: 108
+
+108
+
+
+'My eyes really hurt!' complains Esme.
+
+'Tell me about it,' you grumble. 'I've got the worst headache ever. I can't believe that actually worked.'
+
+But it did, because you're climbing up a mountain that wasn't there before you crossed your eyes, and now it is, because your eyes are crossed and you're climbing up it.
+
+You pull yourselves up onto a ledge and find an opening that leads into the presumably magical mountain, so you decide to have a nose about. Inside you bump into a hot blur of red and orange that probably is something, but you can't tell because your eyes don't seem to be working properly anymore.
+
+'Well, you two look very silly,' says the blur. 'Your eyes are all squiffy.'
+
+'We have to keep our eyes crossed,' you explain, 'or the mountain will vanish and we'll fall to our deaths.'
+
+'Really?' says the blur. 'That seems unlikely. I mean, my eyes aren't crossed, and I'm not falling to my death.'
+
+'I CAN'T TAKE IT ANYMORE!' cries Esme. 'I'm uncrossing my eyes!'
+
+'Are you dead?' you ask, groping around blindly.
+
+'I'm not sure yet,' groans your friend.
+
+You uncross your eyes and sit very still for a few minutes while they slowly start working again. Rather than disappearing the tunnel solidifies around you, and you see a classic two-way fork up ahead. The blur resolves itself into a leery fire sprite!
+
+The fire sprite starts to dance back and forth in the entrance to one of the tunnels, looking lecherous and showing off an inappropriately loud shirt.
+
+'Sister Keronikus warned us about these! She said they'd go for our ankles,' whispers Esme.
+
+<<if $knowLeery>>Hey, you read up on this back at the library! If you blow on the fire sprite, [[turn to 130|130]].<<else>>You don't ''know'' how to handle a fire sprite, so that tunnel's out of the question. And it totally looks like the best tunnel! It's all clean and torchlit, whereas the other one is all dank and gloomy.<<endif>>
+
+If you keep your distance and take the gloomy tunnel, [[turn to 119|119]].
+
+
+:: 109
+
+109
+
+
+<<if $beenBar>>You head back into the bar, where little has changed. You play cards with the barkeep for a while, but you keep losing. Eventually Ethel shows up and whines at you about the whole saving the world thing, so you decide to get back to it.<<else>>You stroll into the bar, which is smoky and smells like grog. No surprise there, then. The barkeep, a stocky mountain orc, is busy polishing glasses with a grimy rag. A distinct lack of customers doesn't seem to be bothering him.
+
+'Hey,' you say. The orc grunts in reply. 'So,' you continue, 'how's business?'
+
+'Business?' asks the orc, seeming surprised. 'Well, I had some pirates in a few weeks ago, but I heard they were attacked by ghosts and zombies. Since then, nothing really. Did you want anything to drink?'
+
+'We're a bit short,' you admit.
+
+'Not to worry, I'm not really in it for the money,' grins the barkeep. 'Have whatever you like, on the house.'
+
+You order a starberry juice, no ice, and Esme has fizzy tea. Refreshed, you thank the orc and wander back outside, where the child treats you to a hostile glare.<<set $beenBar = true>><<endif>>
+
+If you talk to the child, [[turn to 127|127]].
+If you head to the bar again, [[turn to 109|109]].
+If you assess the armoury, [[turn to 67|67]].
+If you mosey on down to the magic shop, [[turn to 96|96]].
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you leave town and strike out towards the marshland, [[turn to 101|101]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>>
+
+
+:: 102
+
+102
+
+
+You descend into what would be blackness if it weren't for your awesome night vision ability, but instead is a dank chamber, with a splashy floor and moss-hugged walls that seem to bend a bit, but maybe that's just the root talking. Besides the steps, the only exit is a creaky-looking door in the far wall.
+
+'This place is a dump,' grumbles Esme. 'And, I can't feel my knees so much.'
+
+A water devil slips from a dark corner and slimes over to you, grinning wetly.
+
+'Welcome to my humble abode!' he says creepily, spreading his arms and splashing you a bit. 'If you wish to pass through this room, you first must riddle me ree!'
+
+You hate this guy already.
+
+If you wait to hear his dumb riddle, [[turn to 83|83]].
+If you just punch him in the face, [[turn to 52|52]].
+
+
+:: Untitled Passage 1 [stylesheet]
+body {background-color: white}
+div { color:black; }
+div { font-family:helvetica }
+
+
+:: 100
+
+100
+<html><img src="026.jpg" width="450" height="348"></html>
+
+Ethel makes a pot of tea, and you all sip from little china cups.
+
+'Well,' she begins, 'in order to save the world completely, we need three magic type things; the wings of a giant bat, a tooth from a real live wizard, and the speckled egg of a moonbird, which may or may not exist. Any one of the three will slow them down, but all three would be preferable if we don't want to wind up dead.'
+
+'That would be nice,' you comment, and Esme agrees fervently.
+
+'Luckily for you you have a witch, and therefore time, on your side. Behold my latest bewitchment, the Fast Travel Cauldron (patents pending), which will appear at certain points throughout your journey and enable you to travel not only through space, but also time!'
+
+'Oooh,' says Esme, who's into that kind of thing.
+
+'So any time you need it, just hop in and say where, and/or when, you want to go. Because it's all magic, you will retain any objects and knowledge you may have gained beforehand, enabling you to try different paths through your day to help you overcome the challenges. You can't go back too far though, it still needs a little work.'
+
+'Sounds complicated,' you say doubtfully, half-wondering whether this has all been an elaborate ruse to get you into a cauldron, and ultimately Ethel's belly.
+
+'I'm kind of bad at explaining stuff,' admits Ethel, 'but you'll get the hang of it. Now, to retrieve the treasures you must travel to the End of Places, between the peaks of Ebb and Sol. I can magic you there, to save you the walk. You will face three challenges, each of which will hopefully lead you to one magic thing that we need. When you get stuck, you'll need to hop in the cauldron, travel back in time and try doing something else with your day. I'll catch up with you later. Any questions? No? Good. Then KAPOW!'
+
+Ethel waves her witchy hands, and you feel yourself hurtling through space...
+
+Now [[turn to 38|38]].
+
+
+:: 101
+
+101
+
+
+<<if $saidNo>>You travel into the marshland once again, finding your way with the map, but the scary lady is nowhere to be seen. It seems you'll need to go back in time if you want to see her again.
+
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you head to town, [[turn to 124|124]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<else>><<if $gotMap>><<if $beenSwamp>>You head back into the marshland, but with no idea of where to go you soon become lost. Luckily you go in a big circle and end up back where you started, so at least you didn't die in a swamp.
+
+'Hey, wait a second,' says Esme. 'Let's take a look at that map we found on the pirate ship. Look at the lines, they seem to match up with the firm ground in the marsh. If we go that way, we can get to the X!'
+
+'Good work, Esme!' you smile, ruffling your friend's shock of red hair while she complains and bats you away. 'Let's get going.'
+
+Despite the treacherous conditions you make steady progress. The 'X' on the map turns out to be a particularly large pool, and draw to a halt as a figure slowly rises from it's centre. It is a grey-skinned lady with straggly black hair in a long white dress. Even if she hadn't just risen out of a misty swamp pool, she'd still look pretty creepy.
+
+'Greetings, travellers,' she says mournfully. 'It's a long time since anyone's come to see me. All the young men from the village used to visit, but one by one they stopped. They said I was beautiful, but that was a long time ago.' She fixes you with her large, pale eyes. 'Do you think I'm... beautiful?'
+
+You notice a bunch of skulls floating in the pool. That's never good.
+
+If you say, 'Um... Yes?', [[turn to 131|131]].
+If you say, 'Hmm... No?', [[turn to 114|114]].<<else>>You strike out into the boggy marshland, which turns out to be extremely treacherous. A few times one of you loses her footing on the thin strips of solid land that run between the stinky pools of marshwater and the other has to pull her out. It's usually Esme. A mist hangs over the marsh, and before long you have almost lost sight of dry land.
+
+'We could get easily get lost out here,' you say. 'We'd better head back.'
+
+'Hey, wait a second,' says Esme. 'Let's take a look at that map we found on the pirate ship. Look at the lines, they seem to match up with the firm ground in the marsh. If we go that way, we can get to the X!'
+
+'Good work, Esme!' you smile, ruffling your friend's shock of red hair while she complains and bats you away. 'Let's get going.'
+
+Despite the treacherous conditions you make steady progress. The 'X' on the map turns out to be a particularly large pool, and draw to a halt as a figure slowly rises from it's centre. It is a grey-skinned lady with straggly black hair in a long white dress. Even if she hadn't just risen out of a misty swamp pool, she'd still look pretty creepy.
+
+<html><img src="024.jpg" width="450" height="338"></html>
+
+'Greetings, travellers,' she says mournfully. 'It's a long time since anyone's come to see me. All the young men from the village used to visit, but one by one they stopped. They said I was beautiful, but that was a long time ago.' She fixes you with her large, pale eyes. 'Do you think I'm... beautiful?'
+
+You notice a bunch of skulls floating in the pool. That's never good.
+
+If you say, 'Um... Yes?', [[turn to 131|131]].
+If you say, 'Hmm... No?', [[turn to 114|114]].<<endif>><<else>><<if $beenSwamp>>You head back into the marshland, but with no idea of where to go you soon become lost. Luckily you go in a big circle and end up back where you started, so at least you didn't die in a swamp.
+
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you head to town, [[turn to 124|124]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<else>>You strike out into the boggy marshland, which turns out to be extremely treacherous. A few times one of you loses your footing on the thin strips of solid land that run between the stinky pools of marshwater and the other has to pull her out. A mist hangs over the marsh, and before long you have almost lost sight of dry land.
+
+You ''have'' no idea which way to go. 'We could get easily get lost out here,' you say. 'We'd better head back.' Esme eagerly agrees, and together you make your way back out of the swamp.
+
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you head to town, [[turn to 124|124]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<set $beenSwamp = true>><<endif>><<endif>><<endif>>
+
+
+:: 106
+
+106
+
+
+You spread your arms, screech like a banshee and launch yourself from the canopy, landing squarely in a prized cucumber patch and destroying many of the prouder specimens. Luckily the grower is nowhere to be seen.
+
+'Are you alright?' asks Esme from the safety of the tree.
+
+'Fine,' you shout, fighting your way through mixed shrubbery to get back to the clearing. Esme descends in a more traditional manner and you regroup.
+
+If you take the west path, [[turn to 41|41]].
+If you cross the stone bridge, [[turn to 110|110]].
+If you leave the Wooded Realm, [[turn to 111|111]].
+
+
+:: 107
+
+107
+
+
+'I've got an idea,' you say to Esme. 'Follow me!'
+
+You shimmy up a column and find a free spot to hang from. Good ol' Esme does the same. Luckily the other bats awake before the fuzzwort wears off, and seeing you hanging upside down they accept you as one of their own. Over the next few weeks you become firm friends with the bat guys, though they laugh at your puny muscles, and before too long you almost forget the world you left behind. Eventually you know the surprisingly linear cave network so well that you don't even need the fuzzwort to see anymore.
+
+One day you are polishing some bat armour when someone hisses at you from behind a naturally formed rock pillar. As everyone knows bats don't hiss, so you approach with caution. Reaching out you feel a long nose and a pointy hat, and suddenly you remember Ethel.
+
+'What happened to you, kiddo?' she asks. 'You were supposed to be saving the world, remember?'
+
+'Oh, yeah!' you say, remembering. 'What happened with that?'
+
+'Well, the world ended,' says Ethel, 'and it took quite a while for me to get back, through magic. Anyway, I'm here now, so I'm just going to magic you back to before you became bat guys, or whatever you're supposed to be, and maybe you can do something more pragmatic.'
+
+'Ok, sure. Gah!' you say.
+
+Ethel waggles her fingers, and you find yourself transported back in time...
+
+'So what should we do?' says Esme.
+
+If you tiptoe over to the large ornate door, [[turn to 62|62]].
+If you tap-dance round to the small cheap door, [[turn to 79|79]].
+If you utilise your super-strength to climb up a pillar and hang upside down like the bat guys (again), [[turn to 107|107]].
+
+
+:: 105
+
+105
+
+
+<<if $goteggonce>>You hop back through the doorway to find Ethel waiting on the trail. Horrible fire, water, dirt and love monsters are everywhere, and she is using the opposing elemental magics to fend them off. It's very exciting and colourful.
+
+'We got the egg again!' you whoop.
+
+'What are you playing at?' asks Ethel. 'You've already got the egg! You crazy kids. Get back in that cauldron and save the world already!'
+
+'Ok, ok, chill,' you sigh before hopping into the Fast Travel Cauldron.
+
+Now [[turn to 90|90]].<<else>>You hop back through the doorway to find Ethel waiting on the trail. Horrible fire, water, dirt and love monsters are everywhere, and she is using the opposing elemental magics to fend them off. It's very exciting and colourful.
+
+'Hey, kids, did you get that egg?' says Ethel.
+
+'We sure did!' you reply, ducking under a hygiene bolt which neatly dispatches a filthy kraken.
+
+'Good work!' says Ethel. 'I'm running out of magic points, so you better hop in the Fast Travel Cauldron (patents pending). Keep it up and we'll save the world by teatime!'
+
+'Sweet!' You each high five the witch before hopping into the Fast Travel Cauldron.<<set $goteggonce = true>>
+
+Now [[turn to 90|90]].<<endif>>
+
+
+:: 39
+
+39
+
+
+Bloodwart snarls furiously, his slavering fangs dripping beast-stuff all over the gnomes' picnic. Petrified with fear, the little guys stare wide-eyed into the blood red beads of the heckhound fated to eat them all up.
+
+As you watch in mock horror, Bloodwart pounces - and begins furiously licking the gnomes as they giggle uproariously.
+
+'It tickles!' cries the mummy gnome as a particularly vigorous slurp dislodges her hat.
+
+After a few minutes, Bloodwart grows tired and settles down for a nap.
+
+'Sorry about your picnic,' says Esme.
+
+'Oh, that's alright,' says the daddy gnome. 'We don't like jam sandwiches that much anyway, we only made them because we ran out of marmalade. Besides, this turned out to be the best day ever! Come on campers, let's sing!'
+
+The gnome family launch into a happy song about how much they love each other and what a great day it was. Feeling slightly ill, you grab Bloodwart's collar and drag the slumbering beast away from the proceedings and back to the cottage.
+
+'Back already, are we?' sniffs Ethel disapprovingly. 'Old Bloodwart looks worn out, bless him. Tell you what, go and tidy up the attic for me and then you can run along home.'
+
+You traipse up a rickety staircase to the dark, dusty attic, where flittery somethings scurry into cobwebbed corners to peer out at you. Glass tanks hold odd shapes that you'd rather not look at too closely, and spidery etchings adorn the walls. Esme shudders a lot.
+
+'Hey, what's this?' you exclaim, picking up a book with a weird face on the front.
+
+'Eep!' cries Esme. 'Put it down! Books with faces on can only have bad things inside!'
+
+If you heed her warning and replace the book, [[turn to 61|61]].
+If you just take one quick peek, [[turn to 75|75]].
+<<if $travelledBefore>>If you run downstairs and jump in the cauldron, [[turn to 90|90]].<<endif>>
+
+
+:: 38
+
+<<if $beenEntrance>> 
+38
+
+
+You travel back to the entrance to the End of Places, which looks no more inviting than before. Vultures circle lazily overhead, and the faint chime of a church bell carries on the breeze. The eye watches you closely.
+
+The Fast Travel Cauldron is just over there. If you jump in, [[turn to 90|90]].
+If you steel yourself and head back into the End of Places, [[turn to 74|74]].
+<<else>> 
+ 
+38
+
+
+You slip between the pages of reality, the universe rearranges itself around you, and then...
+
+You find yourself standing with Esme at the entrance to the End of Places, Ebb and Sol towering high above you. Danger signs litter the area, and a deathly quiet pervades. The bleached bones of various creatures litter the area to serve as a warning to anyone silly enough to enter. Overhead the great eye watches through the hole in the sky. Esme gulps loudly in a cartoonish manner.
+
+'So this is it, then,' you say. 'Time to save the world, I guess.'
+
+If you bravely (foolishly?) head into the End of Places, [[turn to 74|74]].
+Nearby the Fast Travel Cauldron bubbles merrily away. If you jump in, [[turn to 90|90]].
+<<endif>>
+<<set $beenEntrance = true>>
+
+
+:: 33
+
+33
+
+
+'Is there anything we can do to help?' you ask, brimming with genuine concern.
+
+'Well, I did have one idea... But no, it's ridiculous.'
+
+'Everything's ridiculous!' snaps Esme, startling you both. 'Out with it, man!'
+
+'Oh, my,' says Bill. 'Well, if it's not too much trouble you could take this bag of flour with you, and if you happen to pass the new windmill on your travels, you could hand some out to their customers? Maybe if they bake cakes with my flour, they'll come back to me.'
+
+'Yeah, okay, sure,' you say, 'but enough with the flour already. We've got a witch to be visiting!'
+
+'See ya, Bill!' chimes Esme, waving as you hurry on your way.
+
+''Item gained - Bag of flour''<<set $gotFlour = true>>
+
+Before too long you find yourself outside Ethel Frogbottle's rundown old cottage. Weeds threaten to devour the ramshackle structure, and the glass is broken in most of the windows. A faint, indeterminate odour pervades the still air.
+
+If you go right up to the front door and boldly knock, [[turn to 65|65]].
+If you sneak round the back, exercising nosy caution, [[turn to 37|37]].
+
+
+:: 32
+
+32
+
+
+At first the scratches seem to have been made purely at random, but then you realise they form barely readable words.
+
+In the end, words fail
+Fallen moons, reflected pale
+
+'Poetry is lame,' says Esme disgustedly. 'Do you think that fisherperson wrote it?' She points to the water's edge - but the mysterious fisherperson has disappeared.<<set $knowPoetry = true>>
+
+''Knowledge Gained - Lame Poetry!''
+
+It has grown dark. Not wishing to linger in this sombre place, you hurry along to dinner.
+
+Now [[turn to 73|73]].
+
+
+:: 31
+
+31
+
+
+'Oh, I suppose we could wash some pots,' sighs Esme resignedly, though she soon regrets her choice. It turns out Ethel's pot collection extends far beyond the piles in the living space; there are cupboards and pantries crammed full of them.
+
+'How can one person need so many pots?' you cry in exasperation. 'It's just not normal!'
+
+'Yes, and why are //all// of them dirty?' adds Esme.
+
+You sing to each other to pass the long hours, and you scrub and scrub and scrub, and eventually the pots are as clean as they're going to get without your arms falling off.
+
+'Oh wait, there's one more,' says Esme, reaching into the dark corner of a dingy pantry and retrieving a strange-looking pot with a handle at one end and a spout at the other.
+
+'I'm not sure this technically qualifies as a pot,' you frown, 'but sure, whatevs.'
+
+But as soon as you rub a dishcloth over the dusty surface purple smoke explodes from the spout, propelling the handle-spout-pot across the room and giving you quite a shock. The purple smoke disperses to reveal a grumpy yawning djinn.
+
+<html><img src="006.jpg" width="400" height="300"></html>
+
+'Who dares disturb my slumber?' grumbles the djinn sleepily, then waves off your response before it leaves your lips. 'I meant that rhetorically. Make a wish, it'll come true. Quickly, now, before I doze off.'
+
+Ooh, a wish!
+
+If you blurt out the first thing that comes into your head, [[turn to 66|66]].
+If you wish for more wishes, [[turn to 47|47]].
+If you're careful what you wish for, [[turn to 8|8]].
+
+
+:: 37
+
+37
+
+
+Feeling rather shy, you tiptoe around the house to peer through a window. Esme trips over a flowerpot and causes a small commotion, and there is a clattering from inside the house. You decide to run away, but before you can the front door opens suddenly, and a voice shouts 'Oi!', stopping you in your tracks. Esme fearlessly jumps behind a bush.
+
+<html><img src="008.jpg" width="450" height="352"></html>
+
+Ethel Frogbottle eyes you stonily. 'Whaddya want?' she half-growls.
+
+'Um, we're here from the school? Y'know, to help out and stuff?' Your voice sounds small and scared.
+
+Ethel looks around. 'Just you?' she says suspiciously.
+
+'No, my friend Esme's here too.'
+
+Esme waves from behind the bush.
+
+'Right, well I suppose you'd better come in then.' She opens the door wide.
+
+A large cauldron dominates the floorspace, and various pots and pans are arranged in piles around it. Books are stacked on threadbare furniture and along every available inch of wall space. A fire billows heat into the cluttered room, making you feel as though you're already being cooked.
+
+'Sorry for the frosty reception,' says Ethel, making a forlorn attempt at a toothy grin. 'Thought you were the local kids, coming to accuse me of witchcraft and whatnot.'
+
+'Ha ha,' you laugh nervously, adding a 'Ha!' for effect.
+
+'What's so funny?' snaps Ethel.
+
+'Oh nothing,' you backtrack, 'just, you know, witches. Everyone knows there's no such thing anymore.'
+
+Ethel raises an eyebrow sharply. 'Oh, //isn't// there?'
+
+There is an awkward silence.
+
+'Well, anyway,' says Ethel, 'you're here to help, not sit around all day talking. I've got weeds need weeding, a big pile of dirty pots to wash, and a dog to walk. Take your pick.'
+
+You decide to let Esme choose for a change.
+
+If Esme prefers to weed the weeds, [[turn to 17|17]].
+If Esme plumps for washing them pots, [[turn to 31|31]].
+If Esme deigns to walk that dog, [[turn to 55|55]].
+<<if $travelledBefore>>That cauldron looks a lot like the Fast Travel Cauldron. If you cut Esme short and jump in, [[turn to 90|90]].<<endif>>
+
+
+:: 36
+
+36
+
+You take a sheet of paper and a well-chewed pen, then sit quietly, waiting for inspiration to hit. As usual you can't think of anything for ten minutes, then suddenly a flurry of ideas pop into your head at once. But which will you draw?
+
+If you draw a fancy skeleton, [[turn to 12|12]].
+If you draw an aloof barbarian, [[turn to 57|57]].
+If you draw a business elf, [[turn to 34|34]].
+If you draw a snooty vampire, [[turn to 6|6]].
+
+
+:: 35
+
+35
+
+
+Bill, the friendly orc who owns the crumbling old windmill, comes out to greet you as you approach. This guy's alway been there to offer a kind word when one of you has had a difficult time. Today he looks uncharacteristically tired.
+
+'Esme! Oblivia! It's good to see you both,' he smiles.
+
+'Hullo, Bill,' you grin. 'How's tricks?'
+
+Bill lets out a great sigh. 'Not so good, truth be told.' Seeing your worried faces, he adds, 'I'm not dying or anything, it's just that business hasn't been so great lately. That swanky new windmill over the hill is stealing all my customers!'
+
+You make the mistake of asking why, and Bill launches into a lengthy explanation. It turns out that he has a post mill, so called because it is balanced on a large upright post, allowing the mill to rotate to face the wind direction, wheras the swanky new mill is a tower mill, which means only the mill's cap needs to be turned into the wind. Long story short, the tower mill is taller, so the sails are longer, so when the wind is low they're still useful. Esme nods off a few times during the lecture, and you nudge her in the ribs.
+
+'So you see,' finishes Bill, 'they've got me scuppered. No-one's come to buy my flour for weeks. But there's one flaw in their business model. They're leaving out the secret ingredient!'
+
+'More flour?' hazards Esme.
+
+'Nope. It's love!' beams the orc. 'That's why my flour makes the fluffiest cakes!'
+
+You're not sure what to say, so you just nod enthusiastically. Then your neck starts to hurt, so you decide to say something.
+
+If you offer to help, [[turn to 33|33]].
+If you make your excuses and leave, [[turn to 80|80]].
+
+
+:: 34
+
+34
+
+<html><img src="014.jpg" width="239" height="400"></html>
+
+You show your picture to Esme, who claps delightedly. 'He looks  just like the guy who owns the swanky new mill! I drew a flirty mermaid.'
+
+<html><img src="015.jpg" width="384" height="450"></html>
+
+'Nice!' you giggle. 'They could be secret lovers!'
+
+You sit and draw together until the sun goes down, then hurry along to dinner.
+
+Now [[turn to 73|73]].
+
+
+:: StoryAuthor
+Mostly Useless
+
+
+:: 60
+
+60
+
+
+You hurry along to your last class of the day, which unfortunately for you is Social Studies with Madam Crabsticks (known colloquially as Ol' Crabby due to her short temper and pincer-like grip). On the bright side, this is one of the few classes where you haven't been banned from sitting next to Esme, so she can poke you if you start to nod off.
+
+After fifty minutes of tiresome waffle, Madam Crabsticks finally reaches the meat of the class.
+
+'The more attentive among you will be aware that you are each to be given a special assignment for the holiday.' A chorus of groans indicate the general dissatisfaction of the assembled students. 'More specifically, you will pair up, choose an elderly person in the valley, and visit them each day to talk with them and assist them in any way you can. As you will be representing the school, we expect exemplary conduct from each and every one of you.'
+
+With a flourish she produces a list of elderly people and passes it round the class, with each pair writing their names next to one. Since you and Esme are sitting at the back it gets to you last, and only one 'choice' remains. You blink, rub your eyes, then look at the last remaining name again.
+
+'Ethel Frogbottle?' wails Esme. 'But she... she's a witch!'
+
+'Don't be ridiculous, child,' scolds Madam Crabsticks. 'You are well aware that there are no more witches in Carn. It is precisely such scurrilous rumours that tarnish the reputation of the young.'
+
+'But it's true, Ma'am," pipes up an alarmingly small girl who might be called Florence. 'She's got a big pot, an' everything!'
+
+'She turned Daisy's cat into a dog,' murmurs Sophie Bramblethimble, but no-one seems to notice.
+
+'Enough!' cries Madam Crabsticks, banging a bony hand on a desk for silence as the bell rings. 'You will each visit your charges first thing in the morning, and I shall expect glowing reports from each and every one. Dismissed.'
+
+'Well, so much for the hols,' grumbles Esme as you leave through the gates of Clara Bumbleshoot's School for Wayward Orphan Girls. 'Now we've got six weeks of trying not to get eaten, or turned into something slimy.'
+
+'Cheer up, Es,' you say, though your voice sounds a little hollow. 'It'll be an adventure!' Truth be told, you're pretty scared of witches.
+
+'Well, we might as well enjoy our last night of freedom,' sighs Esme. 'What shall we do?'
+
+If you head down to the old fish pond, [[turn to 18|18]].
+If you head to your secret tree house, [[turn to 26|26]].
+If you go scrumping for apples, [[turn to 48|48]].
+<<if $travelledBefore>>Nearby you spot the Fast Travel Cauldron bubbling merrily away. If you jump in, [[turn to 90|90]].<<endif>>
+
+
+:: Start
+
+1
+
+
+Welcome to "Witch's Girl", an entry in Spring Thing 2013.
+
+''Important - Please read before playing!''
+
+Witch's Girl is a choice-based game that records your progress as you play, and the story will change based on the choices you make. If you close this web page or navigate away from it, your progress is lost and you'll have to start again, so if you need to do visit another site please remember to open a new tab.
+
+The picture files for the game need to be kept in the same folder as the web page to be displayed.
+
+To learn more about the game or contact the author, [[turn to 2|2]].
+To play, [[turn to 3|3]].
+
+
+:: 62
+
+62
+
+
+You tiptoe over to the large ornate door, cringing with each click of shoe on stone as you try not to wake the slumbering bat guys. Reaching the door you slowly push it open. Esme slips in behind you and closes the door.
+
+You find yourself in a huge royal bedroom, the centrepiece of which is an enormous silk-sheeted four poster bed. Stretched across the bed is the biggest, meanest looking bat you have ever had the displeasure to come across. It, like the guards, appears to be fast asleep. A sign at the foot of the bed says 'BAT KING'. These bat guys are helpful with the signs. 
+
+'How on Carn are we gonna get his wings?' hisses Esme. 'They're the size of houses! Also, why is my arm turning blue?'
+
+Suddenly the giant bat opens one eye and peers curiously at you. What a to-do!
+
+If you pretend to be bats, [[turn to 120|120]].
+If you pretend to be ghosts, [[turn to 91|91]].
+
+
+:: 63
+
+63
+
+
+'This is no problem for me,' you chortle inwardly, 'I'll simply charm the snake using my mad snake-charming skills.' It is only after making this decision that you remember you don't actually have any such skills. The snake seems to realise this too, and hisses at you all poisony.
+
+You read a comic once where the snake-charming heroine was faced with a similar dilemma, and you try and cast your mind back to remember the details. Yeah, that was it! Raising your arms, you waggle your fingers while bobbing your head about. The snake seems distracted. You start to whistle a discordant melody. The snake looks confused. Finally, you hiss and lunge at the snake, which loses its balance and falls from the branch!
+
+'Look out, Esme!' you cry, but looking down you see Esme must have read the comic too for she is charming the snake all over again.
+
+You start to climb again, trying not to look down as you reach the dizzying heights of the canopy. Peering over the edge of the great nest, you see a tiny egg, kicking out an awful lot of mysterious glow for its diminutive size. This being a treasure you seek, you make straight for it, but your thieving hands are stilled by a great screech from above. You look up to see a gigantic golden bird peering at you with angry bead-eyes.
+
+'Who are you,' squawks the bird, 'and what, pray, are you doing in my tree?'
+
+If you tell the truth, [[turn to 70|70]].
+If you make something up, [[turn to 58|58]].
+
+
+:: 64
+
+64
+
+
+You feel yourself slip between the pages of reality, the universe rearranges itself around you, and then...
+
+Finally the lunch bell rings out from the courtyard, and you quickly make your escape.
+
+Outside, a flushed and slightly out of breath Esme waits impatiently. 'Thank Gaia that's over,' she pouts. 'I thought I was going to die of boredom, literally //die.// So, what do you want to do?'
+
+If you head to the library, [[turn to 13|13]].
+If you quietly eat your lunch, [[turn to 28|28]].
+If you go looking for trouble, [[turn to 5|5]].
+If you hop straight back into the Fast Travel Cauldron, [[turn to 90|90]].
+
+
+:: 65
+
+65
+
+
+You stride up to the front door and rap sharply upon it while Esme bravely hides behind a bush. After a few moments there are cluttering noises from within, and then the door slowly creaks open.
+
+<html><img src="008.jpg" width="450" height="352"></html>
+
+Ethel Frogbottle eyes you stonily. 'Whaddya want?' she half-growls.
+
+'Um, we're here from the school? Y'know, to help out and stuff?' Your voice sounds small and scared.
+
+Ethel looks around. 'Just you?' she says suspiciously.
+
+'No, my friend Esme's here too.'
+
+Esme waves from behind the bush.
+
+'Right, well I suppose you'd better come in then.' She opens the door wide.
+
+A large cauldron dominates the floorspace, and various pots and pans are arranged in piles around it. Books are stacked on threadbare furniture and along every available inch of wall space. A fire billows heat into the cluttered room, making you feel as though you're already being cooked.
+
+'Sorry for the frosty reception,' says Ethel, making a forlorn attempt at a toothy grin. 'Thought you were the local kids, coming to accuse me of witchcraft and whatnot.'
+
+'Ha ha,' you laugh nervously, adding a 'Ha!' for effect.
+
+'What's so funny?' snaps Ethel.
+
+'Oh nothing,' you backtrack, 'just, you know, witches. Everyone knows there's no such thing anymore.'
+
+Ethel raises an eyebrow sharply. 'Oh, //isn't// there?'
+
+There is an awkward silence.
+
+'Well, anyway, you're here to help, not sit around all day talking. I've got weeds need weeding, a big pile of dirty pots to wash, and a dog to walk. Take your pick.'
+
+You decide to let Esme choose for a change.
+
+If Esme prefers to weed the weeds, [[turn to 17|17]].
+If Esme plumps for washing them pots, [[turn to 31|31]].
+If Esme deigns to walk that dog, [[turn to 55|55]].
+<<if $travelledBefore>>That cauldron looks a lot like the Fast Travel Cauldron. If you cut Esme short and jump in, [[turn to 90|90]].<<endif>>
+
+
+:: 66
+
+66
+
+
+'Oh,' you blurt, 'I wish I could see through walls!'
+
+'Shazam!' cries the Djinn. But nothing seems to change.
+
+'It's not working!' you say. 'I can't see through the walls!'
+
+'Ah,' says the Djinn, waving a finger at you in a most frustrating manner, 'but you didn't specify which walls you wanted to be able to see through. In this case, it is up to me to decide, and I have decided that you can only see through walls which are already see-through, like glass ones.'
+
+'Whaaaa?' you say. 'That's stupid. Are you sure you're a real Djinn?'
+
+The Djinn produces the proper paperwork to show that he is indeed a registered Djinn. 'We're tricky like that,' he shrugs. 'In future, be careful what you wish for!'
+
+'What a crock!' mutters Esme as the Djinn smokes back into the spout-handle-pot. You try rubbing it again, but nothing happens.
+
+'All finished, are we?' sniffs Ethel disapprovingly. 'Well, the pots do look fairly clean, I suppose. Tell you what, go and tidy up the attic for me and then you can run along home.'
+
+You traipse up a rickety staircase to the dark, dusty attic, where flittery somethings scurry into cobwebbed corners to peer out at you. Glass tanks hold odd shapes that you'd rather not look at too closely, and spidery etchings adorn the walls. Esme shudders a lot.
+
+'Hey, what's this?' you exclaim, picking up a book with a weird face on the front.
+
+'Eep!' cries Esme. 'Put it down! Books with faces on can only have bad things inside!'
+
+If you heed her warning and replace the book, [[turn to 61|61]].
+If you just take one quick peek, [[turn to 75|75]].
+<<if $travelledBefore>>If you run downstairs and jump in the cauldron, [[turn to 90|90]].<<endif>>
+
+
+:: 103
+
+103
+
+
+You traipse up a lengthsome trail, Esme complaining all the way. She falls quiet as the trail broadens, petering out at the base of a tree like no other you have ever seen, on account of how extremely big it is. A golden glow emanates from a nestlike formation in its distant canopy, and this, you are sure, must be the fabled Moonbird's egg.
+
+'That must be the fabled Moonbird's egg!' you announce.
+
+'So?' shrugs Esme.
+
+'Well, y'know, that's one of the things we need to save the world!' you say, flapping your arms a little for effect.
+
+'Oh yeah!' beams Esme. You wonder about that girl sometimes.
+
+With nothing better to do, you begin to climb the Moontree, jamming your fingers into the deep grooves in the ancient trunk to pull yourself up. Esme, who has an irrational fear of oversized foliage, stays on the ground.
+
+Halfway up you stop to rest on a great branch. Looking down you can just make out Esme, who waves up at you. Looking away you see a nasty-looking snake, poised and ready to strike, all tongue-flickery-like.
+
+If you use your mad snake-charming skills to charm the snake, [[turn to 63|63]].
+If you punch the dumb snake in the face, [[turn to 51|51]].
+
+
+:: 68
+
+68
+
+
+'An excellent choice!' beams the hobgoblin in congratulatory tones. 'This power is especially effective against earth-based stuff. That'll be 1,500 gold, please.'
+
+'1,500 gold?' you gasp. We don't have that kind of money!'
+
+'Oh, okay. Well, the only budget power I currently offer is zombie power. Just how much gold //do// you have?'
+
+<<if $gotGold>>'We ''have'' 10 gold!' you beam proudly.
+
+'What a coincidence!' says the shopkeeper. '10 measly gold is exactly how much zombie power is currently on sale for. Hand that blade over.'
+
+You pay the man and give him your sword. He rubs it with a purple cloth and hands it back.
+
+'Is that it?' you ask doubtfully.
+
+'Yup, that's it. Well, have fun with it!'
+
+''Item gained - Zombie piratey sword!''<<set $gotZombiesword = true>><<set $donezombie = true>><<else>>'We ''have'' no gold,' you say glumly.
+
+'No gold, no powers, I'm afraid,' says the shopkeeper. You show yourselves out.<<endif>>
+
+If you talk to the child, [[turn to 127|127]].
+If you breach the bar, [[turn to 109|109]].
+If you try the armoury again, [[turn to 67|67]].
+If you mosey on down to the magic shop, [[turn to 96|96]].
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you leave town and strike out towards the marshland, [[turn to 101|101]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<endif>><<set $beenArm = true>><<endif>>
+
+
+:: 2
+
+2
+
+
+Witch's Girl was created by myself, Geoff Moore (also known as Mostly Useless) in Twine, a free creator for choice-based games. I made the pictures in Paper for iPad by fiftythree. Many thanks go to the creators of both applications, to Greg Boettcher for organising Spring Thing, and to Michael Hemsley and Marshal Winter for playtesting.
+
+Please feel free to contact me at geoff.moore@mail.com, and many thanks for playing!
+
+To play, [[turn to 3|3]].
+
+
+:: 6
+
+6
+
+<html><img src="016.jpg" width="324" height="450"></html>
+
+You show your picture to Esme, who claps delightedly. 'Just like the ones that hang around the wood! I drew a stinky goblin.'
+
+<html><img src="017.jpg" width="311" height="450"></html>
+
+'He's funky!' you smile. 'They could fight crime!'
+
+You sit and draw together until the sun goes down, then hurry along to dinner.
+
+Now [[turn to 73|73]].
+
+
+:: 99
+
+99
+
+
+Without hesitation you stomp right on the bug. 'He was up to no good,' you say.
+
+Esme nods solemnly, then does a double take. 'Hey, more bugs!' 
+
+Suddenly there are weird little bugs everywhere, and you both set about squishing the lot of them, which takes quite a while and involves a lot of manic laughing. Afterwards you weed the remaining weeds and Ethel fetches you a mop to clean up all the gross bug guts.
+
+'All finished, are we?' sniffs Ethel disapprovingly. 'Well, the garden does look a little tidier, I suppose. Tell you what, go and tidy up the attic for me and then you can run along home.'
+
+You traipse up a rickety staircase to the dark, dusty attic, where flittery somethings scurry into cobwebbed corners to peer out at you. Glass tanks hold odd shapes that you'd rather not look at too closely, and spidery etchings adorn the walls. Esme shudders a lot.
+
+'Hey, what's this?' you exclaim, picking up a book with a weird face on the front.
+
+'Eep!' cries Esme. 'Put it down! Books with faces on can only have bad things inside!'
+
+If you heed her warning and replace the book, [[turn to 61|61]].
+If you just take one quick peek, [[turn to 75|75]].
+<<if $travelledBefore>>If you run downstairs and jump in the cauldron, [[turn to 90|90]].<<endif>>
+
+
+:: 98
+
+98
+
+
+'An excellent choice!' beams the hobgoblin in congratulatory tones. 'This power is especially effective against ice-based stuff. That'll be 800 gold, please.'
+
+'800 gold?' you gasp. We don't have that kind of money!'
+
+'Oh, okay. Well, the only budget power I currently offer is zombie power. Just how much gold //do// you have?'
+
+<<if $gotGold>>'We ''have'' 10 gold!' you beam proudly.
+
+'What a coincidence!' says the shopkeeper. '10 measly gold is exactly how much zombie power is currently on sale for. Hand that blade over.'
+
+You pay the man and give him your sword. He rubs it with a purple cloth and hands it back.
+
+'Is that it?' you ask doubtfully.
+
+'Yup, that's it. Well, have fun with it!'
+
+''Item gained - Zombie piratey sword!''<<set $gotZombiesword = true>><<set $donezombie = true>><<else>>'We ''have'' no gold,' you say glumly.
+
+'No gold, no powers, I'm afraid,' says the shopkeeper. You show yourselves out.<<endif>>
+
+If you talk to the child, [[turn to 127|127]].
+If you breach the bar, [[turn to 109|109]].
+If you try the armoury again, [[turn to 67|67]].
+If you mosey on down to the magic shop, [[turn to 96|96]].
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you leave town and strike out towards the marshland, [[turn to 101|101]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<endif>><<set $beenArm = true>><<endif>>
+
+
+:: 8
+
+8
+
+
+'I wish,' you say, carefully picking your words, 'that I could fly, while remaining in full control of my movement, and without causing any kind of harm to myself or others, and be able to stop flying when I choose to, and not be stopped from flying when I don't want to be, and for it not to be scary.'
+
+'What an extremely well worded wish!' said the Djinn. 'You must have been really careful.'
+
+'Yup!' you beam proudly.
+
+'Hmmm... Well, I was hoping to trick you, but you seem to have left no loopholes. Very well, I shall give you the power of flight - but you may only use it once!' He waves his hands.
+
+'The power of flight?' gawps Esme. 'For realsies?'
+
+'For realsies,' nods the Djinn solemnly, and poofs back into his rubbing-pot.
+
+''Knowledge gained - Power of Flight!''<<set $knowFlight = true>>
+
+'All finished, are we?' sniffs Ethel disapprovingly. 'Well, the pots do look fairly clean, I suppose. Tell you what, go and tidy up the attic for me and then you can run along home.'
+
+You traipse up a rickety staircase to the dark, dusty attic, where flittery somethings scurry into cobwebbed corners to peer out at you. Glass tanks hold odd shapes that you'd rather not look at too closely, and spidery etchings adorn the walls. Esme shudders a lot.
+
+'Hey, what's this?' you exclaim, picking up a book with a weird face on the front.
+
+'Eep!' cries Esme. 'Put it down! Books with faces on can only have bad things inside!'
+
+If you heed her warning and replace the book, [[turn to 61|61]].
+If you just take one quick peek, [[turn to 75|75]].
+<<if $travelledBefore>>If you run downstairs and jump in the cauldron, [[turn to 90|90]].<<endif>>
+
+
+:: 91
+
+91
+
+
+'Do as I do,' you hiss to Esme. You start moaning and wailing in your best impression of a ghost. Esme is quick on the uptake and starts to do the same, even grabbing some spare bedsheets to drape over you.
+
+'What going on? Batsy confused,' says the large bat, who does indeed seem rather confused.
+
+'We are ghosts,' you explain in what you suppose to be a ghostly wail, 'and we have come to haunt you, bat king.'
+
+The giant bat waves his wings in protest, knocking various ornaments off a bedside table. 'Me no bat king! Me Batsy! No haunt Batsy!'
+
+'Wait - you're not the bat king? Then what are you doing here?'
+
+'Batsy was sleeping in king bed,' says the giant bat. 'King out on business and Batsy not like hang upside down. Please no haunt Batsy.'
+
+'Well, Batsy,' Esme says sternly, 'we won't haunt you so long as you keep quiet and don't tell anyone you saw us here.'
+
+'Ok, sure, Batsy keep real quiet!' shouts Batsy as you shush him frantically. 'Batsy keep real quiet,' he whispers, and grins when you give him the thumbs up. 'Bye then!' he waves, stomping loudly out of the room, but remembering to close the door behind him.
+
+'I think the fuzzwort's wearing off,' you say. 'It's getting kinda dark, and I don't feel like I'm dying inside.'
+
+'So what now?' asks Esme. 'Hide until the king comes back?'
+
+'That won't be necessary,' says a tiny crowned bat who has apparently entered through a tiny hole in the door. 'I am the bat king. What is the meaning of all this?' The door opens, and two massive armoured bat guards appear behind him. A third squeezes between them and lifts the tiny bat king onto his enormous bed.
+
+'We've come for your wings!' cries Esme bravely.
+
+'Oh, really?' laughs the bat king, making himself comfortable. 'Tell me, girls, do you know any poetry? I'm rather fond of it. If not, my friends here can see you out.'
+
+<<if $knowPoetry>>'Hey, we //do// know some poetry!' says Esme excitedly. 'We read it down at the lake, remember?'
+
+'Oh yeah!' you nod. 'Now, how did it go... I think I remember! Ahem,
+
+	In the end
+	Words Fail
+	Fallen Moons... Um...'
+
+'Yes?' says the bat king, leaning forward and nearly falling off his cushion. The guards look ready to throw you out. What was that last line?
+
+If you say 'The rain and hail,' [[turn to 97|97]].
+If you say 'A ship sets sail, [[turn to 133|133]].
+If you say 'Perpetual snail', [[turn to 88|88]].
+
+<<else>>Unfortunately you don't know any poetry, and with your super-strength waning the guards have little trouble ejecting you from the bat guy cave to sit blinking in the sunlight. They wedge themselves into the cave entrance, blocking any attempt at re-entry.
+
+Your eyes start doing their thing, and you see that giant mechanical spiders are stomping about setting fire to things, and Ethel using superwater to rust their limbs. It's very loud and confusing.
+
+'Hey, kids, did you get them bat wings?' says Ethel.
+
+'Nah, we were gonna go and do something else,' you reply, dodging a flaming web.
+
+'These spiders keep coming out of the void,' says Ethel. 'They run on empty promises, and their only emissions are broken dreams. I can't hold them off much longer, so you better hop in the Fast Travel Cauldron (patents pending) and head back. Remember, any stuff that you've found or learnt will be retained, so try stuff out. Go crazy! But the fabric of the universe can only hold out so long what with the huge purple eye and all this time travel, so let's try and get that stuff we need sharpish, okay?'
+
+'Okay,' you nod, and hop into the Fast Travel Cauldron.
+
+Now [[turn to 90|90]].<<endif>>
+
+
+:: 90
+
+<<if $travelledBefore>>
+90
+
+
+You both jump into the cauldron, and Ethel's face pops out of the water. That's going to take some getting used to.
+
+"Where to, kiddies?" she grins.
+
+<<else>>
+
+90
+
+
+You hop into the cauldron, only slighty worried about being eaten by a witch. Esme slips in after you.
+
+"So we just have to say where and/or when we want to go?" asks Esme doubtfully.
+
+"That's what the crazy lady said," you shrug.
+
+"Who're you calling crazy?" scowls Ethel, whose face has suddenly popped out of the water. You both scream in shock, but quickly recover. "Well, come on then," cackles the crazy witch, "what are you waiting for?"
+
+<<endif>>
+
+If you travel to the start of Mistress Honeywell's class, [[turn to 115|115]].
+If you travel to after her class, [[turn to 64|64]].
+If you travel to after school, turn to [[turn to 122|122]].
+If you travel to this morning, [[turn to 87|87]].
+If you travel to Ethel's house, [[turn to 93|93]].
+If you travel to your first arrival at the End of Places, [[turn to 38|38]].
+<<if $ftcHill>>If you travel to the hillside inside the third mountain, [[turn to 136|136]].<<endif>>
+<<if $ftcEnd>>If you travel to the end of the world, [[turn to 44|44]].<<endif>>
+<<set $travelledBefore = true>><<set $beenEntrance = false>><<set $beenCave = false>><<set $beenTreesprite = false>><<set $beenEOP = false>><<set $beenChild = false>><<set $beenShip = false>><<set $beenBar = false>><<set $beenMagic = false>><<set $beenArm = false>><<set $beenSwamp = false>><<set $beenTown = false>><<set $saidNo = false>><<set $donezombie = false>>
+
+
+:: 93
+
+93
+
+
+You feel yourself slip between the pages of reality, the universe rearranges itself around you, and then...
+
+'Well, anyway,' says Ethel, 'you're here to help, not sit around all day talking. I've got weeds need weeding, a big pile of dirty pots to wash, and a dog to walk. Take your pick.'
+
+You decide to let Esme choose for a change.
+
+If Esme prefers to weed the weeds, [[turn to 17|17]].
+If Esme plumps for washing them pots, [[turn to 31|31]].
+If Esme deigns to walk that dog, [[turn to 55|55]].
+If you hop straight back into the Fast Travel Cauldron, [[turn to 90|90]].
+
+
+:: 92
+
+92
+
+
+You return to the entrance, where not much has changed. That path winds away to the west, and the stone bridge still crosses a stream to the east. The crooked tree snakes upwards, and the magical doorway hovers angrily, as if to say, 'Scram, kiddos! Your type don't belong 'round here!'<<set $prevlocfc = true>>
+
+If you take the west path, [[turn to 41|41]].
+If you cross the stone bridge, [[turn to 110|110]].
+If you leave the Wooded Realm, [[turn to 111|111]].
+<<if $treeclimb>>If you climb the crooked tree, [[turn to 77|77]].<<endif>>
+
+
+:: 95
+
+95
+
+
+'I would very much like some tea, thank you,' you say in your politest voice, and you even summon up a curtsey from somewhere.
+
+'Very good, very good,' mumbles the ladybird, handing you a cup. You carefully balance it on your little finger and sip at the liquid inside, which is cold and tastes suspiciously like tree sap (you know what tree sap tastes like, because you ate some once).
+
+'Mmm,' you say, rubbing your belly as if you have just drank delicious hot tea, yet unsure why you continue your pretence of guestliness.
+
+'I must say,' says the ladybird grandly, 'out of all the little girls to have wandered out of the undergrowth to join me for tea, you are certainly the politest. As a reward, take that grappling hook.' She motions to a tree with her wigglers, and you see the device resting against the trunk.
+
+'Nice one!' you say gratefully, attaching the gadget to your belt.
+
+''Item gained - Grappling hook!''<<set $gotGrapple = true>>
+
+'Bye then!' you smile as the ladybird dismisses you with a wave. You head back to a quizzical Esme and tell her all about it before choosing this choice:
+
+If you take the north path, [[turn to 78|78]].
+If you head back to the first clearing, [[turn to 92|92]].
+
+
+:: 94
+
+94
+
+
+You both chomp eagerly on the fuzzwort, looking forward to super-strength and night vision and completely forgetting the horrendous side effects Mistress Honeywell warned you about. It tastes kinda funky, but suddenly you're able to see into the cave! Then you start to feel really dizzy, so you decide that's probably enough fuzzwort.
+
+'Dur, where d'ya think you're going?' asks the muscliest of the bat guys as you stride boldly in.
+
+You square up to him the best you can. 'Listen, mister,' you snarl, 'I've got a gutful of Fuzzwort and a heck of a headache, so you might not want to mess with me right now.'
+
+'My eyes feel cold,' says Esme quietly.
+
+<html><img src="020.jpg" width="500" height="208"></html>
+
+'Come on, bat guys,' shouts the super-muscly bat guy while swimming in and out of focus, 'let's murderise 'em!'
+
+You both get to punching, and soon the whole gang of bat guys is lying in a big pile of bruised bat-muscle. 'We hate you!' they scream as you skip deeper into the caves. You come to a junction. Rough steps carved from the stone lead down, and a tunnel leads northeast. It's a good job you brought your compass to school, or you wouldn't have known that.
+
+'What are we doing here?' asks Esme curiously.
+
+'We need the bat king's wings, remember?'
+
+'Oh yeah, so we do!' Esme blinks a lot.
+
+If you step on those steps, [[turn to 102|102]].
+If you get to tunnelling, [[turn to 76|76]].
+
+
+:: 97
+
+
+97
+
+'The rain and hail?' you hazard.
+
+The bat king mulls this over for a moment. 'Hmmm,' he says at last. 'Well it didn't really make any sense, but it did rhyme, and of course that is the sign of an excellent poem. Very well, girls, my wings are yours, but I want them back when you're done with them.'
+
+'Oh, really?' you say, surprised. 'But don't you need them?'
+
+'No, they're just for decoration really. Clip ons.' He detaches them to illustrate his point. 'Lost mine in the war, but a chap doesn't feel complete without something flapping around back there. Anyway, enough of my ramblings. Many thanks for the poem, and good luck to you both.'
+
+''Quest Item Gained - Bat King's Wings!''<<set $gotWings = true>>
+
+<<if $gotwingsonce>>You emerge from the cave to find Ethel waiting on the trail. Giant mechanical spiders are stomping about setting fire to things, and she is using superwater to rust their limbs. It's very loud and confusing.
+
+'We got the wings again!' you whoop.
+
+'What are you playing at?' asks Ethel. 'You've already got the wings! Get back in that cauldron and save the world already!'
+
+'Ok, ok, relax,' you sigh before hopping into the Fast Travel Cauldron.
+
+Now [[turn to 90|90]].<<else>>You emerge from the cave to find Ethel waiting on the trail. Giant mechanical spiders are stomping about setting fire to things, and she using superwater to rust their limbs. It's very loud and confusing.
+
+'Hey, kids, did you get them bat wings?' says Ethel.
+
+'We sure did!' you reply, dodging a falling arachnid seconds before it crashes to the dirt.
+
+'Good work!' says Ethel. 'I'm running out of superwater, so you better get back in the Fast Travel Cauldron (patents pending). We need to kill that eye!'
+
+'We're on it!' You each chestbump the witch before hopping into the Fast Travel Cauldron.<<set $gotwingsonce = true>>
+
+Now [[turn to 90|90]].<<endif>>
+
+
+:: 96
+
+96
+
+
+<<if $beenMagic>>'Let's go and see if there's any more astounding illusions at the magic shop!' chimes Esme.
+
+'Do we have to?' you groan.
+
+'I guess not,' she says. 'It was kinda lame.'<<else>>A bell rings as you enter the magic shop, and the shopkeeper, who seems to be mostly moustache, looks up. 'Welcome, little ones, to the Magic Emporium!'
+
+'It just says 'shop' on the sign,' you point out.
+
+'Ah yes, but in the world of magic nothing is as it seems. Take, for example, this small mirror-free box. You can see inside quite clearly, but look what happens when I drop this coin in - it vanishes!'
+
+'Oooh!' gasps Esme.
+
+'And now,' continues the moustache, 'consider these two perfectly normal bits of rope. I go like //this//'- he fiddles around a bit - 'and presto, they become one!'
+
+'Aaahh!' sighs Esme.
+
+'That's about it for now,' says the shop keeper, but check back soon for more incredible illusions!' He holds the door open, and waits for you to leave.
+
+'Is that it?' you ask. 'Don't you sell, like, fire spells and stuff?'
+
+'Good gracious, no. You're thinking of magick, with a 'k' on the end. I don't go in for that sort of violent rubbish, just good, clean tricks.'
+
+'Riiight,' you nod, making a mental note not to bother checking back soon for more incredible illusions.<<set $beenMagic = true>><<endif>>
+
+If you talk to the child, [[turn to 127|127]].
+If you breach the bar, [[turn to 109|109]].
+If you assess the armoury, [[turn to 67|67]].
+If you mope back to the magic shop, [[turn to 96|96]].
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you leave town and strike out towards the marshland, [[turn to 101|101]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>>
+
+
+:: 11
+
+11
+
+
+You approach the mysterious figure, who holds out a hand in warning. 'Come no closer,' he/she/it intones in a rasping, whispery shout, 'for all who touch me will befall a mysterious and terrible fate.'
+
+'Um... okay,' you say.
+
+'Great adventures await you both,' continues the figure, 'but you will face many dangers along the way. This amulet will illuminate the proper path, but choose wisely when to use it.'
+
+With these words, the hooded figure produces a clear plastic wallet containing a gaudy charm, and hold it out to you. 'Remember, don't touch me!'
+
+You gingerly reach out and take the wallet, thanking the mysterious stranger.
+
+'That's okay,' replies the stranger, 'but can I have the wallet back, please? I can use it again.'
+
+'Oh, sure,' you reply, taking the amulet out and handing the sleeve back to the stranger.<<set $gotAmulet = true>>
+
+''Item Gained - Gaudy Amulet''
+
+'Thanks,' says the stranger, and promptly disappears in a puff of smog.
+
+'Well that was odd,' says Esme. 'I guess we better get to class.'
+
+Now [[turn to 60|60]].
+
+
+:: 13
+
+13
+
+
+'Are you feeling alright?' Esme looks concerned as you head for the large double doors of the library, a place usually avoided like the snooty vampires in Farley Woods.
+
+'Yeah, I just fancied... I dunno... A bit of quiet?' The words drop lamely from your mouth, but Esme just shrugs and lets it pass.
+
+Inside stack of ancient tomes loom over you like great crumbling tombstones, and fat spiders scurry hither and thither.
+
+If you read a book, [[turn to 53|53]].
+If you stomp some spiders, [[turn to 46|46]].
+
+
+:: 12
+
+12
+
+<html><img src="010.jpg" width="272" height="400"></html>
+
+You show your picture to Esme, who claps delightedly. 'That's great! I drew an artistic slime-beast.'
+
+<html><img src="011.jpg" width="400" height="384"></html>
+
+'Cool beans!' you grin. 'I like the use of colour.'
+
+You sit and draw together until the sun goes down, then hurry along to dinner.
+
+Now [[turn to 73|73]].
+
+
+:: 15
+
+15
+
+
+You shift your attention (or lack thereof) to Esme, who appears to be inserting various items of stationery into the hair of Lydia Dragonbottom, a small girl unfortunate enough to both have a perm and be sitting directly in front of your wayward chum. So far she's managed four pencils, two rulers, a handful of paperclips and a protractor, but Lydia doesn't seem to have noticed.
+
+Suddenly a shadow falls across you, and you realise Mistress Honeywell is hovering darkly before your desk.
+
+'Miss Firespoon, you seem distracted. Have you actually been listening today?'
+
+If you admit your lapse of concentration, [[turn to 23|23]].
+If you try to blag it, [[turn to 9|9]].
+
+
+:: 14
+
+14
+
+<html><img src="002.jpg" width="400" height="300"></html>
+
+As the words leave your lips, Esme's head thuds dejectedly to her desk, and your heart sinks.
+
+'Not even close,' snarls Mistress Honeywell. 'This simply isn't good enough. If it happens again I shall see you in Madam Scrimshaw's office, and I hope you'll pay more attention there.'
+
+'Sorry, miss,' you mutter. And you are, a bit.
+
+Finally the lunch bell rings out from the courtyard, and you quickly make your escape.
+
+Outside, a flushed and slightly out of breath Esme waits impatiently. 'Thank Gaia that's over,' she pouts. 'I thought I was going to die of boredom, literally //die.// So, what do you want to do?'
+
+If you head to the library, [[turn to 13|13]].
+If you quietly eat your lunch, [[turn to 28|28]].
+If you go looking for trouble, [[turn to 5|5]].
+<<if $travelledBefore>>Nearby you spot the Fast Travel Cauldron bubbling merrily away. If you jump in, [[turn to 90|90]].<<endif>>
+
+
+:: 17
+
+17
+
+
+'Erm, weeds, I suppose,' says Esme reluctantly. Ethel finds you gardening gloves and bee-keepers bonnets and you head out to the back yard. Bright sunshine beats down as you get straight to weeding, grabbing hold of their ugly heads and ripping them up at the roots like you're supposed to.
+
+Suddenly Esme lets out a piercing scream, and you rush to her side. A weird evil-looking bug thing stares up at you 'twixt the grass-blades.
+
+<html><img src="007.jpg" width="400" height="300"></html>
+
+'Hullo, ladies,' says the bug courteously. 'Having a nice day, are we?'
+
+'Don't look straight at it,' you hiss to Esme, 'it looks all evil!'
+
+'Please don't be alarmed, my dears. I may look all evil, but I assure you I have a heart of gold. In fact, I was just on my way to the orphanage with these freshly baked cookies for all the delicious orphans. If one of you girls could furnish a chap with a few drops of human blood, I'd be very much obliged.'
+
+'Oh, cool. Wait, //what?//' asks Esme.
+
+You scowl, and raise your foot threateningly. 'Hey, you don't even have any cookies!'
+
+'Wait! I can explain!' cries the bug pathetically.
+
+If you stomp on the weird little bug, [[turn to 99|99]].
+If you wait to hear what he has to say, [[turn to 29|29]].
+
+
+:: 16
+
+16
+
+
+A hubbub of noise gently bats your ears as you approach the swanky new windmill, which opened a month ago and seems to be attracting quite a crowd. Colourful signs read 'SUPER CHEAP FLOUR' and 'YOU'VE TRIED THE CRUMBLING OLD MILL, NOW TRY THE SWANKY NEW MILL'. A savvy business elf, the proprietor, sits behind a comically small wooden desk, exchanging flour for gold.
+
+<html><img src="027.jpg" width="450" height="257"></html>
+
+You sense there's talking to be done. But who will be the receptacle for your talk?
+
+If you talk to the savvy business elf, [[turn to 27|27]].
+If you talk to the customers, [[turn to 45|45]].
+<<if $gotFlour>>If you hand out Bill's flour to the customers, [[turn to 132|132]].<<endif>>
+
+
+:: 19
+
+19
+
+
+'From time to time a lady on her travels may encounter a leery fire sprite. This most repugnant of creatures is well known for its lecherous gaze and poor sense of fashion, and on rare occasion has been reported to paw excitedly at a lady's ankles! //(Citation needed)// The only way to effectively dispose of such a beastly thing is simply to blow sharply upon it. It will be left all a tither and will likely slink off to compose itself, during which time our lady may make her escape, or give chase (should she possess the proper papers and seek to capture the fiend).<<set $knowLeery = true>>
+
+With the potentially helpful information gleaned, you replace the book and head outside, Esme in tow.
+
+''Knowledge gained - Leery fire sprite dissuasion technique.''
+
+Only a few minutes of lunch remain, so you quickly snarfle some snowfish sandwiches (your favourite) while a shiny-eyed Esme tells you all about her spider-stomping adventure.
+
+As the bell rings, you notice a hooded figure lurking near the bicycle sheds, apparently beckoning to you.
+
+If you investigate further, [[turn to 11|11]].
+If you head straight to class, not wishing to be tardy, [[turn to 60|60]].
+
+
+:: 18
+
+18
+
+<html><img src="009.jpg" width="400" height="300"></html>
+
+The old fish pond, which some claim is haunted with the ghosts of old fish, is eerily quiet. A lone hooded fisherperson casts his or her rod into the empty waters with unclear purpose. Someone has scratched something in the dirt at the water's edge.
+
+If you approach the hooded fisherperson, [[turn to 21|21]].
+If you examine the dirt-scratches, [[turn to 32|32]].
+
+
+:: 117
+
+117
+<html><img src="025.jpg" width="500" height="404"></html>
+
+Thank you for playing Witch's Girl! Not much has changed since you saved the world, but here's a quick update anyway.
+
+<<if $parentsAvenged = true>>Having killed the Spider King in at least one reality, you finally get over your anger towards him and are able to move on with your life.<<else>>The Spider King went on to apologise to you for what happened all those years ago, and offers to do all your homework for you for a month. You can't help but feel you missed something there.<<endif>>
+
+<<if $doneFlour = true>>Bill's old windmill is doing a roaring trade, thanks to your industrial sabotage. He gives you free flour whenever you go past, and since you can never be bothered to bake you now have far too much flour. The savvy business elf branched out into corn, so he's doing fine, too.<<else>>Sadly, Bill had to shut the crumbling old windmill after he lost all his customers. You can't help but feel you could have helped.<<endif>>
+
+<<if $doneCroissant = true>>That guy you gave the croissant to loved it so much he went and became a bat guy, and his used his mellowed-out forest attitude to help them curb their aggression.<<else>>Some guy in the Wooded Realm wanted a croissant, and you didn't help him. But hey, you were busy saving the world!<<endif>>
+
+Every night the new Moonbird emerges from the Wooded Realm to sing for all of Carn. Everyone who survived your escapade went on to live happily ever after, and those who didn't weren't really missed.
+
+Of course, you and Esme are still the best of friends. You've just finished a brand new comic all about your latest adventure, and it's proving quite popular, though some people are unsure whether children should be allowed to read it. Ethel has been heralded as a hero in the community, and everyone seems to have forgotten why witches were outlawed from Carn in the first place. She even turned Daisy's cat back into a cat. You go round to her house for tea all the time. In fact, you're there right now.
+
+If for some crazy reason you jump in the Fast Travel Cauldron, [[turn to 90|90]].
+Otherwise, feel free to close this window and go on with your life!
+
+
+:: 48
+
+48
+
+
+You hop over the low wall of the local apple orchard and get to scrumping! Big, sweet red ones, small tart green ones, they all taste great to you. Before long you are sticky-chinned and overstuffed, and Esme keeps belching in a most unladylike fashion, causing you to burst into giggles.
+
+<html><img src="004.jpg" width="400" height="300"></html>
+
+Suddenly a tree sprite slips out from behind an apple tree, looking positively furious. 'I am the protector of these apples!' he screeches in an annoyingly nasal fashion. 'They are not to be eaten by stinky humans! The punishment is death, or helping out around the orchard.'
+
+Esme politely swallows a burp and goes into a coughing fit, leaving you to do the talking.
+
+If you choose death, [[turn to 24|24]].
+If you choose helping out around the orchard, [[turn to 50|50]].
+If you formulate a scheme so crazy it might just work, the first step of which is to try and convince the tree sprite to eat an apple, [[turn to 22|22]].
+
+
+:: 49
+
+49
+
+
+You take the rickety stairs three at a time, Ethel looking up sharply as you explode into the living space where she has been relaxing with a good book (of the non-faced variety). 'What is it, girl? Spiders too big for ya?'
+
+You take a deep breath. 'Wefoundawierdoldbookwitha faceandEsmestartedreading itandnowshe'sgoneallscary
+andithinkmaybetheworld'sendingor-'
+
+'Stop right there,' says Ethel. 'Most people would tell you to slow down or just start at the beginning, but as it happens I am a witch and therefore I can use my magic powers to understand whatever you're babbling about.' She waggles her hands in a magical fashion, then pales. 'Well, that's not good,' she says, shoving you out of the way and barging up the stairs.
+
+Hot on her pointy witch-type heels, you arrive just in time to see Ethel and Esme shouting magic stuff at each other while crazy lights dance around the room. The lights become brighter, and you are forced to shield your eyes, but between your fingers you see some terrifying things.
+
+And then it all stops - the lights, the screaming and the floating Esme, who lands flat on her bum. You rush to her side at once.
+
+'Esme, are you okay?'
+
+Your heart pounds as she stares at you blankly for a moment, then leaps with hope as she blinks a few times.
+
+'Is it lunch time yet?'
+
+The voice is small and faint, but unmistakably Esme's. You hug your friend tightly, relief coursing over you.
+
+'Ahem,' coughs Ethel deliberately, staring out of a dusty window. 'This is all very sweet, but we have a problem.'
+
+With Esme in arm you scamper over to the window, where you are rather alarmed to see a huge gash splitting the sky open, with a gigantic, terrible lizard-type eye peering through it. 'That doesn't look good,' you remark limply.
+
+'Yes, when your little red friend read the incantation, she opened a dimensional rift through which all the evil of the universe will soon pour. Now, I'm pretty sure there's a way to stop it, but I'm going to need your help.'
+
+Now [[turn to 100|100]].
+
+
+:: 46
+
+46
+
+You gleefully set about chasing after and stomping on spiders of various shades and size. Esme joins in with relish. A particularly juicy arachnid scuttles off down a long book-lined corridor, and you eagerly give chase, only quietening your enthused whoops when a furious librarian shushes you with a long, bony finger.
+<html><img src="003.jpg" width="400" height="300"></html>
+
+You reach the end of the corridor, where you are surprised to find a gigantic spider wearing a tatty burnished crown and sitting on a frayed satin pillow. Could this be the fabled spider king?
+
+If you curtsey and politely introduce yourself, [[turn to 20|20]].
+If you stomp on its big ugly face, [[turn to 43|43]].
+
+
+:: 86
+
+86
+
+
+'An excellent choice!' beams the hobgoblin in congratulatory tones. 'This power is especially effective against water-based stuff. That'll be 1,000 gold, please.'
+
+'1,000 gold?' you gasp. We don't have that kind of money!'
+
+'Oh, okay. Well, the only budget power I currently offer is zombie power. Just how much gold //do// you have?'
+
+<<if $gotGold>>'We ''have'' 10 gold!' you beam proudly.
+
+'What a coincidence!' says the shopkeeper. '10 measly gold is exactly how much zombie power is currently on sale for. Hand that blade over.'
+
+You pay the man and give him your sword. He rubs it with a purple cloth and hands it back.
+
+'Is that it?' you ask doubtfully.
+
+'Yup, that's it. Well, have fun with it!'
+
+''Item gained - Zombie piratey sword!''<<set $gotZombiesword = true>><<set $donezombie = true>><<else>>'We ''have'' no gold,' you say glumly.
+
+'No gold, no powers, I'm afraid,' says the shopkeeper. You show yourselves out.<<endif>>
+
+If you talk to the child, [[turn to 127|127]].
+If you breach the bar, [[turn to 109|109]].
+If you try the armoury again, [[turn to 67|67]].
+If you mosey on down to the magic shop, [[turn to 96|96]].
+If you head back up the hill and hop in the Fast Travel Cauldron, [[turn to 90|90]].
+If you leave town and strike out towards the marshland, [[turn to 101|101]].
+<<if $beenShip>> <<else>>If you head over to the pirate ship, [[turn to 89|89]].<<endif>><<endif>><<set $beenArm = true>><<endif>>
+
+
+:: 44
+
+44
+
+
+You feel yourself slip between the pages of reality, the universe rearranges itself around you, and then...
+
+You stand at the very peak of the third mountain of Carn. Only fifty feet above you the eye spreads like a virus, infecting suns, devouring stars, and watching, always watching.
+
+The world below is lost to you. Any feeling, any emotion you might once have known has been stripped away from you like meat from a carcass, and now there is only this.
+
+You watch the eye, and the eye watches you, and for the longest time there is nothing else...
+
+
+
+
+And then Esme's hand slips into yours, and you remember the moonbird's egg, and the bat king's wings, and the wizard's tooth, and you know what you ''have'' to do.<<set $ftcEnd = true>>
+
+
+<<if $knowFlight>>[[You have to fly!|The Eye]]<<else>>But you don't ''know'' how to do it. [[You have to go back.|90]]<<endif>>
+
+
+:: 45
+
+45
+
+
+You strike up a conversation with a harpy in the queue, who explains that she is buying flour to bake a cake for Harpycon, an annual gathering of local harpys. The cake is to be given as a prize to the coolest harpy.
+
+'Oh, cool,' you say. 'So this new windmill, pretty swanky, huh?'
+
+'Yes! To be honest, I liked the old one just fine, but this one's so much more convenient! I mean, whenever I have to travel between the orphanage and that scary witch lady's house, I take the slightly shorter route and POW! It's right there. Plus the flour is cheap, so I can make super-big cakes.'
+
+'Well, nice meeting you!' you smile, and leave awkwardly, because you're bad at finishing conversations.
+
+Before too long you find yourself outside Ethel Frogbottle's rundown old cottage. Weeds threaten to devour the ramshackle structure, and the glass is broken in most of the windows. A faint, indeterminate odour pervades the still air.
+
+If you go right up to the front door and boldly knock, [[turn to 65|65]].
+If you sneak round the back, exercising nosy caution, [[turn to 37|37]].
+
+
+:: 42
+
+42
+
+
+You pluck a volume from the pile at random. It's 'Sky Pirate Elena', a semi-epic unfinished work which started a few summers ago, and which you come back to every now and then to add a chapter. Esme does most of the pictures and you do most of the words.
+
+The opening chapters concern Elena's early years; a happy childhood growing up in a seaside town with her socialite mother and inventor father, days spent keenly studying and nights spent with her best friend Octavia riding a mechanical whale her father had built. Then her life is torn apart by tragedy - a winged demon eats her mother and leaves her father wounded and unable to fulfil his dream of building a flying ship that runs on clouds (neither yourself or Esme are of a particularly technical mind). Bent on revenge, Elena works tirelessly on her father's plans, then takes off to battle the demon with Octavia.
+
+Then, a twist! As Elena prepares to fire her cannons directly into the exposed brain of the demon, Octavia sabotages the attack. It turns out she is the demon's daughter! Elena abandons ship and goes to ground, but then Octavia kills the demon and sets off to find her friend. They have a big argument, make up and fly around the world pirating stuff and fighting giant puppets which the demon left behind (or something). It all gets a bit unclear at this point, but there's plenty of high adventure and a good time is had by all.
+
+'Crumbs, it must be nearly dinnertime!' exclaims Esme. Looking up you see it has got rather dark, so you run along to dinner.
+
+Now [[turn to 73|73]].
+
+
+:: 43
+
+43
+
+
+'AIEEE!' screams the spider king as you stomp on his big ugly face. 'What did I ever do to you?'
+
+'My name is Oblivia Firespoon, and you mudered my parents,' you snarl as you finish him off and leave the library.
+
+Is the cold feeling in your bones closure? If so, you could do without it.
+
+''Subquest Complete - Avenge Your Parents!''<<set $parentsAvenged = true>>
+
+Only a few minutes of lunch remain, so you quickly snarfle some snowfish sandwiches (your favourite) while a shiny-eyed Esme recounts your spider-stomping adventure to some first-years.
+
+As the bell rings, you notice a hooded figure lurking near the bicycle sheds, apparently beckoning to you.
+
+If you investigate further, [[turn to 11|11]].
+If you head straight to class, not wishing to be tardy, [[turn to 60|60]].
+
+
+:: 40
+
+40
+
+<html><img src="002.jpg" width="400" height="300"></html>
+
+As the words leave your lips, Esme's head thuds dejectedly to her desk, and your heart sinks.
+
+'Not even close,' snarls Mistress Honeywell. 'This simply isn't good enough. If it happens again I shall see you in Madam Scrimshaw's office, and I hope you'll pay more attention there.'
+
+'Sorry, miss,' you mutter. And you are, a bit.
+
+Finally the lunch bell rings out from the courtyard, and you quickly make your escape.
+
+Outside, a flushed and slightly out of breath Esme waits impatiently. 'Thank Gaia that's over,' she pouts. 'I thought I was going to die of boredom, literally //die.// So, what do you want to do?'
+
+If you head to the library, [[turn to 13|13]].
+If you quietly eat your lunch, [[turn to 28|28]].
+If you go looking for trouble, [[turn to 5|5]].
+<<if $travelledBefore>>Nearby you spot the Fast Travel Cauldron bubbling merrily away. If you jump in, [[turn to 90|90]].<<endif>>
+
+
+:: 87
+
+87
+
+
+You feel yourself slip between the pages of reality, the universe rearranges itself around you, and then...
+
+You are awoken by Esme, hurriedly dress and set off for the purported witch's cottage. A fork in the road is little more than a contrived choice-forcing mechanic.
+
+If you take the (slightly longer) route past the crumbling old windmill, [[turn to 35|35]].
+If you take the (slightly shorter) route past the swanky new windmill, [[turn to 16|16]].
+If you hop straight back into the Fast Travel Cauldron, [[turn to 90|90]].
+
+
+:: 5
+
+5
+
+
+Trouble soon rears its head in the form of Crystalline Temperstone, the prettiest (and therefore also the meanest) girl in school, and her best friend Roxy Slipstream, who is not quite as pretty (and therefore not quite as mean). The pair taunt you from the sports field, and Esme happily launches herself at Roxy while you face up against Crystalline. A nearby ditch provides the perfect site for a scuffle and you all emerge several minutes later, flushed and sweaty with your uniforms in muddy disarray.
+
+Only a few minutes of lunch remain, so you quickly snarfle some snowfish sandwiches (your favourite) and rub your bruises.
+
+As the bell rings, you notice a hooded figure lurking near the bicycle sheds, apparently beckoning to you.
+
+If you investigate further, [[turn to 11|11]].
+If you head straight to class, not wishing to be tardy, [[turn to 60|60]].
+
+
+:: 9
+
+9
+
+
+'Of course, miss,' you lie.
+
+'Very well, what did I just say?'
+
+You think hard. 'Something about healing herbs?'
+
+Mistress Honeywell sighs. 'That was almost an hour ago, my girl. What did I say //just now//?'
+
+A flash of red catches your eye, and you see Esme flailing her arms wildly about and scrunching up her freckled face. Presumably she is trying to help you, but what do you decipher from her actions?
+
+If you say 'Something about explosions?' [[turn to 40|40]].
+If you say 'Something about dying?' [[turn to 25|25]].
+If you say 'Something about frogs?' [[turn to 14|14]].
+
+
+:: 77
+
+77
+
+
+You scramble up the tree, Esme close behind. From the top you can see the Wooded Realm in all it's glory. It's actually not that big. To the west you see a second clearing, to the east a generic glade-type area. In the distant north a dim glow catches your eye. Could this be the glow of the (recently) fabled Moontree? Why, yes. Yes it could.
+
+'Hey, is that glow the Moontree?' says Esme excitedly.
+
+'Yeah, I was just thinking that!' you reply while contemplating your next move.<<set $treeclimb = false>>
+
+If you shimmy back down the tree, [[turn to 92|92]].
+If you leap out of the tree like a mad person, [[turn to 106|106]].
+
+
+:: 76
+
+76
+
+
+You traipse along the tunnel, which is surprisingly bat guy free. Weeds hang down from the roof and smack you in the face, which is annoying. Eventually you emerge into a vast cave, it's floor split by a wide chasm that runs wall to wall. A badly-scrawled sign helpfully reads 'BEWAR OF GAP'. On the far side of the chasm you see what can only be described as a plinth, although no column, pedestal, statue, monument or structure rests upon it. Instead, there is something shiny!
+
+'I want that shiny thing!' says a wide-eyed Esme. 'But how to get it?'
+
+<<if $knowFlight>>'You could fly over there!' suggests Esme.
+
+'Yeah, but I can only do it once, remember? We couldn't get back.'
+
+'Oh yeah,' says Esme. 'Dang.'<<else>>'It's not like we can just fly over there,' says Esme.<<endif>>
+
+<<if $gotGrapple>>'We could use the grappling hook I got from that weird ladybird!' you suggest. Luckily Esme knows how to use grappling hooks, and she quickly retrieves the object, which turns out to be a shiny key!<<set $gotKey = true>>
+
+''Item Gained - Shiny Key!''
+
+'What a dumb place to keep a key,' says Esme. 'I mean really, it makes no sense whatsoever.'
+
+'Well, I suppose the bat guys can just glide over and get it, but it makes it hard for anyone else,' you point out.
+
+'Oh yeah, I guess. Well, there's not much else to do here, let's head back to the entrance cavern.'<<else>>Unfortunately, you ''have'' no way of reaching the object, so you are forced to head back to the entrance cavern and do another thing you can do.<<endif>>
+
+Now [[turn to 135|135]].
+
+
+:: 75
+
+75
+
+
+'I'll just take a quick look,' you reason, unable to quell your natural curiosity.
+
+You open the book to a random page (although it's probably the page that was last open or one that's been read a lot, it's quite hard to open a book to a random page), and what you see there is more than a tad unsettling. Strange symbols, unlike any language you've ever seen, cover the page, save for a few illustrations, the most eye-catching of which details a weird skull thing:
+
+<html><img src="023.jpg" width="181" height="250"></html>
+
+You suddenly realise that your lips are moving, silently reading the symbols in a tongue you are sure does not belong to this world. You feel unusually light, and your eyes tingle. You are dimly aware of a flash of red bobbing around on the edge of your vision, making an irritating noise, but you are either unable or unwilling to tear your attention from the book.
+
+And then everything turns black, or a colour somewhat darker.
+
+*
+
+'Oblivia? Oblivia!'
+
+You awake to find Esme cradling you in her arms, concern colouring her usually cheerful freckle-face. 'Are you OK?'
+
+'I... I'm fine,' you moan. 'Am I dead?'
+
+'Ahem,' coughs Ethel deliberately, staring out of a dusty window. 'This is all very sweet, but we have a problem.'
+
+With Esme in arm you scamper over to the window, where you are rather alarmed to see a huge gash splitting the sky open, with a gigantic, terrible lizard-type eye peering through it. 'That doesn't look good,' you remark limply.
+
+'Yes, when you read the incantation, you opened a dimensional rift through which all the evil of the universe will soon pour. Now, I'm pretty sure there's a way to stop it, but I'm going to need your help.'
+
+Now [[turn to 100|100]].
+
+
+:: 74
+
+<<if $beenCave>>
+74
+
+
+You head back to the forboding entrance to the bat cave. The snooty vampire is nowhere to be seen, but who'd want to hang around in a place like this?
+
+<<if $knowFuzzwort>>That Fuzzwort looks durn tasty. If you nibble on a bit, [[turn to 94|94]].<<else>>Again you notice the weeds growing near the cave entrance, but you wouldn't ''know'' about that sort of thing.<<endif>>
+
+If you head deeper into the End of Places, [[turn to 54|54]].
+If you head back to the entrance, [[turn to 38|38]].
+<<else>>
+
+74
+
+
+'I wonder why they call it the End of Places,' whispers Esme as you cross the threshold, carefully stepping over a neat little row of assorted skulls.
+
+'Maybe they just thought it sounded cool,' you shrug.
+
+'Maybe,' says Esme doubtfully.
+
+A dirt trail stretches endlessly before you, jammed tightly between the mountain bases. The peaks of Ebb and Sol pierce the clouds, and between them the eye watches, impassive, unblinking. You can't think of anything to say.
+
+You walk for what seems like an age. The sun falls, its golden rays superseded by a purple light that seeps from the giant split in the sky, infecting the stars, winding glowing threads among the gathered moons and using them to pull itself ever closer.
+
+'Don't look at it,' says Esme, her voice oddly hollow. 'Just keep your eyes on the path.'
+
+A great cave entrance in the face of Ebb draws your attention, and as you peer into the murky depths a snooty vampire leaps out, snarling a bit and flashing her fangs.
+
+'You don't want to go in there!' she warns snootily. 'It are dark, and there be bat guys!'
+
+Lacking the energy to correct her sloppy grammar, you simply reply, 'We're not afraid of any bats!'
+
+'Oh, okay,' she says forlornly. 'Well, sure, I guess if you wants to go in there, then go for it. But don't say I didn't warns ya!' She conveniently scurries away before you have a chance to say anything else.
+
+Peering into the cave, you realise it really is very dark. Also there appears to be a bunch of super-muscly bat guys who look eager to beat you up. All in all, it looks like a bad bat cave to go caving in.
+
+<<if $knowFuzzwort>>You notice strange weeds growing near the cave entrance. Hey! You ''know'' that root! It's fuzzwort, you learnt all about it in class. If you go right ahead and gobble it up, [[turn to 94|94]].<<else>>You notice a strange weed growing near the cave entrance, but you don't ''know'' much about weeds, so you ignore it.<<endif>>
+
+If you continue up the path, [[turn to 54|54]].
+If you head back down the path, [[turn to 38|38]].<<endif>>
+<<set $beenCave = true>>
+
+
+:: 73
+
+73
+
+
+You approach the run-down orphanage as the last rays of sunlight leave the sky.
+
+'And what sort a'time d'ye call this?' tuts Sister Beatrice as you enter the dining room, where the other girls are all assembled and waiting to eat. You still haven't figured out Sister Beatrice's accent, and you sense this is the wrong time to ask.
+
+'Sorry, Sister,' you mumble. 'We got caught up.'
+
+'Oh, I'm sure ye did. A six-week o' glorious summer stretched 'afore ye, and ye can't even make it back in time for supper.'
+
+You're not sure there's any correlation there, but you smell whiskey on her breath and know better than to press the point.
+
+Dinner is served, and you tuck into boiled firechicken and a big pile of mountain sprouts, washed down with a tall glass of moonfruit juice, which you're pretty sure has been diluted. Some conversation is permitted during mealtime, and you tell the assembled girls of your special assignment.
+
+'Crumbs!' says Matilda Longstaff, the palest of the orphans. 'You're going to get eaten for sure!'
+
+Later, your sleep is interrupted by dreams of being chased through the woods by witches, sprites and elves, all brandishing oversized cutlery and after your gizzard. You are awoken by Esme, hurriedly dress and set off for the purported witch's cottage. A fork in the road is little more than a contrived choice-forcing mechanic.
+
+If you take the (slightly longer) route past the crumbling old windmill, [[turn to 35|35]].
+If you take the (slightly shorter) route past the swanky new windmill, [[turn to 16|16]].
+<<if $travelledBefore>>Nearby you spot the Fast Travel Cauldron bubbling merrily away. If you jump in, [[turn to 90|90]].<<endif>>
+
+
+:: 72
+
+72
+
+
+'Let's disturb the sleeping figure,' you suggest brightly.
+
+'Are you crazy?' hisses Esme. 'It's probably a ghost, or a pirate, or a ghost pirate! Let's get out of here!'
+
+A quick game of orc, goblin, fimir decides in your favour, and you approach the sheeted form with your breath held. 'Um, hello?' you say, but there is no response. You shake the figure's shoulder-bump, but still nothing. You're inclined to stop here, but you don't want Esme to think you're a wuss, so finally you tug at the sheet, which falls away to reveal...
+
+A ghost pirate! It wails and moans and starts chucking stuff at you, so you quickly lift the trapdoor and throw Esme below before jumping down yourself, slamming it behind you. Everyone knows ghosts can't get through trapdoors.
+
+An oil lamp casts a warm glow over the generic corridor you find yourself in. Unmarked doors lead, um, port, and, er... starboard? A rude statue stands at the far end of the corridor, but you manage to avert your gaze.
+
+If you plump for port, [[turn to 118|118]].
+If you sidle starboard, [[turn to 129|129]].
+
+
+:: 71
+
+71
+
+
+<<if $gotZombiesword>>You raise the piratey sword, which crackles excitingly with its zombie powers, and bring it swooshing down, slicing the zombie pirate king neatly in half!
+
+'Ew, gross!' says Esme.
+
+'Yeah, but cool too!' you laugh.
+
+With the danger eliminated you rifle through the cabin and find what looks like an old treasure map!
+
+''Item Gained - Old Map''<<set $gotMap = true>>
+
+'Sweet deal!' chimes Esme. 'Now lets get out of here, the ship could be crawling with zombies!'
+
+You run from the room, knocking over a barrel in your haste. The powder spills towards the oil lamp, and then you realise it is gunpowder and therefore this is very bad! You leap up through the trapdoor, surprising the ghost, and leap from the deck as the ship explodes, propelling you forward to land on your faces at the waterside.
+
+'That was awesome!' says Esme. 'My face hurts.'
+
+If you traipse to town, [[turn to 124|124]].
+If you make merry in the marshland, [[turn to 101|101]].
+If you head back up the hill and jump in the Fast Travel Cauldron, [[turn to 90|90]].<<else>>You raise the piratey sword and bring it swooshing down, but it glances harmlessly off the zombie pirate king's pea-coloured flesh!
+
+'Go for his brain!' cries Esme, throwing a globe and slowing the lurching seafarer momentarily. Luckily (and grossly) his brain is already exposed, but again your blade just bounces off!
+
+'This is useless,' you snarl. 'Fall back!'
+
+You run from the room, knocking over a barrel in your haste. The powder spills towards the oil lamp, and then you realise it is gunpowder and therefore this is very bad! You leap up through the trapdoor, surprising the ghost, and leap from the deck as the ship explodes, propelling you forward to land on your faces at the waterside.
+
+'That was awesome!' says Esme. 'My face hurts.'
+
+'Yeah, it was awesome, but I'd have liked to get a closer look around that pirate king's cabin. Bound to be some cool stuff in there.'
+
+If you traipse to town, [[turn to 124|124]].
+If you make merry in the marshland, [[turn to 101|101]].
+If you head back up the hill and jump in the Fast Travel Cauldron, [[turn to 90|90]].<<endif>>
+
+
+:: 70
+
+70
+
+
+'My name is Oblivia Firespoon,' you say truthfully, 'and I'm trying to save the world, but the thing is, I need your egg.'
+
+The Moonbird considers this for a tense moment before replying. 'I am the last of the Moonbirds, at the end of my life, and this is the only egg I'll ever lay. It can only hatch in a place of pure darkness, and this nest at night is the last such spot in Carn, so if it is removed my kind will die out. But okay, sure, if you need it.'
+
+'Oh, really?' you say, surprised.
+
+'Yeah, s'cool,' says the Moonbird. 'But before you go, will you be the last to hear my song? It's quite short.'
+
+'Well, I'm in a bit of a hurry,' you say, then seeing the hurt expression on the Moonbird's face hurriedly add, 'but of course I'd love to hear your song!'
+
+'Ok, sweet,' says the Moonbird, before clearing its throat and falling silent.
+
+After a few awkward moments, you say 'Um... the song?'
+
+'Oh yes, the song!' smiles the Moonbird. 'Here we go, then.'
+
+<html><img src="018.jpg" width="413" height="550"></html>
+
+And then the Moonbird begins to sing; a sweet, slow, mournful song that washes over your senses and puddles in your soul. Discordant harmonies creep in, dancing in and out of the melody like the ghosts of fallen warriors, and as you stand transfixed lights twinkle in each and every tree as the weird and wonderful inhabitants of the Wooded Realm peek between the leaves to watch. The song lasts forever, and then it is over, and the Moonbird lays down to sleep, and not to wake.
+
+'What was all that squawking about?' asks Esme as you reach the base of the tree. 'Have you been crying?'
+
+'Um, yeah, a bit,' you say feebly, 'but I'm alright now. And look, I've got the egg!'<<set $gotEgg = true>>
+
+''Quest Item Gained - Moonbird Egg!''
+
+Now [[turn to 105|105]].
+
+
+:: 79
+
+79
+
+
+'Why are you tap-dancing?' hisses Esme as you clatter across the rock floor.
+
+'Oh whoops, I meant to tiptoe,' you say, embarrassed. 'Must be the fuzzwort.'
+
+<<if $gotKey>>You're nearly at the door so you just tapdance the rest of the way, feeling rather foolish. Luckily the legions of bat guys above seem to be sleeping soundly. You push at the small cheap door - but find it locked!
+
+'Hey, try the key we found in this very cave!' says Esme. 'It's bound to work!'
+
+'Good call,' you say, trying the key in the door. 'Hey, it won't turn!'
+
+'Really? That's not the key?'
+
+'I HATE THIS DOOR!' you cry, giving it a good kick. Your super-strength wins out over the cheap timber and the door promptly disintegrates. Seeing no other doors around, you discard the useless key.
+
+Through the door you find a bat guy mess hall, with a little bakery at the back. 
+
+'Ooh, croissants!' says Esme. 'Want one?'
+
+''Item gained - Croissant!''<<set $gotCroissant = true>>
+
+'Right, that's enough baked goods for one day,' you declare boldly. 'What's now?'
+
+If you try the large ornate door, [[turn to 62|62]].
+If you hightail it out of the cave, [[turn to 126|126]].<<else>>You're nearly at the door so you just tapdance the rest of the way, feeling rather foolish. Luckily the legions of bat guys above seem to be sleeping soundly. You push at the small cheap door - but find it locked! You don't ''have'' a key, so you are forced to reconsider your options.
+
+If you try the large ornate door instead, [[turn to 62|62]].
+If you hightail it out of the cave, [[turn to 126|126]].<<endif>>
+
+
+:: 78
+
+78
+
+
+You wander around for a bit, and wind up at a three way junction with a handy signpost. It indicates that the southwest path will lead you to a clearing, the southeast path to a glade and the north path to the Moontree.
+
+'Ooh, the Moontree!' says Esme.<<set $prevlocfc = false>>
+
+If you fancy a bit of clearing, [[turn to 41|41]].
+If you're feeling rather gladey, [[turn to 110|110]].
+If you come over all Moontree, [[turn to 103|103]].
+
+
+:: 47
+
+20
+
+
+'I wish for more wishes!' you exclaim brightly.
+
+'Oh, very clever,' says the Djinn, his voice dripping with sarcasm. 'Well, I'm duty bound to grant your wish. But know this! While you have more wishes, you may only ever wish for the //same thing!//'
+
+'Eh?' you rub your head, confused.
+
+'As in, you can only wish for more wishes. So, y'know, you can have millions of wishes, but you can't actually //do// anything with them. It's ironic, probably.' With this he flops back into the lamp and falls asleep.
+
+'All finished, are we?' sniffs Ethel disapprovingly. 'Well, the pots do look fairly clean, I suppose. Tell you what, go and tidy up the attic for me and then you can run along home.'
+
+You traipse up a rickety staircase to the dark, dusty attic, where flittery somethings scurry into cobwebbed corners to peer out at you. Glass tanks hold odd shapes that you'd rather not look at too closely, and spidery etchings adorn the walls. Esme shudders a lot.
+
+'Hey, what's this?' you exclaim, picking up a book with a weird face on the front.
+
+'Eep!' cries Esme. 'Put it down! Books with faces on can only have bad things inside!'
+
+If you heed her warning and replace the book, [[turn to 61|61]].
+If you just take one quick peek, [[turn to 75|75]].
+<<if $travelledBefore>>If you run downstairs and jump in the cauldron, [[turn to 90|90]].<<endif>>
+
+
