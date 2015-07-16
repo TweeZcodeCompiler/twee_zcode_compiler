@@ -61,6 +61,7 @@ private:
 
     std::set<std::string> globalVariables;
     int labelCount;
+    unsigned linkCount = 0;
     std::stack<IfContext> ifContexts;
     unsigned ifCount = 0;
 

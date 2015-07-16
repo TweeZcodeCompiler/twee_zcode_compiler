@@ -71,6 +71,8 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
 
+static const unsigned int LINKED_PASSAGES_SIZE = 512;
+
 //#define ZAS_DEBUG
 
 #ifndef ASSGEN
@@ -111,41 +113,43 @@ string makeIfEndLabel(const IfContext &context) {
 
 
 string makeUserInputRoutine() {
-    return ".FUNCT display_links i, selectcount\n"
-            "   loop_start:\n"
-            "   loadb LINKED_PASSAGES i -> sp\n"
-            "   jz sp ?passage_not_set\n"
-            "   storeb USERINPUT_LOOKUP selectcount i\n"
+    stringstream ss;
+
+    ss << ".FUNCT display_links i, selectcount, linkedcount\n"
+            "   call_vs __stack_count LINKED_PASSAGES " << to_string(LINKED_PASSAGES_SIZE) << " -> linkedcount\n"
+            "   store i 0\n"
+            "   jz linkedcount ?~loop_start\n"
+            "   ret -1\n"
+            "loop_start:\n"
             "   add selectcount 1 -> sp\n"
             "   add selectcount 49 -> sp\n"
             "   print_char sp\n"
             "   print \": \"\n"
-            "   call_vs print_name_for_passage i -> sp\n"
+            "   call_vs __stack_at LINKED_PASSAGES " << to_string(LINKED_PASSAGES_SIZE) << " i -> sp\n"
+            "   print_addr sp\n"
             "   new_line\n"
             "   add selectcount 1 -> selectcount\n"
+            "   add i 1 -> i\n"
+            "   jl i linkedcount ?loop_start\n"
             "\n"
-            "   passage_not_set:\n"
-            "\n"
-            "    add i 1 -> i\n"
-            "    jl i PASSAGES_COUNT ?loop_start\n"
-            "\n"
-            "    jz selectcount ?~links_available\n"
-            "    ret -1\n"
-            "links_available:\n"
-            "    read_char 1 -> USER_INPUT\n"
-            "    sub USER_INPUT 48 -> sp\n"
-            "    sub sp 1 -> sp\n"
-            "    loadb USERINPUT_LOOKUP sp -> sp \n"
-            "\n"
+            "   read_char 1 -> USER_INPUT\n"
+            "   sub USER_INPUT 48 -> sp\n"
+            "   sub sp 1 -> sp\n"
+            "   \n"
             "   add TURNS 1 -> TURNS\n"
-            "   ret sp"
-            "\n";
+            "   \n"
+            "   call_vs __stack_at LINKED_PASSAGES " << to_string(LINKED_PASSAGES_SIZE) << " sp -> sp\n"
+            "   call_vs passage_id_for_string_link sp -> sp\n"
+            "   pop_stack LINKED_PASSAGES linkedcount\n"
+            "\n"
+            "   ret sp";
+
+    return ss.str();
 }
 
 string makeClearTablesRoutine() {
     return ".FUNCT reset_tables i\n"
             "   loop_start:\n"
-            "   storeb LINKED_PASSAGES i 0\n"
             "   storeb USERINPUT_LOOKUP i 0\n"
             "   add i 1 -> i\n"
             "   jl i PASSAGES_COUNT ?loop_start\n"
@@ -159,6 +163,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     vector<Passage> passages = tweeFile.getPassages();
     globalVariables = std::set<std::string>();
     labelCount = 0;
+    linkCount = 0;
     ifContexts = stack<IfContext>();
     ifCount = 0;
 
@@ -178,8 +183,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     }
 
     // tables needed for routine linking
-    ASSGEN.addByteArray(TABLE_LINKED_PASSAGES, (unsigned) passages.size());
-    ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned) passages.size());
+    ASSGEN.addWordArray(TABLE_LINKED_PASSAGES, LINKED_PASSAGES_SIZE);
+    ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned) passages.size()); // todo: check if this is still needed
 
     ASSGEN.addWordArray(TABLE_VISITED_PASSAGE_COUNT, (unsigned) passages.size());
 
@@ -195,8 +200,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     // main routine
     {
         static const string LOCAL_NEXT_PASSAGE = "next_passage";
+
         // call start routine first
         ASSGEN.addRoutine(ROUTINE_MAIN, vector<ZRoutineArgument>({ZRoutineArgument(LOCAL_NEXT_PASSAGE)}))
+                .storew(TABLE_LINKED_PASSAGES, "0", to_string(LINKED_PASSAGES_SIZE-1))
                 .markStart()
                 .store(GLOB_PASSAGES_COUNT, to_string(passages.size()))
                 .store(GLOB_TURNS_COUNT, "1")
@@ -216,7 +223,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.quit();
     }
 
-    out << makeUserInputRoutine() << makeClearTablesRoutine();
+    out << makeUserInputRoutine() << endl << makeClearTablesRoutine() << endl;
 
     // call passage by id routine
     {
@@ -266,6 +273,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             ASSGEN.addLabel(labelForPassage(*it)).print(it->getHead().getName()).ret("0");
         }
+    }
+
+    {
+
     }
 
     // print appropriate text formatting args
@@ -390,7 +401,8 @@ void TweeCompiler::visit(const Formatting& host) {
 
 void TweeCompiler::visit(const Link& host) {
     if (isPreviousMacro(host.getTarget())) {
-        ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
+        // TODO: re-enable support for this
+        //ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
     } else {
         int id;
         string target = host.getTarget();

@@ -136,6 +136,8 @@ public:
 
     ZAssemblyGenerator &random(std::string range, std::string storeTarget);
 
+    ZAssemblyGenerator &pushStack(std::string stack, std::string value, std::string offset,
+                                                      std::string label, bool negateJump);
 
 private:
     std::ostream &out;
