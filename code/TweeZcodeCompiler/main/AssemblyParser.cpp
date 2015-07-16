@@ -69,6 +69,20 @@ const string AssemblyParser::PUSH_STACK_COMMAND = "push_stack";
 const string AssemblyParser::POP_STACK_COMMAND = "pop_stack";
 const string AssemblyParser::PULL_COMMAND = "pull";
 const string AssemblyParser::RANDOM_COMMAND = "random";
+const string AssemblyParser::READ_MOUSE = "read_mouse";
+const string AssemblyParser::MOUSE_WINDOW = "mouse_window";
+const string AssemblyParser::GET_CURSOR = "get_cursor";
+const string AssemblyParser::SET_CURSOR = "set_cursor";
+const string AssemblyParser::GET_WINDOW_PROPERTY = "get_wind_prop";
+const string AssemblyParser::WINDOW_STYLE = "window_style";
+const string AssemblyParser::SCROLL_WINDOW = "scroll_window";
+const string AssemblyParser::PUT_WIND_PROP = "put_wind_prop";
+const string AssemblyParser::SET_WINDOW = "set_window";
+const string AssemblyParser::WINDOW_SIZE = "window_size";
+const string AssemblyParser::SET_MARGINS = "set_margins";
+const string AssemblyParser::ERASE_WINDOW = "erase_window";
+const string AssemblyParser::SAVE_UNDO = "save_undo";
+const string AssemblyParser::RESTORE_UNDO = "restore_undo";
 const string AssemblyParser::OUTPUT_STREAM_COMMAND = "output_stream";
 const string AssemblyParser::INC_COMMAND = "inc";
 const string AssemblyParser::DEC_COMMAND = "dec";
@@ -620,6 +634,48 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
     } else if (commandPart.compare(AssemblyParser::RANDOM_COMMAND) == 0) {
         LOG_DEBUG << ":::::: new random";
         routineGenerator.random(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::READ_MOUSE) == 0) {
+        LOG_DEBUG << ":::::: new read_mouse";
+        routineGenerator.readMouse(parseArguments(command), dynamicMemory);
+    } else if (commandPart.compare(AssemblyParser::MOUSE_WINDOW) == 0) {
+        LOG_DEBUG << ":::::: new mouse_window";
+        routineGenerator.mouseWindow(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::GET_CURSOR) == 0) {
+        LOG_DEBUG << ":::::: new get_cursor";
+        routineGenerator.getCursor(parseArguments(command), dynamicMemory);
+    } else if (commandPart.compare(AssemblyParser::SET_CURSOR) == 0) {
+        LOG_DEBUG << ":::::: new set_cursor";
+        routineGenerator.setCursor(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::GET_WINDOW_PROPERTY) == 0) {
+        LOG_DEBUG << ":::::: new get_window_property";
+        routineGenerator.getWindowProperty(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::WINDOW_STYLE) == 0) {
+        LOG_DEBUG << ":::::: new window_style";
+        routineGenerator.windowStyle(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::SCROLL_WINDOW) == 0) {
+        LOG_DEBUG << ":::::: new scroll_window";
+        routineGenerator.scrollWindow(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::PUT_WIND_PROP) == 0) {
+        LOG_DEBUG << ":::::: new put_wind_prop";
+        routineGenerator.putWindProp(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::SET_WINDOW) == 0) {
+        LOG_DEBUG << ":::::: new set_window";
+        routineGenerator.setWindow(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::WINDOW_SIZE) == 0) {
+        LOG_DEBUG << ":::::: new window_size";
+        routineGenerator.windowSize(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::SET_MARGINS) == 0) {
+        LOG_DEBUG << ":::::: new set_margins";
+        routineGenerator.setMargins(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::ERASE_WINDOW) == 0) {
+        LOG_DEBUG << ":::::: new erase_window";
+        routineGenerator.eraseWindow(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::SAVE_UNDO) == 0) {
+        LOG_DEBUG << ":::::: new save_undo";
+        routineGenerator.saveUndo(parseArguments(command));
+    } else if (commandPart.compare(AssemblyParser::RESTORE_UNDO) == 0) {
+        LOG_DEBUG << ":::::: new restore_undo";
+        routineGenerator.restoreUndo(parseArguments(command));
     } else if (commandPart == AssemblyParser::PUSH_STACK_COMMAND) {
         LOG_DEBUG << ":::::: new push_stack";
         routineGenerator.pushStack(parseArguments(command));

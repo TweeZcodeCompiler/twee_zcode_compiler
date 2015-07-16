@@ -79,7 +79,30 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
     shared_ptr<ZCodeObject> globalObjectsTable = shared_ptr<ZCodeObject>(new ZCodeMemorySpace((0x2f0-0x140), "global objects"));
     dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodePkgAdrrPadding()));
     dynamicMemory->add(globalObjectsTable);
+
+    vector<bitset<8>> headerExtensionTableCode;
+    headerExtensionTableCode.push_back(0);
+    headerExtensionTableCode.push_back(4);
+    headerExtensionTableCode.push_back(0);
+    headerExtensionTableCode.push_back(0);
+    headerExtensionTableCode.push_back(0);
+    headerExtensionTableCode.push_back(0);
+    headerExtensionTableCode.push_back(0);
+    headerExtensionTableCode.push_back(0);
+    headerExtensionTableCode.push_back(0);
+    headerExtensionTableCode.push_back(0);
+
+    shared_ptr<ZCodeObject> headerExtensionTable = shared_ptr<ZCodeObject>(new ZCodeInstruction(headerExtensionTableCode, "header extension table"));
+    dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodePkgAdrrPadding()));
+
+    auto label = dynamicMemory->getOrCreateLabel("HeaderExtTable");
+    dynamicMemory->add(label);
+    dynamicMemory->add(headerExtensionTable);
+
     zcode->add(dynamicMemory);
+
+    //dynamicMemory->mouseXClicked = headerExtensionTable->getOffset() + 2;
+    //dynamicMemory->mouseYClicked = headerExtensionTable->getOffset() + 4;
 
     //create staticMemory
     shared_ptr<ZCodeContainer> staticMemory = shared_ptr<ZCodeContainer>(new ZCodeContainer("static memory"));
@@ -87,7 +110,7 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
     staticMemory->add(padding);
     zcode->add(staticMemory);
 
-    //create hight Memory
+    //create high Memory
     shared_ptr<ZCodeContainer> highMemory = shared_ptr<ZCodeContainer>(new ZCodeContainer("high memory"));
     zcode->add(highMemory);
 
@@ -104,6 +127,7 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
     header->baseOfHighMem = (uint16_t) (highMemory->getOffset());
     header->initValOfPC = header->baseOfHighMem;
     header->locOfObjTable = globalObjectsTable->offset;
+    header->headerExtensionTableAddress = headerExtensionTable->getOffset();
 
     //concat memory sections
 
