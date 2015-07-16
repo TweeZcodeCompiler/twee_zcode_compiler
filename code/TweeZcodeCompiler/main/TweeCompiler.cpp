@@ -176,37 +176,21 @@ string makeUserInputRoutine() {
             "   add i 1 -> i\n"
             "   jl i linkedcount ?loop_start\n"
             "\n"
-            "   read_char 1 -> USER_INPUT\n"
-            "   sub USER_INPUT 48 -> sp\n"
-            "   sub sp 1 -> sp\n"
-            "   \n"
-            "   passage_not_set:\n"
-            "\n"
-            "    add i 1 -> i\n"
-            "    jl i PASSAGES_COUNT ?loop_start\n"
-            "\n"
-            "    jz selectcount ?~links_available\n"
-            "    ret -1\n"
-            "links_available:\n"
             "    je INTERPRETER_SUPPORTS_MOUSE 1 ?mouse_supported\n"
             "    read_char 1 -> USER_INPUT\n"
             "    sub USER_INPUT 48 -> sp\n"
             "    sub sp 1 -> sp\n"
-            "    loadb USERINPUT_LOOKUP sp -> sp\n"
-            "    new_line\n"
+            "   call_vs __stack_at LINKED_PASSAGES " << to_string(LINKED_PASSAGES_SIZE) << " sp -> sp\n"
+            "   call_vs passage_id_for_string_link sp -> sp\n"
+            "   pop_stack linkedcount LINKED_PASSAGES\n"
             "    jump ?fetch_userinput_lookup\n"
-
             "mouse_supported:\n"
             "    push PRINT_ARROW_UP_AT_END\n"
             "    call_vs mouseClick sp -> sp\n"
             "fetch_userinput_lookup:\n"
-
             "\n"
             "   add TURNS 1 -> TURNS\n"
-            "   \n"
-            "   call_vs __stack_at LINKED_PASSAGES " << to_string(LINKED_PASSAGES_SIZE) << " sp -> sp\n"
-            "   call_vs passage_id_for_string_link sp -> sp\n"
-            "   pop_stack linkedcount LINKED_PASSAGES\n"
+            "\n"
             "\n"
             "   ret sp";
 
@@ -852,6 +836,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             i++;
         }
     }
+
+    out << Utils::getStackLib();
 }
 
 bool isPreviousMacro(string link) {
@@ -926,15 +912,14 @@ void TweeCompiler::visit(const Link& host) {
         string linkName = LINK_PREFIX + to_string(linkCount++);
         ASSGEN.addString(linkName, (host.getAltName() == "") ? host.getTarget() : host.getAltName());
 
-        ASSGEN.pushStack(TABLE_LINKED_PASSAGES,
-                         linkName,
-                         LABEL_ROUTINE_FAIL_HANDLER, true);
         foundLinks.push_back(Link(host));
         ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.first)
                 .call_1n(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE)
                 .addLabel(labels.first);
 
-        ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
+        ASSGEN.pushStack(TABLE_LINKED_PASSAGES,
+                         linkName,
+                         LABEL_ROUTINE_FAIL_HANDLER, true);
 
         ASSGEN.setTextStyle("1");           // reversed video
         ASSGEN.print(host.getAltName());
