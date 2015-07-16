@@ -161,7 +161,12 @@ void ZCodeHeader::setFlags2(std::vector<std::bitset<8>> &header) {
         header.push_back(0);
     }
 
-    bitset<8> flags2;                           // Hex 16
+    bitset<8> flags2;
+    flags2.reset();                             // Hex 16
+    flags2.set(0, useMenus);
+    header.push_back(flags2);
+
+    flags2.reset();                             // Hex 17
     flags2.set(0, transcripting);
     flags2.set(1, forcePrintingInFixedPitchFont);
     flags2.set(2, requestScreenRedraw);
@@ -172,7 +177,7 @@ void ZCodeHeader::setFlags2(std::vector<std::bitset<8>> &header) {
     flags2.set(7, useSoundEffects);
     header.push_back(flags2);
 
-    flags2.reset();                             // Hex 17
-    flags2.set(0, useMenus);
-    header.push_back(flags2);
+
+
+
 }

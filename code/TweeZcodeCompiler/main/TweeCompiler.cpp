@@ -67,9 +67,45 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         TEXT_FORMAT_FIXED_PITCH = "FIXED_PITCH",
         START_PASSAGE_NAME = "Start",
         GLOB_PREVIOUS_PASSAGE_ID = "PREVIOUS_PASSAGE_ID",
-        GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID";
+        GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID",
+
+        // mouse vars, routines & tables
+        // mouse link table: one link needs 4 entries: lineNumber, charStart, charEnd, passageNumber
+        // mouse arrow table: bounds are only entered if arrow is displayed.
+        //                    One arrow needs 4 entries: lineTop, charLeftTop, lineBottom, charLeftBottom
+
+        MOUSE_CLICK_ROUTINE = "mouseClick",
+        TABLE_CURSOR = "TABLE_CURSOR",
+        TABLE_MOUSE_CLICK = "TABLE_MOUSE_CLICK",
+        GLOB_INTERPRETER_SUPPORTS_MOUSE = "INTERPRETER_SUPPORTS_MOUSE",
+        SUPPORTS_MOUSE_ROUTINE = "SUPPORTS_MOUSE_ROUTINE",
+        UPDATE_MOUSE_SCREEN_ROUTINE = "UPDATE_MOUSE_SCREEN_ROUTINE",
+        PRINT_SPACES_ROUTINE = "PRINT_SPACES_ROUTINE",
+        TABLE_MOUSE_LINKS = "MOUSE_LINKS",
+        GLOB_TABLE_MOUSE_LINKS_NEXT = "MOUSE_LINKS_NEXT",
+        UPDATE_MOUSE_TABLE_BEFORE_ROUTINE = "UPDATE_MOUSE_TABLE_BEFORE_ROUTINE",
+        UPDATE_MOUSE_TABLE_AFTER_ROUTINE = "UPDATE_MOUSE_TABLE_AFTER_ROUTINE",
+        CLEAR_MOUSE_TABLE_ROUTINE = "CLEAR_MOUSE_TABLE_ROUTINE",
+        GLOB_LINES_PRINTED = "LINES_PRINTED",
+        PAUSE_PRINTING_ROUTINE = "PAUSE_PRINTING_ROUTINE",
+        GLOB_NEXT_PASSAGE_ID = "NEXT_PASSAGE_ID",
+        ROUTINE_PRINT_ARROW_UP = "PRINT_ARROW_UP",
+        ROUTINE_PRINT_ARROW_DOWN = "PRINT_ARROW_DOWN",
+        GLOB_PRINT_ARROW_UP_AT_END = "PRINT_ARROW_UP_AT_END",
+        TABLE_MOUSE_CLICK_ARROWS = "MOUSE_CLICK_ARROWS",
+        INIT_ROUTINE = "INIT_ROUTINE";
 
 static const unsigned int ZSCII_NUM_OFFSET = 49;
+static const unsigned int MAX_MOUSE_LINKS = 20;
+static const unsigned int MARGIN_LEFT = 20;
+static const unsigned int MARGIN_RIGHT = 10;
+static const unsigned int MARGIN_TOP = 4;      // at least 4 lines to leave place for up arrow
+static const unsigned int MARGIN_BOTTOM = 4;   // at least 4 lines to leave place for down arrow
+static const string INTRO_TITLE = "C++ Compiler, built at FU Berlin";
+static const string INTRO_MOUSE = "This interpreter supports mouse control. Click on links to go to the next passage and use the arrow keys on the right side of the screen to navigate in one passage.";
+static const string INTRO_NO_MOUSE = "Unfortunately this interpreter does not support mouse control. Links are displayed at the end of a passage and can be chosen via your keyboard.";
+static const string INTRO_NEXT_MOUSE = "Click somewhere to start the story. Have fun and good luck.";
+static const string INTRO_NEXT_NO_MOUSE = "Press a key to start the story. Have fun and good luck.";
 
 //#define ZAS_DEBUG
 
@@ -118,10 +154,12 @@ string makeUserInputRoutine() {
             "   storeb USERINPUT_LOOKUP selectcount i\n"
             "   add selectcount 1 -> sp\n"
             "   add selectcount 49 -> sp\n"
+            "   je INTERPRETER_SUPPORTS_MOUSE 1 ?mouse_is_supported\n"
             "   print_char sp\n"
             "   print \": \"\n"
             "   call_vs print_name_for_passage i -> sp\n"
             "   new_line\n"
+            "   mouse_is_supported:\n"
             "   add selectcount 1 -> selectcount\n"
             "\n"
             "   passage_not_set:\n"
@@ -132,10 +170,19 @@ string makeUserInputRoutine() {
             "    jz selectcount ?~links_available\n"
             "    ret -1\n"
             "links_available:\n"
+            "    je INTERPRETER_SUPPORTS_MOUSE 1 ?mouse_supported\n"
             "    read_char 1 -> USER_INPUT\n"
             "    sub USER_INPUT 48 -> sp\n"
             "    sub sp 1 -> sp\n"
-            "    loadb USERINPUT_LOOKUP sp -> sp \n"
+            "    loadb USERINPUT_LOOKUP sp -> sp\n"
+            "    new_line\n"
+            "    jump ?fetch_userinput_lookup\n"
+
+            "mouse_supported:\n"
+            "    push PRINT_ARROW_UP_AT_END\n"
+            "    call_vs mouseClick sp -> sp\n"
+            "fetch_userinput_lookup:\n"
+
             "\n"
             "   add TURNS 1 -> TURNS\n"
             "   ret sp"
@@ -163,25 +210,46 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ifCount = 0;
 
     {
+        //check if all passage names are unique and there is a start passage "Start"
+        set<string> passageNames;
+        bool hasStart = false;
+
+        for (auto passage =  passages.begin(); passage!=passages.end(); ++passage) {
+            if (!hasStart) {
+               hasStart = (passage->getHead().getName() == "Start");
+            }
+            if(passageNames.find(passage->getHead().getName()) == passageNames.end()) {
+                passageNames.insert(passage->getHead().getName());
+            } else {
+                throw TweeDocumentException("Duplicate passage name: " + passage->getHead().getName());
+            }
+        }
+
+        if (!hasStart) {
+            throw TweeDocumentException("Twee document doesn't contain a start passage: ::Start");
+        }
+
+    }
+
+    {
         int i = 0;
         for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
-            passageName2id[passage->getHead().getName()] = i;
-            i++;
+            passageName2id[passage->getHead().getName()] = (i++);
         }
     }
-
-    // check if start passage is contained
-    try {
-        passageName2id.at("Start");
-    } catch (const out_of_range &outOfRange) {
-        throw TweeDocumentException("Twee document doesn't contain a start passage");
-    }
-
     // tables needed for routine linking
     ASSGEN.addByteArray(TABLE_LINKED_PASSAGES, (unsigned) passages.size());
     ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned) passages.size());
 
     ASSGEN.addWordArray(TABLE_VISITED_PASSAGE_COUNT, (unsigned) passages.size());
+    ASSGEN.addWordArray(TABLE_CURSOR, 8);
+    ASSGEN.addWordArray(TABLE_MOUSE_CLICK, 20);
+
+
+    ASSGEN.addWordArray(TABLE_MOUSE_LINKS, MAX_MOUSE_LINKS * 4 * 5); // maximum of MAX_MOUSE_LINKS links per page of a passage possible
+    ASSGEN.addWordArray(TABLE_MOUSE_CLICK_ARROWS, 2 * 4);
+
+
 
     // globals
     ASSGEN.addGlobal(GLOB_PASSAGE)
@@ -189,7 +257,12 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
             .addGlobal(GLOB_PASSAGES_COUNT)
             .addGlobal(GLOB_PREVIOUS_PASSAGE_ID)
             .addGlobal(GLOB_CURRENT_PASSAGE_ID)
-            .addGlobal(GLOB_TURNS_COUNT);
+            .addGlobal(GLOB_TURNS_COUNT)
+            .addGlobal(GLOB_INTERPRETER_SUPPORTS_MOUSE)
+            .addGlobal(GLOB_TABLE_MOUSE_LINKS_NEXT)
+            .addGlobal(GLOB_LINES_PRINTED)
+            .addGlobal(GLOB_NEXT_PASSAGE_ID)
+            .addGlobal(GLOB_PRINT_ARROW_UP_AT_END);
 
 
     // main routine
@@ -202,11 +275,21 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .store(GLOB_TURNS_COUNT, "1")
                 .store(GLOB_PREVIOUS_PASSAGE_ID, "0")
                 .store(GLOB_CURRENT_PASSAGE_ID, "0")
+                .call_1n(SUPPORTS_MOUSE_ROUTINE)
                 .call_1n(ROUTINE_CLEAR_TABLES)
+                .store(GLOB_NEXT_PASSAGE_ID, "-1")
+                .setCursor("-1", "0", "0")           // hide cursor
+                .call_1n(INIT_ROUTINE)
                 .call_vn(ROUTINE_PASSAGE_BY_ID, to_string(passageName2id.at(string(START_PASSAGE_NAME))));
 
         ASSGEN.addLabel(LABEL_MAIN_LOOP)
+                .jumpEquals(GLOB_NEXT_PASSAGE_ID + " -1", "displayLinks")
+                .store(LOCAL_NEXT_PASSAGE, GLOB_NEXT_PASSAGE_ID)
+                .store(GLOB_NEXT_PASSAGE_ID, "-1")
+                .jump("callRoutines")
+                .addLabel("displayLinks")
                 .call_vs(ROUTINE_DISPLAY_LINKS, nullopt, LOCAL_NEXT_PASSAGE)
+                .addLabel("callRoutines")
                 .jumpLower(ASSGEN.makeArgs({LOCAL_NEXT_PASSAGE, "0"}), "end_program")
                 .call_1n(ROUTINE_CLEAR_TABLES)
                 .call_vn(ROUTINE_PASSAGE_BY_ID, LOCAL_NEXT_PASSAGE)
@@ -214,6 +297,49 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.addLabel("end_program");
         ASSGEN.quit();
+    }
+
+    {
+        string varI = "i", varKey = "key";
+
+        ASSGEN.addRoutine(INIT_ROUTINE, {ZRoutineArgument(varI), ZRoutineArgument(varKey)})
+                .setMargins(to_string(MARGIN_LEFT), to_string(MARGIN_RIGHT), "0")
+
+                // add top margin
+                .addLabel("loop")
+                .newline()
+                .add(varI, "1", varI)
+                .jumpLess(varI + " " + to_string(MARGIN_TOP), "loop")
+                .windowStyle("0", "15", "1")
+
+                .setTextStyle("6")
+                .setTextStyle("2")
+                .print(INTRO_TITLE)
+                .setTextStyle("0")
+                .newline()
+                .newline()
+
+                .jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 1", "mouseSupported")
+                .print(INTRO_NO_MOUSE)
+                .newline()
+                .newline()
+                .newline()
+                .print(INTRO_NEXT_NO_MOUSE)
+                .read_char(varKey)
+                .setMargins("0", "0", "0")
+                .eraseWindow("0")
+                .ret("0");
+
+        ASSGEN.addLabel("mouseSupported")
+                .print(INTRO_MOUSE)
+                .newline()
+                .newline()
+                .newline()
+                .print(INTRO_NEXT_MOUSE)
+                .mouseWindow("-1")
+                .read_char(varKey)
+                .mouseWindow("1")
+                .ret("0");
     }
 
     out << makeUserInputRoutine() << makeClearTablesRoutine();
@@ -266,6 +392,325 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         for (auto it = passages.begin(); it != passages.end(); ++it) {
             ASSGEN.addLabel(labelForPassage(*it)).print(it->getHead().getName()).ret("0");
         }
+    }
+
+    // mouse control routines
+    {
+        // mouse click routine
+
+        string varKey = "key", varXMouse = "xMouse", varYLineClick = "yMouseLineClick", varXMouseClick = "xMouseClick", varYMouse = "yMouse", varFontSize = "fontSize";
+        string varClickArrows = "clickArrows", varFirstLinkLine = "firstLinkLine", varMouseTableIndex = "mouseTableIndex", varI = "i", varCharWidth = "charWidth";
+
+        vector<ZRoutineArgument> args;
+        args.push_back(ZRoutineArgument(varClickArrows));   // needs to be set by call command
+        args.push_back(ZRoutineArgument(varKey));
+        args.push_back(ZRoutineArgument(varXMouse));
+        args.push_back(ZRoutineArgument(varYMouse));
+        args.push_back(ZRoutineArgument(varYLineClick));
+        args.push_back(ZRoutineArgument(varXMouseClick));
+        args.push_back(ZRoutineArgument(varFontSize));
+        args.push_back(ZRoutineArgument(varCharWidth));
+        args.push_back(ZRoutineArgument(varFirstLinkLine));
+        args.push_back(ZRoutineArgument(varMouseTableIndex));
+        args.push_back(ZRoutineArgument(varI));
+        ASSGEN.addRoutine(MOUSE_CLICK_ROUTINE, args);
+
+        ASSGEN.getWindowProperty("0", "13", varFontSize)
+                .div(varFontSize, "256", varFontSize);
+
+        ASSGEN.loadb("33", 0, "sp")                                                // max chars per line
+                .getWindowProperty("0", "3", "sp")                                 // window width in pixels
+                .sub("sp", to_string(MARGIN_LEFT), "sp")
+                .sub("sp", to_string(MARGIN_RIGHT), "sp")
+                .div("sp", "sp", varCharWidth)
+                .add(varCharWidth, "1", varCharWidth);
+
+        ASSGEN.addLabel("MOUSE_CLICK_LOOP")
+                .mouseWindow("-1")
+                .read_char(varKey)
+                .mouseWindow("1");
+
+        ASSGEN.readMouse(TABLE_MOUSE_CLICK)
+                .loadw(TABLE_MOUSE_CLICK, "0", varYMouse)
+                .loadw(TABLE_MOUSE_CLICK, "1", varXMouse);
+
+        ASSGEN.div(varYMouse, varFontSize, varYLineClick)
+                .add(varYLineClick, "1", varYLineClick)
+                .div(varXMouse, varCharWidth, varXMouseClick);
+
+        ASSGEN.store(varMouseTableIndex, "1");
+        ASSGEN.addLabel("LINKS_ENTRIES")
+                .loadw(TABLE_MOUSE_LINKS, varMouseTableIndex, varI)
+                .jumpGreaterEquals(varMouseTableIndex + " " + GLOB_TABLE_MOUSE_LINKS_NEXT, "ALL_ENTRIES_CHECKED")    // there are no more links saved in table
+                .jumpGreater(varMouseTableIndex + " " + to_string(MAX_MOUSE_LINKS * 4), "ALL_ENTRIES_CHECKED")       // all 20 links are checked
+                .jumpEquals(varYLineClick + " " + varI, "CORRECT_LINE")
+                .add(varMouseTableIndex, "4", varMouseTableIndex)
+                .jump("LINKS_ENTRIES");
+
+        ASSGEN.addLabel("CORRECT_LINE")
+                .add(varMouseTableIndex, "1", varMouseTableIndex)
+                .loadw(TABLE_MOUSE_LINKS, varMouseTableIndex, varI)
+                .jumpGreaterEquals(varXMouseClick + " " + varI, "CORRECT_X_START")
+                .add(varMouseTableIndex, "3", varMouseTableIndex)
+                .jump("LINKS_ENTRIES");
+
+        ASSGEN.addLabel("CORRECT_X_START")
+                .add(varMouseTableIndex, "1", varMouseTableIndex)
+                .loadw(TABLE_MOUSE_LINKS, varMouseTableIndex, varI)
+                .jumpLess(varXMouseClick + " " + varI, "CORRECT_X_ENDING")
+                .add(varMouseTableIndex, "2", varMouseTableIndex)
+                .jump("LINKS_ENTRIES");
+
+        ASSGEN.addLabel("CORRECT_X_ENDING")
+                .add(varMouseTableIndex, "1", varMouseTableIndex)
+                .loadw(TABLE_MOUSE_LINKS, varMouseTableIndex, varI)
+                .ret(varI);
+
+        ASSGEN.addLabel("ALL_ENTRIES_CHECKED")
+                .jumpEquals(varClickArrows + " 0", "MOUSE_CLICK_LOOP")   // are arrows active?
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "1", "sp")              // test here with x value because arrows are always drawn on right sight
+                .jumpEquals("sp 0", "ARROW_DOWN")
+
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "0", "sp")       // lineTop
+                .jumpLess(varYLineClick + " sp", "ARROW_DOWN")
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "1", "sp")       // width left
+                .jumpLess(varXMouseClick + " sp", "ARROW_DOWN")
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "2", "sp")       // line bottom
+                .jumpGreater(varYLineClick + " sp", "ARROW_DOWN")
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "3", "sp")       // width right
+                .jumpGreater(varXMouseClick + " sp", "ARROW_DOWN")
+                .restoreUndo("sp");                               // restores game to start this passage again
+
+        ASSGEN.addLabel("ARROW_DOWN")
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "5", "sp")
+                .jumpEquals("sp 0", "MOUSE_CLICK_LOOP")
+
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "4", "sp")              // lineTop
+                .jumpLess(varYLineClick + " sp", "MOUSE_CLICK_LOOP")
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "5", "sp")              // width left
+                .jumpLess(varXMouseClick + " sp", "MOUSE_CLICK_LOOP")
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "6", "sp")              // line bottom
+                .jumpGreater(varYLineClick + " sp", "MOUSE_CLICK_LOOP")
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "7", "sp")              // width right
+                .jumpGreater(varXMouseClick + " sp", "MOUSE_CLICK_LOOP")
+                .ret("-1");                                              // signals that no link was clicked
+
+
+        // print arrow up routine
+
+        string varLineCount = "line_count";
+
+        ASSGEN.addRoutine(ROUTINE_PRINT_ARROW_UP, {ZRoutineArgument(varCharWidth), ZRoutineArgument(varLineCount)});
+
+        ASSGEN.loadb("33", "0", varCharWidth)
+                .sub(varCharWidth, "4", varCharWidth)
+                .loadb("32", "0", varLineCount)
+                .sub(varLineCount, "4", varLineCount);
+
+        ASSGEN.setWindow("1")
+                .newline()
+                .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .getCursor(TABLE_CURSOR)
+                .loadw(TABLE_CURSOR, "0", "sp") // line number of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "0", "sp")
+                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "1", "sp")
+                .print("/ \\ ");
+
+        ASSGEN.newline()
+                .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" |  ");
+
+        ASSGEN.newline()
+                .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" |  ")
+                .getCursor(TABLE_CURSOR)
+                .loadw(TABLE_CURSOR, "0", "sp") // line number of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "2", "sp")
+                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "3", "sp");
+
+        ASSGEN.setWindow("0")
+                .ret("0");
+
+
+        // print arrow down routine
+
+        string varLinesPrinted = "lines_printed";
+
+        ASSGEN.addRoutine(ROUTINE_PRINT_ARROW_DOWN, {ZRoutineArgument(varCharWidth), ZRoutineArgument(varLinesPrinted),
+                                                     ZRoutineArgument(varLineCount)});
+
+        ASSGEN.loadb("33", "0", varCharWidth)
+                .sub(varCharWidth, "4", varCharWidth)
+                .loadb("32", "0", varLineCount)
+                .sub(varLineCount, "4", varLineCount);
+
+        ASSGEN.setWindow("1")
+                .addLabel("loop")
+                .newline()
+                .add(varLinesPrinted, "1", varLinesPrinted)
+                .jumpLess(varLinesPrinted + " " + varLineCount, "loop");
+
+        ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .getCursor(TABLE_CURSOR)
+                .loadw(TABLE_CURSOR, "0", "sp") // line number of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "4", "sp")
+                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "5", "sp")
+                .print(" |  ")
+                .newline();
+
+        ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" |  ")
+                .newline();
+
+        ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
+                .print(" V  ")
+                .getCursor(TABLE_CURSOR)
+                .loadw(TABLE_CURSOR, "0", "sp") // line number of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "6", "sp")
+                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "7", "sp");
+
+        ASSGEN.setWindow("0")
+                .ret("0");
+
+
+        // support mouse routine
+
+        ASSGEN.addRoutine(SUPPORTS_MOUSE_ROUTINE);
+
+        ASSGEN.loadb("23", "0", "sp")  // flags in header, bit 5 needs to be true
+                .lor("sp", "11011111", "sp")
+                .jumpZero("sp", "NOT_SUPPORTED");
+
+
+        ASSGEN.loadb("50", "0", "sp")  // revision number first part, needs to be 1
+                .land("sp", "00000001", "sp")
+                .jumpZero("sp", "NOT_SUPPORTED");
+
+
+        ASSGEN.loadb("50", "1", "sp")  // revision number second part, needs to be 1
+                .land("sp", "00000001", "sp")
+                .jumpZero("sp", "NOT_SUPPORTED");
+
+        ASSGEN.store(GLOB_INTERPRETER_SUPPORTS_MOUSE, "1")
+                .ret("0");
+
+        ASSGEN.addLabel("NOT_SUPPORTED")
+                .store(GLOB_INTERPRETER_SUPPORTS_MOUSE, "0")
+                .ret("0");
+
+        // update screen routine
+
+        string varYSize = "ySize", varXSize = "xSize";
+
+        ASSGEN.addRoutine(UPDATE_MOUSE_SCREEN_ROUTINE, {ZRoutineArgument(varYSize), ZRoutineArgument(varXSize), ZRoutineArgument(varI)});
+
+        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "no_mouse");
+
+        ASSGEN.eraseWindow("0")
+                .eraseWindow("1")
+                .store(GLOB_TABLE_MOUSE_LINKS_NEXT, "1")
+                .store(GLOB_LINES_PRINTED, "1")
+                .call_1n(CLEAR_MOUSE_TABLE_ROUTINE);
+
+        /*ASSGEN.loadb("33", "0", varCharWidth)
+                .sub(varCharWidth, "4", varCharWidth)
+                .loadb("32", "0", varLineCount)
+                .sub(varLineCount, "4", varLineCount);*/
+
+        ASSGEN.getWindowProperty("0", "2", varYSize)
+                .getWindowProperty("0", "3", varXSize)
+                .windowStyle("0", "15", "1")
+                .windowStyle("1", "15", "1")
+                .putWindowProperty("0", "15", "-999")    // set lineCount to -999 -> interpreter will not show [[MORE]]
+                .putWindowProperty("1", "15", "-999");
+
+        ASSGEN.windowSize("1", varYSize, varXSize)
+                .setMargins(to_string(MARGIN_LEFT), to_string(MARGIN_RIGHT), "0");
+
+        ASSGEN.addLabel("loop")
+                .newline()
+                .add(varI, "1", varI)
+                .jumpLess(varI + " " + to_string(MARGIN_TOP), "loop")
+                .add(GLOB_LINES_PRINTED, varI, GLOB_LINES_PRINTED);
+
+
+        ASSGEN.addLabel("no_mouse")
+                .ret("0");
+
+        // UPDATE_MOUSE_TABLE_BEFORE_ROUTINE
+
+        ASSGEN.addRoutine(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE)
+                .jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "no_mouse")
+                .getCursor(TABLE_CURSOR)
+                .loadw(TABLE_CURSOR, "0", "sp") // line number of cursor
+                .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
+                .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
+                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
+                .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
+                .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
+                .addLabel("no_mouse")
+                .ret("0");
+
+        // UPDATE_MOUSE_TABLE_AFTER_ROUTINE
+
+        string varId = "passage_id";
+
+        ASSGEN.addRoutine(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, {ZRoutineArgument(varId)})
+                .jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "no_mouse")
+                .getCursor(TABLE_CURSOR)
+                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
+                .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
+                .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
+                .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, varId)
+                .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
+                .addLabel("no_mouse")
+                .ret("0");
+
+        // clear mouse table routine
+
+        ASSGEN.addRoutine(CLEAR_MOUSE_TABLE_ROUTINE, {ZRoutineArgument("i")})
+                .addLabel("loop")
+                .storew(TABLE_MOUSE_LINKS, "i", "0")
+                .add("i", "1", "i")
+                .jumpLess("i " + to_string(MAX_MOUSE_LINKS * 4), "loop");
+
+        ASSGEN.store("i", "0")
+                .addLabel("loop2")
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "i", "0")
+                .add("i", "1", "i")
+                .jumpLess("i 8", "loop2")
+                .ret("0");
+
+        // PAUSE_PRINTING_ROUTINE
+
+        ASSGEN.addRoutine(PAUSE_PRINTING_ROUTINE, {ZRoutineArgument("result")})
+                .add(GLOB_LINES_PRINTED, "1", GLOB_LINES_PRINTED)
+                .loadb("32", 0, "sp")
+                .sub("sp", to_string(MARGIN_BOTTOM), "sp")
+                .jumpLess(GLOB_LINES_PRINTED + " sp", "end")             // jump if last line of screen is not reached
+                .store(GLOB_PRINT_ARROW_UP_AT_END, "1")
+                .call_1n(ROUTINE_PRINT_ARROW_DOWN)
+                .call_vs(MOUSE_CLICK_ROUTINE, to_string(1), "result")
+                .jumpLess("result 0", "noLinkClicked")                   // jump if no link clicked by mouse
+                .store(GLOB_NEXT_PASSAGE_ID, "result")
+                .jump("end")
+                .addLabel("noLinkClicked")
+                .call_1n(UPDATE_MOUSE_SCREEN_ROUTINE)
+                .addLabel("end")
+                .ret("0");
+
+        // helper routine
+
+        ASSGEN.addRoutine(PRINT_SPACES_ROUTINE, {ZRoutineArgument("count"), ZRoutineArgument("i")})
+                .addLabel("loop")
+                .print(" ")
+                .add("i", "1", "i")
+                .jumpLess("i count", "loop")
+                .ret("0");
     }
 
     // print appropriate text formatting args
@@ -389,31 +834,65 @@ void TweeCompiler::visit(const Formatting& host) {
 }
 
 void TweeCompiler::visit(const Link& host) {
+    // TODO: catch invalid link
+    pair<string, string> labels = makeLabels("routineClicked");
+
     if (isPreviousMacro(host.getTarget())) {
+        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.first)
+                .call_1n(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE)
+                .addLabel(labels.first);
+
         ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
+
+        ASSGEN.setTextStyle("1");           // reversed video
+        ASSGEN.print(host.getAltName());
+        ASSGEN.setTextStyle("0");           // reversed video
+
+        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.second)
+                .call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, GLOB_PREVIOUS_PASSAGE_ID)
+                .addLabel(labels.second);
     } else {
         int id;
         string target = host.getTarget();
+
         try {
             id = passageName2id.at(target);
-        } catch (const out_of_range &outOfRange) {
+        } catch(const out_of_range& outOfRange) {
             throw TweeDocumentException("invalid link target: " + target);
         }
 
+        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.first)
+                .call_1n(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE)
+                .addLabel(labels.first);
+
         ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
+
+        ASSGEN.setTextStyle("1");           // reversed video
+        ASSGEN.print(host.getAltName());
+        ASSGEN.setTextStyle("0");           // reversed video
+
+        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.second)
+                .call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, to_string(id))
+                .addLabel(labels.second);
     }
 }
 
 void TweeCompiler::visit(const Newline& host) {
-    ASSGEN.newline();
+    pair<string, string> labels = makeLabels("routineClicked");
+    ASSGEN.newline()
+            .jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.first)
+            .call_1n(PAUSE_PRINTING_ROUTINE)
+            .jumpEquals(GLOB_NEXT_PASSAGE_ID + " -1", labels.first)
+            .ret("0")
+            .addLabel(labels.first);
 }
 
 void TweeCompiler::visit(const PrintMacro& host) {
     if (Previous *previous = dynamic_cast<Previous *>(host.getExpression().get())) {
         ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
     } else {
-        evalExpression(host.getExpression().get());
-        ASSGEN.print_num("sp");
+                evalExpression(host.getExpression().get());
+                ASSGEN.print_num("sp");
     }
 }
 
@@ -489,7 +968,18 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     auto &bodyParts = passage.getBody().getBodyParts();
 
     // declare passage routine
-    ASSGEN.addRoutine(routineNameForPassage(passage), {ZRoutineArgument("min")});
+    ASSGEN.addRoutine(routineNameForPassage(passage), {ZRoutineArgument("min"), ZRoutineArgument("saveUndo")});
+
+    ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "noMouse");
+
+    // save game often to be able to restore multiple times
+    ASSGEN.saveUndo("sp").saveUndo("sp").saveUndo("sp").saveUndo("sp").saveUndo("sp").saveUndo("sp");
+
+    // update screen
+    ASSGEN.call_1n(UPDATE_MOUSE_SCREEN_ROUTINE)
+            .store(GLOB_PRINT_ARROW_UP_AT_END, "0");
+
+    ASSGEN.addLabel("noMouse");
 
     ASSGEN.println(string("***** ") + passage.getHead().getName() + string(" *****"));
 
@@ -503,6 +993,12 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     if (ifContexts.size() > 0) {
         throw TweeDocumentException("unclosed if macro");
     }
+
+    ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "onlyOnePage")
+            .jumpEquals(GLOB_PRINT_ARROW_UP_AT_END + " 0", "onlyOnePage")
+            .call_1n(ROUTINE_PRINT_ARROW_UP)
+            .addLabel("onlyOnePage");
+
     ASSGEN.ret("0");
 }
 
@@ -623,103 +1119,100 @@ void TweeCompiler::evalExpression(Expression *expression) {
 
         if (binaryOperation->getOperator() == BinOps::TO) {
             evalAssignment(binaryOperation);
-        }
 
-        TweeCompiler::evalExpression(binaryOperation->getRightSide().get());
-        TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
+        } else {
+            TweeCompiler::evalExpression(binaryOperation->getRightSide().get());
+            TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
 
-        switch (binaryOperation->getOperator()) {
-            case BinOps::ADD:
-                ASSGEN.add("sp", "sp", "sp");
-                break;
-            case BinOps::SUB:
-                ASSGEN.sub("sp", "sp", "sp");
-                break;
-            case BinOps::MUL:
-                ASSGEN.mul("sp", "sp", "sp");
-                break;
-            case BinOps::DIV:
-                ASSGEN.div("sp", "sp", "sp");
-                break;
-            case BinOps::MOD:
-                ASSGEN.mod("sp", "sp", "sp");
-                break;
-            case BinOps::AND:
-                ASSGEN.mul("sp", "sp", "sp");
-                break;
-            case BinOps::OR:
-                labels = makeLabels("or");
-                ASSGEN.jumpNotEquals(std::string("sp") + " " + "0", labels.first)
-                        .push("0")
-                        .jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first)
-                        .push("0")
-                        .jump(labels.second)
-                        .addLabel(labels.first)
-                        .push("1")
-                        .addLabel(labels.second);
-                break;
-            case BinOps::TO:
-                // TODO: check if this is right
-                ASSGEN.load("sp", "sp");
-                break;
-            case BinOps::LT:
-                labels = makeLabels("lower");
-                ASSGEN.jumpLower(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::LTE:
-                labels = makeLabels("lowerEquals");
-                ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::GT:
-                labels = makeLabels("greater");
-                ASSGEN.jumpGreater(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::GTE:
-                labels = makeLabels("greaterEquals");
-                ASSGEN.jumpGreaterEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::IS:
-                labels = makeLabels("is");
-                ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            case BinOps::NEQ:
-                labels = makeLabels("neq");
-                ASSGEN.jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                ASSGEN.push("0");
-                ASSGEN.jump(labels.second);
-                ASSGEN.addLabel(labels.first);
-                ASSGEN.push("1");
-                ASSGEN.addLabel(labels.second);
-                break;
-            default:
-                //TODO: handle this
-                break;
+            switch (binaryOperation->getOperator()) {
+                case BinOps::ADD:
+                    ASSGEN.add("sp", "sp", "sp");
+                    break;
+                case BinOps::SUB:
+                    ASSGEN.sub("sp", "sp", "sp");
+                    break;
+                case BinOps::MUL:
+                    ASSGEN.mul("sp", "sp", "sp");
+                    break;
+                case BinOps::DIV:
+                    ASSGEN.div("sp", "sp", "sp");
+                    break;
+                case BinOps::MOD:
+                    ASSGEN.mod("sp", "sp", "sp");
+                    break;
+                case BinOps::AND:
+                    ASSGEN.mul("sp", "sp", "sp");
+                    break;
+                case BinOps::OR:
+                    labels = makeLabels("or");
+                    ASSGEN.jumpNotEquals(std::string("sp") + " " + "0", labels.first)
+                            .push("0")
+                            .jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first)
+                            .push("0")
+                            .jump(labels.second)
+                            .addLabel(labels.first)
+                            .push("1")
+                            .addLabel(labels.second);
+                    break;
+                case BinOps::LT:
+                    labels = makeLabels("lower");
+                    ASSGEN.jumpLower(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::LTE:
+                    labels = makeLabels("lowerEquals");
+                    ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::GT:
+                    labels = makeLabels("greater");
+                    ASSGEN.jumpGreater(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::GTE:
+                    labels = makeLabels("greaterEquals");
+                    ASSGEN.jumpGreaterEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::IS:
+                    labels = makeLabels("is");
+                    ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                case BinOps::NEQ:
+                    labels = makeLabels("neq");
+                    ASSGEN.jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first);
+                    ASSGEN.push("0");
+                    ASSGEN.jump(labels.second);
+                    ASSGEN.addLabel(labels.first);
+                    ASSGEN.push("1");
+                    ASSGEN.addLabel(labels.second);
+                    break;
+                default:
+                    //TODO: handle this
+                    break;
 
+            }
         }
     } else if (UnaryOperation *unOp = dynamic_cast<UnaryOperation *>(expression)) {
         TweeCompiler::evalExpression(unOp->getExpression().get());
@@ -744,8 +1237,8 @@ void TweeCompiler::evalExpression(Expression *expression) {
             default:
                 // TODO: handle this
                 break;
+            }
         }
-    }
 }
 
 std::pair<std::string, std::string> TweeCompiler::makeLabels(std::string prefix) {

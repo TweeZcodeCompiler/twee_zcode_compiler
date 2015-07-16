@@ -136,6 +136,33 @@ public:
 
     ZAssemblyGenerator &random(std::string range, std::string storeTarget);
 
+    ZAssemblyGenerator &readMouse(std::string table);
+
+    ZAssemblyGenerator &mouseWindow(std::string variable);
+
+    ZAssemblyGenerator &setCursor(std::string variableY, std::string variableX, std::string window);
+
+    ZAssemblyGenerator &getCursor(std::string array);
+
+    ZAssemblyGenerator &getWindowProperty(std::string window, std::string propertyNumber, std::string target);
+
+    ZAssemblyGenerator &jumpZero(std::string args, std::string targetLabel);
+
+    ZAssemblyGenerator &windowSize(std::string window, std::string y, std::string x);
+
+    ZAssemblyGenerator &setMargins(std::string left, std::string right, std::string window);
+
+    ZAssemblyGenerator &setWindow(std::string window);
+
+    ZAssemblyGenerator &putWindowProperty(std::string window, std::string propertyNumber, std::string value);
+
+    ZAssemblyGenerator &eraseWindow(std::string window);
+
+    ZAssemblyGenerator &windowStyle(std::string window, std::string flags, std::string operation);
+
+    ZAssemblyGenerator &saveUndo(std::string target);
+
+    ZAssemblyGenerator &restoreUndo(std::string target);
 
 private:
     std::ostream &out;

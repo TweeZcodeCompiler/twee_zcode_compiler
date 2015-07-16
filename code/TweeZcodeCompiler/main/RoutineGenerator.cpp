@@ -645,6 +645,124 @@ void RoutineGenerator::dec(std::vector<std::unique_ptr<ZParam>> params) {
     routine-> storeAdress(params.at(0)->getZCodeValue());
 }
 
+void RoutineGenerator::mouseWindow(vector<unique_ptr<ZParam>> params) {
+    debug("mouse_window");
+    checkParamCount(params, 1);
+    checkParamType(params, VALUE);
+
+    routine->generateExtOPInstruction(MOUSE_WINDOW, params, "mouse_window");
+}
+
+void RoutineGenerator::readMouse(vector<unique_ptr<ZParam>> params, shared_ptr<ZCodeContainer> dynamicMemory) {
+    debug("read_mouse");
+    checkParamCount(params, 1);
+    checkParamType(params, NAME);
+
+    routine->generateExtOPInstruction(READ_MOUSE, params, "read_mouse");
+}
+
+void RoutineGenerator::getCursor(vector<unique_ptr<ZParam>> params, shared_ptr<ZCodeContainer> dynamicMemory) {
+    debug("get_cursor");
+    checkParamCount(params, 1);
+    checkParamType(params, NAME);
+
+    routine->generateVarOPInstruction(GET_CURSOR, params, "get_cursor");
+}
+
+void RoutineGenerator::setCursor(vector<unique_ptr<ZParam>> params) {
+    debug("set_cursor");
+    checkParamCount(params, 3);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+
+    routine->generateVarOPInstruction(SET_CURSOR, params, "set_cursor");
+}
+
+// TODO: maybe wrong?
+void RoutineGenerator::getWindowProperty(vector<unique_ptr<ZParam>> params) {
+    debug("get_window_property");
+    checkParamCount(params, 3);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
+
+    routine->generateExtOPInstruction(GET_WINDOW_PROPERTY, params, "get_window_property");
+    routine->storeAdress(params.at(2)->getZCodeValue());
+}
+
+void RoutineGenerator::windowStyle(vector<unique_ptr<ZParam>> params) {
+    debug("window_style");
+    checkParamCount(params, 3);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+
+    routine->generateExtOPInstruction(WINDOW_STYLE, params, "window_style");
+}
+
+void RoutineGenerator::scrollWindow(vector<unique_ptr<ZParam>> params) {
+    debug("scroll_window");
+    checkParamCount(params, 2);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+
+    routine->generateExtOPInstruction(SCROLL_WINDOW, params, "scroll_window");
+}
+
+void RoutineGenerator::putWindProp(vector<unique_ptr<ZParam>> params) {
+    debug("put_wind_prop");
+    checkParamCount(params, 3);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+
+    routine->generateExtOPInstruction(PUT_WIND_PROP, params, "put_wind_prop");
+}
+
+void RoutineGenerator::setWindow(vector<unique_ptr<ZParam>> params) {
+    debug("set_window");
+    checkParamCount(params, 1);
+    checkParamType(params, VARIABLE_OR_VALUE);
+
+    routine->generateVarOPInstruction(SET_WINDOW, params, "set_window");
+}
+
+void RoutineGenerator::windowSize(vector<unique_ptr<ZParam>> params) {
+    debug("window_size");
+    checkParamCount(params, 3);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+
+    routine->generateExtOPInstruction(WINDOW_SIZE, params, "window_size");
+}
+
+void RoutineGenerator::setMargins(vector<unique_ptr<ZParam>> params) {
+    debug("set_margins");
+    checkParamCount(params, 3);
+    checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
+
+    routine->generateExtOPInstruction(SET_MARGINS, params, "set_margins");
+}
+
+void RoutineGenerator::eraseWindow(vector<unique_ptr<ZParam>> params) {
+    debug("erase_window");
+    checkParamCount(params, 1);
+    checkParamType(params, VARIABLE_OR_VALUE);
+
+    routine->generateVarOPInstruction(ERASE_WINDOW, params, "erase_window");
+}
+
+// TODO: maybe wrong?
+void RoutineGenerator::saveUndo(vector<unique_ptr<ZParam>> params) {
+    debug("save_undo");
+    checkParamCount(params, 1);
+    checkParamType(params,  STORE_ADDRESS);
+
+    routine->generateExtOPInstruction(SAVE_UNDO, params, "save_undo");
+    routine->storeAdress(params.at(0)->getZCodeValue());
+}
+
+// TODO: maybe wrong?
+void RoutineGenerator::restoreUndo(vector<unique_ptr<ZParam>> params) {
+    debug("restore_undo");
+    checkParamCount(params, 1);
+    checkParamType(params,  STORE_ADDRESS);
+
+    routine->generateExtOPInstruction(RESTORE_UNDO, params, "restore_undo");
+    routine->storeAdress(params.at(0)->getZCodeValue());
+}
+
 shared_ptr<ZCodeLabel> RoutineGenerator::getOrCreateLabel(std::string name) {
     return routine->getOrCreateLabel(name);
 }
