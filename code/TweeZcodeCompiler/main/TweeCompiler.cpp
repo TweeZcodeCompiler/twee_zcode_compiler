@@ -421,43 +421,9 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .loadw(TABLE_MOUSE_CLICK, "0", varYMouse)
                 .loadw(TABLE_MOUSE_CLICK, "1", varXMouse);
 
-        //ASSGEN.newline().print_num(varXMouse).print("/").print_num(varYMouse).newline();
-
         ASSGEN.div(varYMouse, varFontSize, varYLineClick)
                 .add(varYLineClick, "1", varYLineClick)
                 .div(varXMouse, varCharWidth, varXMouseClick);
-
-
-       /* ASSGEN.setCursor(varYMouse, varXMouse, "0")
-                .getCursor(TABLE_CURSOR)
-                .loadb(TABLE_CURSOR, "0", "sp")
-                .print("curent cursor line: ")
-                .print_num("sp")
-                .newline()
-                .loadb(TABLE_CURSOR, "1", "sp")
-                .print("current cursor width: ")
-                .print_num("sp")
-                .newline();*/
-
-        /*ASSGEN.newline();
-        ASSGEN.print("yline click: ");
-        ASSGEN.print_num(varYLineClick);
-        ASSGEN.newline();
-        ASSGEN.print("xline click: ");
-        ASSGEN.print_num(varXMouseClick);
-        ASSGEN.newline();
-        ASSGEN.print("GLOB_TABLE_MOUSE_LINKS_NEXT: ");
-        ASSGEN.print_num(GLOB_TABLE_MOUSE_LINKS_NEXT);
-        ASSGEN.newline();*/
-
-        //ASSGEN.jumpEquals(varClickArrows + " 1", "beeeeep");
-        /*ASSGEN.store(varMouseTableIndex, "1");
-        ASSGEN.addLabel("fu")
-                .loadw(TABLE_MOUSE_LINKS, varMouseTableIndex, "sp")
-                .print_num("sp")
-                .newline().add(varMouseTableIndex, "1", varMouseTableIndex)
-                .jumpLess(varMouseTableIndex + " 16", "fu");
-        ASSGEN.addLabel("beeeeep");*/
 
         ASSGEN.store(varMouseTableIndex, "1");
         ASSGEN.addLabel("LINKS_ENTRIES")
@@ -515,24 +481,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .loadw(TABLE_MOUSE_CLICK_ARROWS, "7", "sp")              // width right
                 .jumpGreater(varXMouseClick + " sp", "MOUSE_CLICK_LOOP")
                 .ret("-1");                                              // signals that no link was clicked
-
-
-        /*ASSGEN.push(varYCursor)
-                .sub("sp", "2", "sp")
-                .jumpGreater(varYLineClick + " sp", "MOUSE_CLICK_LOOP");
-
-        ASSGEN.push(varYCursor)
-                .sub("sp", "1", "sp")
-                .sub("sp", varSelectableLinks, "sp")
-                .store(varFirstLinkLine, "sp")
-                .jumpLess(varYLineClick + " " + varFirstLinkLine, "MOUSE_CLICK_LOOP");
-
-        ASSGEN.push(varYLineClick)
-                .sub("sp", varFirstLinkLine, "sp");
-
-        ASSGEN.newline().newline();
-
-        ASSGEN.ret("sp");*/
 
 
         // print arrow up routine
@@ -675,39 +623,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .add(varI, "1", varI)
                 .jumpLess(varI + " " + to_string(MARGIN_TOP), "loop")
                 .add(GLOB_LINES_PRINTED, varI, GLOB_LINES_PRINTED);
-
-        /*ASSGEN.setWindow("1");
-
-        ASSGEN.newline()
-                .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
-                .print("/ \\ ");
-
-        ASSGEN.newline()
-                .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
-                .print(" |  ");
-
-        ASSGEN.newline()
-                .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
-                .print(" |  ");
-
-        ASSGEN.store(varLinesPrinted, "3")
-                .addLabel("loop")
-                .newline()
-                .add(varLinesPrinted, "1", varLinesPrinted)
-                .jumpLess(varLinesPrinted + " " + varLineCount, "loop");
-
-        ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
-                .print(" |  ")
-                .newline();
-
-        ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
-                .print(" |  ")
-                .newline();
-
-        ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
-                .print(" V  ");
-
-        ASSGEN.setWindow("0");*/
 
 
         ASSGEN.addLabel("no_mouse")
