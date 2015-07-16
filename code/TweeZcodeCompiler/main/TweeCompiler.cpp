@@ -312,7 +312,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .jumpLess(varI + " " + to_string(MARGIN_TOP), "loop")
                 .windowStyle("0", "15", "1")
 
-                // TODO: bold and italic
                 .setTextStyle("6")
                 .setTextStyle("2")
                 .print(INTRO_TITLE)
@@ -845,9 +844,9 @@ void TweeCompiler::visit(const Link& host) {
 
         ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
 
-        ASSGEN.print("|||");
+        ASSGEN.setTextStyle("1");           // reversed video
         ASSGEN.print(host.getAltName());
-        ASSGEN.print("|||");
+        ASSGEN.setTextStyle("0");           // reversed video
 
         ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.second)
                 .call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, GLOB_PREVIOUS_PASSAGE_ID)
@@ -867,9 +866,10 @@ void TweeCompiler::visit(const Link& host) {
                 .addLabel(labels.first);
 
         ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
-        ASSGEN.print("|||");
+
+        ASSGEN.setTextStyle("1");           // reversed video
         ASSGEN.print(host.getAltName());
-        ASSGEN.print("|||");
+        ASSGEN.setTextStyle("0");           // reversed video
 
         ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.second)
                 .call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, to_string(id))
