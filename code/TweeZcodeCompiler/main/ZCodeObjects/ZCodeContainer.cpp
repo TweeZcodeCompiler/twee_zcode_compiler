@@ -18,7 +18,6 @@ bool ZCodeContainer::revalidate() {
             std::shared_ptr<ZCodeObject> child = children.at(i);
             size_t offset = this->offset;
             child->setOffset(offset+ calculatedSize);
-            LOG_DEBUG <<" revalidate '"<< child->displayName<<"' in '"<< (displayName) << "'";
             if(child->revalidate()){
                 validatedAll = true;
             }

@@ -235,6 +235,8 @@ int ZCodeConverter::getAlphabet(int asciiValue) {
         return 1;
     } else if (asciiValue == ' ') {
         return 3;
+    }else if(asciiValue >= 48 && asciiValue <= 57){
+        return 2;
     } else if (asciiValue >= 32 && asciiValue < 127) {
         return 4;
     } else {

@@ -177,12 +177,40 @@ public:
     void push(std::vector<std::unique_ptr<ZParam>> params);
 
     void inc(std::vector<std::unique_ptr<ZParam>> params);
+    
+    void mouseWindow(std::vector<std::unique_ptr<ZParam>> params);
 
     void pushStack(std::vector<std::unique_ptr<ZParam>> params);
 
     void popStack(std::vector<std::unique_ptr<ZParam>> params);
 
     void dec(std::vector<std::unique_ptr<ZParam>> params);
+
+    void readMouse(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemory);
+
+    void getCursor(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemory);
+
+    void setCursor(std::vector<std::unique_ptr<ZParam>> params);
+
+    void getWindowProperty(std::vector<std::unique_ptr<ZParam>> params);
+
+    void windowStyle(std::vector<std::unique_ptr<ZParam>> params);
+
+    void scrollWindow(std::vector<std::unique_ptr<ZParam>> params);
+
+    void putWindProp(std::vector<std::unique_ptr<ZParam>> params);
+
+    void setWindow(std::vector<std::unique_ptr<ZParam>> params);
+
+    void windowSize(std::vector<std::unique_ptr<ZParam>> params);
+
+    void setMargins(std::vector<std::unique_ptr<ZParam>> params);
+
+    void eraseWindow(std::vector<std::unique_ptr<ZParam>> params);
+
+    void saveUndo(std::vector<std::unique_ptr<ZParam>> params);
+
+    void restoreUndo(std::vector<std::unique_ptr<ZParam>> params);
 
     /*
      *      Enumerations
@@ -265,6 +293,14 @@ public:
                 PULL = 233,
         //VAR:231 7 random range -> (result)
                 RANDOM = 231,
+        //OPCODE: store cursor position in array
+                GET_CURSOR = 240,
+        //OPCODE: set cursor position
+                SET_CURSOR = 239,
+        //OPCODE: set used window to print
+                SET_WINDOW = 235,
+        //OPCODE: clears window
+                ERASE_WINDOW = 237,
 
         //VAR:243 13 3 output_stream number table
                 OUTPUT_STREAM = 243,
@@ -272,7 +308,6 @@ public:
                 INC = 133,
         //1OP:134 6 dec (variable)
                 DEC = 134
-
 
         /*
          * Not implemented:
@@ -283,9 +318,19 @@ public:
          */
     };
 
-    enum ExtOpcode : unsigned int {
-        POP_STACK = 21,
-        PUSH_STACK = 24,
+    enum ExtendedOpcode : unsigned int {
+                MOUSE_WINDOW = 23,
+                READ_MOUSE = 22,
+                GET_WINDOW_PROPERTY = 19,
+                WINDOW_STYLE = 18,
+                SCROLL_WINDOW = 20,
+                PUT_WIND_PROP = 25,
+                WINDOW_SIZE = 17,
+                SET_MARGINS = 8,
+                SAVE_UNDO = 9,
+                RESTORE_UNDO = 10,
+                POP_STACK = 21,
+                PUSH_STACK = 24,
     };
 
     enum BranchOffset {

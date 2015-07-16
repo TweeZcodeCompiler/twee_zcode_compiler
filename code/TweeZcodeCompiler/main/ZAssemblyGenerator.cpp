@@ -41,6 +41,7 @@ namespace instruction {
     INST_TYPE PRINT = "print";
     INST_TYPE READ_CHAR = "read_char";
     INST_TYPE JUMP_GREATER = "jg";
+    INST_TYPE JUMP_Zero = "jz";
     INST_TYPE SET_TEXT_STYLE = "set_text_style";
     INST_TYPE STOREBYTE = "storeb";
     INST_TYPE STOREWORD = "storew";
@@ -81,6 +82,19 @@ namespace instruction {
     INST_TYPE VERIFY_COMMAND = "verify";
     INST_TYPE RANDOM_COMMAND = "random";
     INST_TYPE NOTHING = "";
+    INST_TYPE READ_MOUSE = "read_mouse";
+    INST_TYPE MOUSE_WINDOW = "mouse_window";
+    INST_TYPE GET_CURSOR = "get_cursor";
+    INST_TYPE SET_CURSOR = "set_cursor";
+    INST_TYPE GET_WINDOW_PROPERTY = "get_wind_prop";
+    INST_TYPE PUT_WINDOW_PROPERTY = "put_wind_prop";
+    INST_TYPE SET_WINDOW = "set_window";
+    INST_TYPE SET_MARGINS = "set_margins";
+    INST_TYPE WINDOW_SIZE = "window_size";
+    INST_TYPE ERASE_WINDOW = "erase_window";
+    INST_TYPE WINDOW_STYLE = "window_style";
+    INST_TYPE RESTORE_UNDO = "restore_undo";
+    INST_TYPE SAVE_UNDO = "save_undo";
 }
 
 ZAssemblyGenerator::ZAssemblyGenerator(ostream &out) : out(out) { }
@@ -274,6 +288,10 @@ ZAssemblyGenerator &ZAssemblyGenerator::jumpLowerEquals(string args, string targ
     return addInstruction(instruction::JG_COMMAND, args, make_pair(targetLabel, true), nullopt);
 }
 
+ZAssemblyGenerator &ZAssemblyGenerator::jumpZero(string args, string targetLabel) {
+    return addInstruction(instruction::JZ_COMMAND, args, make_pair(targetLabel, false), nullopt);
+}
+
 ZAssemblyGenerator &ZAssemblyGenerator::quit() {
     return this->newline().addInstruction(instruction::QUIT_COMMAND, nullopt, nullopt, nullopt);
 }
@@ -365,6 +383,58 @@ ZAssemblyGenerator &ZAssemblyGenerator::lor(std::string left, std::string right,
 
 ZAssemblyGenerator &ZAssemblyGenerator::lnot(std::string variable, std::string storeTarget) {
     return addInstruction(instruction::NOT_COMMAND, variable, nullopt, storeTarget);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::readMouse(string table) {
+    return addInstruction(instruction::READ_MOUSE, table, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::mouseWindow(string variable) {
+    return addInstruction(instruction::MOUSE_WINDOW, variable, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::setCursor(string variableY, string variableX, string window) {
+    return addInstruction(instruction::SET_CURSOR, makeArgs({variableY, variableX, window}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::getCursor(string array) {
+    return addInstruction(instruction::GET_CURSOR, array, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::getWindowProperty(string window, string propertyNumber, string target) {
+    return addInstruction(instruction::GET_WINDOW_PROPERTY, makeArgs({window, propertyNumber}), nullopt, target);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::windowSize(string window, string y, string x) {
+    return addInstruction(instruction::WINDOW_SIZE, makeArgs({window, y, x}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::setMargins(string left, string right, string window) {
+    return addInstruction(instruction::SET_MARGINS, makeArgs({left, right, window}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::setWindow(string window) {
+    return addInstruction(instruction::SET_WINDOW, window, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::putWindowProperty(string window, string propertyNumber, string value) {
+    return addInstruction(instruction::PUT_WINDOW_PROPERTY, makeArgs({window, propertyNumber, value}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::eraseWindow(std::string window) {
+    return addInstruction(instruction::ERASE_WINDOW, window, nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::windowStyle(std::string window, std::string flags, std::string operation) {
+    return addInstruction(instruction::WINDOW_STYLE, makeArgs({window, flags, operation}), nullopt, nullopt);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::saveUndo(std::string target) {
+    return addInstruction(instruction::SAVE_UNDO, nullopt, nullopt, target);
+}
+
+ZAssemblyGenerator &ZAssemblyGenerator::restoreUndo(std::string target) {
+    return addInstruction(instruction::RESTORE_UNDO, nullopt, nullopt, target);
 }
 
 ZAssemblyGenerator &ZAssemblyGenerator::nop() {
