@@ -401,6 +401,8 @@ void TweeCompiler::visit(const Link& host) {
         }
 
         ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
+
+        ASSGEN.print(host.getAltName());
     }
 }
 

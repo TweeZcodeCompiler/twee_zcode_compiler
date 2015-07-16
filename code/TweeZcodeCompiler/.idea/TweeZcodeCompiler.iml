@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="CPP_MODULE" version="4">
   <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$" />
     <content url="file://$USER_HOME$/Library/Caches/clion10/cmake/generated/eacd1c22/eacd1c22/Debug/parser/GeneratedTweeLexer.cpp">
       <sourceFolder url="file://$USER_HOME$/Library/Caches/clion10/cmake/generated/eacd1c22/eacd1c22/Debug/parser/GeneratedTweeLexer.cpp" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

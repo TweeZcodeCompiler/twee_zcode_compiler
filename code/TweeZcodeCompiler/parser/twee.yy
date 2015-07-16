@@ -446,6 +446,7 @@ formatting:
     {
     LOG_DEBUG << "Parser: formatted -> FORMATTING: ";
     $$ = new Formatting(*$1);
+    delete $1;
     }
   ;
 

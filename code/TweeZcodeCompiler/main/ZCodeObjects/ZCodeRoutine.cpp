@@ -50,27 +50,32 @@ void ZCodeRoutine::generate1OPInstruction(unsigned int opcode, ZParam &param,std
         std::string name = param.name;
         this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions, showName)));
         this->add(shared_ptr<ZCodeObject>(new ZCodeCallAdress(Utils::dynamicMemory->getOrCreateLabel(name), false)));
-        return;
-    }
-    uint16_t paramValue = param.getZCodeValue();
-    if (paramIsVariable) {
-        opcodeByte.set(5, paramIsVariable); // type variable (10)
-    } else {
 
-        if (paramValue < 256) {
-            opcodeByte.set(4, true);  // type small constant (01)
+    } else if (param.isRoutine) {
+        instructions.push_back(opcodeByte);
+        this->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions, showName)));
+        this->add(shared_ptr<ZCodeObject>(new ZCodeCallAdress(ZCodeRoutine::getOrCreateRoutine(param.name ,0), true)));
+    } else {
+        uint16_t paramValue = param.getZCodeValue();
+        if (paramIsVariable) {
+            opcodeByte.set(5, paramIsVariable); // type variable (10)
         } else {
-            oneByteParameter = false;   // type large constant (00)
-        }
-    }
-    instructions.push_back(opcodeByte);
 
-    if (oneByteParameter) {
-        instructions.push_back(bitset<8>(paramValue));
-    } else {
-        Utils::addTwoBytes((int16_t) paramValue, instructions);
+            if (paramValue < 256) {
+                opcodeByte.set(4, true);  // type small constant (01)
+            } else {
+                oneByteParameter = false;   // type large constant (00)
+            }
+        }
+        instructions.push_back(opcodeByte);
+
+        if (oneByteParameter) {
+            instructions.push_back(bitset<8>(paramValue));
+        } else {
+            Utils::addTwoBytes((int16_t) paramValue, instructions);
+        }
+        this->add(std::shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions, showName)));
     }
-    this->add(std::shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions,showName)));
 }
 
 void ZCodeRoutine::generate2OPInstruction(unsigned int opcode, ZParam &param1, ZParam &param2, std::string showName) {

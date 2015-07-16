@@ -78,7 +78,8 @@ const char AssemblyParser::STRING_DELIMITER = '\"';
 const string AssemblyParser::ASSIGNMENT_OPERATOR = "->";
 
 
-string trim(const string &str, const string &whitespace = " \t") {
+string trim(const string &str,
+            const string &whitespace = " \t") {
     const auto strBegin = str.find_first_not_of(whitespace);
     if (strBegin == string::npos)
         return ""; // no content
@@ -225,7 +226,7 @@ void AssemblyParser::readAssembly(istream &input, shared_ptr<ZCodeContainer> dyn
                         performWordArrayDirective(line, dynamicMemory);
                     } else {
                         cerr << "unknown directive";
-                        throw;
+                        throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
                     }
                 } else {
                     executeCommand(line, *currentGenerator, dynamicMemory);
@@ -788,10 +789,15 @@ void AssemblyParser::performStringDirective(std::string command, shared_ptr<ZCod
             unsigned long end = command.find('\"', begin + 1);
             string str = command.substr(begin + 1, end - begin - 1);
             auto label = dynamicMemory->getOrCreateLabel(name);
-            dynamicMemory->add(label);
             ZCodeConverter converter;
+            auto vstr = converter.convertStringToZSCII(str);
+            dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(7,"static string typedef")));
+            vector<bitset<8>> vsize;
+            Utils::addTwoBytes(vstr.size(),vsize);
+            dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(vsize,"size")));
+            dynamicMemory->add(label);
             auto table = shared_ptr<ZCodeObject>(
-            new ZCodeInstruction(converter.convertStringToZSCII(str), "string " + name));
+                    new ZCodeInstruction(vstr, "string " + name));
             dynamicMemory->add(table);
         } else {
             LOG_ERROR << "two directives have the same name";
