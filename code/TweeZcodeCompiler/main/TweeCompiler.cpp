@@ -20,7 +20,6 @@
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Newline.h>
 
-
 #include <Passage/Body/Expressions/BinaryOperation.h>
 #include <Passage/Body/Expressions/UnaryOperation.h>
 
@@ -891,8 +890,8 @@ void TweeCompiler::visit(const PrintMacro& host) {
     if (Previous *previous = dynamic_cast<Previous *>(host.getExpression().get())) {
         ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
     } else {
-                evalExpression(host.getExpression().get());
-                ASSGEN.print_num("sp");
+        evalExpression(optimizeExpression(host.getExpression().get()));
+        ASSGEN.print_num("sp");
     }
 }
 
@@ -928,7 +927,7 @@ void TweeCompiler::visit(const SetMacro& host) {
 
 void TweeCompiler::visit(const IfMacro& host) {
     ifContexts.push(makeNextIfContext());
-    evalExpression(host.getExpression().get());
+    evalExpression(optimizeExpression(host.getExpression().get()));
     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
 }
 
@@ -948,7 +947,7 @@ void TweeCompiler::visit(const ElseIfMacro& host) {
     ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
     ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
     ifContexts.top().caseCount++;
-    evalExpression(host.getExpression().get());
+    evalExpression(optimizeExpression(host.getExpression().get()));
     ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
 }
 
@@ -1008,6 +1007,134 @@ IfContext TweeCompiler::makeNextIfContext() {
     return context;
 }
 
+Expression *TweeCompiler::optimizeExpression(Expression *expression) {
+
+    if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
+        return constant;
+    } else if (Const<bool> *constant = dynamic_cast<Const<bool> *>(expression)) {
+        return constant;
+    }
+    else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
+        return variable;
+    } else if (UnaryOperation *unOp = dynamic_cast<UnaryOperation *>(expression)) {
+        Expression *unOpexpr = optimizeExpression(unOp->getExpression().get());
+        switch (unOp->getOperator()) {
+            case UnOps::NOT:
+                if (Const<bool> *constant = dynamic_cast<Const<bool> *>(unOpexpr)) {
+                    if (constant->getValue()) {
+                        return new Const<bool>(false);
+                    } else {
+                        return new Const<bool>(true);
+                    }
+                }
+                break;
+            case UnOps::PLUS:
+                if (Const<int> *constant = dynamic_cast<Const<int> *>(unOpexpr)) {
+                    return constant;
+                }
+                break;
+            case UnOps::MINUS:
+                if (Const<int> *constant = dynamic_cast<Const<int> *>(unOpexpr)) {
+                    return new Const<int>(-constant->getValue());
+                }
+                break;
+            default:
+                throw TweeDocumentException("unsupported operator");
+        }
+    } else if (BinaryOperation *binOp = dynamic_cast<BinaryOperation *>(expression)) {
+        Expression *lExpr = optimizeExpression(binOp->getLeftSide().get());
+        Expression *rExpr = optimizeExpression(binOp->getRightSide().get());
+
+        if (binOp->getOperator() == BinOps::TO) {
+            if (BinaryOperation *rrExpr = dynamic_cast<BinaryOperation *>(rExpr)) {
+                if (rrExpr->getOperator() == BinOps::TO) {
+                    Variable *varL = dynamic_cast<Variable *>(lExpr);
+                    Variable *varR = dynamic_cast<Variable *>(rrExpr->getLeftSide().get());
+                    if (rrExpr->getOperator() == BinOps::TO) {
+                        if (Variable *varRR = dynamic_cast<Variable *>(rrExpr->getRightSide().get())) {
+                            if (varRR->getName() == varL->getName()) {
+                                return new BinaryOperation(BinOps::TO, varR, rrExpr->getRightSide().get());
+                            }
+                        }
+                    }
+                    if (varL->getName() == varR->getName()) {
+                        return new BinaryOperation(BinOps::TO, varL, rrExpr->getRightSide().get());
+                    }
+                }
+            }
+            return new BinaryOperation(BinOps::TO, lExpr, rExpr);
+        }
+
+        if (Const<int> *lConst = dynamic_cast<Const<int> *>(lExpr)) {
+            if (Const<int> *rConst = dynamic_cast<Const<int> *>(rExpr)) {
+                switch (binOp->getOperator()) {
+                    case BinOps::ADD:
+                        return new Const<int>(lConst->getValue() + rConst->getValue());
+                    case BinOps::SUB:
+                        return new Const<int>(lConst->getValue() - rConst->getValue());
+                    case BinOps::MUL:
+                        return new Const<int>(lConst->getValue() * rConst->getValue());
+                    case BinOps::DIV:
+                        if (rConst) {
+                            return new Const<int>(lConst->getValue() / rConst->getValue());
+                        } else {
+                            throw TweeDocumentException("div by zero!");
+                        }
+                    case BinOps::MOD:
+                        if (rConst) {
+                            return new Const<int>(lConst->getValue() % rConst->getValue());
+                        } else {
+                            throw TweeDocumentException("mod by zero!");
+                        }
+                    case BinOps::LT:
+                        return new Const<bool>((lConst < rConst));
+                    case BinOps::LTE:
+                        return new Const<bool>((lConst <= rConst));
+                    case BinOps::GT:
+                        return new Const<bool>((lConst > rConst));
+                    case BinOps::GTE:
+                        return new Const<bool>((lConst >= rConst));
+                    case BinOps::IS:
+                        return new Const<bool>((lConst != rConst));
+                    case BinOps::NEQ:
+                        return new Const<bool>((lConst == rConst));
+                    default:
+                        throw TweeDocumentException("unsupported operator");
+                }
+            } else {
+                return new BinaryOperation(binOp->getOperator(), lExpr, rExpr);
+            }
+
+        }
+        if (Const<bool> *lConst = dynamic_cast<Const<bool> *>(lExpr)) {
+            if (Const<bool> *rConst = dynamic_cast<Const<bool> *>(rExpr)) {
+                switch (binOp->getOperator()) {
+                    case BinOps::AND:
+                        return new Const<bool>(lConst->getValue() && rConst->getValue());
+
+                    case BinOps::OR:
+                        return new Const<int>(lConst->getValue() || rConst->getValue());
+                    default:
+                        throw TweeDocumentException("unsupported operator");
+                }
+            }
+        } else {
+            return new BinaryOperation(binOp->getOperator(), lExpr, rExpr);
+        }
+
+    } else if (Visited *visited = dynamic_cast<Visited *>(expression)) {
+        return visited;
+    } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
+        return turns;
+    } else if (Random *random = dynamic_cast<Random *>(expression)) {
+        Expression *start = optimizeExpression(random->getStart().get());
+        Expression *end = optimizeExpression(random->getEnd().get());
+        return new Random(start, end);
+    } else if (Previous *previous = dynamic_cast<Previous * > (expression)) {
+        return previous;
+    }
+}
+
 void TweeCompiler::evalAssignment(BinaryOperation *expression) {
     if (expression->getOperator() == BinOps::TO) {
         if (Variable *variable = (Variable *) (expression->getLeftSide().get())) {
@@ -1019,7 +1146,7 @@ void TweeCompiler::evalAssignment(BinaryOperation *expression) {
                 ASSGEN.addGlobal(variableName);
             }
 
-            evalExpression(expression->getRightSide().get());
+            evalExpression(optimizeExpression(expression->getRightSide().get()));
 
             ASSGEN.load("sp", variableName);
             ASSGEN.push(variableName);
@@ -1119,7 +1246,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
 
         if (binaryOperation->getOperator() == BinOps::TO) {
             evalAssignment(binaryOperation);
-
+        
         } else {
             TweeCompiler::evalExpression(binaryOperation->getRightSide().get());
             TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
@@ -1235,10 +1362,9 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 ASSGEN.sub("sp", "sp", "sp");
                 break;
             default:
-                // TODO: handle this
-                break;
-            }
+                throw TweeDocumentException("unsupported operator");
         }
+    }
 }
 
 std::pair<std::string, std::string> TweeCompiler::makeLabels(std::string prefix) {
