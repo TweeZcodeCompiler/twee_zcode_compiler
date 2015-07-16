@@ -313,9 +313,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .windowStyle("0", "15", "1")
 
                 // TODO: bold and italic
-                //.setTextStyle("6")
+                .setTextStyle("6")
+                .setTextStyle("2")
                 .print(INTRO_TITLE)
-                //.setTextStyle("6")
+                .setTextStyle("0")
                 .newline()
                 .newline()
 
