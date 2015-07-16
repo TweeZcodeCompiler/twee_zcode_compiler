@@ -820,6 +820,38 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     for (auto passage = passages.begin(); passage != passages.end(); ++passage) {
         makePassageRoutine(*passage);
     }
+
+    // label for link string routine
+    {
+        static const string STRING_ARG_NAME = "thestring";
+        static const string linkLabelPrefix = "L_";
+        ASSGEN.addRoutine(ROUTINE_PASSAGE_FOR_STRING, vector<ZRoutineArgument>{ ZRoutineArgument(STRING_ARG_NAME) });
+
+        int i=0;
+        for(auto link = foundLinks.begin(); link != foundLinks.end(); ++link) {
+            string linkName = LINK_PREFIX + to_string(i);
+
+            ASSGEN.jumpEquals(ASSGEN.makeArgs({STRING_ARG_NAME, linkName}), linkLabelPrefix + linkName);
+            i++;
+        }
+
+        // error handling
+        ASSGEN.print("could not find target passage for string ")
+                .printAddr(STRING_ARG_NAME)
+                .print(" at address ")
+                .print_num(STRING_ARG_NAME);
+
+        i=0;
+
+
+        for(auto link = foundLinks.begin(); link != foundLinks.end(); ++link) {
+            int targetId = passageName2id.at(link->getTarget());
+            string linkName = LINK_PREFIX + to_string(i);
+            ASSGEN.addLabel(linkLabelPrefix + linkName)
+                    .ret(to_string(targetId));
+            i++;
+        }
+    }
 }
 
 bool isPreviousMacro(string link) {
