@@ -229,7 +229,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     ASSGEN.addByteArray(TABLE_USERINPUT_LOOKUP, (unsigned) passages.size());
 
     ASSGEN.addWordArray(TABLE_VISITED_PASSAGE_COUNT, (unsigned) passages.size());
-    ASSGEN.addWordArray(TABLE_CURSOR, 2);
+    ASSGEN.addWordArray(TABLE_CURSOR, 8);
     ASSGEN.addWordArray(TABLE_MOUSE_CLICK, 20);
 
 
@@ -318,7 +318,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .ret("0");
 
         ASSGEN.addLabel("mouseSupported")
-                .read_char(varKey)          // workaround for wrong jump offset calculation
                 .print(INTRO_MOUSE)
                 .newline()
                 .newline()
@@ -406,8 +405,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.getWindowProperty("0", "13", varFontSize)
                 .div(varFontSize, "256", varFontSize);
 
-        ASSGEN.loadb("33", 0, "sp")                   // max chars per line
-                .getWindowProperty("0", "3", "sp")    // window width in pixels
+        ASSGEN.loadb("33", 0, "sp")                                                // max chars per line
+                .getWindowProperty("0", "3", "sp")                                 // window width in pixels
                 .sub("sp", to_string(MARGIN_LEFT), "sp")
                 .sub("sp", to_string(MARGIN_RIGHT), "sp")
                 .div("sp", "sp", varCharWidth)
@@ -451,14 +450,14 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.print_num(GLOB_TABLE_MOUSE_LINKS_NEXT);
         ASSGEN.newline();*/
 
-        /*ASSGEN.jumpEquals(varClickArrows + " 1", "beeeeep");
-        ASSGEN.store(varMouseTableIndex, "0");
+        //ASSGEN.jumpEquals(varClickArrows + " 1", "beeeeep");
+        ASSGEN.store(varMouseTableIndex, "1");
         ASSGEN.addLabel("fu")
-                .loadw(TABLE_MOUSE_CLICK_ARROWS, varMouseTableIndex, "sp")
+                .loadw(TABLE_MOUSE_LINKS, varMouseTableIndex, "sp")
                 .print_num("sp")
                 .newline().add(varMouseTableIndex, "1", varMouseTableIndex)
-                .jumpLess(varMouseTableIndex + " 8", "fu");
-        ASSGEN.addLabel("beeeeep");*/
+                .jumpLess(varMouseTableIndex + " 16", "fu");
+        ASSGEN.addLabel("beeeeep");
 
         ASSGEN.store(varMouseTableIndex, "1");
         ASSGEN.addLabel("LINKS_ENTRIES")
@@ -489,7 +488,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .ret(varI);
 
         ASSGEN.addLabel("ALL_ENTRIES_CHECKED")
-                .read_char("sp")                                         // read_char only workaround here for wrong jump offset -> is not executed
                 .jumpEquals(varClickArrows + " 0", "MOUSE_CLICK_LOOP")   // are arrows active?
                 .loadw(TABLE_MOUSE_CLICK_ARROWS, "1", "sp")              // test here with x value because arrows are always drawn on right sight
                 .jumpEquals("sp 0", "ARROW_DOWN")
@@ -724,6 +722,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
                 .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
                 .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
+                .print("sp: ").print_num("sp").read_char("sp")
                 .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
                 .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
                 .addLabel("no_mouse")
@@ -910,11 +909,11 @@ void TweeCompiler::visit(const Formatting& host) {
 void TweeCompiler::visit(const Link& host) {
     // TODO: catch invalid link
 
-    if (isPreviousMacro(link.getTarget())) {
+    if (isPreviousMacro(host.getTarget())) {
         ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
     } else {
         int id;
-        string target = link.getTarget();
+        string target = host.getTarget();
         pair<string, string> labels = makeLabels("routineClicked");
         try {
             id = passageName2id.at(target);
@@ -928,7 +927,7 @@ void TweeCompiler::visit(const Link& host) {
 
         ASSGEN.storeb(TABLE_LINKED_PASSAGES, id, "1");
         ASSGEN.print("|||");
-        ASSGEN.print(link.getTarget());
+        ASSGEN.print(host.getTarget());
         ASSGEN.print("|||");
 
         ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.second)

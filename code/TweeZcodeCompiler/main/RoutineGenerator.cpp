@@ -650,45 +650,23 @@ void RoutineGenerator::mouseWindow(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1);
     checkParamType(params, VALUE);
 
-    vector<bitset<8>> instructions = opcodeGenerator.generateExtOPInstruction(MOUSE_WINDOW, params);
-    addBitset(instructions, "mouse_window");
+    routine->generateExtOPInstruction(MOUSE_WINDOW, params, "mouse_window");
 }
 
-void RoutineGenerator::readMouse(string array, shared_ptr<ZCodeContainer> dynamicMemory) {
-    vector<uint16_t> params;
-    vector<bool> paramIsVariable;
+void RoutineGenerator::readMouse(vector<unique_ptr<ZParam>> params, shared_ptr<ZCodeContainer> dynamicMemory) {
+    debug("read_mouse");
+    checkParamCount(params, 1);
+    checkParamType(params, NAME);
 
-    params.push_back(3000);
-    paramIsVariable.push_back(false);
-
-    vector<bitset<8>> instructions = opcodeGenerator.generateExtOPInstruction(READ_MOUSE, params, paramIsVariable);
-    vector<bitset<8>> instructionsWithoutPlaceholder;
-    for (int i = 0; i < instructions.size() - 2; i++) {
-        instructionsWithoutPlaceholder.push_back(instructions.at(i));
-    }
-    addBitset(instructionsWithoutPlaceholder, "read_mouse");
-
-    auto adress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(dynamicMemory->getOrCreateLabel(array)));
-    routine->add(adress);
+    routine->generateExtOPInstruction(READ_MOUSE, params, "read_mouse");
 }
 
-void RoutineGenerator::getCursor(string array, shared_ptr<ZCodeContainer> dynamicMemory) {
+void RoutineGenerator::getCursor(vector<unique_ptr<ZParam>> params, shared_ptr<ZCodeContainer> dynamicMemory) {
     debug("get_cursor");
+    checkParamCount(params, 1);
+    checkParamType(params, NAME);
 
-    vector<uint16_t> params;
-    vector<bool> paramIsVariable;
-
-    params.push_back(3000);
-    paramIsVariable.push_back(false);
-
-    vector<bitset<8>> generated = opcodeGenerator.generateVarOPInstruction(GET_CURSOR, params, paramIsVariable);
-    vector<bitset<8>> vopcode;
-    vopcode.push_back(generated.at(0));
-    vopcode.push_back(generated.at(1));
-    auto opcode = shared_ptr<ZCodeObject>(new ZCodeInstruction(vopcode, "get_cursor"));
-    routine->add(opcode);
-    auto adress = shared_ptr<ZCodeObject>(new ZCodeCallAdress(dynamicMemory->getOrCreateLabel(array)));
-    routine->add(adress);
+    routine->generateExtOPInstruction(GET_CURSOR, params, "get_cursor");
 }
 
 void RoutineGenerator::setCursor(vector<unique_ptr<ZParam>> params) {
@@ -696,24 +674,17 @@ void RoutineGenerator::setCursor(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
 
-    vector<bitset<8>> instructions = opcodeGenerator.generateVarOPInstruction(SET_CURSOR, params);
-    addBitset(instructions, "set_cursor");
+    routine->generateVarOPInstruction(SET_CURSOR, params, "set_cursor");
 }
 
+// TODO: maybe wrong?
 void RoutineGenerator::getWindowProperty(vector<unique_ptr<ZParam>> params) {
     debug("get_window_property");
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, STORE_ADDRESS);
 
-    vector<bitset<8>> target;
-    target.push_back(bitset<8>((*move(params.at(2))).getZCodeValue()));
-    params.erase(params.end() - 1);
-
-    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(GET_WINDOW_PROPERTY, params);
-    addBitset(generated, "get_window_property");
-
-    auto targetObject = shared_ptr<ZCodeObject>(new ZCodeInstruction(target, "get_cursor"));
-    routine->add(targetObject);
+    routine->generateExtOPInstruction(GET_WINDOW_PROPERTY, params, "get_window_property");
+    routine->storeAdress(params.at(2)->getZCodeValue());
 }
 
 void RoutineGenerator::windowStyle(vector<unique_ptr<ZParam>> params) {
@@ -721,8 +692,7 @@ void RoutineGenerator::windowStyle(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
 
-    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(WINDOW_STYLE, params);
-    addBitset(generated, "window_style");
+    routine->generateExtOPInstruction(WINDOW_STYLE, params, "window_style");
 }
 
 void RoutineGenerator::scrollWindow(vector<unique_ptr<ZParam>> params) {
@@ -730,8 +700,7 @@ void RoutineGenerator::scrollWindow(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 2);
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
 
-    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(SCROLL_WINDOW, params);
-    addBitset(generated, "scroll_window");
+    routine->generateExtOPInstruction(SCROLL_WINDOW, params, "scroll_window");
 }
 
 void RoutineGenerator::putWindProp(vector<unique_ptr<ZParam>> params) {
@@ -739,8 +708,7 @@ void RoutineGenerator::putWindProp(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
 
-    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(PUT_WIND_PROP, params);
-    addBitset(generated, "put_wind_prop");
+    routine->generateExtOPInstruction(PUT_WIND_PROP, params, "put_wind_prop");
 }
 
 void RoutineGenerator::setWindow(vector<unique_ptr<ZParam>> params) {
@@ -748,8 +716,7 @@ void RoutineGenerator::setWindow(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1);
     checkParamType(params, VARIABLE_OR_VALUE);
 
-    vector<bitset<8>> generated = opcodeGenerator.generateVarOPInstruction(SET_WINDOW, params);
-    addBitset(generated, "set_window");
+    routine->generateVarOPInstruction(SET_WINDOW, params, "set_window");
 }
 
 void RoutineGenerator::windowSize(vector<unique_ptr<ZParam>> params) {
@@ -757,8 +724,7 @@ void RoutineGenerator::windowSize(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
 
-    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(WINDOW_SIZE, params);
-    addBitset(generated, "window_size");
+    routine->generateExtOPInstruction(WINDOW_SIZE, params, "window_size");
 }
 
 void RoutineGenerator::setMargins(vector<unique_ptr<ZParam>> params) {
@@ -766,8 +732,7 @@ void RoutineGenerator::setMargins(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 3);
     checkParamType(params, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE, VARIABLE_OR_VALUE);
 
-    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(SET_MARGINS, params);
-    addBitset(generated, "set_margins");
+    routine->generateExtOPInstruction(SET_MARGINS, params, "set_margins");
 }
 
 void RoutineGenerator::eraseWindow(vector<unique_ptr<ZParam>> params) {
@@ -775,38 +740,27 @@ void RoutineGenerator::eraseWindow(vector<unique_ptr<ZParam>> params) {
     checkParamCount(params, 1);
     checkParamType(params, VARIABLE_OR_VALUE);
 
-    vector<bitset<8>> generated = opcodeGenerator.generateVarOPInstruction(ERASE_WINDOW, params);
-    addBitset(generated, "erase_window");
+    routine->generateVarOPInstruction(ERASE_WINDOW, params, "erase_window");
 }
 
+// TODO: maybe wrong?
 void RoutineGenerator::saveUndo(vector<unique_ptr<ZParam>> params) {
     debug("save_undo");
     checkParamCount(params, 1);
     checkParamType(params,  STORE_ADDRESS);
 
-    vector<unique_ptr<ZParam>> p;
-    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(SAVE_UNDO, p);
-    addBitset(generated, "save_undo");
-
-    vector<bitset<8>> target;
-    target.push_back(bitset<8>((*move(params.at(0))).getZCodeValue()));
-    auto targetObject = shared_ptr<ZCodeObject>(new ZCodeInstruction(target, "save_undo"));
-    routine->add(targetObject);
+    routine->generateExtOPInstruction(SAVE_UNDO, params, "save_undo");
+    routine->storeAdress(params.at(0)->getZCodeValue());
 }
 
+// TODO: maybe wrong?
 void RoutineGenerator::restoreUndo(vector<unique_ptr<ZParam>> params) {
     debug("restore_undo");
     checkParamCount(params, 1);
     checkParamType(params,  STORE_ADDRESS);
 
-    vector<unique_ptr<ZParam>> p;
-    vector<bitset<8>> generated = opcodeGenerator.generateExtOPInstruction(RESTORE_UNDO, p);
-    addBitset(generated, "restore_undo");
-
-    vector<bitset<8>> target;
-    target.push_back(bitset<8>((*move(params.at(0))).getZCodeValue()));
-    auto targetObject = shared_ptr<ZCodeObject>(new ZCodeInstruction(target, "restore_undo"));
-    routine->add(targetObject);
+    routine->generateExtOPInstruction(RESTORE_UNDO, params, "restore_undo");
+    routine->storeAdress(params.at(0)->getZCodeValue());
 }
 
 shared_ptr<ZCodeLabel> RoutineGenerator::getOrCreateLabel(std::string name) {

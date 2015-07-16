@@ -186,15 +186,13 @@ public:
 
     void dec(std::vector<std::unique_ptr<ZParam>> params);
 
-    void readMouse(std::string array, std::shared_ptr<ZCodeContainer> dynamicMemory);
+    void readMouse(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemory);
 
-    void getCursor(std::string array, std::shared_ptr<ZCodeContainer> dynamicMemory);
+    void getCursor(std::vector<std::unique_ptr<ZParam>> params, std::shared_ptr<ZCodeContainer> dynamicMemory);
 
     void setCursor(std::vector<std::unique_ptr<ZParam>> params);
 
     void getWindowProperty(std::vector<std::unique_ptr<ZParam>> params);
-
-    void loadb(std::vector<std::unique_ptr<ZParam>> &params);
 
     void windowStyle(std::vector<std::unique_ptr<ZParam>> params);
 
@@ -302,7 +300,7 @@ public:
         //OPCODE: set used window to print
                 SET_WINDOW = 235,
         //OPCODE: clears window
-                ERASE_WINDOW = 237
+                ERASE_WINDOW = 237,
 
         //VAR:243 13 3 output_stream number table
                 OUTPUT_STREAM = 243,

@@ -636,15 +636,13 @@ void AssemblyParser::executeCommand(const string &command, RoutineGenerator &rou
         routineGenerator.random(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::READ_MOUSE) == 0) {
         LOG_DEBUG << ":::::: new read_mouse";
-        vector<string> params = split(command, SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
-        routineGenerator.readMouse(params.at(1), dynamicMemory);
+        routineGenerator.readMouse(parseArguments(command), dynamicMemory);
     } else if (commandPart.compare(AssemblyParser::MOUSE_WINDOW) == 0) {
         LOG_DEBUG << ":::::: new mouse_window";
         routineGenerator.mouseWindow(parseArguments(command));
     } else if (commandPart.compare(AssemblyParser::GET_CURSOR) == 0) {
         LOG_DEBUG << ":::::: new get_cursor";
-        vector<string> params = split(command, SPLITTER_BETWEEN_LEXEMES_IN_A_COMMAND);
-        routineGenerator.getCursor(params.at(1), dynamicMemory);
+        routineGenerator.getCursor(parseArguments(command), dynamicMemory);
     } else if (commandPart.compare(AssemblyParser::SET_CURSOR) == 0) {
         LOG_DEBUG << ":::::: new set_cursor";
         routineGenerator.setCursor(parseArguments(command));
