@@ -112,66 +112,71 @@ void AssemblyParser::performRoutineDirectiveCommand(vector<string> lineComps, sh
         throw AssemblyException(AssemblyException::ErrorType::INVALID_ROUTINE);
     }
     string routineName = lineComps.at(1);
-
-    // currentGenerator exists, so we can get its code
-    if (currentGenerator) {
-        finishRoutine(highMemory);
-    }
-
-    // have to be cleared after each routine
-    registeredJumpsAtLines = vector<pair<string, unsigned>>();
-    registeredLabels = vector<string>();
-
-    unsigned locVariablesCount = (unsigned) (lineComps.size() - 2);
-    currentGenerator.reset(new RoutineGenerator(routineName, locVariablesCount));
-
-    vector<pair<string, optional<int>>> locals;
-    bool withoutComma = true;
-    for (; locVariablesCount > 0; locVariablesCount--) {     // parse locale variables
-        string var = lineComps[locVariablesCount + 1];
-
-        size_t nameEnd = var.find_first_of("=");
-        size_t varEnd = var.size();
-
-        if (withoutComma) {         // last locale variable has no comma as last char
-            withoutComma = false;
-        } else {
-            varEnd -= 1;
+    if (routineNames.find(routineName) == routineNames.end()) {
+        this->routineNames.insert(routineName);
+        // currentGenerator exists, so we can get its code
+        if (currentGenerator) {
+            finishRoutine(highMemory);
         }
 
-        if (nameEnd != string::npos) {
-            int val;
-            string valueString = var.substr(nameEnd + 1, varEnd - 1 - nameEnd);
+        // have to be cleared after each routine
+        registeredJumpsAtLines = vector<pair<string, unsigned>>();
+        registeredLabels = vector<string>();
 
-            try {
-                val = stoi(valueString);
-            } catch (const invalid_argument &invaldArgument) {
-                LOG_ERROR << "Given value for local variable is not an integer: " << valueString;
-                throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
-            } catch (const out_of_range &outOfRange) {
-                LOG_ERROR << "Given value for local variable too large or too small: " << valueString;
-                throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
+        unsigned locVariablesCount = (unsigned) (lineComps.size() - 2);
+        currentGenerator.reset(new RoutineGenerator(routineName, locVariablesCount));
+
+        vector<pair<string, optional<int>>> locals;
+        bool withoutComma = true;
+        for (; locVariablesCount > 0; locVariablesCount--) {     // parse locale variables
+            string var = lineComps[locVariablesCount + 1];
+
+            size_t nameEnd = var.find_first_of("=");
+            size_t varEnd = var.size();
+
+            if (withoutComma) {         // last locale variable has no comma as last char
+                withoutComma = false;
+            } else {
+                varEnd -= 1;
             }
 
-            if (val > INT16_MAX || val < INT16_MIN) {
-                LOG_ERROR << "Given value for local variable too large or too small: " << to_string(val);
-                throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
+            if (nameEnd != string::npos) {
+                int val;
+                string valueString = var.substr(nameEnd + 1, varEnd - 1 - nameEnd);
+
+                try {
+                    val = stoi(valueString);
+                } catch (const invalid_argument &invaldArgument) {
+                    LOG_ERROR << "Given value for local variable is not an integer: " << valueString;
+                    throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
+                } catch (const out_of_range &outOfRange) {
+                    LOG_ERROR << "Given value for local variable too large or too small: " << valueString;
+                    throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
+                }
+
+                if (val > INT16_MAX || val < INT16_MIN) {
+                    LOG_ERROR << "Given value for local variable too large or too small: " << to_string(val);
+                    throw AssemblyException(AssemblyException::ErrorType::INVALID_INSTRUCTION);
+                }
+
+                string name = var.substr(0, nameEnd);
+                locals.push_back(make_pair(name, val));
+            } else {
+                string name = var.substr(0, varEnd);
+                locals.push_back(make_pair(name, nullopt));
             }
-
-            string name = var.substr(0, nameEnd);
-            locals.push_back(make_pair(name, val));
-        } else {
-            string name = var.substr(0, varEnd);
-            locals.push_back(make_pair(name, nullopt));
         }
-    }
 
-    for (auto localPair = locals.rbegin(); localPair != locals.rend(); ++localPair) {
-        if (localPair->second) {
-            currentGenerator->setLocalVariable(localPair->first, *(localPair->second));
-        } else {
-            currentGenerator->setLocalVariable(localPair->first);
+        for (auto localPair = locals.rbegin(); localPair != locals.rend(); ++localPair) {
+            if (localPair->second) {
+                currentGenerator->setLocalVariable(localPair->first, *(localPair->second));
+            } else {
+                currentGenerator->setLocalVariable(localPair->first);
+            }
         }
+    } else {
+        LOG_ERROR << "two routines have the same name";
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_ROUTINE);
     }
 }
 
@@ -185,8 +190,20 @@ void AssemblyParser::performRoutineGlobalVarCommand(string line) {
     }
 
     string gvar = lineComps.at(1);
-
-    addGlobal(gvar);
+    unsigned index = (unsigned) globalVariables.size();
+    if (index < 240) {
+        if (this->directiveNames.find(gvar) == this->directiveNames.end()) {
+            LOG_DEBUG << "adding gvar " << gvar << " at index " << to_string(index);
+            this->globalVariables[gvar] = index;
+            this->directiveNames.insert(gvar);
+        } else {
+            LOG_ERROR << "two directives have the same name";
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
+        }
+    } else {
+        LOG_DEBUG << "maximum amount of global variables reached!";
+        throw AssemblyException(AssemblyException::ErrorType::INVALID_GLOBAL);
+    }
 }
 
 
@@ -418,18 +435,6 @@ unique_ptr<ZParam> AssemblyParser::createZParam(const string &paramString, bool 
 
 
     return param;
-}
-
-
-void AssemblyParser::addGlobal(string globalName) {
-    // TODO: check if maximum gvar limit is reached
-    unsigned index = (unsigned) globalVariables.size();
-    if (globalVariables.find(globalName) != globalVariables.end()) {
-        LOG_ERROR << "two global variable have the same name";
-        throw AssemblyException(AssemblyException::ErrorType::INVALID_GLOBAL);
-    }
-    LOG_DEBUG << "adding gvar " << globalName << " at index " << to_string(index);
-    this->globalVariables[globalName] = index;
 }
 
 void AssemblyParser::registerJump(const vector<unique_ptr<ZParam>> &params) {
@@ -760,14 +765,20 @@ void AssemblyParser::performByteArrayDirective(string command, shared_ptr<ZCodeC
     try {
         vector<string> param = this->split(command, ' ');
         string name = param.at(1);
-        string sSize = param.at(2).substr(1, param.at(2).size() - 2);
-        int size = std::stoi(sSize.c_str());
-        auto initialSize = shared_ptr<ZCodeObject>(new ZCodeInstruction(size));
-        auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size, "ARRAY : " + name));
-        auto label = dynamicMemory->getOrCreateLabel(name);
-        dynamicMemory->add(label);
-        dynamicMemory->add(table);
-        dynamicMemory->add(shared_ptr<ZCodeInstruction>(new ZCodeInstruction(0xff, "EOM")));
+        if (this->directiveNames.find(name) == this->directiveNames.end()) {
+            string sSize = param.at(2).substr(1, param.at(2).size() - 2);
+            int size = std::stoi(sSize.c_str());
+            auto initialSize = shared_ptr<ZCodeObject>(new ZCodeInstruction(size));
+            auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size, "ARRAY : " + name));
+            auto label = dynamicMemory->getOrCreateLabel(name);
+            dynamicMemory->add(label);
+            dynamicMemory->add(table);
+            dynamicMemory->add(shared_ptr<ZCodeInstruction>(new ZCodeInstruction(0xff, "EOM")));
+            this->directiveNames.insert(name);
+        } else {
+            LOG_ERROR << "two directives have the same name";
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
+        }
     } catch (std::invalid_argument) {
         LOG_ERROR << "'.BYTEARRAY_DIRECTIVE <name> [<size>]' expected. '" << command << "' found instead";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
@@ -781,13 +792,19 @@ void AssemblyParser::performWordArrayDirective(string command, shared_ptr<ZCodeC
     try {
         vector<string> param = this->split(command, ' ');
         string name = param.at(1);
-        string sSize = param.at(2).substr(1, param.at(2).size() - 2);
-        int size = std::stoi(sSize.c_str());
-        auto label = dynamicMemory->getOrCreateLabel(name);
-        dynamicMemory->add(label);
-        auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size * 2, "ARRAY : " + name));
-        dynamicMemory->add(table);
-        dynamicMemory->add(shared_ptr<ZCodeInstruction>(new ZCodeInstruction(0xff, "EOM")));
+        if (this->directiveNames.find(name) == this->directiveNames.end()) {
+            string sSize = param.at(2).substr(1, param.at(2).size() - 2);
+            int size = std::stoi(sSize.c_str());
+            auto label = dynamicMemory->getOrCreateLabel(name);
+            dynamicMemory->add(label);
+            auto table = shared_ptr<ZCodeObject>(new ZCodeMemorySpace(size * 2, "ARRAY : " + name));
+            dynamicMemory->add(table);
+            dynamicMemory->add(shared_ptr<ZCodeInstruction>(new ZCodeInstruction(0xff, "EOM")));
+            this->directiveNames.insert(name);
+        } else {
+            LOG_ERROR << "two directives have the same name";
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
+        }
     } catch (std::invalid_argument) {
         LOG_ERROR << "'.WORDARRAY_DIRECTIVE <name> [<size>]' expected. '" << command << "' found instead";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
@@ -822,20 +839,26 @@ void AssemblyParser::performStringDirective(std::string command, shared_ptr<ZCod
     try {
         vector<string> param = this->split(command, ' ');
         string name = param.at(1);
-        unsigned long begin = command.find('\"');
-        unsigned long end = command.find('\"', begin + 1);
-        string str = command.substr(begin + 1, end - begin - 1);
-        auto label = dynamicMemory->getOrCreateLabel(name);
-        ZCodeConverter converter;
-        auto vstr = converter.convertStringToZSCII(str);
-        dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(7,"static string typedef")));
-        vector<bitset<8>> vsize;
-        Utils::addTwoBytes(vstr.size(),vsize);
-        dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(vsize,"size")));
-        dynamicMemory->add(label);
-        auto table = shared_ptr<ZCodeObject>(
-                new ZCodeInstruction(vstr, "string " + name));
-        dynamicMemory->add(table);
+        if (this->directiveNames.find(name) == this->directiveNames.end()) {
+            this->directiveNames.insert(name);
+            unsigned long begin = command.find('\"');
+            unsigned long end = command.find('\"', begin + 1);
+            string str = command.substr(begin + 1, end - begin - 1);
+            auto label = dynamicMemory->getOrCreateLabel(name);
+            ZCodeConverter converter;
+            auto vstr = converter.convertStringToZSCII(str);
+            dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(7,"static string typedef")));
+            vector<bitset<8>> vsize;
+            Utils::addTwoBytes(vstr.size(),vsize);
+            dynamicMemory->add(shared_ptr<ZCodeObject>(new ZCodeInstruction(vsize,"size")));
+            dynamicMemory->add(label);
+            auto table = shared_ptr<ZCodeObject>(
+                    new ZCodeInstruction(vstr, "string " + name));
+            dynamicMemory->add(table);
+        } else {
+            LOG_ERROR << "two directives have the same name";
+            throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);
+        }
     } catch (std::out_of_range) {
         LOG_ERROR << "'.STRING <name> \"<size>\"' expected. '" << command << "' found instead";
         throw AssemblyException(AssemblyException::ErrorType::INVALID_DIRECTIVE);

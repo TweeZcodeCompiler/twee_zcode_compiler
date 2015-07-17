@@ -8,6 +8,7 @@
 #include <Passage/Body/IBodyPartsVisitor.h>
 #include <Passage/Body/Expressions/Expression.h>
 #include <Passage/Body/Expressions/BinaryOperation.h>
+#include <Passage/Body/Link.h>
 
 #include <map>
 #include <set>
@@ -63,6 +64,8 @@ private:
 
     std::set<std::string> globalVariables;
     int labelCount;
+    unsigned linkCount = 0;
+    std::vector<Link> foundLinks;
     std::stack<IfContext> ifContexts;
     unsigned ifCount = 0;
 

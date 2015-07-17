@@ -31,12 +31,16 @@ public:
 
     static std::string getMallocLib();
 
+    static std::string getStackLib();
+
     template<typename T>
     static bool contains(std::set<T> set, T elem) {
         return (std::find(set.begin(), set.end(), elem) != set.end());
     }
 
     static std::shared_ptr<ZCodeContainer> dynamicMemory;
+
+
 };
 
 

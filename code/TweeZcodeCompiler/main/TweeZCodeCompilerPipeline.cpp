@@ -62,7 +62,7 @@ void TweeZCodeCompilerPipeline::compile(string inputFileName, string outputFileN
         buffer << in.rdbuf();
     }
 
-    buffer << endl << Utils::getMallocLib();
+    buffer << endl << Utils::getMallocLib() << endl;
 
     shared_ptr<ZCodeContainer> zcode = shared_ptr<ZCodeContainer>(new ZCodeContainer("ZCode Container"));
 
