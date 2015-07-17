@@ -135,6 +135,8 @@ private:
     std::vector<std::pair<std::string, unsigned>> registeredJumpsAtLines;
     std::vector<std::string> registeredLabels;
     std::map<std::string, uint8_t> globalVariables;
+    std::set<std::string> directiveNames;
+    std::set<std::string> routineNames;
 
     bool firstRoutine = true;
 
@@ -143,8 +145,6 @@ private:
     void registerJump(const std::vector<std::unique_ptr<ZParam>> &params);
 
     void finishRoutine(std::shared_ptr<ZCodeContainer> highMemoryZcode);
-
-    void addGlobal(std::string globalName);
 
     std::unique_ptr<uint8_t> getAddressForId(const std::string &id);
 
