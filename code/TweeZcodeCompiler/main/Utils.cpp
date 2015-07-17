@@ -54,6 +54,42 @@ void Utils::insertPaddingToNextRoutine(vector<bitset<8>> &bitsets, size_t routin
     }
 }
 
+std::string Utils::getStackLib() {
+    return ".FUNCT __stack_top stack\n"
+        "loadw stack 0 -> sp\n"
+        "add sp 1 -> sp\n"
+        "loadw stack sp -> sp\n"
+        "ret sp\n"
+        "\n"
+        "\n"
+        ".FUNCT __stack_bot stack, stacksize\n"
+        "sub stacksize 1 -> sp\n"
+        "loadw stack sp -> sp\n"
+        "ret sp\n"
+        "\n"
+        ".FUNCT __stack_is_empty stack, stacksize\n"
+        "loadw stack 0 -> sp\n"
+        "sub stacksize 1 -> sp\n"
+        "sub sp sp -> sp\n"
+        "je sp 0 ?empty\n"
+        "ret 0\n"
+        "empty:\n"
+        "ret 1\n"
+        "\n"
+        ".FUNCT __stack_count stack, stacksize\n"
+        "loadw stack 0 -> sp\n"
+        "sub stacksize sp -> sp\n"
+        "sub sp 1 -> sp\n"
+        "ret sp\n"
+        "\n"
+        "\n"
+        ".FUNCT __stack_at stack, stacksize, i\n"
+        "sub stacksize 1 -> sp\n"
+        "sub sp i -> sp\n"
+        "loadw stack sp -> sp\n"
+        "ret sp";
+}
+
 std::string Utils::getMallocLib() {
     return ";one data set contains:\n"
             ";\t1 byte:\t\ttype of stored data\n"

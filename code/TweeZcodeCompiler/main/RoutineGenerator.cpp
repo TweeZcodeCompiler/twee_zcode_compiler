@@ -157,7 +157,7 @@ void RoutineGenerator::readChar(vector<unique_ptr<ZParam>> params) {
     // Read char needs '1' as first parameter (cannot be handled by OpcodeParameterGenerator)
     vector<bitset<8>> instructions = vector<bitset<8>>();
     instructions.push_back(numberToBitset(READ_CHAR));
-    instructions.push_back(numberToBitset(0xbf));
+    instructions.push_back(numberToBitset(0x7f));
     instructions.push_back(numberToBitset(1));
     instructions.push_back(numberToBitset((*params.at(params.size() - 1)).getZCodeValue()));
     auto zinstruction = shared_ptr<ZCodeObject>(new ZCodeInstruction(instructions, "read char"));
