@@ -1,0 +1,15 @@
+::Start
+
+<<print (100+200*33-45)%12 neq 7>> = 0
+
+<<print true and false or true>>  = 1
+
+<<set $var = 0>>
+
+<<set $v = 0>>
+
+<<print $var = $var = $v = $var = 10 + 10>> = 20
+
+<<print $var = $var + 5*20-30>> = 90
+
+<<print $v>> = 20

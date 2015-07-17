@@ -20,7 +20,6 @@
 #include <Passage/Body/Link.h>
 #include <Passage/Body/Newline.h>
 
-
 #include <Passage/Body/Expressions/BinaryOperation.h>
 #include <Passage/Body/Expressions/UnaryOperation.h>
 
@@ -70,12 +69,13 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         START_PASSAGE_NAME = "Start",
         GLOB_PREVIOUS_PASSAGE_ID = "PREVIOUS_PASSAGE_ID",
         GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID",
+        STACK_POINTER = "sp",
         LINK_PREFIX = "LINK_", STRING_PREVIOUS = "PREVIOUS",
 
-        // mouse vars, routines & tables
-        // mouse link table: one link needs 4 entries: lineNumber, charStart, charEnd, passageNumber
-        // mouse arrow table: bounds are only entered if arrow is displayed.
-        //                    One arrow needs 4 entries: lineTop, charLeftTop, lineBottom, charLeftBottom
+// mouse vars, routines & tables
+// mouse link table: one link needs 4 entries: lineNumber, charStart, charEnd, passageNumber
+// mouse arrow table: bounds are only entered if arrow is displayed.
+//                    One arrow needs 4 entries: lineTop, charLeftTop, lineBottom, charLeftBottom
 
         MOUSE_CLICK_ROUTINE = "mouseClick",
         TABLE_CURSOR = "TABLE_CURSOR",
@@ -241,7 +241,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         for (auto passage =  passages.begin(); passage!=passages.end(); ++passage) {
             if (!hasStart) {
-               hasStart = (passage->getHead().getName() == "Start");
+                hasStart = (passage->getHead().getName() == "Start");
             }
             if(passageNames.find(passage->getHead().getName()) == passageNames.end()) {
                 passageNames.insert(passage->getHead().getName());
@@ -339,7 +339,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.addRoutine(INIT_ROUTINE, {ZRoutineArgument(varI), ZRoutineArgument(varKey)})
                 .setMargins(to_string(MARGIN_LEFT), to_string(MARGIN_RIGHT), "0")
 
-                // add top margin
+                        // add top margin
                 .addLabel("loop")
                 .newline()
                 .add(varI, "1", varI)
@@ -401,7 +401,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .quit();
 
         for (auto it = passages.begin(); it != passages.end(); ++it) {
-            ASSGEN.addLabel(labelForPassage(*it)).call_vs(routineNameForPassage(*it), nullopt, "sp").ret("0");
+            ASSGEN.addLabel(labelForPassage(*it)).call_vs(routineNameForPassage(*it), nullopt, STACK_POINTER).ret("0");
         }
     }
 
@@ -450,11 +450,11 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.getWindowProperty("0", "13", varFontSize)
                 .div(varFontSize, "256", varFontSize);
 
-        ASSGEN.loadb("33", 0, "sp")                                                // max chars per line
-                .getWindowProperty("0", "3", "sp")                                 // window width in pixels
-                .sub("sp", to_string(MARGIN_LEFT), "sp")
-                .sub("sp", to_string(MARGIN_RIGHT), "sp")
-                .div("sp", "sp", varCharWidth)
+        ASSGEN.loadb("33", 0, STACK_POINTER)                                                // max chars per line
+                .getWindowProperty("0", "3", STACK_POINTER)                                 // window width in pixels
+                .sub(STACK_POINTER, to_string(MARGIN_LEFT), STACK_POINTER)
+                .sub(STACK_POINTER, to_string(MARGIN_RIGHT), STACK_POINTER)
+                .div(STACK_POINTER, STACK_POINTER, varCharWidth)
                 .add(varCharWidth, "1", varCharWidth);
 
         ASSGEN.addLabel("MOUSE_CLICK_LOOP")
@@ -500,30 +500,30 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.addLabel("ALL_ENTRIES_CHECKED")
                 .jumpEquals(varClickArrows + " 0", "MOUSE_CLICK_LOOP")   // are arrows active?
-                .loadw(TABLE_MOUSE_CLICK_ARROWS, "1", "sp")              // test here with x value because arrows are always drawn on right sight
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "1", STACK_POINTER)              // test here with x value because arrows are always drawn on right sight
                 .jumpEquals("sp 0", "ARROW_DOWN")
 
-                .loadw(TABLE_MOUSE_CLICK_ARROWS, "0", "sp")       // lineTop
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "0", STACK_POINTER)       // lineTop
                 .jumpLess(varYLineClick + " sp", "ARROW_DOWN")
-                .loadw(TABLE_MOUSE_CLICK_ARROWS, "1", "sp")       // width left
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "1", STACK_POINTER)       // width left
                 .jumpLess(varXMouseClick + " sp", "ARROW_DOWN")
-                .loadw(TABLE_MOUSE_CLICK_ARROWS, "2", "sp")       // line bottom
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "2", STACK_POINTER)       // line bottom
                 .jumpGreater(varYLineClick + " sp", "ARROW_DOWN")
-                .loadw(TABLE_MOUSE_CLICK_ARROWS, "3", "sp")       // width right
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "3", STACK_POINTER)       // width right
                 .jumpGreater(varXMouseClick + " sp", "ARROW_DOWN")
-                .restoreUndo("sp");                               // restores game to start this passage again
+                .restoreUndo(STACK_POINTER);                               // restores game to start this passage again
 
         ASSGEN.addLabel("ARROW_DOWN")
-                .loadw(TABLE_MOUSE_CLICK_ARROWS, "5", "sp")
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "5", STACK_POINTER)
                 .jumpEquals("sp 0", "MOUSE_CLICK_LOOP")
 
-                .loadw(TABLE_MOUSE_CLICK_ARROWS, "4", "sp")              // lineTop
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "4", STACK_POINTER)              // lineTop
                 .jumpLess(varYLineClick + " sp", "MOUSE_CLICK_LOOP")
-                .loadw(TABLE_MOUSE_CLICK_ARROWS, "5", "sp")              // width left
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "5", STACK_POINTER)              // width left
                 .jumpLess(varXMouseClick + " sp", "MOUSE_CLICK_LOOP")
-                .loadw(TABLE_MOUSE_CLICK_ARROWS, "6", "sp")              // line bottom
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "6", STACK_POINTER)              // line bottom
                 .jumpGreater(varYLineClick + " sp", "MOUSE_CLICK_LOOP")
-                .loadw(TABLE_MOUSE_CLICK_ARROWS, "7", "sp")              // width right
+                .loadw(TABLE_MOUSE_CLICK_ARROWS, "7", STACK_POINTER)              // width right
                 .jumpGreater(varXMouseClick + " sp", "MOUSE_CLICK_LOOP")
                 .ret("-1");                                              // signals that no link was clicked
 
@@ -543,10 +543,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .newline()
                 .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
                 .getCursor(TABLE_CURSOR)
-                .loadw(TABLE_CURSOR, "0", "sp") // line number of cursor
-                .storew(TABLE_MOUSE_CLICK_ARROWS, "0", "sp")
-                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
-                .storew(TABLE_MOUSE_CLICK_ARROWS, "1", "sp")
+                .loadw(TABLE_CURSOR, "0", STACK_POINTER) // line number of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "0", STACK_POINTER)
+                .loadw(TABLE_CURSOR, "1", STACK_POINTER) // x position of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "1", STACK_POINTER)
                 .print("/ \\ ");
 
         ASSGEN.newline()
@@ -557,10 +557,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
                 .print(" |  ")
                 .getCursor(TABLE_CURSOR)
-                .loadw(TABLE_CURSOR, "0", "sp") // line number of cursor
-                .storew(TABLE_MOUSE_CLICK_ARROWS, "2", "sp")
-                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
-                .storew(TABLE_MOUSE_CLICK_ARROWS, "3", "sp");
+                .loadw(TABLE_CURSOR, "0", STACK_POINTER) // line number of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "2", STACK_POINTER)
+                .loadw(TABLE_CURSOR, "1", STACK_POINTER) // x position of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "3", STACK_POINTER);
 
         ASSGEN.setWindow("0")
                 .ret("0");
@@ -586,10 +586,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
                 .getCursor(TABLE_CURSOR)
-                .loadw(TABLE_CURSOR, "0", "sp") // line number of cursor
-                .storew(TABLE_MOUSE_CLICK_ARROWS, "4", "sp")
-                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
-                .storew(TABLE_MOUSE_CLICK_ARROWS, "5", "sp")
+                .loadw(TABLE_CURSOR, "0", STACK_POINTER) // line number of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "4", STACK_POINTER)
+                .loadw(TABLE_CURSOR, "1", STACK_POINTER) // x position of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "5", STACK_POINTER)
                 .print(" |  ")
                 .newline();
 
@@ -600,10 +600,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.call_vn(PRINT_SPACES_ROUTINE, varCharWidth)
                 .print(" V  ")
                 .getCursor(TABLE_CURSOR)
-                .loadw(TABLE_CURSOR, "0", "sp") // line number of cursor
-                .storew(TABLE_MOUSE_CLICK_ARROWS, "6", "sp")
-                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
-                .storew(TABLE_MOUSE_CLICK_ARROWS, "7", "sp");
+                .loadw(TABLE_CURSOR, "0", STACK_POINTER) // line number of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "6", STACK_POINTER)
+                .loadw(TABLE_CURSOR, "1", STACK_POINTER) // x position of cursor
+                .storew(TABLE_MOUSE_CLICK_ARROWS, "7", STACK_POINTER);
 
         ASSGEN.setWindow("0")
                 .ret("0");
@@ -613,19 +613,19 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.addRoutine(SUPPORTS_MOUSE_ROUTINE);
 
-        ASSGEN.loadb("23", "0", "sp")  // flags in header, bit 5 needs to be true
-                .lor("sp", "11011111", "sp")
-                .jumpZero("sp", "NOT_SUPPORTED");
+        ASSGEN.loadb("23", "0", STACK_POINTER)  // flags in header, bit 5 needs to be true
+                .lor(STACK_POINTER, "11011111", STACK_POINTER)
+                .jumpZero(STACK_POINTER, "NOT_SUPPORTED");
 
 
-        ASSGEN.loadb("50", "0", "sp")  // revision number first part, needs to be 1
-                .land("sp", "00000001", "sp")
-                .jumpZero("sp", "NOT_SUPPORTED");
+        ASSGEN.loadb("50", "0", STACK_POINTER)  // revision number first part, needs to be 1
+                .land(STACK_POINTER, "00000001", STACK_POINTER)
+                .jumpZero(STACK_POINTER, "NOT_SUPPORTED");
 
 
-        ASSGEN.loadb("50", "1", "sp")  // revision number second part, needs to be 1
-                .land("sp", "00000001", "sp")
-                .jumpZero("sp", "NOT_SUPPORTED");
+        ASSGEN.loadb("50", "1", STACK_POINTER)  // revision number second part, needs to be 1
+                .land(STACK_POINTER, "00000001", STACK_POINTER)
+                .jumpZero(STACK_POINTER, "NOT_SUPPORTED");
 
         ASSGEN.store(GLOB_INTERPRETER_SUPPORTS_MOUSE, "1")
                 .ret("0");
@@ -678,11 +678,11 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.addRoutine(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE)
                 .jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "no_mouse")
                 .getCursor(TABLE_CURSOR)
-                .loadw(TABLE_CURSOR, "0", "sp") // line number of cursor
-                .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
+                .loadw(TABLE_CURSOR, "0", STACK_POINTER) // line number of cursor
+                .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, STACK_POINTER)
                 .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
-                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
-                .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
+                .loadw(TABLE_CURSOR, "1", STACK_POINTER) // x position of cursor
+                .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, STACK_POINTER)
                 .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
                 .addLabel("no_mouse")
                 .ret("0");
@@ -694,8 +694,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
         ASSGEN.addRoutine(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, {ZRoutineArgument(varId)})
                 .jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "no_mouse")
                 .getCursor(TABLE_CURSOR)
-                .loadw(TABLE_CURSOR, "1", "sp") // x position of cursor
-                .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, "sp")
+                .loadw(TABLE_CURSOR, "1", STACK_POINTER) // x position of cursor
+                .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, STACK_POINTER)
                 .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
                 .storew(TABLE_MOUSE_LINKS, GLOB_TABLE_MOUSE_LINKS_NEXT, varId)
                 .add(GLOB_TABLE_MOUSE_LINKS_NEXT, "1", GLOB_TABLE_MOUSE_LINKS_NEXT)
@@ -721,8 +721,8 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
         ASSGEN.addRoutine(PAUSE_PRINTING_ROUTINE, {ZRoutineArgument("result")})
                 .add(GLOB_LINES_PRINTED, "1", GLOB_LINES_PRINTED)
-                .loadb("32", 0, "sp")
-                .sub("sp", to_string(MARGIN_BOTTOM), "sp")
+                .loadb("32", 0, STACK_POINTER)
+                .sub(STACK_POINTER, to_string(MARGIN_BOTTOM), STACK_POINTER)
                 .jumpLess(GLOB_LINES_PRINTED + " sp", "end")             // jump if last line of screen is not reached
                 .store(GLOB_PRINT_ARROW_UP_AT_END, "1")
                 .call_1n(ROUTINE_PRINT_ARROW_DOWN)
@@ -867,16 +867,16 @@ void TweeCompiler::visit(const Text& host) {
 void TweeCompiler::visit(const Formatting& host) {
     switch (host.getFormat()) {
         case Format::UNDERLINED:
-            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("0"), "sp");
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("0"), STACK_POINTER);
             break;
         case Format::BOLD:
-            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("1"), "sp");
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("1"), STACK_POINTER);
             break;
         case Format::ITALIC:
-            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("2"), "sp");
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("2"), STACK_POINTER);
             break;
         case Format::MONOSPACE:
-            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("3"), "sp");
+            ASSGEN.call_vs(TEXT_FORMAT_ROUTINE, std::string("3"), STACK_POINTER);
             break;
         default:
             LOG_DEBUG << "Unknown text formatting";
@@ -935,10 +935,10 @@ void TweeCompiler::visit(const Newline& host) {
 
 void TweeCompiler::visit(const PrintMacro& host) {
     if (Previous *previous = dynamic_cast<Previous *>(host.getExpression().get())) {
-        ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, "sp");
+        ASSGEN.call_vs(ROUTINE_NAME_FOR_PASSAGE, GLOB_PREVIOUS_PASSAGE_ID, STACK_POINTER);
     } else {
-                evalExpression(host.getExpression().get());
-                ASSGEN.print_num("sp");
+        evalExpression(optimizeExpression(host.getExpression().get()));
+        ASSGEN.print_num(STACK_POINTER);
     }
 }
 
@@ -974,8 +974,8 @@ void TweeCompiler::visit(const SetMacro& host) {
 
 void TweeCompiler::visit(const IfMacro& host) {
     ifContexts.push(makeNextIfContext());
-    evalExpression(host.getExpression().get());
-    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
+    evalExpression(optimizeExpression(host.getExpression().get()));
+    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({STACK_POINTER, "1"}), makeIfCaseLabel(ifContexts.top()));
 }
 
 void TweeCompiler::visit(const ElseMacro& host) {
@@ -994,8 +994,8 @@ void TweeCompiler::visit(const ElseIfMacro& host) {
     ASSGEN.jump(makeIfEndLabel(ifContexts.top()));
     ASSGEN.addLabel(makeIfCaseLabel(ifContexts.top()));
     ifContexts.top().caseCount++;
-    evalExpression(host.getExpression().get());
-    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({"sp", "1"}), makeIfCaseLabel(ifContexts.top()));
+    evalExpression(optimizeExpression(host.getExpression().get()));
+    ASSGEN.jumpNotEquals(ZAssemblyGenerator::makeArgs({STACK_POINTER, "1"}), makeIfCaseLabel(ifContexts.top()));
 }
 
 void TweeCompiler::visit(const EndIfMacro& host) {
@@ -1019,7 +1019,7 @@ void TweeCompiler::makePassageRoutine(const Passage &passage) {
     ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", "noMouse");
 
     // save game often to be able to restore multiple times
-    ASSGEN.saveUndo("sp").saveUndo("sp").saveUndo("sp").saveUndo("sp").saveUndo("sp").saveUndo("sp");
+    ASSGEN.saveUndo(STACK_POINTER).saveUndo(STACK_POINTER).saveUndo(STACK_POINTER).saveUndo(STACK_POINTER).saveUndo(STACK_POINTER).saveUndo(STACK_POINTER);
 
     // update screen
     ASSGEN.call_1n(UPDATE_MOUSE_SCREEN_ROUTINE)
@@ -1057,6 +1057,142 @@ IfContext TweeCompiler::makeNextIfContext() {
     return context;
 }
 
+Expression *TweeCompiler::optimizeExpression(Expression *expression) {
+
+    if (Const<int> *constant = dynamic_cast<Const<int> *>(expression)) {
+        return constant;
+    } else if (Const<bool> *constant = dynamic_cast<Const<bool> *>(expression)) {
+        return constant;
+    }
+    else if (Variable *variable = dynamic_cast<Variable *>(expression)) {
+        return variable;
+    } else if (UnaryOperation *unOp = dynamic_cast<UnaryOperation *>(expression)) {
+        Expression *unOpexpr = optimizeExpression(unOp->getExpression().get());
+        switch (unOp->getOperator()) {
+            case UnOps::NOT:
+                if (Const<bool> *constant = dynamic_cast<Const<bool> *>(unOpexpr)) {
+                    if (constant->getValue()) {
+                        return new Const<bool>(false);
+                    } else {
+                        return new Const<bool>(true);
+                    }
+                } else {
+                    return new UnaryOperation(unOp->getOperator(), unOp->getExpression().get());
+                }
+                break;
+            case UnOps::PLUS:
+                if (Const<int> *constant = dynamic_cast<Const<int> *>(unOpexpr)) {
+                    return constant;
+                }
+                break;
+            case UnOps::MINUS:
+                if (Const<int> *constant = dynamic_cast<Const<int> *>(unOpexpr)) {
+                    return new Const<int>(-constant->getValue());
+                }
+                break;
+            default:
+                LOG_WARNING << "unsupported operator";
+                return expression;
+        }
+    } else if (BinaryOperation *binOp = dynamic_cast<BinaryOperation *>(expression)) {
+        Expression *lExpr = optimizeExpression(binOp->getLeftSide().get());
+        Expression *rExpr = optimizeExpression(binOp->getRightSide().get());
+
+        if (binOp->getOperator() == BinOps::TO) {
+            if (BinaryOperation *rrExpr = dynamic_cast<BinaryOperation *>(rExpr)) {
+                if (rrExpr->getOperator() == BinOps::TO) {
+                    Variable *varL = dynamic_cast<Variable *>(lExpr);
+                    Variable *varR = dynamic_cast<Variable *>(rrExpr->getLeftSide().get());
+                    if (rrExpr->getOperator() == BinOps::TO) {
+                        if (Variable *varRR = dynamic_cast<Variable *>(rrExpr->getRightSide().get())) {
+                            if (varRR->getName() == varL->getName()) {
+                                return new BinaryOperation(BinOps::TO, varR, rrExpr->getRightSide().get());
+                            }
+                        }
+                    }
+                    if (varL->getName() == varR->getName()) {
+                        return new BinaryOperation(BinOps::TO, varL, rrExpr->getRightSide().get());
+                    }
+                }
+            }
+            return new BinaryOperation(BinOps::TO, lExpr, rExpr);
+        }
+
+        if (Const<int> *lConst = dynamic_cast<Const<int> *>(lExpr)) {
+            if (Const<int> *rConst = dynamic_cast<Const<int> *>(rExpr)) {
+                switch (binOp->getOperator()) {
+                    case BinOps::ADD:
+                        return new Const<int>(lConst->getValue() + rConst->getValue());
+                    case BinOps::SUB:
+                        return new Const<int>(lConst->getValue() - rConst->getValue());
+                    case BinOps::MUL:
+                        return new Const<int>(lConst->getValue() * rConst->getValue());
+                    case BinOps::DIV:
+                        if (rConst) {
+                            return new Const<int>(lConst->getValue() / rConst->getValue());
+                        } else {
+                            throw TweeDocumentException("div by zero!");
+                        }
+                    case BinOps::MOD:
+                        if (rConst) {
+                            return new Const<int>(lConst->getValue() % rConst->getValue());
+                        } else {
+                            throw TweeDocumentException("mod by zero!");
+                        }
+                    case BinOps::LT:
+                        return new Const<bool>((lConst < rConst));
+                    case BinOps::LTE:
+                        return new Const<bool>((lConst <= rConst));
+                    case BinOps::GT:
+                        return new Const<bool>((lConst > rConst));
+                    case BinOps::GTE:
+                        return new Const<bool>((lConst >= rConst));
+                    case BinOps::IS:
+                        return new Const<bool>((lConst != rConst));
+                    case BinOps::NEQ:
+                        return new Const<bool>((lConst == rConst));
+                    default:
+                        LOG_WARNING << "unsupported operator";
+                        return expression;
+                }
+            } else {
+                return new BinaryOperation(binOp->getOperator(), lExpr, rExpr);
+            }
+
+        }
+        if (Const<bool> *lConst = dynamic_cast<Const<bool> *>(lExpr)) {
+            if (Const<bool> *rConst = dynamic_cast<Const<bool> *>(rExpr)) {
+                switch (binOp->getOperator()) {
+                    case BinOps::AND:
+                        return new Const<bool>(lConst->getValue() && rConst->getValue());
+
+                    case BinOps::OR:
+                        return new Const<int>(lConst->getValue() || rConst->getValue());
+                    default:
+                        LOG_WARNING << "unsupported operator";
+                        return expression;
+                }
+            }
+        } else {
+            return new BinaryOperation(binOp->getOperator(), lExpr, rExpr);
+        }
+
+    } else if (Visited *visited = dynamic_cast<Visited *>(expression)) {
+        return visited;
+    } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
+        return turns;
+    } else if (Random *random = dynamic_cast<Random *>(expression)) {
+        Expression *start = optimizeExpression(random->getStart().get());
+        Expression *end = optimizeExpression(random->getEnd().get());
+        return new Random(start, end);
+    } else if (Previous *previous = dynamic_cast<Previous * > (expression)) {
+        return previous;
+    }
+
+    LOG_WARNING << "didn't optimize anything";
+    return expression;
+}
+
 void TweeCompiler::evalAssignment(BinaryOperation *expression) {
     if (expression->getOperator() == BinOps::TO) {
         if (Variable *variable = (Variable *) (expression->getLeftSide().get())) {
@@ -1068,9 +1204,9 @@ void TweeCompiler::evalAssignment(BinaryOperation *expression) {
                 ASSGEN.addGlobal(variableName);
             }
 
-            evalExpression(expression->getRightSide().get());
+            evalExpression(optimizeExpression(expression->getRightSide().get()));
 
-            ASSGEN.load("sp", variableName);
+            ASSGEN.load(STACK_POINTER, variableName);
             ASSGEN.push(variableName);
         } else {
             throw TweeDocumentException("left side of set assignment was not a variable");
@@ -1101,9 +1237,9 @@ void TweeCompiler::evalExpression(Expression *expression) {
         LOG_DEBUG << visited->to_string();
         size_t passageCount = visited->getPassageCount();
         if (passageCount == 0) {
-            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, "sp");
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, GLOB_CURRENT_PASSAGE_ID, STACK_POINTER);
         } else if (passageCount == 1) {
-            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)]), "sp");
+            ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)]), STACK_POINTER);
         } else {
             ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, to_string(passageName2id[visited->getPassage(0)]), "min");
 
@@ -1111,7 +1247,7 @@ void TweeCompiler::evalExpression(Expression *expression) {
                 string label = "NO_NEW_MIN_FOUND_" + to_string(i);
                 string nextPassageVisitedCount = to_string(passageName2id[visited->getPassage(i)] + 1);
 
-                ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, nextPassageVisitedCount, "sp")
+                ASSGEN.loadw(TABLE_VISITED_PASSAGE_COUNT, nextPassageVisitedCount, STACK_POINTER)
                         .jumpLess("sp min", "~" + label)
                         .loadw(TABLE_VISITED_PASSAGE_COUNT, nextPassageVisitedCount, "min")
                         .addLabel(label);
@@ -1123,45 +1259,45 @@ void TweeCompiler::evalExpression(Expression *expression) {
 
     } else if (Turns *turns = dynamic_cast<Turns *>(expression)) {
         LOG_DEBUG << turns->to_string();
-        ASSGEN.load(GLOB_TURNS_COUNT, "sp");
+        ASSGEN.load(GLOB_TURNS_COUNT, STACK_POINTER);
     } else if (Random *random = dynamic_cast<Random *>(expression)) {
         LOG_DEBUG << random->to_string();
         std::string afterRandom = makeLabels("random").second;
-    // check if a > b, act accordingly
+        // check if a > b, act accordingly
         labels = makeLabels("randomAGTB");
         evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
-        ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.second);
-    //  a > b
+        ASSGEN.jumpLowerEquals(std::string(STACK_POINTER) + " " + std::string(STACK_POINTER), labels.second);
+        //  a > b
         evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
-        ASSGEN.add("sp", "1", "sp");
-        ASSGEN.sub("sp", "sp", "sp");
-        ASSGEN.random("sp", "sp");
+        ASSGEN.add(STACK_POINTER, "1", STACK_POINTER);
+        ASSGEN.sub(STACK_POINTER, STACK_POINTER, STACK_POINTER);
+        ASSGEN.random(STACK_POINTER, STACK_POINTER);
         evalExpression(random->getStart().get());
-        ASSGEN.sub("sp", "1", "sp");
-        ASSGEN.add("sp", "sp", "sp");
-        ASSGEN.jump(afterRandom);
+        ASSGEN.sub(STACK_POINTER, "1", STACK_POINTER)
+                .add(STACK_POINTER, STACK_POINTER, STACK_POINTER)
+                .jump(afterRandom);
 
         ASSGEN.addLabel(labels.second);
-    // check if a < b, act accordingly
+        // check if a < b, act accordingly
         labels = makeLabels("randomALTB");
         evalExpression(random->getStart().get());
         evalExpression(random->getEnd().get());
-        ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.second);
-    //  a < b
+        ASSGEN.jumpEquals(std::string(STACK_POINTER) + " " + std::string(STACK_POINTER), labels.second);
+        //  a < b
         evalExpression(random->getEnd().get());
         evalExpression(random->getStart().get());
-        ASSGEN.add("sp", "1", "sp");
-        ASSGEN.sub("sp", "sp", "sp");
-        ASSGEN.random("sp", "sp");
+        ASSGEN.add(STACK_POINTER, "1", STACK_POINTER);
+        ASSGEN.sub(STACK_POINTER, STACK_POINTER, STACK_POINTER);
+        ASSGEN.random(STACK_POINTER, STACK_POINTER);
         evalExpression(random->getEnd().get());
-        ASSGEN.sub("sp", "1", "sp");
-        ASSGEN.add("sp", "sp", "sp");
+        ASSGEN.sub(STACK_POINTER, "1", STACK_POINTER);
+        ASSGEN.add(STACK_POINTER, STACK_POINTER, STACK_POINTER);
         ASSGEN.jump(afterRandom);
 
         ASSGEN.addLabel(labels.second);
-    // a == b, simply return a
+        // a == b, simply return a
         evalExpression(random->getEnd().get());
         ASSGEN.addLabel(afterRandom);
     } else if (BinaryOperation *binaryOperation = dynamic_cast<BinaryOperation *>(expression)) {
@@ -1170,84 +1306,92 @@ void TweeCompiler::evalExpression(Expression *expression) {
             evalAssignment(binaryOperation);
 
         } else {
-            TweeCompiler::evalExpression(binaryOperation->getRightSide().get());
-            TweeCompiler::evalExpression(binaryOperation->getLeftSide().get());
+            evalExpression(binaryOperation->getRightSide().get());
+            evalExpression(binaryOperation->getLeftSide().get());
 
             switch (binaryOperation->getOperator()) {
                 case BinOps::ADD:
-                    ASSGEN.add("sp", "sp", "sp");
+                    ASSGEN.add(STACK_POINTER, STACK_POINTER, STACK_POINTER);
                     break;
                 case BinOps::SUB:
-                    ASSGEN.sub("sp", "sp", "sp");
+                    ASSGEN.sub(STACK_POINTER, STACK_POINTER, STACK_POINTER);
                     break;
                 case BinOps::MUL:
-                    ASSGEN.mul("sp", "sp", "sp");
+                    ASSGEN.mul(STACK_POINTER, STACK_POINTER, STACK_POINTER);
                     break;
                 case BinOps::DIV:
-                    ASSGEN.div("sp", "sp", "sp");
+                    ASSGEN.div(STACK_POINTER, STACK_POINTER, STACK_POINTER);
                     break;
                 case BinOps::MOD:
-                    ASSGEN.mod("sp", "sp", "sp");
+                    ASSGEN.mod(STACK_POINTER, STACK_POINTER, STACK_POINTER);
                     break;
                 case BinOps::AND:
-                    ASSGEN.land("sp", "sp", "sp");
+                    ASSGEN.mul(STACK_POINTER, STACK_POINTER, STACK_POINTER);
                     break;
                 case BinOps::OR:
-                    ASSGEN.lor("sp", "sp", "sp");
+                    labels = makeLabels("or");
+                    ASSGEN.jumpNotEquals(std::string(STACK_POINTER) + " " + "0", labels.first)
+                            .push("0")
+                            .jumpNotEquals(std::string(STACK_POINTER) + " " + std::string(STACK_POINTER), labels.first)
+                            .push("0")
+                            .jump(labels.second)
+                            .addLabel(labels.first)
+                            .push("1")
+                            .addLabel(labels.second);
                     break;
                 case BinOps::LT:
                     labels = makeLabels("lower");
-                    ASSGEN.jumpLower(std::string("sp") + " " + std::string("sp"), labels.first);
-                    ASSGEN.push("0");
-                    ASSGEN.jump(labels.second);
-                    ASSGEN.addLabel(labels.first);
-                    ASSGEN.push("1");
-                    ASSGEN.addLabel(labels.second);
+                    ASSGEN.jumpLower(std::string(STACK_POINTER) + " " + std::string(STACK_POINTER), labels.first)
+                            .push("0")
+                            .jump(labels.second)
+                            .addLabel(labels.first)
+                            .push("1")
+                            .addLabel(labels.second);
                     break;
                 case BinOps::LTE:
                     labels = makeLabels("lowerEquals");
-                    ASSGEN.jumpLowerEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                    ASSGEN.push("0");
-                    ASSGEN.jump(labels.second);
-                    ASSGEN.addLabel(labels.first);
-                    ASSGEN.push("1");
-                    ASSGEN.addLabel(labels.second);
+                    ASSGEN.jumpLowerEquals(std::string(STACK_POINTER) + " " + std::string(STACK_POINTER), labels.first)
+                            .push("0")
+                            .jump(labels.second)
+                            .addLabel(labels.first)
+                            .push("1")
+                            .addLabel(labels.second);
                     break;
                 case BinOps::GT:
                     labels = makeLabels("greater");
-                    ASSGEN.jumpGreater(std::string("sp") + " " + std::string("sp"), labels.first);
-                    ASSGEN.push("0");
-                    ASSGEN.jump(labels.second);
-                    ASSGEN.addLabel(labels.first);
-                    ASSGEN.push("1");
-                    ASSGEN.addLabel(labels.second);
+                    ASSGEN.jumpGreater(std::string(STACK_POINTER) + " " + std::string(STACK_POINTER), labels.first)
+                            .push("0")
+                            .jump(labels.second)
+                            .addLabel(labels.first)
+                            .push("1")
+                            .addLabel(labels.second);
                     break;
                 case BinOps::GTE:
                     labels = makeLabels("greaterEquals");
-                    ASSGEN.jumpGreaterEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                    ASSGEN.push("0");
-                    ASSGEN.jump(labels.second);
-                    ASSGEN.addLabel(labels.first);
-                    ASSGEN.push("1");
-                    ASSGEN.addLabel(labels.second);
+                    ASSGEN.jumpGreaterEquals(std::string(STACK_POINTER) + " " + std::string(STACK_POINTER), labels.first)
+                            .push("0")
+                            .jump(labels.second)
+                            .addLabel(labels.first)
+                            .push("1")
+                            .addLabel(labels.second);
                     break;
                 case BinOps::IS:
                     labels = makeLabels("is");
-                    ASSGEN.jumpEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                    ASSGEN.push("0");
-                    ASSGEN.jump(labels.second);
-                    ASSGEN.addLabel(labels.first);
-                    ASSGEN.push("1");
-                    ASSGEN.addLabel(labels.second);
+                    ASSGEN.jumpEquals(std::string(STACK_POINTER) + " " + std::string(STACK_POINTER), labels.first)
+                            .push("0")
+                            .jump(labels.second)
+                            .addLabel(labels.first)
+                            .push("1")
+                            .addLabel(labels.second);
                     break;
                 case BinOps::NEQ:
                     labels = makeLabels("neq");
-                    ASSGEN.jumpNotEquals(std::string("sp") + " " + std::string("sp"), labels.first);
-                    ASSGEN.push("0");
-                    ASSGEN.jump(labels.second);
-                    ASSGEN.addLabel(labels.first);
-                    ASSGEN.push("1");
-                    ASSGEN.addLabel(labels.second);
+                    ASSGEN.jumpNotEquals(std::string(STACK_POINTER) + " " + std::string(STACK_POINTER), labels.first)
+                            .push("0")
+                            .jump(labels.second)
+                            .addLabel(labels.first)
+                            .push("1")
+                            .addLabel(labels.second);
                     break;
                 default:
                     //TODO: handle this
@@ -1256,24 +1400,20 @@ void TweeCompiler::evalExpression(Expression *expression) {
             }
         }
     } else if (UnaryOperation *unOp = dynamic_cast<UnaryOperation *>(expression)) {
-        TweeCompiler::evalExpression(unOp->getExpression().get());
+        evalExpression(unOp->getExpression().get());
         switch (unOp->getOperator()) {
             case UnOps::NOT:
-                ASSGEN.lnot("sp", "sp");
+                ASSGEN.sub("1", STACK_POINTER, STACK_POINTER);
                 break;
             case UnOps::PLUS:
-                ASSGEN.push("0");
-                ASSGEN.add("sp", "sp", "sp");
                 break;
             case UnOps::MINUS:
-                ASSGEN.push("0");
-                ASSGEN.sub("sp", "sp", "sp");
+                ASSGEN.mul("-1", STACK_POINTER, STACK_POINTER);
                 break;
             default:
-                // TODO: handle this
-                break;
-            }
+                throw TweeDocumentException("unsupported operator");
         }
+    }
 }
 
 std::pair<std::string, std::string> TweeCompiler::makeLabels(std::string prefix) {

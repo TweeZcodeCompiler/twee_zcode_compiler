@@ -26,9 +26,11 @@ class TweeCompiler : public ITweeCompiler, IBodyPartsVisitor {
 public:
     void compile(TweeFile &tweeDoc, std::ostream &out);
 
-    void evalExpression(Expression *);
+    Expression * optimizeExpression(Expression *expression);
 
-    void evalAssignment(BinaryOperation *expression);
+    void evalExpression(Expression *expression);
+
+    void evalAssignment(BinaryOperation* expression);
 
     std::pair<std::string, std::string> makeLabels(std::string);
 
