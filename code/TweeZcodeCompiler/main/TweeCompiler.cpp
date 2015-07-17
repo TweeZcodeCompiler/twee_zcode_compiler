@@ -70,7 +70,7 @@ static const string GLOB_PASSAGE = "PASSAGE_PTR",
         START_PASSAGE_NAME = "Start",
         GLOB_PREVIOUS_PASSAGE_ID = "PREVIOUS_PASSAGE_ID",
         GLOB_CURRENT_PASSAGE_ID = "CURRENT_PASSAGE_ID",
-        LINK_PREFIX = "LINK_",
+        LINK_PREFIX = "LINK_", STRING_PREVIOUS = "PREVIOUS",
 
         // mouse vars, routines & tables
         // mouse link table: one link needs 4 entries: lineNumber, charStart, charEnd, passageNumber
@@ -117,6 +117,22 @@ static const unsigned int LINKED_PASSAGES_SIZE = 512;
 #ifndef ASSGEN
 #define ASSGEN (*_assgen)
 #endif
+
+
+bool isPreviousMacro(string link) {
+    // TODO: catch invalid link
+
+    string previousFunc = "previous()";
+
+    while (link.size() > previousFunc.size() && link.at(0) == ' ') {
+        link = link.substr(1);
+    }
+    while (link.size() > previousFunc.size() && link.at(link.size() - 1) == ' ') {
+        link = link.substr(0, link.size() - 1);
+    }
+
+    return link == previousFunc;
+}
 
 void maskString(std::string &string) {
     std::replace(string.begin(), string.end(), ' ', '_');
@@ -214,6 +230,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     globalVariables = std::set<std::string>();
     labelCount = 0;
     linkCount = 0;
+    foundLinks = vector<Link>();
     ifContexts = stack<IfContext>();
     ifCount = 0;
 
@@ -256,6 +273,10 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
     ASSGEN.addWordArray(TABLE_MOUSE_LINKS, MAX_MOUSE_LINKS * 4 * 5); // maximum of MAX_MOUSE_LINKS links per page of a passage possible
     ASSGEN.addWordArray(TABLE_MOUSE_CLICK_ARROWS, 2 * 4);
+
+
+    // special string for previous functionality
+    ASSGEN.addString(STRING_PREVIOUS, "previous");
 
 
 
@@ -817,7 +838,7 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
 
             ASSGEN.jumpEquals(ASSGEN.makeArgs({STRING_ARG_NAME, linkName}), linkLabelPrefix + linkName);
             i++;
-        }
+        };
 
         // error handling
         ASSGEN.print("could not find target passage for string ")
@@ -826,13 +847,12 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
                 .print_num(STRING_ARG_NAME);
 
         i=0;
-
-
         for(auto link = foundLinks.begin(); link != foundLinks.end(); ++link) {
-            int targetId = passageName2id.at(link->getTarget());
+            string targetId = isPreviousMacro(link->getTarget()) ? GLOB_PREVIOUS_PASSAGE_ID : to_string(passageName2id.at(link->getTarget()));
             string linkName = LINK_PREFIX + to_string(i);
-            ASSGEN.addLabel(linkLabelPrefix + linkName)
-                    .ret(to_string(targetId));
+            ASSGEN.addLabel(linkLabelPrefix + linkName);
+
+            ASSGEN.ret(targetId);
             i++;
         }
     }
@@ -840,20 +860,6 @@ void TweeCompiler::compile(TweeFile &tweeFile, std::ostream &out) {
     out << Utils::getStackLib();
 }
 
-bool isPreviousMacro(string link) {
-    // TODO: catch invalid link
-
-    string previousFunc = "previous()";
-
-    while (link.size() > previousFunc.size() && link.at(0) == ' ') {
-        link = link.substr(1);
-    }
-    while (link.size() > previousFunc.size() && link.at(link.size() - 1) == ' ') {
-        link = link.substr(0, link.size() - 1);
-    }
-
-    return link == previousFunc;
-}
 
 void TweeCompiler::visit(const Text& host) {
     ASSGEN.print(host.getContent());
@@ -882,53 +888,39 @@ void TweeCompiler::visit(const Link& host) {
     // TODO: catch invalid link
     pair<string, string> labels = makeLabels("routineClicked");
 
-    if (isPreviousMacro(host.getTarget())) {
-        // TODO: re-enable support for this
-        //ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
-        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.first)
-                .call_1n(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE)
-                .addLabel(labels.first);
+    string id;
+    string target = host.getTarget();
 
-        ASSGEN.storeb(TABLE_LINKED_PASSAGES, GLOB_PREVIOUS_PASSAGE_ID, "1");
-
-        ASSGEN.setTextStyle("1");           // reversed video
-        ASSGEN.print(host.getAltName());
-        ASSGEN.setTextStyle("0");           // reversed video
-
-        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.second)
-                .call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, GLOB_PREVIOUS_PASSAGE_ID)
-                .addLabel(labels.second);
+    if(isPreviousMacro(host.getTarget())) {
+        id = GLOB_PREVIOUS_PASSAGE_ID;
     } else {
-        int id;
-        string target = host.getTarget();
-
         try {
-            id = passageName2id.at(target);
-        } catch(const out_of_range& outOfRange) {
+            id = to_string(passageName2id.at(target));
+        } catch (const out_of_range &outOfRange) {
             throw TweeDocumentException("invalid link target: " + target);
         }
-
-
-        string linkName = LINK_PREFIX + to_string(linkCount++);
-        ASSGEN.addString(linkName, (host.getAltName() == "") ? host.getTarget() : host.getAltName());
-
-        foundLinks.push_back(Link(host));
-        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.first)
-                .call_1n(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE)
-                .addLabel(labels.first);
-
-        ASSGEN.pushStack(TABLE_LINKED_PASSAGES,
-                         linkName,
-                         LABEL_ROUTINE_FAIL_HANDLER, true);
-
-        ASSGEN.setTextStyle("1");           // reversed video
-        ASSGEN.print(host.getAltName());
-        ASSGEN.setTextStyle("0");           // reversed video
-
-        ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.second)
-                .call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, to_string(id))
-                .addLabel(labels.second);
     }
+
+
+    string linkName = LINK_PREFIX + to_string(linkCount++);
+    ASSGEN.addString(linkName, host.getAltName());
+
+    foundLinks.push_back(Link(host));
+    ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.first)
+            .call_1n(UPDATE_MOUSE_TABLE_BEFORE_ROUTINE)
+            .addLabel(labels.first);
+
+    ASSGEN.pushStack(TABLE_LINKED_PASSAGES,
+                     linkName,
+                     LABEL_ROUTINE_FAIL_HANDLER, true);
+
+    ASSGEN.setTextStyle("1");           // reversed video
+    ASSGEN.print(host.getAltName());
+    ASSGEN.setTextStyle("0");           // reversed video
+
+    ASSGEN.jumpEquals(GLOB_INTERPRETER_SUPPORTS_MOUSE + " 0", labels.second)
+            .call_vn(UPDATE_MOUSE_TABLE_AFTER_ROUTINE, id)
+            .addLabel(labels.second);
 }
 
 void TweeCompiler::visit(const Newline& host) {
