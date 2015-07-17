@@ -57,8 +57,6 @@ int main(int argc, char **argv) {
         std::cout << "Console log";
         plog::init(plog::debug,  &consoleAppender);
     } else {
-        remove(logFile.c_str());
-        plog::init(plog::debug, logFile.c_str());
         plog::init(plog::error,  &consoleAppender);
     }
 
@@ -70,7 +68,6 @@ int main(int argc, char **argv) {
     LOG_DEBUG << "Output-file:" << outputFile;
 
     LOG_DEBUG  << "Compiler started";
-    LOG_ERROR << "test";
     TweeCompiler compiler;
     TweeZCodeCompilerPipeline pipeline;
 
