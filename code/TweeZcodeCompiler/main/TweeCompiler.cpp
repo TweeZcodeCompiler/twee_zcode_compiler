@@ -1042,7 +1042,8 @@ Expression *TweeCompiler::optimizeExpression(Expression *expression) {
                 }
                 break;
             default:
-                throw TweeDocumentException("unsupported operator");
+                LOG_WARNING << "unsupported operator";
+                return expression;
         }
     } else if (BinaryOperation *binOp = dynamic_cast<BinaryOperation *>(expression)) {
         Expression *lExpr = optimizeExpression(binOp->getLeftSide().get());
@@ -1102,7 +1103,8 @@ Expression *TweeCompiler::optimizeExpression(Expression *expression) {
                     case BinOps::NEQ:
                         return new Const<bool>((lConst == rConst));
                     default:
-                        throw TweeDocumentException("unsupported operator");
+                        LOG_WARNING << "unsupported operator";
+                        return expression;
                 }
             } else {
                 return new BinaryOperation(binOp->getOperator(), lExpr, rExpr);
@@ -1118,7 +1120,8 @@ Expression *TweeCompiler::optimizeExpression(Expression *expression) {
                     case BinOps::OR:
                         return new Const<int>(lConst->getValue() || rConst->getValue());
                     default:
-                        throw TweeDocumentException("unsupported operator");
+                        LOG_WARNING << "unsupported operator";
+                        return expression;
                 }
             }
         } else {
@@ -1136,6 +1139,9 @@ Expression *TweeCompiler::optimizeExpression(Expression *expression) {
     } else if (Previous *previous = dynamic_cast<Previous * > (expression)) {
         return previous;
     }
+
+    LOG_WARNING << "didn't optimize anything";
+    return expression;
 }
 
 void TweeCompiler::evalAssignment(BinaryOperation *expression) {
