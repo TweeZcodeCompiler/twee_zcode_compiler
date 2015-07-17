@@ -1,0 +1,4 @@
+::Start
+
+<<set $v = 0>>
+<<print not ($v)>>
